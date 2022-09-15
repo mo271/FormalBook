@@ -93,7 +93,7 @@
       </defs>
       <g class="TextShape">
        <g id="id3">
-        <rect class="BoundingBox" stroke="none" fill="none" x="635" y="952" width="22707" height="2022"/>
+        <rect class="BoundingBox" stroke="none" fill="rgb(156,22,10)" x="635" y="952" width="22707" height="2022"/>
         <text class="SVGTextShape"><tspan class="TextParagraph" font-family="Liberation Sans, sans-serif" font-size="1588px" font-style="italic" font-weight="400"><tspan class="TextPosition" x="885" y="2512"><tspan fill="rgb(255,245,129)" stroke="none" style="white-space: pre">Formal</tspan><tspan font-style="normal" fill="rgb(255,245,129)" stroke="none" style="white-space: pre"> Proofs from THE BOOK</tspan></tspan></tspan></text>
        </g>
       </g>
