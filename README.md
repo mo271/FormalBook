@@ -30,7 +30,7 @@ Status of the chapters:
   6. :x: [Every finite division ring is a field](./src/chapters/06_Every_finite_division_ring_is_a_field.lean)
   7. :x: [The spectral theorem and Hadamard's determinant problem](./src/chapters/07_The_spectral_theorem_and_Hadamard's_determinant_problem.lean)
   8. :x: [Some irrational numbers](./src/chapters/08_Some_irrational_numbers.lean)
-  9. :x: [Four times $π^2/6$](./src/chapters/09_Four_times_pi²_over_6.lean)
+  9. :x: [Four times ](./src/chapters/09_Four_times_pi²_over_6.lean)$\pi^2/6$
 
 ### Geometry
   10. :x: [Hilbert's third problem: decomposing polyhedra](./src/chapters/10_Hilbert's_third_problem:_decomposing_polyhedra.lean)
