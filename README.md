@@ -16,19 +16,21 @@ We follow the [naming conventions](https://leanprover-community.github.io/contri
 ## Chapters
 
 Status of the chapters:
-  - :x: not yet started
-  - :white_check_mark: work in progress
-  - :heavy_check_mark: chapter is completely formalized
 
+  - :x: not yet started
+  - [ ] work in progress
+  - [x] chapter completely formalized
+### Number Theory
   1.  :white_check_mark: [Six proofs of the infinity of primes](./src/chapters/01_Six_proofs_of_the_infinity_of_primes.lean)
-  2. :x: [Bertrand's_postulate](./src/chapters/02_Bertrand's_postulate.lean)
-  3. :x: [Binomial_coefficients_are_(almost)_never_powers](./src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean)
+  2. [ ] [Bertrand's_postulate](./src/chapters/02_Bertrand's_postulate.lean)
+  3. [x] [Binomial_coefficients_are_(almost)_never_powers](./src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean)
   4. :x: [Representing_numbers_as_sums_of_two_squares](./src/chapters/04_Representing_numbers_as_sums_of_two_squares.lean)
   5. :x: [The_law_of_quadratic_reciprocity](./src/chapters/05_The_law_of_quadratic_reciprocity.lean)
   6. :x: [Every_finite_division_ring_is_a_field](./src/chapters/06_Every_finite_division_ring_is_a_field.lean)
   7. :x: [The_spectral_theorem_and_Hadamard's_determinant_problem](./src/chapters/07_The_spectral_theorem_and_Hadamard's_determinant_problem.lean)
   8. :x: [Some_irrational_numbers](./src/chapters/08_Some_irrational_numbers.lean)
   9. :x: [Four_times_$π^2/6$](./src/chapters/09_Four_times_pi²_over_6.lean)
+### Geometry
   10. :x: [Hilbert's_third_problem:_decomposing_polyhedra](./src/chapters/10_Hilbert's_third_problem:_decomposing_polyhedra.lean)
   11. :x: [Lines_in_the_plane_and_decompositions_of_graphs](./src/chapters/11_Lines_in_the_plane_and_decompositions_of_graphs.lean)
   12. :x: [The_slope_problem](./src/chapters/12_The_slope_problem.lean)
@@ -38,6 +40,7 @@ Status of the chapters:
   16. :x: [Touching_simplices](./src/chapters/16_Touching_simplices.lean)
   17. :x: [Every_large_point_set_has_an_obtuse_angle](./src/chapters/17_Every_large_point_set_has_an_obtuse_angle.lean)
   18. :x: [Borsuk's_conjecture](./src/chapters/18_Borsuk's_conjecture.lean)
+### Analysis
   19. :x: [Sets,_functions,_and_the_continuum_hypothesis](./src/chapters/19_Sets,_functions,_and_the_continuum_hypothesis.lean)
   20. :x: [In_praise_of_inequalities](./src/chapters/20_In_praise_of_inequalities.lean)
   21. :x: [The_fundamental_theorem_of_algebra](./src/chapters/21_The_fundamental_theorem_of_algebra.lean)
@@ -47,6 +50,7 @@ Status of the chapters:
   25. :x: [On_a_lemma_of_Littlewook_and_Offord](./src/chapters/25_On_a_lemma_of_Littlewook_and_Offord.lean)
   26. :x: [Cotangent_and_the_Herglotz_trick](./src/chapters/26_Cotangent_and_the_Herglotz_trick.lean)
   27. :x: [Buffon's_needle_problem](./src/chapters/27_Buffon's_needle_problem.lean)
+### Combinatorics
   28. :x: [Pigeon-hole_and_double_counting](./src/chapters/28_Pigeon-hole_and_double_counting.lean)
   29. :x: [Tiling_rectangles](./src/chapters/29_Tiling_rectangles.lean)
   30. :x: [Three_famous_theorems_on_finite_sets](./src/chapters/30_Three_famous_theorems_on_finite_sets.lean)
@@ -56,6 +60,7 @@ Status of the chapters:
   34. :x: [Identities_versus_bijections](./src/chapters/34_Identities_versus_bijections.lean)
   35. :x: [The_finite_Kakeya_problem](./src/chapters/35_The_finite_Kakeya_problem.lean)
   36. :x: [Completing_Latin_squares](./src/chapters/36_Completing_Latin_squares.lean)
+### Graph Theory
   37. :x: [Permanents_and_the_power_of_entropy](./src/chapters/37_Permanents_and_the_power_of_entropy.lean)
   38. :x: [The_Dinitz_problem](./src/chapters/38_The_Dinitz_problem.lean)
   39. :x: [Five-coloring_plane_graphs](./src/chapters/39_Five-coloring_plane_graphs.lean)
