@@ -45,7 +45,7 @@ Status of the chapters:
 ### Analysis
   19. :x: [Sets, functions, and the continuum hypothesis](./src/chapters/19_Sets,_functions,_and_the_continuum_hypothesis.lean)
   20. :x: [In praise of inequalities](./src/chapters/20_In_praise_of_inequalities.lean)
-  21. :x: [The fundamental theorem of algebra](./src/chapters/21_The_fundamental_theorem_of_algebra.lean)
+  21. :white_check_mark: [The fundamental theorem of algebra](./src/chapters/21_The_fundamental_theorem_of_algebra.lean)
   22. :x: [One square and an odd number of triangles](./src/chapters/22_One_square_and_an_odd_number_of_triangles.lean)
   23. :x: [A theorem of Pólya on polynomials](./src/chapters/23_A_theorem_of_Pólya_on_polynomials.lean)
   24. :x: [Van der Waerden's permanent conjecture](./src/chapters/24_Van_der_Waerden's_permanent_conjecture.lean)
