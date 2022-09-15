@@ -16,9 +16,11 @@ limitations under the License.
 Authors: Moritz Firsching
 -/
 import tactic
+import ring_theory.integral_domain
 /-!
 # Every finite division ring is a field
 
+This is a TODO in `ring_theory.integral_domain`.
 ## TODO
   - statement
     - proof

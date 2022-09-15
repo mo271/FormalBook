@@ -24,7 +24,7 @@ Status of the chapters:
 ### Number Theory
   1. :white_check_mark: [Six proofs of the infinity of primes](./src/chapters/01_Six_proofs_of_the_infinity_of_primes.lean)
   2. :white_check_mark: [Bertrand's postulate](./src/chapters/02_Bertrand's_postulate.lean)
-  3. :x: [Binomial coefficients are (almost) never powers](./src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean)
+  3. :white_check_mark: [Binomial coefficients are (almost) never powers](./src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean)
   4. :x: [Representing numbers as sums of two squares](./src/chapters/04_Representing_numbers_as_sums_of_two_squares.lean)
   5. :x: [The law of quadratic reciprocity](./src/chapters/05_The_law_of_quadratic_reciprocity.lean)
   6. :x: [Every finite division ring is a field](./src/chapters/06_Every_finite_division_ring_is_a_field.lean)
