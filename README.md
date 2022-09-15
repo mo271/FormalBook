@@ -1,6 +1,6 @@
 # Formal BOOK
 
-A work-in-progress attempt to formalize [Proofs from THE BOOK](https://link.springer.com/book/10.1007/978-3-662-57265-8) using [Lean](https://leanprover-community.github.io/).
+A collaborative, work-in-progress attempt to formalize [Proofs from THE BOOK](https://link.springer.com/book/10.1007/978-3-662-57265-8) using [Lean](https://leanprover-community.github.io/).
 
 
 ![Formal Proofs from THE BOOK](formal_proofs_form_the_book.svg)
@@ -17,11 +17,12 @@ We follow the [naming conventions](https://leanprover-community.github.io/contri
 
 Status of the chapters:
 
-  - :x: not yet started
-  - :white-checkmark: work in progress
-  - :full-checkmark: chapter completely formalized
+  - :x: chapter is just a stub
+  - :white_check_mark: work in progress
+  - :heavy_check_mark: chapter is completely formalized
+
 ### Number Theory
-  1. :x: [Six proofs of the infinity of primes](./src/chapters/01_Six_proofs_of_the_infinity_of_primes.lean)
+  1. :white_check_mark: [Six proofs of the infinity of primes](./src/chapters/01_Six_proofs_of_the_infinity_of_primes.lean)
   2. :x: [Bertrand's postulate](./src/chapters/02_Bertrand's_postulate.lean)
   3. :x: [Binomial coefficients are (almost) never powers](./src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean)
   4. :x: [Representing numbers as sums of two squares](./src/chapters/04_Representing_numbers_as_sums_of_two_squares.lean)
