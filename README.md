@@ -80,7 +80,7 @@ Contributions are most welcome! Feel free to
     - definitions, (if not yet in mathlib)
     - statements and
     - proofs
-  - fill in `sorry`s
+  - fill in [`sorry`s](https://github.com/mo271/formal_book/search?q=sorry+extension%3Alean)
   - suggest improvements to proofs/code golf
   - correct typos/formatting/linting
 

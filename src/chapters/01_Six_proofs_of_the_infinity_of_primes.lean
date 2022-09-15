@@ -16,6 +16,8 @@ limitations under the License.
 Authors: Moritz Firsching
 -/
 import tactic
+import number_theory.lucas_lehmer
+
 open finset nat
 open_locale big_operators
 /-!
@@ -154,6 +156,31 @@ end
 
 using Mersenne numbers
 -/
+theorem infinity_of_primes₃:
+  ¬ (∃ (p : ℕ), nat.prime p ∧ (∀ (q : ℕ), (nat.prime q) → q ≤ p)) :=
+begin
+  simp only [not_exists, not_and, not_forall, not_le, exists_prop],
+  intros p h,
+  let m := mersenne p,
+  /- This m has a prime factor;
+  we pick the minimal one, the argument works with any prime factor -/
+  let q := m.min_fac,
+  have h_mod_q: 2^p % q = 1 := by
+  { have: (2^p - 1) % q = 0 :=  mod_eq_zero_of_dvd (min_fac_dvd m),
+    sorry, },
+  have h_piv_div_q_sub_one: p ∣ q - 1 := by
+  { -- Use Lagrange's theorem here!
+    sorry, },
+  use q,
+  split,
+  { refine min_fac_prime _,
+    have one_lt_mersenne: 1 < mersenne p := by
+    { dsimp [mersenne],
+      calc 1 < 2^2 - 1 : by norm_num
+         ... ≤ 2^p - 1 : pred_le_pred (pow_le_pow_of_le_right (nat.succ_pos 1) (prime.two_le h)), },
+    exact ne.symm (ne_of_lt one_lt_mersenne), },
+  { sorry, },
+end
 
 
 /-!
