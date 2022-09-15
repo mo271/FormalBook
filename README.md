@@ -1,6 +1,6 @@
 # Formal BOOK
 
-A work-in-progress attempt to formalize [Proofs from the BOOK](https://link.springer.com/book/10.1007/978-3-662-57265-8) using [Lean](https://leanprover-community.github.io/).
+A work-in-progress attempt to formalize [Proofs from THE BOOK](https://link.springer.com/book/10.1007/978-3-662-57265-8) using [Lean](https://leanprover-community.github.io/).
 
 
 ![Formal Proofs from THE BOOK](formal_proofs_form_the_book.svg)
