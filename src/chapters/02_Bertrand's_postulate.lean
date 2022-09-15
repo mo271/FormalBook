@@ -16,16 +16,12 @@ limitations under the License.
 Authors: Moritz Firsching
 -/
 import tactic
+import number_theory.bertrand -- follows the book-proof pretty closely!
 /-!
 # Bertrand's postulate
 
 ## TODO
-  - statement
-  - proof
-    - (1)
-    - (2)
-    - (3)
-    - (4)
+  - check how much can be imported/rewritten from number_theory.bertrand
   - Appendix: Some estimates
     - Estimating via integrals
     - Estimating factorials - Stirling's formula
