@@ -29,7 +29,7 @@ open nat
 
 Using ℕ instead of ℤ here, because of the definition of `choose` and because of the inequalities.
 -/
-theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_l: l ≥ 2) (h_k: 4 ≤ k) (h_n: k ≤ n):
+theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_l : l ≥ 2) (h_ : 4 ≤ k) (h_n : k ≤ n):
   choose n k ≠ m^l :=
 begin
   sorry,

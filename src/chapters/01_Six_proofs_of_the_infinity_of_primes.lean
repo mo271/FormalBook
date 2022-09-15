@@ -34,7 +34,7 @@ open_locale big_operators
 ### Euclid's Proof
 
 -/
-theorem infinity_of_primes₁ (S : finset ℕ) (h: ∀ (q ∈ S), nat.prime q):
+theorem infinity_of_primes₁ (S : finset ℕ) (h : ∀ (q ∈ S), nat.prime q):
   ∃ (p : ℕ), nat.prime p ∧ p ∉ S :=
 begin
   let n := 1 + ∏ q in S, q,
@@ -42,8 +42,8 @@ begin
   we pick the minimal one, the argument works with any prime divisor -/
   let p := n.min_fac,
   use p,
-  have hp: nat.prime p := by
-  { have hn: 0 < ∏ q in S, q := by
+  have hp : nat.prime p := by
+  { have hn : 0 < ∏ q in S, q := by
     { refine prod_pos _,
       intros q hq,
       exact prime.pos (h q hq), },
@@ -51,9 +51,9 @@ begin
   split,
   { exact hp, },
   { by_contradiction,
-    have h_p_div_prod: p ∣ ∏ q in S, q := dvd_prod_of_mem (λ (i : ℕ), i) h,
-    have h_p_div_diff: p ∣ n - ∏ q in S, q := dvd_sub' (min_fac_dvd n) h_p_div_prod,
-    have h_p_div_one: p ∣ 1 := by finish,
+    have h_p_div_prod : p ∣ ∏ q in S, q := dvd_prod_of_mem (λ (i : ℕ), i) h,
+    have h_p_div_diff : p ∣ n - ∏ q in S, q := dvd_sub' (min_fac_dvd n) h_p_div_prod,
+    have h_p_div_one : p ∣ 1 := by finish,
     exact nat.prime.not_dvd_one (hp) h_p_div_one,
     },
 end
@@ -63,7 +63,7 @@ end
 
 using Fermat numbers
 -/
-definition F: ℕ → ℕ := λ n, 2^2^n + 1
+definition F : ℕ → ℕ := λ n, 2^2^n + 1
 
 lemma F₀: F 0 = 3 :=
 begin
@@ -109,7 +109,7 @@ begin
   rw prod_range_succ,
   rw hn,
   have h_bounded := le_of_lt (fermat_bounded n),
-  have h: (F n)*(F n) + 2 = (F n.succ) + 2 * (F n) := by
+  have h : (F n)*(F n) + 2 = (F n.succ) + 2 * (F n) := by
   { rw F,
     norm_num,
     simp [add_mul, pow_succ, mul_add, mul_add],
@@ -125,7 +125,7 @@ begin
 end
 
 
-theorem infinity_of_primes₂  (k n : ℕ) (h: k < n): coprime (F n) (F k) :=
+theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): coprime (F n) (F k) :=
 begin
   let m := (F n).gcd (F k),
   have h_n : m ∣ F n := (F n).gcd_dvd_left (F k),
@@ -133,7 +133,7 @@ begin
   have h_m : m ∣ 2 :=  by
   { have h_m_prod : m ∣ (∏ k in range n, F k) :=
       dvd_trans h_k (dvd_prod_of_mem F (mem_range.mpr h)),
-    have h_prod: (∏ k in range n, F k) + 2 = F n := by
+    have h_prod : (∏ k in range n, F k) + 2 = F n := by
     { rw fermat_product,
       have h_bound := lt_trans one_lt_two (fermat_bounded n),
       linarith, },
@@ -146,8 +146,8 @@ begin
   { exact h_one, },
   { by_contradiction,
     rw h_two at h_n,
-    have h_even: even (F n) := even_iff_two_dvd.mpr h_n,
-    have h_odd: odd (F n) := fermat_odd,
+    have h_even : even (F n) := even_iff_two_dvd.mpr h_n,
+    have h_odd : odd (F n) := fermat_odd,
     finish, },
 end
 
@@ -165,16 +165,16 @@ begin
   /- This m has a prime factor;
   we pick the minimal one, the argument works with any prime factor -/
   let q := m.min_fac,
-  have h_mod_q: 2^p % q = 1 := by
-  { have: (2^p - 1) % q = 0 :=  mod_eq_zero_of_dvd (min_fac_dvd m),
+  have h_mod_q : 2^p % q = 1 := by
+  { have : (2^p - 1) % q = 0 :=  mod_eq_zero_of_dvd (min_fac_dvd m),
     sorry, },
-  have h_piv_div_q_sub_one: p ∣ q - 1 := by
+  have h_piv_div_q_sub_one : p ∣ q - 1 := by
   { -- Use Lagrange's theorem here!
     sorry, },
   use q,
   split,
   { refine min_fac_prime _,
-    have one_lt_mersenne: 1 < mersenne p := by
+    have one_lt_mersenne : 1 < mersenne p := by
     { dsimp [mersenne],
       calc 1 < 2^2 - 1 : by norm_num
          ... ≤ 2^p - 1 : pred_le_pred (pow_le_pow_of_le_right (nat.succ_pos 1) (prime.two_le h)), },
