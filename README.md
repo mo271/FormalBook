@@ -3,7 +3,7 @@
 A work-in-progress attempt to formalize [Proofs from the BOOK](https://link.springer.com/book/10.1007/978-3-662-57265-8) using [Lean](https://leanprover-community.github.io/).
 
 
-<div style="background-image:url('https://media.springernature.com/w600/springer-static/cover-hires/book/978-3-662-57265-8'); width:530px; height:95px; background-position: right 530px top 508px;"><p style="color:#fff581; font-size:20px; "><b><i>Formal</i></b></p></div>
+![Formal Proofs from THE BOOK](formal_proofs_form_the_book.svg)
 
 ## Structure
 
