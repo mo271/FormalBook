@@ -18,13 +18,13 @@ We follow the [naming conventions](https://leanprover-community.github.io/contri
 Status of the chapters:
 
   - :x: chapter is just a stub
-  - :thought_ballon: work in progress
+  - :thought_balloon: work in progress
   - :tada: chapter is completely formalized
 
 ### Number Theory
-  1. :thought_ballon: [Six proofs of the infinity of primes](./src/chapters/01_Six_proofs_of_the_infinity_of_primes.lean)
-  2. :thought_ballon: [Bertrand's postulate](./src/chapters/02_Bertrand's_postulate.lean)
-  3. :thought_ballon: [Binomial coefficients are (almost) never powers](./src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean)
+  1. :thought_balloon: [Six proofs of the infinity of primes](./src/chapters/01_Six_proofs_of_the_infinity_of_primes.lean)
+  2. :thought_balloon: [Bertrand's postulate](./src/chapters/02_Bertrand's_postulate.lean)
+  3. :thought_balloon: [Binomial coefficients are (almost) never powers](./src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean)
   4. :x: [Representing numbers as sums of two squares](./src/chapters/04_Representing_numbers_as_sums_of_two_squares.lean)
   5. :x: [The law of quadratic reciprocity](./src/chapters/05_The_law_of_quadratic_reciprocity.lean)
   6. :x: [Every finite division ring is a field](./src/chapters/06_Every_finite_division_ring_is_a_field.lean)
@@ -45,7 +45,7 @@ Status of the chapters:
 ### Analysis
   19. :x: [Sets, functions, and the continuum hypothesis](./src/chapters/19_Sets,_functions,_and_the_continuum_hypothesis.lean)
   20. :x: [In praise of inequalities](./src/chapters/20_In_praise_of_inequalities.lean)
-  21. :thought_ballon: [The fundamental theorem of algebra](./src/chapters/21_The_fundamental_theorem_of_algebra.lean)
+  21. :thought_balloon: [The fundamental theorem of algebra](./src/chapters/21_The_fundamental_theorem_of_algebra.lean)
   22. :x: [One square and an odd number of triangles](./src/chapters/22_One_square_and_an_odd_number_of_triangles.lean)
   23. :x: [A theorem of Pólya on polynomials](./src/chapters/23_A_theorem_of_Pólya_on_polynomials.lean)
   24. :x: [Van der Waerden's permanent conjecture](./src/chapters/24_Van_der_Waerden's_permanent_conjecture.lean)
@@ -70,7 +70,7 @@ Status of the chapters:
   41. :x: [Turán's graph theorem](./src/chapters/41_Turán's_graph_theorem.lean)
   42. :x: [Communicating without errors](./src/chapters/42_Communicating_without_errors.lean)
   43. :x: [The chromatic number of Kneser graphs](./src/chapters/43_The_chromatic_number_of_Kneser_graphs.lean)
-  44. :thought_ballon: [Of friends and politicians](./src/chapters/44_Of_friends_and_politicians.lean)
+  44. :thought_balloon: [Of friends and politicians](./src/chapters/44_Of_friends_and_politicians.lean)
   45. :x: [Probability makes counting (sometimes) easy](./src/chapters/45_Probability_makes_counting_(sometimes)_easy.lean)
 
 ## Contributing
