@@ -20,6 +20,9 @@ import tactic
 # Of friends and politicians
 
 ## TODO
+  - Check what can be ported from archive/100-theorems-list/83_friendship_graphs, seems to follow the
+  book closely!
+
   - statement
     - proof
       - (1)

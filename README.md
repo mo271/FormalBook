@@ -70,7 +70,7 @@ Status of the chapters:
   41. :x: [Turán's graph theorem](./src/chapters/41_Turán's_graph_theorem.lean)
   42. :x: [Communicating without errors](./src/chapters/42_Communicating_without_errors.lean)
   43. :x: [The chromatic number of Kneser graphs](./src/chapters/43_The_chromatic_number_of_Kneser_graphs.lean)
-  44. :x: [Of friends and politicians](./src/chapters/44_Of_friends_and_politicians.lean)
+  44. :white_check_mark: [Of friends and politicians](./src/chapters/44_Of_friends_and_politicians.lean)
   45. :x: [Probability makes counting (sometimes) easy](./src/chapters/45_Probability_makes_counting_(sometimes)_easy.lean)
 
 ## Contributing
