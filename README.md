@@ -13,6 +13,16 @@ The goal is to make the formalizations of the proofs as close as possible to the
 
 We follow the [naming conventions](https://leanprover-community.github.io/contribute/naming.html) and [code style](https://leanprover-community.github.io/contribute/style.html) of mathlib.
 
+## Installation
+
+This is a leanproject currently using Lean 3. You first need to [install Lean](https://leanprover-community.github.io/get_started.html#regular-install) and then run
+```shell
+leanproject get mo271/formal_book
+cd formal_book
+code .
+```
+The last step only opens vscode in case you want to use that.
+
 ## Chapters
 
 Status of the chapters:
