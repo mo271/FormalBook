@@ -43,7 +43,7 @@ Status of the chapters:
   9. :x: [Four times ](./src/chapters/09_Four_times_pi²_over_6.lean)$\pi^2/6$
 
 ### Geometry
-  10. :x: [Hilbert's third problem: decomposing polyhedra](./src/chapters/10_Hilbert's_third_problem:_decomposing_polyhedra.lean)
+  10. :x: [Hilbert's third problem: decomposing polyhedra](./src/chapters/10_Hilbert's_third_problem_decomposing_polyhedra.lean)
   11. :x: [Lines in the plane and decompositions of graphs](./src/chapters/11_Lines_in_the_plane_and_decompositions_of_graphs.lean)
   12. :x: [The slope problem](./src/chapters/12_The_slope_problem.lean)
   13. :x: [Three applications of Euler's formula](./src/chapters/13_Three_applications_of_Euler's_formula.lean)
