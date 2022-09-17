@@ -54,7 +54,7 @@ Status of the chapters:
   18. :x: [Borsuk's conjecture](./src/chapters/18_Borsuk's_conjecture.lean)
 ### Analysis
   19. :x: [Sets, functions, and the continuum hypothesis](./src/chapters/19_Sets,_functions,_and_the_continuum_hypothesis.lean)
-  20. :x: [In praise of inequalities](./src/chapters/20_In_praise_of_inequalities.lean)
+  20. :thought_balloon: [In praise of inequalities](./src/chapters/20_In_praise_of_inequalities.lean)
   21. :thought_balloon: [The fundamental theorem of algebra](./src/chapters/21_The_fundamental_theorem_of_algebra.lean)
   22. :x: [One square and an odd number of triangles](./src/chapters/22_One_square_and_an_odd_number_of_triangles.lean)
   23. :x: [A theorem of Pólya on polynomials](./src/chapters/23_A_theorem_of_Pólya_on_polynomials.lean)

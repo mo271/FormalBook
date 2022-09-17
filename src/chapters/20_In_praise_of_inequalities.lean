@@ -16,6 +16,11 @@ limitations under the License.
 Authors: Moritz Firsching
 -/
 import tactic
+import analysis.inner_product_space.basic
+import algebra.module.basic
+import data.real.basic
+open_locale real_inner_product_space
+
 /-!
 # In praise of inequalities
 
@@ -37,3 +42,20 @@ import tactic
     - First proof
     - Second proof
 -/
+
+-- Not quite sure what we actually need here, want to have ℝ-vector space with inner product.
+variables {V : Type*}  [add_comm_group V] [module ℝ V] [inner_product_space ℝ V] [normed_space ℝ V]
+
+theorem cauchy_schwarz_inequality (a b : V) : ⟪a, b⟫^2 ≤ ∥a∥^2 * ∥b∥^2 :=
+begin
+  have h: ∀ (x : ℝ), ∥x•a + b∥^2 = x^2*∥a∥^2 + 2*x*⟪a, b⟫ + ∥b∥^2 := by
+  { cases em (a = 0),
+    { rw h,
+      intro x,
+      simp only [smul_zero, zero_add, self_eq_add_left],
+      sorry, },
+    { cases em (∃ (l : ℝ),  b = l•a),
+      { sorry, },
+      { sorry, }, }, },
+  sorry,
+end
