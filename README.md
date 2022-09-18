@@ -96,6 +96,11 @@ Contributions are most welcome! Feel free to
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details.
 
+## Authors
+
+  - [Moritz Firsching](https://github.com/mo271)
+  - [Nick Kuhn](https://github.com/nick-kuhn)
+
 ## License
 
 Apache 2.0; see [`LICENSE`](LICENSE) for details.
