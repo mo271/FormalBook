@@ -16,7 +16,12 @@ limitations under the License.
 Authors: Moritz Firsching
 -/
 import tactic
+import data.fintype.card
 import ring_theory.integral_domain
+import data.polynomial.ring_division
+
+open finset
+open_locale big_operators nat
 /-!
 # Every finite division ring is a field
 
@@ -26,3 +31,9 @@ This is a TODO in `ring_theory.integral_domain`.
     - proof
       - Roots of unity
 -/
+variables {R : Type*} [ring R] [comm_ring R] [decidable_eq R] [division_ring R]
+
+noncomputable theorem wedderburn (h: fintype R): field R :=
+begin
+  sorry,
+end
