@@ -37,14 +37,14 @@ Status of the chapters:
   3. :thought_balloon: [Binomial coefficients are (almost) never powers](./src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean)
   4. :x: [Representing numbers as sums of two squares](./src/chapters/04_Representing_numbers_as_sums_of_two_squares.lean)
   5. :thought_balloon: [The law of quadratic reciprocity](./src/chapters/05_The_law_of_quadratic_reciprocity.lean)
-  6. :x: [Every finite division ring is a field](./src/chapters/06_Every_finite_division_ring_is_a_field.lean)
+  6. :thought_balloon: [Every finite division ring is a field](./src/chapters/06_Every_finite_division_ring_is_a_field.lean)
   7. :x: [The spectral theorem and Hadamard's determinant problem](./src/chapters/07_The_spectral_theorem_and_Hadamard's_determinant_problem.lean)
-  8. :x: [Some irrational numbers](./src/chapters/08_Some_irrational_numbers.lean)
+  8. :thought_balloon: [Some irrational numbers](./src/chapters/08_Some_irrational_numbers.lean)
   9. :x: [Four times ](./src/chapters/09_Four_times_pi²_over_6.lean)$\pi^2/6$
 
 ### Geometry
   10. :x: [Hilbert's third problem: decomposing polyhedra](./src/chapters/10_Hilbert's_third_problem_decomposing_polyhedra.lean)
-  11. :x: [Lines in the plane and decompositions of graphs](./src/chapters/11_Lines_in_the_plane_and_decompositions_of_graphs.lean)
+  11. :thought_balloon: [Lines in the plane and decompositions of graphs](./src/chapters/11_Lines_in_the_plane_and_decompositions_of_graphs.lean)
   12. :x: [The slope problem](./src/chapters/12_The_slope_problem.lean)
   13. :x: [Three applications of Euler's formula](./src/chapters/13_Three_applications_of_Euler's_formula.lean)
   14. :x: [Cauchy's rigidity theorem](./src/chapters/14_Cauchy's_rigidity_theorem.lean)
@@ -95,6 +95,11 @@ Contributions are most welcome! Feel free to
   - correct typos/formatting/linting
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details.
+
+## Authors
+
+  - [Moritz Firsching](https://github.com/mo271)
+  - [Nick Kuhn](https://github.com/nick-kuhn)
 
 ## License
 
