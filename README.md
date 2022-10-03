@@ -81,7 +81,7 @@ Status of the chapters:
   42. :x: [Communicating without errors](./src/chapters/42_Communicating_without_errors.lean)
   43. :x: [The chromatic number of Kneser graphs](./src/chapters/43_The_chromatic_number_of_Kneser_graphs.lean)
   44. :thought_balloon: [Of friends and politicians](./src/chapters/44_Of_friends_and_politicians.lean)
-  45. :x: [Probability makes counting (sometimes) easy](./src/chapters/45_Probability_makes_counting_(sometimes)_easy.lean)
+  45. :thought_balloon: [Probability makes counting (sometimes) easy](./src/chapters/45_Probability_makes_counting_(sometimes)_easy.lean)
 
 ## Contributing
 
