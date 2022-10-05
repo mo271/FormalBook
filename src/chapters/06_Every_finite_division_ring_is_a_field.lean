@@ -16,12 +16,18 @@ limitations under the License.
 Authors: Moritz Firsching
 -/
 import tactic
+import data.set.basic
 import data.fintype.card
 import ring_theory.integral_domain
+import ring_theory.subring.basic
 import data.polynomial.ring_division
+import algebra.group.conj
+import linear_algebra.finite_dimensional
+import linear_algebra.basis
+import data.polynomial.basic
 
-open finset
-open_locale big_operators nat
+open finset subring polynomial
+open_locale big_operators nat polynomial
 /-!
 # Every finite division ring is a field
 
@@ -31,9 +37,63 @@ This is a TODO in `ring_theory.integral_domain`.
     - proof
       - Roots of unity
 -/
-variables {R : Type*} [ring R] [comm_ring R] [decidable_eq R] [division_ring R]
 
-noncomputable theorem wedderburn (h: fintype R): field R :=
+
+--Define cyclotomic polynomials and check their basic properties
+
+
+def phi (d : ℕ) : ℤ[X] := sorry
+
+lemma phi_div (n : ℕ) : phi n ∣ X ^ n - 1 :=
 begin
   sorry,
 end
+
+lemma phi_div_2 (n : ℕ) (k : ℕ) (h₂ : k ∣ n) (h₃ : k ≠ n) :
+  phi n ∣ div_by_monic (X ^ n - 1) (X ^ k - 1) :=
+begin
+  sorry,
+end
+
+
+section wedderburn
+
+variables {R : Type*}  [decidable_eq R] [division_ring R]
+
+
+noncomputable theorem wedderburn (h: fintype R): is_field R :=
+begin
+  let Z := center R,
+  haveI : fintype R := h,
+
+
+
+  obtain ⟨n, h⟩ := vector_space.card_fintype Z R,
+
+
+  set q := fintype.card Z,
+
+
+  --conjugacy classes with more than one element
+  let S := {A : conj_classes Rˣ | fintype.card A.carrier > 1}.to_finset,
+  let n_k : S → ℕ := λ A, fintype.card
+    (set.centralizer ({(quotient.out' (A : conj_classes Rˣ))} : set Rˣ)),
+
+  --class  formula
+  suffices : q ^ n - 1 = q - 1  + ∑ A in S, (q ^ n - 1) / (q ^ (fintype.card A.carrier) - 1), by
+
+  { have : ∀ A : S, (n_k A ∣ n) := sorry,
+
+  --rest of proof
+
+  sorry,
+
+  },
+  --proof of class  formula
+
+
+
+  all_goals {sorry},
+end
+
+end wedderburn
