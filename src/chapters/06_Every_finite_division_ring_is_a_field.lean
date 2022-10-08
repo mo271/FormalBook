@@ -26,8 +26,9 @@ import algebra.group.conj
 import linear_algebra.finite_dimensional
 import linear_algebra.basis
 import data.polynomial.basic
+import data.complex.basic
 
-open finset subring polynomial
+open finset subring polynomial complex
 open_locale big_operators nat polynomial
 /-!
 # Every finite division ring is a field
@@ -89,8 +90,7 @@ begin
   { have h_n_k_A_dvd: ∀ A : conj_classes Rˣ, (n_k A ∣ n) := sorry,
 
   --rest of proof
-  have h_n_pos: 0 < n := by {sorry},
-  have h_phi_dvd_q_sub_one : (phi n).eval q  ∣  (q - 1) := by
+  have h_phi_dvd_q_sub_one : (phi n).eval q ∣ (q - 1) := by
   { have h₁_dvd : (phi n).eval q ∣ (X ^ n - 1).eval q  := by {
       refine eval_dvd _,
       exact phi_dvd n, },
@@ -113,13 +113,29 @@ begin
   },
   by_contradiction,
 
-  have g :  map (int.cast_ring_hom ℂ) (phi n)
-    = ∏ lamb in (primitive_roots n ℂ), (X  - C lamb) := by
+  have g : map (int.cast_ring_hom ℂ) (phi n) = ∏ lamb in (primitive_roots n ℂ), (X - C lamb) := by
   { dsimp [phi],
     simp [int_cyclotomic_spec n],
     dsimp [cyclotomic'],
     refl, },
-    sorry,
+  have h_lamb_gt_q_sub_one : ∀ (lamb : ℂ),
+    lamb ∈ (primitive_roots n ℂ) → ∥(X - C lamb).eval q∥ > q - 1 := by
+    { intro lamb,
+      let a := real_part lamb,
+      let b := imaginary_part lamb,
+      have h_lamb: lamb ≠ 1 := by sorry,
+      have h_a_lt_one: ∥a∥ < 1 := by sorry,
+      have h_ineq :=
+        calc  ∥(X - C lamb).eval q∥^2 = ∥(q : ℂ) - lamb∥^2 : by simp only [eval_sub, eval_X, eval_C]
+        ... = ∥(q : ℂ) - a - I*b∥^2 : by sorry
+        ... = ∥(q : ℂ) - a∥^2 + ∥b∥^2 : by sorry
+        ... = q^2 - 2*∥a∥*q + ∥a∥^2 + ∥b∥^2 : by sorry
+        ... > q^2 - 2*q + 1 : by sorry
+        ... = (q - 1)^2 : by sorry,
+      sorry, },
+  have h_gt: ∥(phi n).eval q ∥ > q - 1 := by
+  { sorry, },
+  sorry,
   },
   {
   --proof of class  formula
