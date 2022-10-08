@@ -44,6 +44,26 @@ This is a TODO in `ring_theory.integral_domain`.
 --Define cyclotomic polynomials and check their basic properties
 
 
+-- TODO: find the appropriate lemmas for use in the end of the proof...
+example (i j : ℕ) (gj: 0 ≠ j) (h: i ∣ j): i ≤ j:=
+begin
+  dsimp [has_dvd.dvd] at h,
+  cases h with c h₀,
+  cases em (c = 0) with hc,
+  { by_contradiction,
+    rw hc at h₀,
+    simp only [mul_zero] at h₀,
+    exact gj (eq.symm h₀), },
+  { calc
+      i ≤ i*c : le_mul_of_le_of_one_le rfl.ge (zero_lt_iff.mpr h)
+    ... = j: (eq.symm h₀),},
+end
+
+example (i j : ℤ) (gj: 0 ≠ j) (h: i ∣ j): ∥i∥ ≤ ∥j∥ :=
+begin
+  sorry,
+end
+
 noncomputable def phi (n : ℕ) : ℤ[X] := cyclotomic n ℤ
 
 lemma phi_dvd (n : ℕ) : phi n ∣ X ^ n - 1 :=
@@ -91,8 +111,8 @@ begin
 
   --rest of proof
   have h_phi_dvd_q_sub_one : (phi n).eval q ∣ (q - 1) := by
-  { have h₁_dvd : (phi n).eval q ∣ (X ^ n - 1).eval q  := by {
-      refine eval_dvd _,
+  { have h₁_dvd : (phi n).eval q ∣ (X ^ n - 1).eval q  := by
+    { refine eval_dvd _,
       exact phi_dvd n, },
     have h₂_dvd :
      (phi n).eval(q) ∣ ∑ A in S, (q ^ n - 1) / (q ^ (n_k A) - 1) := by
@@ -105,12 +125,10 @@ begin
       have h_noneval := phi_div_2 n (n_k A) h_one_neq (h_n_k_A_dvd A) h_k_n_lt_n,
       have := @eval_dvd ℤ _ _ _ q h_noneval,
       simp at this,
-      exact this,
-       },
+      exact this, },
     simp only [eval_sub, eval_pow, eval_X, eval_one] at h₁_dvd,
     rw this at h₁_dvd,
-    refine (dvd_add_iff_left h₂_dvd).mpr h₁_dvd,
-  },
+    refine (dvd_add_iff_left h₂_dvd).mpr h₁_dvd, },
   by_contradiction,
 
   have g : map (int.cast_ring_hom ℂ) (phi n) = ∏ lamb in (primitive_roots n ℂ), (X - C lamb) := by
@@ -133,15 +151,15 @@ begin
         ... > q^2 - 2*q + 1 : by sorry
         ... = (q - 1)^2 : by sorry,
       sorry, },
-  have h_gt: ∥(phi n).eval q ∥ > q - 1 := by
+  have h_gt: ∥(phi n).eval q∥ > q - 1 := by
   { sorry, },
-  sorry,
-  },
-  {
-  --proof of class  formula
-
-  sorry,
-  }
+  have norm_dvd_lemma : ∀ (a b : ℤ), a ∣ b → ∥a∥ ≤ ∥b∥ := by { sorry, },
+  have h_q : ∥(q : ℤ) - 1∥ = q - 1 := by { sorry, },
+  have h_norm := norm_dvd_lemma ((phi n).eval q) (q - 1) h_phi_dvd_q_sub_one,
+  rw h_q at h_norm,
+  exact not_le_of_gt h_gt h_norm, },
+  { --proof of class  formula
+  sorry, },
 end
 
 end wedderburn
