@@ -59,9 +59,19 @@ begin
     ... = j: (eq.symm h₀),},
 end
 
-example (i j : ℤ) (gj: 0 ≠ j) (h: i ∣ j): ∥i∥ ≤ ∥j∥ :=
+lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| :=
 begin
-  sorry,
+  dsimp [has_dvd.dvd] at h,
+  cases h with c h₀,
+  cases em (c = 0) with hc,
+  { by_contradiction,
+    rw hc at h₀,
+    simp only [mul_zero] at h₀,
+    exact gj (eq.symm h₀), },
+  { calc
+      |i| ≤ |i|*|c| : le_mul_of_le_of_one_le' rfl.ge (int.one_le_abs h) (abs_nonneg c) (abs_nonneg i)
+      ... = |i*c| : eq.symm (abs_mul i c)
+      ... = |j| : by { rw eq.symm h₀,}, },
 end
 
 noncomputable def phi (n : ℕ) : ℤ[X] := cyclotomic n ℤ
@@ -137,25 +147,26 @@ begin
     dsimp [cyclotomic'],
     refl, },
   have h_lamb_gt_q_sub_one : ∀ (lamb : ℂ),
-    lamb ∈ (primitive_roots n ℂ) → ∥(X - C lamb).eval q∥ > q - 1 := by
+    lamb ∈ (primitive_roots n ℂ) → abs ((X - C lamb).eval (q : ℂ)) > q - 1 := by
     { intro lamb,
       let a := real_part lamb,
       let b := imaginary_part lamb,
       have h_lamb: lamb ≠ 1 := by sorry,
       have h_a_lt_one: ∥a∥ < 1 := by sorry,
       have h_ineq :=
-        calc  ∥(X - C lamb).eval q∥^2 = ∥(q : ℂ) - lamb∥^2 : by simp only [eval_sub, eval_X, eval_C]
-        ... = ∥(q : ℂ) - a - I*b∥^2 : by sorry
-        ... = ∥(q : ℂ) - a∥^2 + ∥b∥^2 : by sorry
+        calc  (abs ((X - C lamb).eval (q : ℂ)))^2 = (abs ((q : ℂ) - lamb))^2 :
+          by simp only [eval_sub, eval_X, eval_C]
+        ... = (abs ((q : ℂ) - a - I*b))^2 : by sorry
+        ... = (abs ((q : ℂ) - a))^2 + ∥b∥^2 : by sorry
         ... = q^2 - 2*∥a∥*q + ∥a∥^2 + ∥b∥^2 : by sorry
         ... > q^2 - 2*q + 1 : by sorry
         ... = (q - 1)^2 : by sorry,
       sorry, },
-  have h_gt: ∥(phi n).eval q∥ > q - 1 := by
+  have h_gt: |(phi n).eval q| > q - 1 := by
   { sorry, },
-  have norm_dvd_lemma : ∀ (a b : ℤ), a ∣ b → ∥a∥ ≤ ∥b∥ := by { sorry, },
-  have h_q : ∥(q : ℤ) - 1∥ = q - 1 := by { sorry, },
-  have h_norm := norm_dvd_lemma ((phi n).eval q) (q - 1) h_phi_dvd_q_sub_one,
+  have h_q_sub_one : 0 ≠ (q : ℤ) - 1 := by { sorry, },
+  have h_q : |((q : ℤ) - 1)| = q - 1 := by { sorry, },
+  have h_norm := le_abs_of_dvd h_q_sub_one h_phi_dvd_q_sub_one,
   rw h_q at h_norm,
   exact not_le_of_gt h_gt h_norm, },
   { --proof of class  formula
