@@ -26,8 +26,9 @@ import algebra.group.conj
 import linear_algebra.finite_dimensional
 import linear_algebra.basis
 import data.polynomial.basic
+import data.complex.basic
 
-open finset subring polynomial
+open finset subring polynomial complex
 open_locale big_operators nat polynomial
 /-!
 # Every finite division ring is a field
@@ -42,6 +43,36 @@ This is a TODO in `ring_theory.integral_domain`.
 
 --Define cyclotomic polynomials and check their basic properties
 
+
+-- TODO: find the appropriate lemmas for use in the end of the proof...
+example (i j : ℕ) (gj: 0 ≠ j) (h: i ∣ j): i ≤ j:=
+begin
+  dsimp [has_dvd.dvd] at h,
+  cases h with c h₀,
+  cases em (c = 0) with hc,
+  { by_contradiction,
+    rw hc at h₀,
+    simp only [mul_zero] at h₀,
+    exact gj (eq.symm h₀), },
+  { calc
+      i ≤ i*c : le_mul_of_le_of_one_le rfl.ge (zero_lt_iff.mpr h)
+    ... = j: (eq.symm h₀),},
+end
+
+lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| :=
+begin
+  dsimp [has_dvd.dvd] at h,
+  cases h with c h₀,
+  cases em (c = 0) with hc,
+  { by_contradiction,
+    rw hc at h₀,
+    simp only [mul_zero] at h₀,
+    exact gj (eq.symm h₀), },
+  { calc
+      |i| ≤ |i|*|c| : le_mul_of_le_of_one_le' rfl.ge (int.one_le_abs h) (abs_nonneg c) (abs_nonneg i)
+      ... = |i*c| : eq.symm (abs_mul i c)
+      ... = |j| : by { rw eq.symm h₀,}, },
+end
 
 noncomputable def phi (n : ℕ) : ℤ[X] := cyclotomic n ℤ
 
@@ -89,10 +120,9 @@ begin
   { have h_n_k_A_dvd: ∀ A : conj_classes Rˣ, (n_k A ∣ n) := sorry,
 
   --rest of proof
-  have h_n_pos: 0 < n := by {sorry},
-  have h_phi_dvd_q_sub_one : (phi n).eval q  ∣  (q - 1) := by
-  { have h₁_dvd : (phi n).eval q ∣ (X ^ n - 1).eval q  := by {
-      refine eval_dvd _,
+  have h_phi_dvd_q_sub_one : (phi n).eval q ∣ (q - 1) := by
+  { have h₁_dvd : (phi n).eval q ∣ (X ^ n - 1).eval q  := by
+    { refine eval_dvd _,
       exact phi_dvd n, },
     have h₂_dvd :
      (phi n).eval(q) ∣ ∑ A in S, (q ^ n - 1) / (q ^ (n_k A) - 1) := by
@@ -105,27 +135,42 @@ begin
       have h_noneval := phi_div_2 n (n_k A) h_one_neq (h_n_k_A_dvd A) h_k_n_lt_n,
       have := @eval_dvd ℤ _ _ _ q h_noneval,
       simp at this,
-      exact this,
-       },
+      exact this, },
     simp only [eval_sub, eval_pow, eval_X, eval_one] at h₁_dvd,
     rw this at h₁_dvd,
-    refine (dvd_add_iff_left h₂_dvd).mpr h₁_dvd,
-  },
+    refine (dvd_add_iff_left h₂_dvd).mpr h₁_dvd, },
   by_contradiction,
 
-  have g :  map (int.cast_ring_hom ℂ) (phi n)
-    = ∏ lamb in (primitive_roots n ℂ), (X  - C lamb) := by
+  have g : map (int.cast_ring_hom ℂ) (phi n) = ∏ lamb in (primitive_roots n ℂ), (X - C lamb) := by
   { dsimp [phi],
     simp [int_cyclotomic_spec n],
     dsimp [cyclotomic'],
     refl, },
-    sorry,
-  },
-  {
-  --proof of class  formula
-
-  sorry,
-  }
+  have h_lamb_gt_q_sub_one : ∀ (lamb : ℂ),
+    lamb ∈ (primitive_roots n ℂ) → abs ((X - C lamb).eval (q : ℂ)) > q - 1 := by
+    { intro lamb,
+      let a := real_part lamb,
+      let b := imaginary_part lamb,
+      have h_lamb: lamb ≠ 1 := by sorry,
+      have h_a_lt_one: ∥a∥ < 1 := by sorry,
+      have h_ineq :=
+        calc  (abs ((X - C lamb).eval (q : ℂ)))^2 = (abs ((q : ℂ) - lamb))^2 :
+          by simp only [eval_sub, eval_X, eval_C]
+        ... = (abs ((q : ℂ) - a - I*b))^2 : by sorry
+        ... = (abs ((q : ℂ) - a))^2 + ∥b∥^2 : by sorry
+        ... = q^2 - 2*∥a∥*q + ∥a∥^2 + ∥b∥^2 : by sorry
+        ... > q^2 - 2*q + 1 : by sorry
+        ... = (q - 1)^2 : by sorry,
+      sorry, },
+  have h_gt: |(phi n).eval q| > q - 1 := by
+  { sorry, },
+  have h_q_sub_one : 0 ≠ (q : ℤ) - 1 := by { sorry, },
+  have h_q : |((q : ℤ) - 1)| = q - 1 := by { sorry, },
+  have h_norm := le_abs_of_dvd h_q_sub_one h_phi_dvd_q_sub_one,
+  rw h_q at h_norm,
+  exact not_le_of_gt h_gt h_norm, },
+  { --proof of class  formula
+  sorry, },
 end
 
 end wedderburn
