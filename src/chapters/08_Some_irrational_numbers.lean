@@ -89,8 +89,8 @@ begin
 end
 
 /--
-"For any `n ≥ 1` the integer `n!` contains the prime factor `2` at most `n − 1` times — with equality if
-(and only if) `n` is a power of two, `n = 2 ^ m`."
+"For any `n ≥ 1` the integer `n!` contains the prime factor `2` at most `n − 1` times —
+with equality if (and only if) `n` is a power of two, `n = 2 ^ m`."
 -/
 lemma little_lemma (n : ℕ) (h_n : n ≠ 0) :
   ¬ (2 ^ n ∣ n.factorial) ∧ (2 ^ (n - 1) ∣ n.factorial ↔ ∃ m : ℕ, n = 2 ^ m) :=
@@ -139,7 +139,7 @@ begin
   sorry,
 end
 
-/-! ### Theorems 1 to 3-/
+/-! ### Theorems 1 to 3 -/
 
 /--For any non-zero rational number `r`, the exponential `e ^ r` is irrational.-/
 theorem Theorem_1 (r : ℚ) (h_r : r ≠ 0) : irrational (exp r) :=

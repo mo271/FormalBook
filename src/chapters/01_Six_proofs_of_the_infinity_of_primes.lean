@@ -54,8 +54,7 @@ begin
     have h_p_div_prod : p ∣ ∏ q in S, q := dvd_prod_of_mem (λ (i : ℕ), i) h,
     have h_p_div_diff : p ∣ n - ∏ q in S, q := dvd_sub' (min_fac_dvd n) h_p_div_prod,
     have h_p_div_one : p ∣ 1 := by finish,
-    exact nat.prime.not_dvd_one (hp) h_p_div_one,
-    },
+    exact nat.prime.not_dvd_one (hp) h_p_div_one, },
 end
 
 /-!
@@ -118,8 +117,7 @@ begin
     norm_num,
     rw [add_comm],
     norm_num,
-    rw [←pow_add, two_mul],
-  },
+    rw [←pow_add, two_mul], },
   have h_bounded' := le_of_lt (fermat_bounded n.succ),
   linarith,
 end
@@ -139,8 +137,7 @@ begin
       linarith, },
     refine (nat.dvd_add_right h_m_prod).mp _,
     rw h_prod,
-    exact h_n,
-    },
+    exact h_n, },
   have h_one_or_two := (dvd_prime prime_two).mp h_m,
   cases h_one_or_two with h_one h_two,
   { exact h_one, },

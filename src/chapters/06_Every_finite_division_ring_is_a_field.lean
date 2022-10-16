@@ -69,7 +69,8 @@ begin
     simp only [mul_zero] at h₀,
     exact gj (eq.symm h₀), },
   { calc
-      |i| ≤ |i|*|c| : le_mul_of_le_of_one_le' rfl.ge (int.one_le_abs h) (abs_nonneg c) (abs_nonneg i)
+      |i| ≤ |i|*|c| :
+        le_mul_of_le_of_one_le' rfl.ge (int.one_le_abs h) (abs_nonneg c) (abs_nonneg i)
       ... = |i*c| : eq.symm (abs_mul i c)
       ... = |j| : by { rw eq.symm h₀,}, },
 end
