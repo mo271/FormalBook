@@ -31,7 +31,7 @@ open_locale nat big_operators
 ### Sylvester's Theorem
 There is no proof given in the book, perhaps check out Erdős' for a proof to formalize.
 -/
-theorem sylvester (k n : ℕ) (h: 2*k ≤ n ): ∃ p, k < p ∧ p.prime ∧ p ∣ choose n k :=
+theorem sylvester (k n : ℕ) (h : n ≥ 2*k): ∃ p, p > k ∧ p.prime ∧ p ∣ choose n k :=
 begin
   sorry,
 end
