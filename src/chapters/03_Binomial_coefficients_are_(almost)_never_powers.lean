@@ -17,6 +17,8 @@ Authors: Moritz Firsching
 -/
 import tactic
 open nat
+open_locale nat big_operators
+open finset
 /-!
 # Binomial coefficients are (almost) never powers
 
@@ -26,38 +28,139 @@ open nat
   - (3)
   - (4)
 
+### Sylvester's Theorem
 There is no proof given in the book, perhaps check out Erdős' for a proof to formalize.
 -/
-theorem sylvester (k n : ℕ) (h: n ≥ 2*k): ∃ p, p > k ∧ p.prime ∧ p ∣ choose n k :=
+theorem sylvester (k n : ℕ) (h: 2*k ≤ n ): ∃ p, k < p ∧ p.prime ∧ p ∣ choose n k :=
 begin
   sorry,
 end
 
+lemma test (n : ℕ ): n.factorial = ∏ i in Icc 1 n, i :=
+begin 
+  induction n with n h_ind,
+  simp only [factorial_zero, Icc_eq_empty_of_lt, lt_one_iff, prod_empty],
+  simp only [factorial_succ],
+  rw h_ind,
+  have h_help : Icc 1 n.succ = (Icc 1 n) ∪ (singleton n.succ) := by
+    { refine subset.antisymm _ _, 
+      { intros k hk,
+        simp only [mem_union, mem_Icc, mem_singleton],
+        cases em (k < n.succ),
+        { simp at hk,
+          left,
+          split,
+          exact hk.left,
+          exact lt_succ_iff.mp h,},
+        { right,
+          simp only [not_lt] at h,
+          simp only [mem_Icc] at hk,
+          have := hk.right,
+          exact ge_antisymm h this,},
+      },
+      { sorry, },
+    },
+  have h_help2 : disjoint (Icc 1 n) (singleton n.succ) := by
+    { simp only [disjoint_singleton_right, mem_Icc, not_and, not_le],
+      intro p,
+      rw nat.succ_eq_one_add,
+      simp only [lt_add_iff_pos_left, lt_one_iff], },
+  rw h_help,
+  have h := prod_union h_help2,
+  rw h,
+  simp,
+  apply mul_comm,
+end
+
 /-
+### Erdo's Theorem
 Using ℕ instead of ℤ here, because of the definition of `choose` and because of the inequalities.
 -/
-theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_l : l ≥ 2) (h_k : 4 ≤ k)
+theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_l : 2 ≤ l) (h_k : 4 ≤ k)
 (h_n : k ≤ n - 4) : choose n k ≠ m^l :=
 begin
-  have h_wlog : ∀ (k' : ℕ) (h_k' : 4 ≤ k') (h_n' : k' ≤ n - 4), n ≥ 2*k' → choose n k' ≠ m^l := by
+
+  /- Assumption that n ≥ 2k -/
+  have h_wlog : ∀ (k' : ℕ) (h_k' : 4 ≤ k') (h_n' : k' ≤ n - 4), 2*k' ≤ n → choose n k' ≠ m^l := by
   { clear h_k h_n k,
     intros k h_k h_n h,
-    /- main proof here proceeding in four steps
-    (1) -/
-    have h₀: ∃ p, nat.prime p ∧ n ≥ p^l ∧ p^l > k^l ∧ k^l ≥ k^2 := by
+    by_contra H,
+    -- main proof here proceeding in four steps
+
+    -- STEP (1) : ∃ p prim : n ≥ p^l > k^l ≥ k² 
+    have h₁: ∃ p, nat.prime p ∧ p^l ≤ n ∧ k^l < p^l ∧ k^2 ≤ k^l := by
     { have h_sylvester := sylvester k n h,
       cases h_sylvester with p hp,
       cases hp with h_pk h_right,
       cases h_right with h_p h_p_div,
       use p,
       split,
+      -- prove that p is prim
       { exact h_p, },
       { split,
-        { sorry, },
+        -- prove p^l ≤ n
+        { -- p^l ∣ choose n k
+          have h_p_div2 : p ∣ m^l := by
+            { rw ← H, 
+            exact h_p_div, }, 
+          have h_pl_div : p^l ∣ m^l := by
+            { sorry, }, 
+          have h_pl_div2 : p^l  ∣ choose n k := by
+            { rw H,
+            exact h_pl_div, },
+          -- p^l ∣ n!/ (k! * (n-k)!)
+          have h_pl_div_fac : p^l ∣ (n.factorial / (k.factorial * (n-k).factorial)) := by
+            { have h_n'help : n-4 ≤ n := by
+                { exact nat.sub_le n 4, },
+              have h_n' : k ≤ n := by
+                { exact le_trans h_n h_n'help, },
+              rw ← nat.choose_eq_factorial_div_factorial h_n',
+              exact h_pl_div2, },
+          -- p^l ∣ (n*...*(n-k+1)) /  k!
+          
+
+          --have L : list.ico,
+          --have S : finset ℕ := by
+            --{exact finset.Icc l l,},
+          have h_rw_fac1 : n.factorial / (n-k).factorial = n*(n-k+1) := by
+            { sorry, },
+            --{ induction k with k h_ind,
+            --rw tsub_zero n,
+            --have hh : n-0 = n, exact tsub_zero n},
+          --have h_help : (n.factorial / (k.factorial * (n-k).factorial)) = (n-k+1).factorial / k.factorial := by
+            --{ have h_help' n.factorial / (n-k).factorial = (n-k+1).factorial, }, 
+          sorry, },
         { split,
-          { sorry, },
-          { sorry, }, } }, },
-    sorry, },
+          -- prove k^l < p^l
+          { exact nat.pow_lt_pow_of_lt_left (h_pk)(gt_of_ge_of_gt h_l two_pos), },
+          -- prove k² ≤ k^l
+          { exact nat.pow_le_pow_of_le_right (pos_of_gt h_k) h_l,  }, 
+        }, 
+      }, 
+    },
+      
+    -- STEP (2) : Breakdown of numerator factros n-j = a_j m_j^l whereas a_j pairwise distinct
+    have h₂ : ∀ (n k p : ℕ) (h_kleqn : k ≤ n) (h_klp : k < p), 
+    choose n k = ∏ i  in Icc (n-k+1) n , i * 1/k.factorial := by
+    { sorry, },
+    have h_binom_fac : choose n k = n.factorial / ( k.factorial * (n-k).factorial) := by
+    { sorry, },
+    have h_red_fac : n.factorial / (n-k).factorial = ∏ i in Icc (n-k+1) n, i := by
+    { sorry, },
+
+    --have h_rw_num : 
+    
+    -- STEP (3) : a_i are integers 1..k
+
+
+    -- STEP (4) : Contradiciton
+
+
+    sorry, 
+  },
+
+
+
   cases em (n ≥ 2*k) with h_2k,
   { exact h_wlog k h_k h_n h_2k, },
   { /- This is just transforming the cases k -> n - k, so that we can use the
