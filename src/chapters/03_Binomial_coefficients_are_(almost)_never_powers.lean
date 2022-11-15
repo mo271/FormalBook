@@ -69,7 +69,7 @@ begin
             exact h_p_div, }, 
           have h_pl_div : p^l ∣ m^l := by
             { sorry, }, 
-          have h_pl_div2 : p^l  ∣ choose n k := by
+          have h_pl_div2 : p^l ∣ choose n k := by
             { rw H,
             exact h_pl_div, },
           -- p^l ∣ n!/ (k! * (n-k)!)
