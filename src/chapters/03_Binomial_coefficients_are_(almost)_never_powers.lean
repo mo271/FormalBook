@@ -17,8 +17,8 @@ Authors: Moritz Firsching
 -/
 import tactic
 open nat
-open_locale nat big_operators
 open finset
+open_locale nat big_operators
 /-!
 # Binomial coefficients are (almost) never powers
 
