@@ -36,42 +36,6 @@ begin
   sorry,
 end
 
-lemma test (n : ℕ ): n.factorial = ∏ i in Icc 1 n, i :=
-begin 
-  induction n with n h_ind,
-  simp only [factorial_zero, Icc_eq_empty_of_lt, lt_one_iff, prod_empty],
-  simp only [factorial_succ],
-  rw h_ind,
-  have h_help : Icc 1 n.succ = (Icc 1 n) ∪ (singleton n.succ) := by
-    { refine subset.antisymm _ _, 
-      { intros k hk,
-        simp only [mem_union, mem_Icc, mem_singleton],
-        cases em (k < n.succ),
-        { simp at hk,
-          left,
-          split,
-          exact hk.left,
-          exact lt_succ_iff.mp h,},
-        { right,
-          simp only [not_lt] at h,
-          simp only [mem_Icc] at hk,
-          have := hk.right,
-          exact ge_antisymm h this,},
-      },
-      { sorry, },
-    },
-  have h_help2 : disjoint (Icc 1 n) (singleton n.succ) := by
-    { simp only [disjoint_singleton_right, mem_Icc, not_and, not_le],
-      intro p,
-      rw nat.succ_eq_one_add,
-      simp only [lt_add_iff_pos_left, lt_one_iff], },
-  rw h_help,
-  have h := prod_union h_help2,
-  rw h,
-  simp,
-  apply mul_comm,
-end
-
 /-
 ### Erdo's Theorem
 Using ℕ instead of ℤ here, because of the definition of `choose` and because of the inequalities.
