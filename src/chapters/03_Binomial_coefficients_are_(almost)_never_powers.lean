@@ -105,7 +105,7 @@ begin
       
     -- STEP (2) : Breakdown of numerator factros n-j = a_j m_j^l whereas a_j pairwise distinct
     have h₂ : ∀ (n k p : ℕ) (h_kleqn : k ≤ n) (h_klp : k < p), 
-    choose n k = ∏ i  in Icc (n-k+1) n , i * 1/k.factorial := by
+    choose n k = ∏ i in Icc (n - k + 1) n , i * 1/k.factorial := by
     { sorry, },
     have h_binom_fac : choose n k = n.factorial / ( k.factorial * (n-k).factorial) := by
     { sorry, },
