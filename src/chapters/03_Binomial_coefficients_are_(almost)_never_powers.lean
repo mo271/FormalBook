@@ -6,7 +6,7 @@ you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
     https://www.apache.org/licenses/LICENSE-2.0
-    
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -79,19 +79,19 @@ begin
   simp only [mem_Ico, zero_le', true_and, exists_prop, mem_range],
 end
 
-lemma factor_in_desc_factorial (n k p l : ℕ) (h_4lekleqn : k<=n) (h_p : k < p) (hp: _root_.prime p )
+lemma factor_in_desc_factorial (n k p l : ℕ) (h_klen : k ≤ n) (h_klp : k < p) (hp: _root_.prime p )
 (h_pow_div: p^l ∣ n.desc_factorial k) :
 ∃ (i : ℕ), (i ≤ k) ∧ p^l ∣ (n - i) :=
 begin
 have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
 { intro hl,
   have h_exists : ∃ (i : ℕ), i  ∈ (range k) ∧ p ∣ (n - i) := by
-  { have h_div : p ∣ n.desc_factorial k := by {
-    have h_p_div : p ∣ p^l := by {
-      nth_rewrite 0 ←pow_one p,
-      exact pow_dvd_pow p hl, },
-    exact dvd_trans h_p_div h_pow_div, },
-    have := desc_factorial_div_fac n k p h_4lekleqn hp h_div,
+  { have h_div : p ∣ n.desc_factorial k := by 
+    { have h_klp_div : p ∣ p^l := by 
+      { nth_rewrite 0 ←pow_one p,
+        exact pow_dvd_pow p hl, },
+      exact dvd_trans h_klp_div h_pow_div, },
+    have := desc_factorial_div_fac n k p h_klen hp h_div,
     cases this with j hj,
     use j,
     simp at hj,
@@ -108,22 +108,62 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
       simp only [nat.Ico_zero_eq_range, mem_range] at h_i_left,
       cases h_j_right with q_j,
       cases h_i_right with q_i,
-      have h_in : i≤n := by { sorry, },
-      have h_jn : j≤n := by { sorry, },
+      have h_in : i≤n := by 
+      { exact le_trans (le_of_lt h_i_left) h_klen, },
+      have h_jn : j≤n := by 
+      { exact le_trans (le_of_lt h_j_left) h_klen, },
       zify at *,
-      have h_i_sub_j : (i : ℤ) - j = p*(q_i - q_j) := by { sorry, },
-      have h_abs : |(i : ℤ) - j| < k := by { sorry, },
-      have h_abs' : |(i : ℤ) - j| < p := lt_trans h_abs h_p,
-      have h_q_diff_zero : (q_i - q_j) = 0 := by { sorry, },
-      have h_diff : (i : ℤ) - j = 0 := by { sorry, },
-      sorry, }, },
+      have h_i_sub_j : (i : ℤ) - j = p*(q_j - q_i) := by 
+      { have h : (n : ℤ) - j - (n - i) = p * q_j - p * q_i := by
+        { exact congr (congr_arg has_sub.sub h_j_right_h) h_i_right_h, },
+        simp only [sub_sub_sub_cancel_left] at h,
+        rw mul_sub,
+        exact h,},
+      have h_abs : |(i : ℤ) - j| < k := by 
+      { have h_pos : (i : ℤ) - j < k - 0 := by
+        { have h_help : 0 ≤ j := by 
+          { exact zero_le j, }, 
+          zify at h_help,
+          exact int.sub_lt_sub_of_lt_of_le h_i_left h_help, },
+        simp only [tsub_zero] at h_pos,
+        have h_neg : -((i : ℤ) - j) < k - 0 := by
+        { simp only [neg_sub],
+          have h_help : 0 ≤ i := by
+          { exact zero_le i,},
+          zify at h_help,
+          exact int.sub_lt_sub_of_lt_of_le h_j_left h_help, },
+        simp only [neg_sub, tsub_zero] at h_neg,
+        cases em (0 ≤ |(i : ℤ) - j|),
+        { have h_help : |(i : ℤ) - j | = i - j := by
+          { sorry, },
+          rw h_help,
+          exact h_pos, },
+        { have h_help : |(i : ℤ) - j| = -(i - j) := by
+          { sorry,}, 
+          rw h_help,
+          simp only [neg_sub],
+          exact h_neg,}, },
+      have h_abs' : |(i : ℤ) - j| < p := by
+      { exact lt_trans h_abs h_klp, },
+      have h_q_diff_zero : ((q_j : ℤ) - q_i) = 0 := by 
+      { by_contra,
+        cases em (0 ≤ (q_j : ℤ) - q_i),
+        { sorry, },
+        { sorry, }, },
+      have h_diff : (i : ℤ) - j = 0 := by 
+      { rw h_q_diff_zero at h_i_sub_j,
+        simp only [mul_zero] at h_i_sub_j,
+        exact h_i_sub_j,},
+      have h_help : (i : ℤ) = j := by
+      { exact sub_eq_zero.mp h_diff},
+      exact eq.symm h_help, }, },
   refine ⟨i, _⟩,
   simp only [true_and, exists_unique_iff_exists, exists_prop, and_imp],
   exact h_unique, },
 induction l with l hl,
 { use 0,
   simp only [zero_le', pow_zero, is_unit.dvd, nat.is_unit_iff, and_self], },
-{ have h_p_prod: p ^ l * p = p ^ l.succ := by
+{ have h_klp_prod: p ^ l * p = p ^ l.succ := by
   { nth_rewrite 1 ←pow_one p,
     rw ←pow_add p _ _ , },
   have one_le_succ: 1 ≤ l.succ := by
@@ -157,45 +197,45 @@ begin
     have h₁: ∃ p, nat.prime p ∧ p^l ≤ n ∧ k^l < p^l ∧ k^2 ≤ k^l := by
     { have h_sylvester := sylvester k n h,
       cases h_sylvester with p hp,
-      cases hp with h_pk h_right,
-      cases h_right with h_p h_p_div,
+      cases hp with h_klpk h_right,
+      cases h_right with h_klp h_klp_div,
       use p,
       split,
       -- prove that p is prim
-      { exact h_p, },
+      { exact h_klp, },
       { split,
         -- prove p^l ≤ n
         { -- p^l ∣ choose n k
-          have h_p_div_ml : p ∣ m^l := by
+          have h_klp_div_ml : p ∣ m^l := by
             { rw ← H,
-            exact h_p_div, },
-          have h_pl_div_ml : p^l ∣ m^l := by
+            exact h_klp_div, },
+          have h_klpl_div_ml : p^l ∣ m^l := by
             { have help : p ∣ m := by 
-              { exact nat.prime.dvd_of_dvd_pow (h_p)(h_p_div_ml), },
+              { exact nat.prime.dvd_of_dvd_pow (h_klp)(h_klp_div_ml), },
               exact pow_dvd_pow_of_dvd help l, },
-          have h_pl_div_binom : p^l ∣ choose n k := by
+          have h_klpl_div_binom : p^l ∣ choose n k := by
             { rw H,
-            exact h_pl_div_ml, },
+            exact h_klpl_div_ml, },
           -- p^l ∣ n!/ (k! * (n-k)!)
-          have h_pl_div_fac : p^l ∣ (n.factorial / (k.factorial * (n-k).factorial)) := by
+          have h_klpl_div_fac : p^l ∣ (n.factorial / (k.factorial * (n-k).factorial)) := by
           { have h_klen4'help : n-4 ≤ n := by
               { exact nat.sub_le n 4, },
             have h_klen4' : k ≤ n := by
               { exact le_trans h_klen4 h_klen4'help, },
             rw ← nat.choose_eq_factorial_div_factorial h_klen4',
-            exact h_pl_div_binom, },
+            exact h_klpl_div_binom, },
 
           have h_fraction: (n.factorial / (k.factorial * (n - k).factorial)) =
             (n.factorial / (n - k).factorial) / k.factorial := by
           { sorry, },
-          have h_pl_div_ml_frac: p^l ∣ (n.factorial /(n - k).factorial) := by
+          have h_klpl_div_fac_part: p^l ∣ (n.factorial /(n - k).factorial) := by
           { sorry, },
-          have h_pl_div_ml_desc: p^l ∣ n.desc_factorial k := by
-          { convert  h_pl_div_ml_frac,
+          have h_klpl_div_ml_desc: p^l ∣ n.desc_factorial k := by
+          { convert  h_klpl_div_fac_part,
             exact desc_factorial_eq_div h_klen, },
-          have h_p_pow_dvd := factor_in_desc_factorial n k p l h_klen (gt_iff_lt.mp h_pk) (nat.prime_iff.mp h_p)
-            h_pl_div_ml_desc,
-          cases h_p_pow_dvd with i hi,
+          have h_klp_pow_dvd := factor_in_desc_factorial n k p l h_klen (gt_iff_lt.mp h_klpk) (nat.prime_iff.mp h_klp)
+            h_klpl_div_ml_desc,
+          cases h_klp_pow_dvd with i hi,
           cases hi,
           have : p^l ≤ n - i := by
           { refine  nat.le_of_dvd _ hi_right,
@@ -205,7 +245,7 @@ begin
           exact le_trans this h_klen4i, },
         { split,
           -- prove k^l < p^l
-          { exact nat.pow_lt_pow_of_lt_left (h_pk)(gt_of_ge_of_gt h_2lel two_pos), },
+          { exact nat.pow_lt_pow_of_lt_left (h_klpk)(gt_of_ge_of_gt h_2lel two_pos), },
           -- prove k² ≤ k^l
           { exact nat.pow_le_pow_of_le_right (pos_of_gt h_4lek) h_2lel,  },
         },
@@ -213,7 +253,7 @@ begin
     },
 
     -- STEP (2) : Breakdown of numerator factros n-j = a_j m_j^l whereas a_j pairwise distinct
-    have h₂ : ∀ (n k p : ℕ) (h_4lekleqn : k ≤ n) (h_4leklp : k < p),
+    have h₂ : ∀ (n k p : ℕ) (h_klen : k ≤ n) (h_4leklp : k < p),
     choose n k = ∏ i in Icc (n - k + 1) n , i * 1/k.factorial := by
     { sorry, },
     have h_binom_fac : choose n k = n.factorial / ( k.factorial * (n-k).factorial) := by
@@ -265,4 +305,3 @@ begin
       exact le_sub.mp h_klen4, },
     exact h_wlog k' h_4lek_l h_klen4_l this, }
 end
-
