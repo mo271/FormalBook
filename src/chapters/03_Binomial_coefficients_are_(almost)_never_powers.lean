@@ -88,10 +88,10 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
 { intro hl,
   have h_exists : ∃ (i : ℕ), i  ∈ (range k) ∧ p ∣ (n - i) := by
   { have h_div : p ∣ n.desc_factorial k := by 
-    { have h_p_div_binom : p ∣ p^l := by 
+    { have h_p_div_pl : p ∣ p^l := by 
       { nth_rewrite 0 ←pow_one p,
         exact pow_dvd_pow p hl, },
-      exact dvd_trans h_p_div_binom h_pow_div, },
+      exact dvd_trans h_p_div_pl h_pow_div, },
     have := desc_factorial_div_fac n k p h_klen hp h_div,
     cases this with j hj,
     use j,
