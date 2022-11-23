@@ -16,6 +16,7 @@ limitations under the License.
 Authors: Moritz Firsching, Christopher Schmidt
 -/
 import tactic
+import tactic.qify 
 open nat
 open finset
 open_locale nat big_operators
@@ -87,10 +88,10 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
 { intro hl,
   have h_exists : ∃ (i : ℕ), i  ∈ (range k) ∧ p ∣ (n - i) := by
   { have h_div : p ∣ n.desc_factorial k := by 
-    { have h_klp_div : p ∣ p^l := by 
+    { have h_p_div_pl : p ∣ p^l := by 
       { nth_rewrite 0 ←pow_one p,
         exact pow_dvd_pow p hl, },
-      exact dvd_trans h_klp_div h_pow_div, },
+      exact dvd_trans h_p_div_pl h_pow_div, },
     have := desc_factorial_div_fac n k p h_klen hp h_div,
     cases this with j hj,
     use j,
@@ -108,9 +109,9 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
       simp only [nat.Ico_zero_eq_range, mem_range] at h_i_left,
       cases h_j_right with q_j,
       cases h_i_right with q_i,
-      have h_in : i≤n := by 
+      have h_in : i ≤ n := by 
       { exact le_trans (le_of_lt h_i_left) h_klen, },
-      have h_jn : j≤n := by 
+      have h_jn : j ≤ n := by 
       { exact le_trans (le_of_lt h_j_left) h_klen, },
       zify at *,
       have h_i_sub_j : (i : ℤ) - j = p*(q_j - q_i) := by 
@@ -176,6 +177,24 @@ induction l with l hl,
   },
 end
 
+lemma div_mul_eq_mul_div_xx (a b : ℕ) (h_b : b ≠ 0): a / b * b = a :=
+begin
+  qify,
+  sorry,
+end 
+
+lemma div_by_mul_eq_div_div (a b c : ℕ) (h_b : b ≠ 0) (h_c : c ≠ 0): a / (b * c) = a / c / b :=
+begin
+  have h_bc : b * c ≠ 0 := by
+  { exact mul_ne_zero h_b h_c, },
+  qify at h_b h_c h_bc,
+  have h_in_Q : (a : ℚ) / (b * c) = a / c / b := by
+  { have h_comm : (b : ℚ) * c = c * b := by
+    { cc, },
+    rw h_comm, 
+    sorry, },
+  sorry,
+end
 
 /-
 ### Erdo's Theorem
@@ -197,44 +216,61 @@ begin
     have h₁: ∃ p, nat.prime p ∧ p^l ≤ n ∧ k^l < p^l ∧ k^2 ≤ k^l := by
     { have h_sylvester := sylvester k n h,
       cases h_sylvester with p hp,
-      cases hp with h_klpk h_right,
-      cases h_right with h_klp h_klp_div,
+      cases hp with h_klp h_right,
+      cases h_right with h_p h_p_div_binom,
       use p,
       split,
       -- prove that p is prim
-      { exact h_klp, },
+      { exact h_p, },
       { split,
         -- prove p^l ≤ n
         { -- p^l ∣ choose n k
-          have h_klp_div_ml : p ∣ m^l := by
+          have h_p_div_ml : p ∣ m^l := by
             { rw ← H,
-            exact h_klp_div, },
-          have h_klpl_div_ml : p^l ∣ m^l := by
+            exact h_p_div_binom, },
+          have h_pl_div_ml : p^l ∣ m^l := by
             { have help : p ∣ m := by 
-              { exact nat.prime.dvd_of_dvd_pow (h_klp)(h_klp_div_ml), },
+              { exact nat.prime.dvd_of_dvd_pow (h_p)(h_p_div_ml), },
               exact pow_dvd_pow_of_dvd help l, },
-          have h_klpl_div_binom : p^l ∣ choose n k := by
+          have h_pl_div_binom : p^l ∣ choose n k := by
             { rw H,
-            exact h_klpl_div_ml, },
+            exact h_pl_div_ml, },
           -- p^l ∣ n!/ (k! * (n-k)!)
-          have h_klpl_div_fac : p^l ∣ (n.factorial / (k.factorial * (n-k).factorial)) := by
+          have h_pl_div_fac : p^l ∣ (n.factorial / (k.factorial * (n-k).factorial)) := by
           { have h_klen4'help : n-4 ≤ n := by
               { exact nat.sub_le n 4, },
             have h_klen4' : k ≤ n := by
               { exact le_trans h_klen4 h_klen4'help, },
             rw ← nat.choose_eq_factorial_div_factorial h_klen4',
-            exact h_klpl_div_binom, },
-
+            exact h_pl_div_binom, },
           have h_fraction: (n.factorial / (k.factorial * (n - k).factorial)) =
             (n.factorial / (n - k).factorial) / k.factorial := by
-          { sorry, },
-          have h_klpl_div_fac_part: p^l ∣ (n.factorial /(n - k).factorial) := by
-          { sorry, },
-          have h_klpl_div_ml_desc: p^l ∣ n.desc_factorial k := by
-          { convert  h_klpl_div_fac_part,
+          { have h_kfac_ne_zero : k.factorial ≠ 0 := by
+            { exact factorial_ne_zero k},
+            have h_nkfac_ne_zero : (n - k).factorial ≠ 0 := by
+            { exact (n - k).factorial_ne_zero, },
+            exact div_by_mul_eq_div_div n.factorial k.factorial (n - k).factorial h_kfac_ne_zero h_nkfac_ne_zero,},
+          have h_pl_div_fac_part: p^l ∣ (n.factorial / (n - k).factorial) := by
+          { rw h_fraction at h_pl_div_fac,
+            have h_eq_pl_with_k : ∃ (j : ℕ), (n.factorial / (n - k).factorial) / k.factorial = p^l * j := by
+            { exact exists_eq_mul_right_of_dvd h_pl_div_fac,},
+            have h_eq_pl : ∃ (r : ℕ), r * p^l = n.factorial / (n - k).factorial := by
+            { cases h_eq_pl_with_k with j h_eq,
+              use (j * k.factorial),
+              have h_rew : j * k.factorial * p^l = p^l * j * k.factorial := by
+              { cc, },
+              rw h_rew,
+              rw ← h_eq,
+              have h_kfac_ne_zero : k.factorial ≠ 0 := by
+              { exact factorial_ne_zero k},
+              exact div_mul_eq_mul_div_xx (n.factorial / (n - k).factorial) k.factorial h_kfac_ne_zero, },
+            cases h_eq_pl with j h_eq,
+            exact dvd.intro_left j h_eq, },
+          have h_pl_div_desc: p^l ∣ n.desc_factorial k := by
+          { convert  h_pl_div_fac_part,
             exact desc_factorial_eq_div h_klen, },
-          have h_klp_pow_dvd := factor_in_desc_factorial n k p l h_klen (gt_iff_lt.mp h_klpk) (nat.prime_iff.mp h_klp)
-            h_klpl_div_ml_desc,
+          have h_klp_pow_dvd := factor_in_desc_factorial n k p l h_klen (gt_iff_lt.mp h_klp) (nat.prime_iff.mp h_p)
+            h_pl_div_desc,
           cases h_klp_pow_dvd with i hi,
           cases hi,
           have : p^l ≤ n - i := by
@@ -245,7 +281,7 @@ begin
           exact le_trans this h_klen4i, },
         { split,
           -- prove k^l < p^l
-          { exact nat.pow_lt_pow_of_lt_left (h_klpk)(gt_of_ge_of_gt h_2lel two_pos), },
+          { exact nat.pow_lt_pow_of_lt_left (h_klp)(gt_of_ge_of_gt h_2lel two_pos), },
           -- prove k² ≤ k^l
           { exact nat.pow_le_pow_of_le_right (pos_of_gt h_4lek) h_2lel,  },
         },
