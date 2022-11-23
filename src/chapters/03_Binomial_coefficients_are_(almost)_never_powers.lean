@@ -16,9 +16,15 @@ limitations under the License.
 Authors: Moritz Firsching, Christopher Schmidt
 -/
 import tactic
-import tactic.qify 
+import tactic.qify
+import ring_theory.prime
+import data.list.prime
+--set_option trace.simp_lemmas true
+
+
 open nat
 open finset
+
 open_locale nat big_operators
 /-!
 # Binomial coefficients are (almost) never powers
@@ -30,7 +36,7 @@ open_locale nat big_operators
 ### Sylvester's Theorem
 There is no proof given in the book, perhaps check out Erdős' for a proof to formalize.
 -/
-theorem sylvester (k n : ℕ) (h : n ≥ 2*k): ∃ p, p > k ∧ p.prime ∧ p ∣ choose n k :=
+theorem sylvester (k n : ℕ) (h : n ≥ 2*k): ∃ p, p > k ∧ prime p ∧ p ∣ choose n k :=
 begin
   sorry,
 end
@@ -56,7 +62,7 @@ begin
     rw mul_comm,}, },
 end
 
-lemma prime_dvd_prod (p : ℕ) (hp : _root_.prime p) {s : finset ℕ } {f : ℕ → ℕ}:
+lemma prime_dvd_prod (p : ℕ) (hp : prime p) {s : finset ℕ } {f : ℕ → ℕ}:
 p ∣ ∏ i in s, f i → ∃ i, i ∈ s ∧ p ∣ (f i) :=
 begin
   rw ← prod_to_list,
@@ -87,8 +93,8 @@ begin
 have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
 { intro hl,
   have h_exists : ∃ (i : ℕ), i  ∈ (range k) ∧ p ∣ (n - i) := by
-  { have h_div : p ∣ n.desc_factorial k := by 
-    { have h_p_div_pl : p ∣ p^l := by 
+  { have h_div : p ∣ n.desc_factorial k := by
+    { have h_p_div_pl : p ∣ p^l := by
       { nth_rewrite 0 ←pow_one p,
         exact pow_dvd_pow p hl, },
       exact dvd_trans h_p_div_pl h_pow_div, },
@@ -109,49 +115,43 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
       simp only [nat.Ico_zero_eq_range, mem_range] at h_i_left,
       cases h_j_right with q_j,
       cases h_i_right with q_i,
-      have h_in : i ≤ n := by 
-      { exact le_trans (le_of_lt h_i_left) h_klen, },
-      have h_jn : j ≤ n := by 
-      { exact le_trans (le_of_lt h_j_left) h_klen, },
+      have h_in : i ≤ n := le_trans (le_of_lt h_i_left) h_klen,
+      have h_jn : j ≤ n := le_trans (le_of_lt h_j_left) h_klen,
       zify at *,
-      have h_i_sub_j : (i : ℤ) - j = p*(q_j - q_i) := by 
-      { have h : (n : ℤ) - j - (n - i) = p * q_j - p * q_i := by
-        { exact congr (congr_arg has_sub.sub h_j_right_h) h_i_right_h, },
+      have h_i_sub_j : (i : ℤ) - j = p*(q_j - q_i) := by
+      { have h : (n : ℤ) - j - (n - i) = p * q_j - p * q_i :=
+          congr (congr_arg has_sub.sub h_j_right_h) h_i_right_h,
         simp only [sub_sub_sub_cancel_left] at h,
         rw mul_sub,
         exact h,},
-      have h_abs : |(i : ℤ) - j| < k := by 
+      have h_abs : |(i : ℤ) - j| < k := by
       { have h_pos : (i : ℤ) - j < k - 0 := by
-        { have h_help : 0 ≤ j := by 
-          { exact zero_le j, }, 
+        { have h_help : 0 ≤ j := by
+          { exact zero_le j, },
           zify at h_help,
           exact int.sub_lt_sub_of_lt_of_le h_i_left h_help, },
         simp only [tsub_zero] at h_pos,
         have h_neg : -((i : ℤ) - j) < k - 0 := by
         { simp only [neg_sub],
-          have h_help : 0 ≤ i := by
-          { exact zero_le i,},
-          zify at h_help,
-          exact int.sub_lt_sub_of_lt_of_le h_j_left h_help, },
+          exact int.sub_lt_sub_of_lt_of_le h_j_left (cast_nonneg i), },
         simp only [neg_sub, tsub_zero] at h_neg,
-        cases em (0 ≤ |(i : ℤ) - j|),
-        { have h_help : |(i : ℤ) - j | = i - j := by
-          { sorry, },
+        cases em ((i : ℤ) - j ≤ 0),
+        { have h_help : |(i : ℤ) - j | = -(i - j) := abs_of_nonpos h,
           rw h_help,
-          exact h_pos, },
-        { have h_help : |(i : ℤ) - j| = -(i - j) := by
-          { sorry,}, 
+          norm_num,
+          exact h_neg, },
+        { have : (i : ℤ) - j ≥ 0 := by { exact le_of_not_ge h, },
+          have h_help : |(i : ℤ) - j| = i - j := abs_of_nonneg this,
           rw h_help,
-          simp only [neg_sub],
-          exact h_neg,}, },
+          exact h_pos, }, },
       have h_abs' : |(i : ℤ) - j| < p := by
       { exact lt_trans h_abs h_klp, },
-      have h_q_diff_zero : ((q_j : ℤ) - q_i) = 0 := by 
+      have h_q_diff_zero : ((q_j : ℤ) - q_i) = 0 := by
       { by_contra,
         cases em (0 ≤ (q_j : ℤ) - q_i),
         { sorry, },
         { sorry, }, },
-      have h_diff : (i : ℤ) - j = 0 := by 
+      have h_diff : (i : ℤ) - j = 0 := by
       { rw h_q_diff_zero at h_i_sub_j,
         simp only [mul_zero] at h_i_sub_j,
         exact h_i_sub_j,},
@@ -163,7 +163,7 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
   exact h_unique, },
 induction l with l hl,
 { use 0,
-  simp only [zero_le', pow_zero, is_unit.dvd, nat.is_unit_iff, and_self], },
+  simp only [zero_le', pow_zero, is_unit.dvd, is_unit_one, and_self], },
 { have h_klp_prod: p ^ l * p = p ^ l.succ := by
   { nth_rewrite 1 ←pow_one p,
     rw ←pow_add p _ _ , },
@@ -181,7 +181,7 @@ lemma div_mul_eq_mul_div_xx (a b : ℕ) (h_b : b ≠ 0): a / b * b = a :=
 begin
   qify,
   sorry,
-end 
+end
 
 lemma div_by_mul_eq_div_div (a b c : ℕ) (h_b : b ≠ 0) (h_c : c ≠ 0): a / (b * c) = a / c / b :=
 begin
@@ -191,7 +191,7 @@ begin
   have h_in_Q : (a : ℚ) / (b * c) = a / c / b := by
   { have h_comm : (b : ℚ) * c = c * b := by
     { cc, },
-    rw h_comm, 
+    rw h_comm,
     sorry, },
   sorry,
 end
@@ -207,13 +207,13 @@ begin
   have h_wlog : ∀ (k' : ℕ) (h_4lek' : 4 ≤ k') (h_klen4' : k' ≤ n - 4), 2*k' ≤ n → choose n k' ≠ m^l := by
   { clear h_4lek h_klen4 k,
     intros k h_4lek h_klen4 h,
-    have h_klen: k ≤ n := by 
+    have h_klen: k ≤ n := by
     { exact le_trans h_klen4 (nat.sub_le n 4), },
     by_contra H,
     -- main proof here proceeding in four steps
 
     -- STEP (1) : ∃ p prim : n ≥ p^l > k^l ≥ k²
-    have h₁: ∃ p, nat.prime p ∧ p^l ≤ n ∧ k^l < p^l ∧ k^2 ≤ k^l := by
+    have h₁: ∃ p, prime p ∧ p^l ≤ n ∧ k^l < p^l ∧ k^2 ≤ k^l := by
     { have h_sylvester := sylvester k n h,
       cases h_sylvester with p hp,
       cases hp with h_klp h_right,
@@ -229,8 +229,8 @@ begin
             { rw ← H,
             exact h_p_div_binom, },
           have h_pl_div_ml : p^l ∣ m^l := by
-            { have help : p ∣ m := by 
-              { exact nat.prime.dvd_of_dvd_pow (h_p)(h_p_div_ml), },
+            { have help : p ∣ m := by
+              { exact prime.dvd_of_dvd_pow (h_p)(h_p_div_ml), },
               exact pow_dvd_pow_of_dvd help l, },
           have h_pl_div_binom : p^l ∣ choose n k := by
             { rw H,
