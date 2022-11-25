@@ -188,7 +188,7 @@ begin
      or_true, true_and],
     split,
     { exact succ_lt_succ h, },
-    { simp only [one_pow, is_unit.dvd, nat.is_unit_iff], }, },
+    { simp only [one_pow, is_unit.dvd, is_unit_one], }, },
   { use 0,
     rw power_div,
     simp only [not_lt, le_zero_iff] at h,
@@ -312,7 +312,7 @@ begin
           have h_pl_div_desc: p^l ∣ n.desc_factorial k := by
           { convert  h_pl_div_fac_part,
             exact desc_factorial_eq_div h_klen, },
-          have h_klp_pow_dvd := factor_in_desc_factorial n k p l h_klen (gt_iff_lt.mp h_klp) (nat.prime_iff.mp h_p)
+          have h_klp_pow_dvd := factor_in_desc_factorial n k p l h_klen (gt_iff_lt.mp h_klp) (h_p)
             h_pl_div_desc,
           cases h_klp_pow_dvd with i hi,
           cases hi,
@@ -377,10 +377,6 @@ begin
     { simp [h_4lek'_def],
       zify,
       sorry, },
-    have h_4lek_l : 4 ≤ k' := by
-    { simp [h_4lek'_def],
-      zify,
-      zify at h_klen4,
-      exact le_sub.mp h_klen4, },
+    have h_4lek_l : 4 ≤ k' := by linarith,
     exact h_wlog k' h_4lek_l h_klen4_l this, }
 end
