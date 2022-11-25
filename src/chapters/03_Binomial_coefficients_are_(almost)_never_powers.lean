@@ -177,6 +177,49 @@ induction l with l hl,
   },
 end
 
+definition power_div (l z : ℕ) := (finset.range (z + 1)).filter (λ i, i^l ∣ z)
+
+lemma power_div_nonempty (l z : ℕ) : (power_div l z).nonempty :=
+begin
+ cases (em (0 < z)),
+  { use 1,
+    rw power_div,
+    simp only [mem_filter, mem_range, add_pos_iff, lt_one_iff, eq_self_iff_true,
+     or_true, true_and],
+    split,
+    { exact succ_lt_succ h, },
+    { simp only [one_pow, is_unit.dvd, nat.is_unit_iff], }, },
+  { use 0,
+    rw power_div,
+    simp only [not_lt, le_zero_iff] at h,
+    simp only [mem_filter, mem_range, add_pos_iff, lt_one_iff, eq_self_iff_true, or_true, true_and],
+    rw h,
+    simp only [dvd_zero],},
+end
+
+definition largest_power_divisor (l z: ℕ) : ℕ := (power_div l z).max' (power_div_nonempty l z)
+
+lemma largest_power_divisor_divides (l z : ℕ) : (largest_power_divisor l z)^l ∣ z :=
+begin
+  have h := (power_div l z).max'_mem (power_div_nonempty l z),
+  rw ←largest_power_divisor at h,
+  have : (power_div l z) = (finset.range (z + 1)).filter (λ i, i^l ∣ z) := by refl,
+  rw this at h,
+  simp at h,
+  exact h.2,
+end
+
+definition m (l n: ℕ) : ℕ → ℕ := λ j, (largest_power_divisor l (n - j))
+
+definition a (l n: ℕ) : ℕ → ℕ := λ j, (n - j)/(m l n j)^l
+
+lemma decompose_n_j (n j l : ℕ) : n - j = (a l n j)*(m l n j)^l :=
+begin
+  have : (m l n j)^l ∣ n - j := largest_power_divisor_divides l (n - j),
+  rw a,
+  rw nat.div_mul_cancel this,
+end
+
 lemma div_mul_eq_mul_div_xx (a b : ℕ) (h_b : b ≠ 0): a / b * b = a :=
 begin
   qify,
