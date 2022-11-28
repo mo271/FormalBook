@@ -86,9 +86,15 @@ begin
   simp only [mem_Ico, zero_le', true_and, exists_prop, mem_range],
 end
 
+lemma desc_factorial_div_fac2 (n k p l : ℕ) (h_klen : k ≤ n)(hp : _root_.prime p)
+(h : (p^l) ∣ n.desc_factorial k) : ∃ i ∈ range k, (p^l) ∣ n - i :=
+begin
+  sorry, 
+end
+
 lemma factor_in_desc_factorial (n k p l : ℕ) (h_klen : k ≤ n) (h_klp : k < p) (hp: _root_.prime p )
-(h_pow_div: p^l ∣ n.desc_factorial k) :
-∃ (i : ℕ), (i ≤ k) ∧ p^l ∣ (n - i) :=
+(h_pow_div: p^l ∣ n.desc_factorial k) ( h_1lel : 1 ≤ l):
+∃! (i : ℕ), (i ≤ k - 1) ∧ p^l ∣ (n - i) :=
 begin
 have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
 { intro hl,
@@ -157,24 +163,48 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
         exact h_i_sub_j,},
       have h_help : (i : ℤ) = j := by
       { exact sub_eq_zero.mp h_diff},
-      exact eq.symm h_help, }, },
+      exact eq.symm h_help, }, },  
   refine ⟨i, _⟩,
   simp only [true_and, exists_unique_iff_exists, exists_prop, and_imp],
   exact h_unique, },
-induction l with l hl,
-{ use 0,
-  simp only [zero_le', pow_zero, is_unit.dvd, is_unit_one, and_self], },
-{ have h_klp_prod: p ^ l * p = p ^ l.succ := by
-  { nth_rewrite 1 ←pow_one p,
-    rw ←pow_add p _ _ , },
-  have one_le_succ: 1 ≤ l.succ := by
-  { rw nat.succ_eq_add_one, simp only [le_add_iff_nonneg_left, zero_le'], },
-  replace h_one_fac := h_one_fac one_le_succ,
-  cases h_one_fac with i hi,
-  simp at hi,
-  use i,
-  sorry,
-  },
+
+  replace h_one_fac := h_one_fac h_1lel,
+  cases h_one_fac with i h,
+  cases h,
+  simp only [mem_range, exists_unique_iff_exists, exists_prop, and_imp] at h_right,
+  simp only [mem_range, exists_unique_iff_exists, exists_prop] at h_left,
+  have h_lemma := desc_factorial_div_fac2 n k p l h_klen hp h_pow_div,
+  cases h_lemma with j hj,
+  cases hj with hj1 hj2,
+  use j,
+  split,
+  { simp,
+    have h1 := h_left.1,
+    have h2 := h_left.2,
+    split,
+    { },
+    { have h_solve := desc_factorial_div_fac2 n k p l h_klen hp h_pow_div,
+      cases h_solve with j hj,
+      cases hj with H1 H2,
+      }, },
+  { },
+
+
+
+--induction l with l hl,
+--{ use 0,
+  --simp only [zero_le', pow_zero, is_unit.dvd, is_unit_one, and_self], },
+--{ have h_klp_prod: p ^ l * p = p ^ l.succ := by
+  --{ nth_rewrite 1 ←pow_one p,
+    --rw ←pow_add p _ _ , },
+  --have one_le_succ: 1 ≤ l.succ := by
+  --{ rw nat.succ_eq_add_one, simp only [le_add_iff_nonneg_left, zero_le'], },
+  --replace h_one_fac := h_one_fac one_le_succ,
+  --cases h_one_fac with i hi,
+  --simp at hi,
+  --use i,
+  --sorry,
+  --},
 end
 
 definition power_div (l z : ℕ) := (finset.range (z + 1)).filter (λ i, i^l ∣ z)
@@ -209,16 +239,16 @@ begin
   exact h.2,
 end
 
-definition m (l n: ℕ) : ℕ → ℕ := λ j, (largest_power_divisor l (n - j))
+definition mFct (l n: ℕ) : ℕ → ℕ := λ j, (largest_power_divisor l (n - j))
 
-definition a (l n: ℕ) : ℕ → ℕ := λ j, (n - j)/(m l n j)^l
+definition aFct (l n: ℕ) : ℕ → ℕ := λ j, (n - j)/(mFct l n j)^l
 
-lemma decompose_n_j (n j l : ℕ) : n - j = (a l n j)*(m l n j)^l :=
+lemma decompose_n_j (n j l : ℕ) : n - j = (aFct l n j)*(mFct l n j)^l :=
 begin
-  have : (m l n j)^l ∣ n - j := largest_power_divisor_divides l (n - j),
-  rw a,
+  have : (mFct l n j)^l ∣ n - j := largest_power_divisor_divides l (n - j),
+  rw aFct,
   rw nat.div_mul_cancel this,
-end
+end 
 
 lemma div_mul_eq_mul_div_xx (a b : ℕ) (h_b : b ≠ 0): a / b * b = a :=
 begin
@@ -269,21 +299,21 @@ begin
         -- prove p^l ≤ n
         { -- p^l ∣ choose n k
           have h_p_div_ml : p ∣ m^l := by
-            { rw ← H,
+          { rw ← H,
             exact h_p_div_binom, },
           have h_pl_div_ml : p^l ∣ m^l := by
-            { have help : p ∣ m := by
-              { exact prime.dvd_of_dvd_pow (h_p)(h_p_div_ml), },
+          { have help : p ∣ m := by
+            { exact prime.dvd_of_dvd_pow (h_p)(h_p_div_ml), },
               exact pow_dvd_pow_of_dvd help l, },
           have h_pl_div_binom : p^l ∣ choose n k := by
-            { rw H,
+          { rw H,
             exact h_pl_div_ml, },
           -- p^l ∣ n!/ (k! * (n-k)!)
           have h_pl_div_fac : p^l ∣ (n.factorial / (k.factorial * (n-k).factorial)) := by
           { have h_klen4'help : n-4 ≤ n := by
-              { exact nat.sub_le n 4, },
+            { exact nat.sub_le n 4, },
             have h_klen4' : k ≤ n := by
-              { exact le_trans h_klen4 h_klen4'help, },
+            { exact le_trans h_klen4 h_klen4'help, },
             rw ← nat.choose_eq_factorial_div_factorial h_klen4',
             exact h_pl_div_binom, },
           have h_fraction: (n.factorial / (k.factorial * (n - k).factorial)) =
@@ -332,15 +362,46 @@ begin
     },
 
     -- STEP (2) : Breakdown of numerator factros n-j = a_j m_j^l whereas a_j pairwise distinct
-    have h₂ : ∀ (n k p : ℕ) (h_klen : k ≤ n) (h_4leklp : k < p),
-    choose n k = ∏ i in Icc (n - k + 1) n , i * 1/k.factorial := by
-    { sorry, },
-    have h_binom_fac : choose n k = n.factorial / ( k.factorial * (n-k).factorial) := by
-    { sorry, },
-    have h_red_fac : n.factorial / (n-k).factorial = ∏ i in Icc (n-k+1) n, i := by
-    { sorry, },
-
-    --have h_rw_num :
+    have h₂ : ∀ (j ≤ k - 1), 
+      (∀ (q : ℕ), q ∣ (aFct l n j) ∧ prime q → q ≤ k) ∧ 
+      (∀ i ≤ k - 1, i ≠ j → (aFct l n i) ≠ (aFct l n j)) := by
+    { intros j h_jlek1,
+      split,
+      -- First Claim
+      { intros q hq,
+        cases hq with h_qdiv h_q,
+        by_contra,
+        simp only [not_le] at h,
+        have h_qdivbinom : q ∣ choose n k :=
+        { sorry, }, 
+        sorry, },
+      -- Second Claim
+      { intros i h_ilek1 h_inej,
+        by_contra,
+        cases em (i < j),
+        { have h_mjlmi : (mFct l n j) + 1 ≤ mFct l n i := by
+          { have h_njlni : n - i < n - j := by
+            { sorry, },
+            have h_amjlami : (aFct l n j) * (mFct l n j)^l < (aFct l n i) * (mFct l n i)^l := by
+            { sorry, },
+            have h_mjlmi_pow : (mFct n l j)^l < (mFct n l i)^l := by
+            { sorry, },
+            have h_mjlmi : mFct n l j < mFct n l i := by
+            { sorry, },
+            sorry, }, 
+          have h_sqrtnlk : n^(1/2) < k := by
+          { sorry, }, 
+          have h_nlk2 : n < k^2 := by
+          { sorry, }, 
+          cases h₁ with p h,
+          cases h with h_p h,
+          cases h with hpln h,
+          cases h with h_klpl h_k2kl,
+          have h_from1 : k^2 < n := by
+          { sorry, }, 
+          exact nat.lt_asymm h_nlk2 h_from1, },
+        { sorry, }, 
+        }, },
 
     -- STEP (3) : a_i are integers 1..k
 
