@@ -94,7 +94,7 @@ end
 
 lemma factor_in_desc_factorial (n k p l : ℕ) (h_klen : k ≤ n) (h_klp : k < p) (hp: _root_.prime p )
 (h_pow_div: p^l ∣ n.desc_factorial k) ( h_1lel : 1 ≤ l):
-∃! (i : ℕ), (i ≤ k - 1) ∧ p^l ∣ (n - i) :=
+∃ (i : ℕ), (i ≤ k - 1) ∧ p^l ∣ (n - i) :=
 begin
 have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
 { intro hl,
@@ -167,7 +167,7 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
   refine ⟨i, _⟩,
   simp only [true_and, exists_unique_iff_exists, exists_prop, and_imp],
   exact h_unique, },
-
+  -- new Version
   replace h_one_fac := h_one_fac h_1lel,
   cases h_one_fac with i h,
   cases h,
@@ -177,19 +177,17 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
   cases h_lemma with j hj,
   cases hj with hj1 hj2,
   use j,
+  have h_ieqj : i = j := by
+  { sorry, },
   split,
   { simp,
     have h1 := h_left.1,
     have h2 := h_left.2,
     split,
-    { },
-    { have h_solve := desc_factorial_div_fac2 n k p l h_klen hp h_pow_div,
-      cases h_solve with j hj,
-      cases hj with H1 H2,
-      }, },
-  { },
-
-
+    { sorry, },
+    { exact hj2, }, },
+  { simp,
+    sorry, },
 
 --induction l with l hl,
 --{ use 0,
@@ -287,7 +285,9 @@ begin
 
     -- STEP (1) : ∃ p prim : n ≥ p^l > k^l ≥ k²
     have h₁: ∃ p, prime p ∧ p^l ≤ n ∧ k^l < p^l ∧ k^2 ≤ k^l := by
-    { have h_sylvester := sylvester k n h,
+    { have h_1lel : 1 ≤ l := by
+      { exact le_of_succ_le h_2lel},
+      have h_sylvester := sylvester k n h,
       cases h_sylvester with p hp,
       cases hp with h_klp h_right,
       cases h_right with h_p h_p_div_binom,
@@ -343,7 +343,7 @@ begin
           { convert  h_pl_div_fac_part,
             exact desc_factorial_eq_div h_klen, },
           have h_klp_pow_dvd := factor_in_desc_factorial n k p l h_klen (gt_iff_lt.mp h_klp) (h_p)
-            h_pl_div_desc,
+            h_pl_div_desc h_1lel,
           cases h_klp_pow_dvd with i hi,
           cases hi,
           have : p^l ≤ n - i := by
