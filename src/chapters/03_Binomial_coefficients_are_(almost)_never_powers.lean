@@ -176,19 +176,13 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
   have h_lemma := desc_factorial_div_fac2 n k p l h_klen hp h_pow_div,
   cases h_lemma with j hj,
   cases hj with hj1 hj2,
-  use j,
-  have h_ieqj : i = j := by
+  have h_jrw : j ≤ k - 1 ↔ j ∈ range k := by
   { sorry, },
+  use j,
   split,
-  { simp,
-    have h1 := h_left.1,
-    have h2 := h_left.2,
-    split,
-    { sorry, },
-    { exact hj2, }, },
-  { simp,
-    sorry, },
-
+  { rw h_jrw,
+    exact hj1, },
+  { exact hj2, },
 --induction l with l hl,
 --{ use 0,
   --simp only [zero_le', pow_zero, is_unit.dvd, is_unit_one, and_self], },
@@ -349,7 +343,17 @@ begin
           have : p^l ≤ n - i := by
           { refine  nat.le_of_dvd _ hi_right,
             simp only [tsub_pos_iff_lt],
-            linarith, },
+            have h_ilk : i < k := by
+            { have h_kk : k - 1 < k := by 
+              { have h_1lk : 1 < k := by
+                { have h_1l4 : 1 < 4 := by
+                  { sorry, }, 
+                  exact gt_of_ge_of_gt h_4lek h_1l4, }, 
+                have h_0lk1 : 0 < k - 1 := by
+                { exact tsub_pos_of_lt h_1lk}, 
+                sorry, }, 
+              exact gt_of_gt_of_ge h_kk hi_left,}, 
+            exact gt_of_ge_of_gt h_klen h_ilk, },
           have h_klen4i : n - i ≤ n := nat.sub_le n i,
           exact le_trans this h_klen4i, },
         { split,
@@ -361,7 +365,7 @@ begin
       },
     },
 
-    -- STEP (2) : Breakdown of numerator factros n-j = a_j m_j^l whereas a_j pairwise distinct
+    -- STEP (2) : Breakdown of numerator factors n-j = a_j m_j^l whereas a_j pairwise distinct
     have h₂ : ∀ (j ≤ k - 1), 
       (∀ (q : ℕ), q ∣ (aFct l n j) ∧ prime q → q ≤ k) ∧ 
       (∀ i ≤ k - 1, i ≠ j → (aFct l n i) ≠ (aFct l n j)) := by
@@ -372,7 +376,7 @@ begin
         cases hq with h_qdiv h_q,
         by_contra,
         simp only [not_le] at h,
-        have h_qdivbinom : q ∣ choose n k :=
+        have h_q_div_binom : q ∣ choose n k := by
         { sorry, }, 
         sorry, },
       -- Second Claim
