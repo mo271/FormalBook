@@ -440,7 +440,7 @@ begin
         exact range_subset.mpr h_help, }, 
       have h₃' : ∀(i : ℕ), aFct l n i ∈ range (5) := by
       { sorry, }, 
-      },
+      sorry, },
     -- STEP (4) : l ≥ 3 by Contradiciton
     { sorry, },
   },
