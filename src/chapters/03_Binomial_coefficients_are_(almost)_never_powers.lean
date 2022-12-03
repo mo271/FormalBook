@@ -389,7 +389,7 @@ begin
       -- Second Claim : aᵢ ≠ aⱼ
       { intros i h_ilek1 h_inej,
         by_contra,
-        have h_cases : ∀ (x y :ℕ), (((x = j ∧ y = i) ∨ (x = i ∧ y = j)) ∧ x < y) → false := by
+        have h_cases : ∀ (x y : ℕ), (((x = j ∧ y = i) ∨ (x = i ∧ y = j)) ∧ x < y) → false := by
         { sorry, },
         cases em (i < j),
         { have h_casesij := h_cases i j,
