@@ -404,7 +404,7 @@ begin
         { simp only [not_lt] at h_1,
           have h_1' := (ne.symm h_inej).lt_of_le h_1, 
           have h_casesji := h_cases j i,
-          have h_help : (((j = j ∧ i= i) ∨ (j = i ∧ i = j)) ∧ j < i) := by
+          have h_help : (((j = j ∧ i = i) ∨ (j = i ∧ i = j)) ∧ j < i) := by
           { split,
             { left,
               split,
