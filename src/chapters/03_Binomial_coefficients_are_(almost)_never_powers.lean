@@ -69,12 +69,19 @@ begin
   { rw ← nat.choose_eq_factorial_div_factorial h_klen,
     exact h_pl_div_binom, },
 
-  have h_fac_div: (↑k! * ↑(n - k)!) ∣ (n! : ℤ) := by sorry,
-  have h_fac_div': ↑(n - k)! ∣ (n! : ℤ) := by sorry,
-  have h_fac_div'':  (k! : ℤ) ∣ (↑n! / ↑(n - k)!) := sorry,
+  have h_fac_div : (↑k! * ↑(n - k)!) ∣ (n! : ℤ) := by
+  { norm_cast,
+    exact factorial_mul_factorial_dvd_factorial h_klen, },
+  have h_fac_div' : ↑(n - k)! ∣ (n! : ℤ) := dvd_of_mul_left_dvd h_fac_div,
+  have h_fac_div'' :  (k! : ℤ) ∣ (↑n! / ↑(n - k)!) := by
+  { norm_cast,
+    refine (dvd_div_iff ((int.coe_nat_dvd).mp h_fac_div')).mpr _,
+    norm_cast at h_fac_div,
+    rw mul_comm,
+    exact h_fac_div, },
   have h_kfac_ne_zero : (k! : ℚ) ≠ 0 := cast_ne_zero.mpr (factorial_ne_zero k),
   have h_nkfac_ne_zero : ((n - k)! : ℚ) ≠ 0 := cast_ne_zero.mpr (n - k).factorial_ne_zero,
-  have : (k! * (n - k)! : ℚ) ≠ 0 := by sorry,
+  have : (k! * (n - k)! : ℚ) ≠ 0 := mul_ne_zero h_kfac_ne_zero h_nkfac_ne_zero,
   have h_fraction: (n.factorial / (k.factorial * (n - k).factorial)) =
     (n.factorial / (n - k).factorial) / k.factorial := by
   { zify,
@@ -399,10 +406,10 @@ begin
               split,
               { refl, },
               { refl, }, },
-            { exact h_1, }, }, 
+            { exact h_1, }, },
           exact h_casesij h_help, },
         { simp only [not_lt] at h_1,
-          have h_1' := (ne.symm h_inej).lt_of_le h_1, 
+          have h_1' := (ne.symm h_inej).lt_of_le h_1,
           have h_casesji := h_cases j i,
           have h_help : (((j = j ∧ i = i) ∨ (j = i ∧ i = j)) ∧ j < i) := by
           { split,
