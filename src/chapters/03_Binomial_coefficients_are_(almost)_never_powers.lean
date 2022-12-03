@@ -252,6 +252,13 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
   sorry,
 end
 
+lemma factor_in_desc_factorial2 (n k p l : ℕ) (h_klen : k ≤ n) (h_klp : k < p) (hp: _root_.prime p )
+(h_pow_div: p^l ∣ n.desc_factorial k) ( h_1lel : 1 ≤ l):
+∃! (i : ℕ), (i ≤ k - 1) ∧ p^l ∣ (n - i) :=
+begin
+  sorry, 
+end
+
 /-!
 ### Lemmata for Step 2
 Here we list the lemmata soley used for step 2
@@ -368,29 +375,43 @@ begin
         cases hq with h_q_div_a h_q,
         by_contra h_klq,
         simp only [not_le] at h_klq,
-        -- pre work
+        -- pre work, important result q ∣ n - j and q ∣ choose n k
+        have h_q_div_nj : q ∣ (n - j) := by
+        { have h_q_div_am := dvd_mul_of_dvd_left h_q_div_a (mFct l n j),
+          have h_am_eq_nj : aFct l n j * mFct l n j = n - j := by
+          { sorry, },
+          rw ← h_am_eq_nj,
+          exact h_q_div_am, },
+        have h_q_div_desc_fact : q ∣ n.desc_factorial k := by
+        { sorry, },
         have h_q_div_binom : q ∣ choose n k := by
-        { have h_a_div_binom_factor : aFct l n j ∣ (n - j) := by
-          { have h_am_eq_nj : aFct l n j * mFct l n j = n - j := by
-            { sorry, },
-            exact dvd.intro (mFct l n j) h_am_eq_nj, },
-          have h_a_div_binom : aFct l n j ∣ choose n k := by
-          { have h_a_div_desc : aFct l n j ∣ n.desc_factorial k := by
-            { rw desc_factorial_eq_prod n k h_klen,
-              sorry, },
-            have h_desc_div_binom : n.desc_factorial k ∣ choose n k := by
-            { sorry, },
-            exact dvd_trans h_a_div_desc h_desc_div_binom, },
-          exact dvd_trans h_q_div_a h_a_div_binom, },
-        -- use of lemmata
+        { have h_q_div_desc_fact : q ∣ n.desc_factorial k := by
+          { sorry, },
+          have h_descfac_div_binom : n.desc_factorial k ∣ choose n k := by
+          { sorry, }, 
+          exact dvd_trans h_q_div_desc_fact h_descfac_div_binom, },
+        -- introducing lemmata by using q ∣ choose n k
         have h_ql_div_desc: q^l ∣ n.desc_factorial k := by
           { exact prime_div_desc_fac n k m l q h_1lel h_4lek h_klen h_q h_q_div_binom h_klq H, },
-        have h_klp_pow_dvd := factor_in_desc_factorial n k q l h_klen (gt_iff_lt.mp h_klq) (h_q)
+        have h_klp_pow_dvd := factor_in_desc_factorial2 n k q l h_klen (gt_iff_lt.mp h_klq) (h_q)
             h_ql_div_desc h_1lel,
-        -- working with them
+        -- working with lemmata 
         cases h_klp_pow_dvd with i hi,
-        cases hi,
-        sorry, },
+        cases hi with h_ex h_uni,
+        cases h_ex,
+        have h_qldivam : q^l ∣ ((aFct l n i) * (mFct l n i)^l) := by
+        { sorry, },
+        have h_qdivml : q ∣ (mFct l n i)^l := by
+        { sorry, }, 
+        have h_qldivml : q^l ∣ (mFct l n i)^l := by
+        { sorry, },
+        have h_qnotdiva : ¬ (q ∣ (aFct l n i)) := by
+        { sorry, },
+        -- applying result of lemmata by using q ∣ n - j
+        have h_ieqj : j = i := by
+        { sorry, },
+        rw h_ieqj at h_q_div_a,
+        exact h_qnotdiva h_q_div_a, },
       -- Second Claim : aᵢ ≠ aⱼ
       { intros i h_ilek1 h_inej,
         -- here we perform the proof by contradiciton which we will use for both cases below
