@@ -389,6 +389,30 @@ begin
       -- Second Claim : aᵢ ≠ aⱼ
       { intros i h_ilek1 h_inej,
         by_contra,
+        have h_cases : ∀ (x y : ℕ), (((x = j ∧ y = i) ∨ (x = i ∧ y = j)) ∧ x < y) → false := by
+        { sorry, },
+        cases em (i < j),
+        { have h_casesij := h_cases i j,
+          have h_help : (((i= j ∧ j = i) ∨ (i = i ∧ j = j)) ∧ i < j) := by
+          { split,
+            { right,
+              split,
+              { refl, },
+              { refl, }, },
+            { exact h_1, }, }, 
+          exact h_casesij h_help, },
+        { simp only [not_lt] at h_1,
+          have h_1' := (ne.symm h_inej).lt_of_le h_1, 
+          have h_casesji := h_cases j i,
+          have h_help : (((j = j ∧ i = i) ∨ (j = i ∧ i = j)) ∧ j < i) := by
+          { split,
+            { left,
+              split,
+              { refl, },
+              { refl, }, },
+            { exact h_1', }, },
+          exact h_casesji h_help, }, }, },
+/-
         cases em (i < j),
         { have h_mjlmi : (mFct l n j) + 1 ≤ mFct l n i := by
           { have h_njlni : n - i < n - j := by
@@ -413,6 +437,7 @@ begin
           exact nat.lt_asymm h_nlk2 h_from1, },
         { sorry, },
         }, },
+-/
     -- STEP (3) : a_i are integers 1..k
     have h₃ : ∀ (i : ℕ), aFct l n i ∈ range (k + 1) := by
     { sorry, },
