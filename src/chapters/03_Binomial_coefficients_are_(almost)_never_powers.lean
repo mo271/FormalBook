@@ -355,10 +355,7 @@ begin
           -- prove k^l < p^l
           { exact nat.pow_lt_pow_of_lt_left (h_klp)(gt_of_ge_of_gt h_2lel two_pos), },
           -- prove k² ≤ k^l
-          { exact nat.pow_le_pow_of_le_right (pos_of_gt h_4lek) h_2lel,  },
-        },
-      },
-    },
+          { exact nat.pow_le_pow_of_le_right (pos_of_gt h_4lek) h_2lel,  }, }, }, },
     -- STEP (2) : aⱼ only have prime divisors ≤ k ; aᵢ ≠ aⱼ
     have h₂ : ∀ (j ≤ k - 1),
       (∀ (q : ℕ), q ∣ (aFct l n j) ∧ prime q → q ≤ k) ∧
@@ -396,28 +393,30 @@ begin
       -- Second Claim : aᵢ ≠ aⱼ
       { intros i h_ilek1 h_inej,
         by_contra,
-        have h_cases : ∀ (x y :ℕ), (((x = j ∧ y = i) ∨ (x = i ∧ y = j)) ∧ x < y) → false := by
-        { sorry, },
+        have h_cases : ∀ (x y : ℕ), (x ≤ k - 1 ∧ y ≤ k - 1 ∧ x < y) → false := by
+        { intros x y h,
+          cases h with h_x h,
+          cases h with h_y h_xley, 
+          sorry,
+        },
         cases em (i < j),
         { have h_casesij := h_cases i j,
-          have h_help : (((i= j ∧ j = i) ∨ (i = i ∧ j = j)) ∧ i < j) := by
-          { split,
-            { right,
-              split,
-              { refl, },
-              { refl, }, },
-            { exact h_1, }, }, 
+          have h_help : i ≤ k - 1 ∧ j ≤ k - 1 ∧ i < j := by
+          { split, 
+            { exact h_ilek1, }, 
+            { split, 
+              { exact h_jlek1, },
+              { exact h_1, }, }, }, 
           exact h_casesij h_help, },
         { simp only [not_lt] at h_1,
           have h_1' := (ne.symm h_inej).lt_of_le h_1, 
           have h_casesji := h_cases j i,
-          have h_help : (((j = j ∧ i= i) ∨ (j = i ∧ i = j)) ∧ j < i) := by
-          { split,
-            { left,
-              split,
-              { refl, },
-              { refl, }, },
-            { exact h_1', }, },
+          have h_help : j ≤ k - 1 ∧ i ≤ k - 1 ∧ j < i := by
+          { split, 
+            { exact h_jlek1, },
+            { split,
+              { exact h_ilek1, }, 
+              { exact h_1', }, }, }, 
           exact h_casesji h_help, }, }, },
 /-
         cases em (i < j),
