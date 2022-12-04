@@ -19,6 +19,7 @@ import tactic
 import tactic.qify
 import ring_theory.prime
 import data.list.prime
+import data.nat.sqrt
 --set_option trace.simp_lemmas true
 
 
@@ -251,6 +252,13 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
   sorry,
 end
 
+lemma factor_in_desc_factorial2 (n k p l : ℕ) (h_klen : k ≤ n) (h_klp : k < p) (hp: _root_.prime p )
+(h_pow_div: p^l ∣ n.desc_factorial k) ( h_1lel : 1 ≤ l):
+∃! (i : ℕ), (i ≤ k - 1) ∧ p^l ∣ (n - i) :=
+begin
+  sorry, 
+end
+
 /-!
 ### Lemmata for Step 2
 Here we list the lemmata soley used for step 2
@@ -367,60 +375,53 @@ begin
         cases hq with h_q_div_a h_q,
         by_contra h_klq,
         simp only [not_le] at h_klq,
-        -- pre work
+        -- pre work, important result q ∣ n - j and q ∣ choose n k
+        have h_q_div_nj : q ∣ (n - j) := by
+        { have h_q_div_am := dvd_mul_of_dvd_left h_q_div_a (mFct l n j),
+          have h_am_eq_nj : aFct l n j * mFct l n j = n - j := by
+          { sorry, },
+          rw ← h_am_eq_nj,
+          exact h_q_div_am, },
+        have h_q_div_desc_fact : q ∣ n.desc_factorial k := by
+        { sorry, },
         have h_q_div_binom : q ∣ choose n k := by
-        { have h_a_div_binom_factor : aFct l n j ∣ (n - j) := by
-          { have h_am_eq_nj : aFct l n j * mFct l n j = n - j := by
-            { sorry, },
-            exact dvd.intro (mFct l n j) h_am_eq_nj, },
-          have h_a_div_binom : aFct l n j ∣ choose n k := by
-          { have h_a_div_desc : aFct l n j ∣ n.desc_factorial k := by
-            { rw desc_factorial_eq_prod n k h_klen,
-              sorry, },
-            have h_desc_div_binom : n.desc_factorial k ∣ choose n k := by
-            { sorry, },
-            exact dvd_trans h_a_div_desc h_desc_div_binom, },
-          exact dvd_trans h_q_div_a h_a_div_binom, },
-        -- use of lemmata
+        { have h_q_div_desc_fact : q ∣ n.desc_factorial k := by
+          { sorry, },
+          have h_descfac_div_binom : n.desc_factorial k ∣ choose n k := by
+          { sorry, }, 
+          exact dvd_trans h_q_div_desc_fact h_descfac_div_binom, },
+        -- introducing lemmata by using q ∣ choose n k
         have h_ql_div_desc: q^l ∣ n.desc_factorial k := by
           { exact prime_div_desc_fac n k m l q h_1lel h_4lek h_klen h_q h_q_div_binom h_klq H, },
-        have h_klp_pow_dvd := factor_in_desc_factorial n k q l h_klen (gt_iff_lt.mp h_klq) (h_q)
+        have h_klp_pow_dvd := factor_in_desc_factorial2 n k q l h_klen (gt_iff_lt.mp h_klq) (h_q)
             h_ql_div_desc h_1lel,
-        -- working with them
+        -- working with lemmata 
         cases h_klp_pow_dvd with i hi,
-        cases hi,
-        sorry, },
+        cases hi with h_ex h_uni,
+        cases h_ex,
+        have h_qldivam : q^l ∣ ((aFct l n i) * (mFct l n i)^l) := by
+        { sorry, },
+        have h_qdivml : q ∣ (mFct l n i)^l := by
+        { sorry, }, 
+        have h_qldivml : q^l ∣ (mFct l n i)^l := by
+        { sorry, },
+        have h_qnotdiva : ¬ (q ∣ (aFct l n i)) := by
+        { sorry, },
+        -- applying result of lemmata by using q ∣ n - j
+        have h_ieqj : j = i := by
+        { sorry, },
+        rw h_ieqj at h_q_div_a,
+        exact h_qnotdiva h_q_div_a, },
       -- Second Claim : aᵢ ≠ aⱼ
       { intros i h_ilek1 h_inej,
-        by_contra,
-        have h_cases : ∀ (x y : ℕ), (x ≤ k - 1 ∧ y ≤ k - 1 ∧ x < y) → false := by
+        -- here we perform the proof by contradiciton which we will use for both cases below
+        have h_cases : ∀ (x y : ℕ), (x ≤ k - 1 ∧ y ≤ k - 1 ∧ x < y) → aFct l n x ≠ aFct l n y := by
         { intros x y h,
           cases h with h_x h,
           cases h with h_y h_xley, 
-          sorry,
-        },
-        cases em (i < j),
-        { have h_casesij := h_cases i j,
-          have h_help : i ≤ k - 1 ∧ j ≤ k - 1 ∧ i < j := by
-          { split, 
-            { exact h_ilek1, }, 
-            { split, 
-              { exact h_jlek1, },
-              { exact h_1, }, }, }, 
-          exact h_casesij h_help, },
-        { simp only [not_lt] at h_1,
-          have h_1' := (ne.symm h_inej).lt_of_le h_1, 
-          have h_casesji := h_cases j i,
-          have h_help : j ≤ k - 1 ∧ i ≤ k - 1 ∧ j < i := by
-          { split, 
-            { exact h_jlek1, },
-            { split,
-              { exact h_ilek1, }, 
-              { exact h_1', }, }, }, 
-          exact h_casesji h_help, }, }, },
-/-
-        cases em (i < j),
-        { have h_mjlmi : (mFct l n j) + 1 ≤ mFct l n i := by
+          by_contra,
+          -- will help us rewriting
+          have h_mjlmi : (mFct l n j) + 1 ≤ mFct l n i := by
           { have h_njlni : n - i < n - j := by
             { sorry, },
             have h_amjlami : (aFct l n j) * (mFct l n j)^l < (aFct l n i) * (mFct l n i)^l := by
@@ -430,20 +431,63 @@ begin
             have h_mjlmi : mFct n l j < mFct n l i := by
             { sorry, },
             sorry, },
-          have h_sqrtnlk : n^(1/2) < k := by
-          { sorry, },
+          -- n < k²
+          have h_sqrtnlk : n.sqrt < k := by
+          { have h_ineq1 : n.sqrt < l * (n / 2 + 1).sqrt := by
+            { sorry, },
+            have h_ineq2 : l * (n / 2 + 1).sqrt ≤ l * (n - k + 1).sqrt := by
+            { sorry, },
+            have h_ineq3 : l * (n - k + 1).sqrt ≤ 
+              l * ((aFct l n j) * (mFct l n j)^l).sqrt := by
+            { sorry, },
+            have h_ineq4 : l * ((aFct l n j) * (mFct l n j)^l).sqrt ≤ 
+              (aFct l n j) * l * (mFct l n j)^(l - 1) := by
+            { sorry, },
+            have h_ineq5 : (aFct l n j) * l * (mFct l n j)^(l - 1) ≤ 
+              (aFct l n j) * ((mFct l n j + 1)^l - (mFct l n j)^l) := by
+            { sorry, },
+            have h_ineq6 : (aFct l n j) * ((mFct l n j + 1)^l - (mFct l n j)^l) ≤ 
+              (aFct l n j) * ((mFct l n i)^l * (mFct l n j)^l) := by 
+            { sorry, }, 
+            have h_eq7 : (aFct l n j) * ((mFct l n i)^l * (mFct l n j)^l) = (n - i) - (n - j) := by
+            { sorry, },
+            have h_eq8 :  (n - i) - (n - j) = j - i := by
+            { sorry, },
+            have h_ineq9 : j - i < k := by 
+            { sorry, },
+            linarith, },
           have h_nlk2 : n < k^2 := by
-          { sorry, },
+          { exact sqrt_lt'.mp h_sqrtnlk, },
+          -- usage of h₁ : k² < n
           cases h₁ with p h,
           cases h with h_p h,
-          cases h with hpln h,
-          cases h with h_klpl h_k2kl,
+          cases h with hplen h,
+          cases h with h_kllpl h_k2kl,
           have h_from1 : k^2 < n := by
-          { sorry, },
+          { have h_k2lpl : k^2 < p^l := gt_of_gt_of_ge h_kllpl h_k2kl, 
+            exact gt_of_ge_of_gt hplen h_k2lpl, },
           exact nat.lt_asymm h_nlk2 h_from1, },
-        { sorry, },
-        }, },
--/
+        cases em (i < j),
+        { -- case i < j using h_cases
+          have h_casesij := h_cases i j,
+          have h_help : i ≤ k - 1 ∧ j ≤ k - 1 ∧ i < j := by
+          { split, 
+            { exact h_ilek1, }, 
+            { split, 
+              { exact h_jlek1, },
+              { exact h_1, }, }, }, 
+          exact h_casesij h_help, },
+        { -- case i > j using h_cases
+          simp only [not_lt] at h_1,
+          have h_1' := (ne.symm h_inej).lt_of_le h_1, 
+          have h_casesji := h_cases j i,
+          have h_help : j ≤ k - 1 ∧ i ≤ k - 1 ∧ j < i := by
+          { split, 
+            { exact h_jlek1, },
+            { split,
+              { exact h_ilek1, }, 
+              { exact h_1', }, }, }, 
+          exact ne.symm (h_cases j i h_help), }, }, },
     -- STEP (3) : a_i are integers 1..k
     have h₃ : ∀ (i : ℕ), aFct l n i ∈ range (k + 1) := by
     { sorry, },
