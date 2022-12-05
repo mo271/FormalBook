@@ -145,7 +145,7 @@ begin
   cases hi with j hj,
   use j,
   cases hj,
-  rw ←hj_right at hpi,
+  rw ← hj_right at hpi,
   exact ⟨hj_left, hpi⟩,
 end
 
@@ -367,6 +367,12 @@ begin
           -- prove k² ≤ k^l
           { exact nat.pow_le_pow_of_le_right (pos_of_gt h_4lek) h_2lel,  }, }, }, },
     -- STEP (2) : aⱼ only have prime divisors ≤ k ; aᵢ ≠ aⱼ
+    have h_mdef : ∀ (l n j : ℕ), mFct l n j = (largest_power_divisor l (n - j)) := by
+    { intros l n j,
+      refl, },
+    have h_adef : ∀ (l n j : ℕ), aFct l n j = (n - j) / (mFct l n j)^l := by
+    { intros l n j,
+      refl, },
     have h₂ : ∀ (j ≤ k - 1),
       (∀ (q : ℕ), q ∣ (aFct l n j) ∧ prime q → q ≤ k) ∧
       (∀ i ≤ k - 1, i ≠ j → (aFct l n i) ≠ (aFct l n j)) := by
@@ -518,10 +524,30 @@ begin
         rw sq 2,
         rw h_help,
         exact h_ais4, }, 
-      -- @MORITZ
+      rw h_adef at h_a,
+      rw h_mdef at h_a,
       sorry, },
     -- STEP (4) : l ≥ 3 by Contradiciton
-    { sorry, },
+    { have h₄ : n < k^3 := by
+      { sorry, }, 
+      have h_3lel : 3 ≤ l := by
+      { have h_2ll :=(ne.symm h_1).lt_of_le h_2lel, 
+        exact succ_le_iff.mpr h_2ll, }, 
+      cases h₁ with p h,
+      cases h with h_p h,
+      cases h with h_plen h,
+      cases h with h_kllpl h_k2kl, 
+      have h_k3ln : k^3 < n := by
+      { have h_k3lpl : k^3 < p^l := by
+        { have h_k3lekl : k^3 ≤ k^l := by
+          { have h_0lk : 0 < k := by
+            { have h_0l4 : 0 < 4 := by 
+              { exact four_pos, },
+              exact gt_of_ge_of_gt h_4lek h_0l4, },
+            exact pow_le_pow_of_le_right h_0lk h_3lel, }, 
+          exact gt_of_gt_of_ge h_kllpl h_k3lekl, },
+        exact gt_of_ge_of_gt h_plen h_k3lpl, }, 
+      exact nat.lt_asymm h₄ h_k3ln, },
   },
 
 
