@@ -42,11 +42,10 @@ theorem sylvester (k n : ℕ) (h : n ≥ 2*k): ∃ p, p > k ∧ prime p ∧ p �
 begin
   sorry,
 end
+
 /-!
 ### Lemmata for Step 1 and Step 2
-Here we list the lemmata used for step 1 and step 2
 -/
-
 example (a p : ℕ) (h : p ∣ a) (g : a < p): a = 0 :=
 begin
   exact eq_zero_of_dvd_of_lt h g,
@@ -261,7 +260,6 @@ end
 
 /-!
 ### Lemmata for Step 2
-Here we list the lemmata soley used for step 2
 -/
 definition power_div (l z : ℕ) := (finset.range (z + 1)).filter (λ i, i^l ∣ z)
 
@@ -312,6 +310,69 @@ end
 definition s_1tok (k : ℕ) := (finset.range (k + 1)).filter(λ i, 1 ≤ i ∧ i ≤ k)
 
 definition a_values (l n k : ℕ) := finset.image (aFct l n) (range k)
+
+lemma fac_eq_prod (n : ℕ) : n.factorial = ∏ i in Icc 1 n, i :=
+begin
+  induction n with n h_ind,
+  -- induction start
+  { simp only [factorial_zero, Icc_eq_empty_of_lt, lt_one_iff, prod_empty], },
+  -- indcution step
+  { simp only [factorial_succ],
+    rw h_ind,
+    have h_help : Icc 1 n.succ = (Icc 1 n) ∪ (singleton n.succ) := by
+    { refine subset.antisymm _ _,
+      -- left in right
+      { intros k hk,
+        simp only [mem_union, mem_Icc, mem_singleton],
+        simp at hk,
+        cases em (k ≤ n),
+        { left,
+          split,
+          { exact hk.left, },
+          { exact h, }, },
+        { right,
+          simp only [not_le] at h,
+          have h2 := hk.right,
+          exact ge_antisymm (succ_le_iff.mpr (h)) h2,}, },
+      -- right in left
+      { intros k hk,
+        simp only [mem_union, mem_Icc, mem_singleton],
+        simp at hk,
+        cases hk with hk1 hk2,
+        { split,
+          { exact hk1.left, },
+          { have := hk1.right,
+            exact le_succ_of_le this, }, },
+        { split,
+          { rw hk2,
+            have help : 0 < n.succ := by
+            { exact ne_zero.pos (succ n), },
+            exact succ_le_iff.mpr help, },
+          { exact (eq.symm hk2).ge}, }, }, },
+    have h_help2 : disjoint (Icc 1 n) (singleton n.succ) := by
+    { simp only [disjoint_singleton_right, mem_Icc, not_and, not_le],
+      intro p,
+      rw nat.succ_eq_one_add,
+      simp only [lt_add_iff_pos_left, lt_one_iff], },
+    rw h_help,
+    have h := prod_union h_help2,
+    rw h,
+    simp,
+    apply mul_comm, },
+end 
+
+/-!
+### Lemmata for Step 4
+-/
+lemma h_mul_div (a b : ℕ) (h_b : b ≠ 0) : a * b / b = 1 :=
+begin
+  sorry,
+end
+
+lemma h_div_mul (a b : ℕ) (h_b : b ≠ 0) : a / b * b = 1 :=
+begin
+  sorry,
+end
 
 /-
 ### Erdo's Theorem
@@ -367,12 +428,6 @@ begin
           -- prove k² ≤ k^l
           { exact nat.pow_le_pow_of_le_right (pos_of_gt h_4lek) h_2lel,  }, }, }, },
     -- STEP (2) : aⱼ only have prime divisors ≤ k ; aᵢ ≠ aⱼ
-    have h_mdef : ∀ (l n j : ℕ), mFct l n j = (largest_power_divisor l (n - j)) := by
-    { intros l n j,
-      refl, },
-    have h_adef : ∀ (l n j : ℕ), aFct l n j = (n - j) / (mFct l n j)^l := by
-    { intros l n j,
-      refl, },
     have h₂ : ∀ (j ≤ k - 1),
       (∀ (q : ℕ), q ∣ (aFct l n j) ∧ prime q → q ≤ k) ∧
       (∀ i ≤ k - 1, i ≠ j → (aFct l n i) ≠ (aFct l n j)) := by
@@ -498,19 +553,24 @@ begin
           exact ne.symm (h_cases j i h_help), }, }, },
     -- STEP (3) : a_i are integers 1..k
     have h₃ : a_values l n k = s_1tok k := by
-    { sorry, },
-    have h₃' : finset.image (aFct l n) (range k) = (finset.range (k + 1)).filter(λ i, 1 ≤ i ∧ i ≤ k) := by
-    { sorry, },
+    { dsimp only [a_values, s_1tok],
+      have h_div : (∏ i in (a_values l n k), i) ∣ k.factorial := by
+      { sorry, },
+      have h_eq : (∏ i in (a_values l n k), i) = k.factorial := by
+      { sorry, },
+      rw fac_eq_prod at h_eq,
+      sorry, },
     -- divide in two cases
     cases em (l = 2),
     -- Special Case l = 2 by Contradicition
-    { have h_4ins : 4 ∈ (finset.range (k + 1)).filter(λ i, 1 ≤ i ∧ i ≤ k) := by
-      { simp only [mem_filter, mem_range, one_le_bit0_iff, succ_pos', true_and],
+    { have h_4ins : 4 ∈ (s_1tok k) := by
+      { dsimp only [s_1tok],
+        simp only [mem_filter, mem_range, one_le_bit0_iff, succ_pos', true_and],
         split,
         { exact lt_succ_iff.mpr h_4lek, },
         { exact h_4lek, }, }, 
-      have h_4inavalues : 4 ∈ (finset.image (aFct l n) (range k)) := by
-      { rw h₃',
+      have h_4inavalues : 4 ∈ (a_values l n k) := by
+      { rw h₃,
         exact h_4ins, }, 
       have h_avalue4 : ∃ (j ∈ range k), aFct l n j = 4 := by
       { sorry, }, 
@@ -524,15 +584,38 @@ begin
         rw sq 2,
         rw h_help,
         exact h_ais4, }, 
-      rw h_adef at h_a,
-      rw h_mdef at h_a,
+      dsimp only [aFct] at h_a,
+      dsimp only [mFct] at h_a,
       sorry, },
     -- STEP (4) : l ≥ 3 by Contradiciton
-    { have h₄ : n < k^3 := by
-      { sorry, }, 
+    { -- case l ≥ 3
       have h_3lel : 3 ≤ l := by
       { have h_2ll :=(ne.symm h_1).lt_of_le h_2lel, 
         exact succ_le_iff.mpr h_2ll, }, 
+      -- main work : n < k³
+      have h₄ : n < k^3 := by
+      { have h_intro : ∃ (i1 i2 i3 : ℕ), aFct l n i1 = 1 ∧ aFct l n i2 = 2 ∧ aFct l n i3 = 4 := by
+        { sorry, },
+        cases h_intro with i1 h,
+        cases h with i2 h,
+        cases h with i3 h,
+        cases h with h_a1 h,
+        cases h with h_a2 h_a3,
+        have h_ineqm : (mFct l n i2)^2 ≠ (mFct l n i1) * (mFct l n i2) := by
+        { sorry, },
+        -- cases for m₂² ≠ m₁ * m₃ 
+        cases em ((mFct l n i2)^2 > (mFct l n i1) * (mFct l n i3)),
+        { -- that is the case being covered in the book
+          have h_ineq1 : k * n^(2 / 3) > n := by
+          { have h_ineq2 : 2 * (k - 1) * n * (mFct l n i1) * (mFct l n i3) > 2 * n^2 := by
+            { have h_ineq3 : 2 * (k - 1) * n > 4 * l * (mFct l n i1)^(l - 1) * (mFct l n i3)^(l - 1) := by
+              { sorry, }, 
+              sorry, }, 
+            sorry, },
+          sorry, },
+        { -- that is the case not being covered in the book
+          sorry, }, }, 
+      -- using step 1 for k³ < n
       cases h₁ with p h,
       cases h with h_p h,
       cases h with h_plen h,
@@ -547,6 +630,7 @@ begin
             exact pow_le_pow_of_le_right h_0lk h_3lel, }, 
           exact gt_of_gt_of_ge h_kllpl h_k3lekl, },
         exact gt_of_ge_of_gt h_plen h_k3lpl, }, 
+      -- contradiciton 
       exact nat.lt_asymm h₄ h_k3ln, },
   },
 
