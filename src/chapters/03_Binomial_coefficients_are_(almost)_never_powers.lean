@@ -68,7 +68,7 @@ begin
   have h_pl_div_fac : p^l ∣ (n.factorial / (k.factorial * (n-k).factorial)) := by
   { rw ← nat.choose_eq_factorial_div_factorial h_klen,
     exact h_pl_div_binom, },
-
+  -- here we start using qify to handle division 
   have h_fac_div : (↑k! * ↑(n - k)!) ∣ (n! : ℤ) := by
   { norm_cast,
     exact factorial_mul_factorial_dvd_factorial h_klen, },
@@ -304,6 +304,23 @@ begin
   rw nat.div_mul_cancel this,
 end
 
+lemma not_lthpow_dvd_a (p l n j : ℕ) (h_p : prime p): ¬ (p^l ∣ (aFct l n j)) :=
+begin
+  -- maybe different approach needed
+  by_contra,
+  have h_pl_div_nj : p^l ∣ n - j := by
+  { rw decompose_n_j n j l,
+    exact dvd_mul_of_dvd_left h (mFct l n j ^ l), }, 
+  have h_pl_div_ml : p^l ∣ (mFct l n j)^l := by
+  { dsimp only [mFct],
+    have h_lpd_div_nj := largest_power_divisor_divides l (n - j),
+    by_contra,
+    have h_not_pl_div_nj : ¬(p^l ∣ (n - j)) := by
+    { sorry, },
+    exact h (false.rec (p ^ l ∣ largest_power_divisor l (n - j) ^ l) (h_not_pl_div_nj h_pl_div_nj)), },
+  sorry,
+end
+
 /-!
 ### Lemmata for Step 3
 -/
@@ -363,6 +380,7 @@ end
 
 /-!
 ### Lemmata for Step 4
+-- maybe we do not need those 
 -/
 lemma h_mul_div (a b : ℕ) (h_b : b ≠ 0) : a * b / b = 1 :=
 begin
@@ -463,11 +481,15 @@ begin
         cases hi with h_ex h_uni,
         cases h_ex,
         have h_qldivam : q^l ∣ ((aFct l n i) * (mFct l n i)^l) := by
-        { sorry, },
+        { rw ← decompose_n_j n i l,
+          exact h_ex_right, },
         have h_qdivml : q ∣ (mFct l n i)^l := by
-        { sorry, }, 
+        { have h_not_ql_div_a := not_lthpow_dvd_a q l n i h_q, 
+          sorry, }, 
         have h_qldivml : q^l ∣ (mFct l n i)^l := by
-        { sorry, },
+        { have h_qdivm : q ∣ (mFct l n i) := by
+          { exact prime.dvd_of_dvd_pow h_q h_qdivml, }, 
+          exact pow_dvd_pow_of_dvd h_qdivm l, },
         have h_qnotdiva : ¬ (q ∣ (aFct l n i)) := by
         { sorry, },
         -- applying result of lemmata by using q ∣ n - j
