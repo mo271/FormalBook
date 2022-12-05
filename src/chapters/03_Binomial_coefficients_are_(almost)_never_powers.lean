@@ -309,7 +309,9 @@ end
 /-!
 ### Lemmata for Step 3
 -/
--- definition bij (l n j k : ℕ) : ℕ → range (k + 1) := λ j, (aFct l n j)
+definition s_1tok (k : ℕ) := (finset.range (k + 1)).filter(λ i, 1 ≤ i ∧ i ≤ k)
+
+definition a_values (l n k : ℕ) := finset.image (aFct l n) (range k)
 
 /-
 ### Erdo's Theorem
@@ -489,17 +491,34 @@ begin
               { exact h_1', }, }, }, 
           exact ne.symm (h_cases j i h_help), }, }, },
     -- STEP (3) : a_i are integers 1..k
-    have h₃ : ∀ (i : ℕ), aFct l n i ∈ range (k + 1) := by
+    have h₃ : a_values l n k = s_1tok k := by
+    { sorry, },
+    have h₃' : finset.image (aFct l n) (range k) = (finset.range (k + 1)).filter(λ i, 1 ≤ i ∧ i ≤ k) := by
     { sorry, },
     -- divide in two cases
     cases em (l = 2),
     -- Special Case l = 2 by Contradicition
-    { have h_rangek : range (5) ⊆ range (k + 1) := by
-      { have h_help : 5 ≤ k + 1 := by
-        { exact succ_le_succ h_4lek, },
-        exact range_subset.mpr h_help, },
-      have h₃' : ∀(i : ℕ), aFct l n i ∈ range (5) := by
-      { sorry, },
+    { have h_4ins : 4 ∈ (finset.range (k + 1)).filter(λ i, 1 ≤ i ∧ i ≤ k) := by
+      { simp only [mem_filter, mem_range, one_le_bit0_iff, succ_pos', true_and],
+        split,
+        { exact lt_succ_iff.mpr h_4lek, },
+        { exact h_4lek, }, }, 
+      have h_4inavalues : 4 ∈ (finset.image (aFct l n) (range k)) := by
+      { rw h₃',
+        exact h_4ins, }, 
+      have h_avalue4 : ∃ (j ∈ range k), aFct l n j = 4 := by
+      { sorry, }, 
+      cases h_avalue4 with j hj,
+      cases hj with h_j h_ais4,
+      have h_a : aFct l n j = 2^l := by
+      { have h_help : 2 * 2 = 4 := by
+        { sorry, },
+        rw h_1,
+        rw h_1 at h_ais4,
+        rw sq 2,
+        rw h_help,
+        exact h_ais4, }, 
+      -- @MORITZ
       sorry, },
     -- STEP (4) : l ≥ 3 by Contradiciton
     { sorry, },
