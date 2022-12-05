@@ -608,7 +608,7 @@ begin
         { -- that is the case being covered in the book
           have h_ineq1 : k * n^(2 / 3) > n := by
           { have h_ineq2 : 2 * (k - 1) * n * (mFct l n i1) * (mFct l n i3) > 2 * n^2 := by
-            { have h_ineq3 :  2 * (k - 1) * n > 4 * l * (mFct l n i1)^(l - 1) * (mFct l n i3)^(l - 1) := by
+            { have h_ineq3 : 2 * (k - 1) * n > 4 * l * (mFct l n i1)^(l - 1) * (mFct l n i3)^(l - 1) := by
               { sorry, }, 
               sorry, }, 
             sorry, },
