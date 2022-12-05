@@ -381,7 +381,7 @@ Using ℕ instead of ℤ here, because of the definition of `choose` and because
 theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (h_4lek : 4 ≤ k)
 (h_klen4 : k ≤ n - 4) : choose n k ≠ m^l :=
 begin
-  /- Assumption that n ≥ 2k -/
+  -- Assumption that n ≥ 2k 
   have h_wlog : ∀ (k' : ℕ) (h_4lek' : 4 ≤ k') (h_klen4' : k' ≤ n - 4), 2*k' ≤ n → choose n k' ≠ m^l := by
   { clear h_4lek h_klen4 k,
     intros k h_4lek h_klen4 h,
