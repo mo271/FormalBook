@@ -38,3 +38,12 @@ import combinatorics.simple_graph.acyclic
   - Theorem
     - proof
 -/
+universe u
+
+-- Copying the structure from simple_graph.
+@[ext]
+structure simple_directed_graph (V : Type u) := (adj : V → V → Prop)
+
+noncomputable instance {V : Type u} [fintype V] : fintype (simple_directed_graph V) :=
+by { classical,
+exact fintype.of_injective simple_directed_graph.adj simple_directed_graph.ext,}
