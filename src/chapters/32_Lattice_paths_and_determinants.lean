@@ -23,7 +23,7 @@ import combinatorics.simple_graph.acyclic
 ## TODO
 
  - missing definitions:
-  - directed graphs (non-trivial to do)
+  - directed graphs (trivial to do)
   - Path
   - weights on edge set (trivial to do)
   - definition for weight of Path
