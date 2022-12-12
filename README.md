@@ -67,7 +67,7 @@ Status of the chapters:
   29. :x: [Tiling rectangles](./src/chapters/29_Tiling_rectangles.lean)
   30. :x: [Three famous theorems on finite sets](./src/chapters/30_Three_famous_theorems_on_finite_sets.lean)
   31. :x: [Shuffling cards](./src/chapters/31_Shuffling_cards.lean)
-  32. :x: [Lattice paths and determinants](./src/chapters/32_Lattice_paths_and_determinants.lean)
+  32. :thought_balloon: [Lattice paths and determinants](./src/chapters/32_Lattice_paths_and_determinants.lean)
   33. :x: [Cayley's formula for the number of trees](./src/chapters/33_Cayley's_formula_for_the_number_of_trees.lean)
   34. :x: [Identities versus bijections](./src/chapters/34_Identities_versus_bijections.lean)
   35. :x: [The finite Kakeya problem](./src/chapters/35_The_finite_Kakeya_problem.lean)
@@ -100,6 +100,7 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details.
 
   - [Moritz Firsching](https://github.com/mo271)
   - [Nick Kuhn](https://github.com/nick-kuhn)
+  - [Christopher Schmidt](https://github.com/C-h-r-i-s-x)
 
 ## License
 

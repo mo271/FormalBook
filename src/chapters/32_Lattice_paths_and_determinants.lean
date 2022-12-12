@@ -13,15 +13,37 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Authors: Moritz Firsching
+Authors: Moritz Firsching, Christopher Schmidt
 -/
 import tactic
+import combinatorics.simple_graph.acyclic
 /-!
 # Lattice paths and determinants
 
 ## TODO
+
+ - missing definitions:
+  - directed graphs (non-trivial to do)
+  - Path
+  - weights on edge set (trivial to do)
+  - definition for weight of Path
+  - path matrix
+  - path system from A to B
+  - weight of path system
+  - vertex disjoint
+
+
   - Lemma
     - proof
   - Theorem
     - proof
 -/
+universe u
+
+-- Copying the structure from simple_graph.
+@[ext]
+structure simple_directed_graph (V : Type u) := (adj : V → V → Prop)
+
+noncomputable instance {V : Type u} [fintype V] : fintype (simple_directed_graph V) :=
+by { classical,
+exact fintype.of_injective simple_directed_graph.adj simple_directed_graph.ext,}
