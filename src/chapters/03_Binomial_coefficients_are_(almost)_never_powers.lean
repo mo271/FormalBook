@@ -281,7 +281,7 @@ begin
     simp only [dvd_zero],},
 end
 
-definition largest_power_divisor (l z: ℕ) : ℕ := (power_div l z).max' (power_div_nonempty l z)
+definition largest_power_divisor (l z : ℕ) : ℕ := (power_div l z).max' (power_div_nonempty l z)
 
 lemma largest_power_divisor_divides (l z : ℕ) : (largest_power_divisor l z)^l ∣ z :=
 begin
@@ -293,9 +293,9 @@ begin
   exact h.2,
 end
 
-definition mFct (l n: ℕ) : ℕ → ℕ := λ j, (largest_power_divisor l (n - j))
+definition mFct (l n : ℕ) : ℕ → ℕ := λ j, (largest_power_divisor l (n - j))
 
-definition aFct (l n: ℕ) : ℕ → ℕ := λ j, (n - j)/(mFct l n j)^l
+definition aFct (l n : ℕ) : ℕ → ℕ := λ j, (n - j)/(mFct l n j)^l
 
 lemma decompose_n_j (n j l : ℕ) : n - j = (aFct l n j)*(mFct l n j)^l :=
 begin
