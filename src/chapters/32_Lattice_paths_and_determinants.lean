@@ -85,4 +85,4 @@ def edges: Π {u v : V}, G.directed_walk u v → list (V × V) :=
 
 end directed_walk
 
-end simple_directed_graph fintype.of_injective simple_directed_graph.adj simple_directed_graph.ext,}
+end simple_directed_graph
