@@ -79,7 +79,7 @@ def support : Π {u v : V}, G.directed_walk u v → list V
 | u v (cons h p) := u :: p.support
 
 /-- The `edges` of a walk is the list of edges it visits in order. -/
-def edges: Π {u v : V}, G.directed_walk u v → list (V × V) :=
+def edges: Π {u v : V}, G.directed_walk u v → list (V × V) := 
 
 
 
