@@ -26,11 +26,11 @@ import data.list.rotate
 ## TODO
 
  - missing definitions:
-  - directed graphs (trivial to do)
-  - acyclic graphs
-  - Path
-  - weights on edge set (trivial to do)
-  - definition for weight of Path
+  - simple directed graphs (trivial to do)
+    - acyclic 
+    - weights on edge set (trivial to do)
+    - Path
+    - definition for weight of Path 
   - path matrix
   - path system from A to B
   - weight of path system
@@ -80,9 +80,9 @@ def support : Π {u v : V}, G.directed_walk u v → list V
 
 /-- The `edges` of a walk is the list of edges it visits in order. -/
 def edges: Π {u v : V}, G.directed_walk u v → list (V × V) :=
---TODO
+
 
 
 end directed_walk
 
-end simple_directed_graph fintype.of_injective simple_directed_graph.adj simple_directed_graph.ext,}
+end simple_directed_graph
