@@ -16,7 +16,7 @@ limitations under the License.
 Authors: Moritz Firsching, Christopher Schmidt
 -/
 import tactic
-import data.rel 
+import data.rel
 /-!
 # Lattice paths and determinants
 
@@ -24,10 +24,10 @@ import data.rel
 
  - missing definitions:
   - simple directed graphs (trivial to do)
-    - acyclic 
+    - acyclic
     - weights on edge set (trivial to do)
     - Path
-    - definition for weight of Path 
+    - definition for weight of Path
   - path matrix
   - path system from A to B
   - weight of path system
@@ -42,7 +42,7 @@ import data.rel
 ## Defining missing Objects
 proceed analogous to combinatorics.simple_graph
 -/
-open function 
+open function
 
 universes u v w
 /-
@@ -57,7 +57,7 @@ exact fintype.of_injective directed_simple_graph.adj directed_simple_graph.ext,}
 
 namespace directed_simple_graph
 
-variables {V : Type u} {V' : Type v} {V'' : Type w} 
+variables {V : Type u} {V' : Type v} {V'' : Type w}
 variables (G : directed_simple_graph V) (G' : directed_simple_graph V') (G'' : directed_simple_graph V'')
 /-
 #### Directed Simple Graph Support
@@ -79,7 +79,7 @@ instance neighbor_set.mem_decidable (v : V) [decidable_rel G.adj] :
 intersection of the neighbor sets of `v` and `w`. -/
 def common_neighbors (v w : V) : set V := G.neighbor_set v ∩ G.neighbor_set w
 /-
-#### Directed Simple Graph Darts 
+#### Directed Simple Graph Darts
 -/
 /- A `dart` is an oriented edge, implemented as an ordered pair of adjacent vertices. -/
 @[ext, derive decidable_eq]
@@ -118,10 +118,10 @@ attribute [refl] directed_walk.nil
 @[simps] instance directed_walk.inhabited (v : V) : inhabited (G.directed_walk v v) := ⟨directed_walk.nil⟩
 
 /-- The one-edge walk associated to a pair of adjacent vertices. -/
-@[pattern, reducible] def adj.to_directed_walk {G : directed_simple_graph V} {u v : V} (h : G.adj u v) : 
+@[pattern, reducible] def adj.to_directed_walk {G : directed_simple_graph V} {u v : V} (h : G.adj u v) :
   G.directed_walk u v := directed_walk.cons h directed_walk.nil
 /-
-#### Directed Walk nil' and cons' 
+#### Directed Walk nil' and cons'
 -/
 namespace directed_walk
 
@@ -134,7 +134,7 @@ variables {G}
 @[pattern] abbreviation cons' (u v w : V) (h : G.adj u v) (p : G.directed_walk v w) :
 G.directed_walk u w := directed_walk.cons h p
 /-
-#### Directed Walk Copy 
+#### Directed Walk Copy
 -/
 /-- Change the endpoints of a walk using equalities. This is helpful for relaxing
 definitional equality constraints and to be able to state otherwise difficult-to-state
@@ -182,7 +182,7 @@ def append : Π {u v w : V}, G.directed_walk u v → G.directed_walk v w → G.d
 | _ _ _ nil q := q
 | _ _ _ (cons h p) q := cons h (p.append q)
 /-
-#### Directed Walk getting Vertices using Length 
+#### Directed Walk getting Vertices using Length
 -/
 /-- Get the `n`th vertex from a walk, where `n` is generally expected to be
 between `0` and `p.length`, inclusive.
@@ -286,7 +286,7 @@ def darts : Π {u v : V}, G.directed_walk u v → list G.dart
 
 /-- The `edges` of a walk is the list of edges it visits in order.
 This is defined to be the list of edges underlying `simple_directed_graph.directed_walk.darts`. -/
-def edges {u v : V} (p : G.directed_walk u v) : list V := p.darts.map dart.edge
+def edges {u v : V} (p : G.directed_walk u v) : list (V × V) := p.darts.map (dart.edge G)
 
 @[simp] lemma support_nil {u : V} : (nil : G.directed_walk u u).support = [u] := rfl
 
@@ -300,9 +300,10 @@ lemma support_append {u v w : V} (p : G.directed_walk u v) (p' : G.directed_walk
   (p.append p').support = p.support ++ p'.support.tail :=
 by induction p; cases p'; simp [*]
 
-@[simp]
-lemma support_reverse {u v : V} (p : G.directed_walk u v) : p.reverse.support = p.support.reverse :=
-by induction p; simp [support_append, *]
+-- first define reverse...
+--@[simp]
+--lemma support_reverse {u v : V} (p : G.directed_walk u v) : p.reverse.support = p.support.reverse :=
+--by induction p; simp [support_append, *]
 
 lemma support_ne_nil {u v : V} (p : G.directed_walk u v) : p.support ≠ [] :=
 by cases p; simp
@@ -347,13 +348,13 @@ begin
 end
 
 @[simp]
-lemma subset_support_append_left {V : Type u} {G : simple_graph V} {u v w : V}
+lemma subset_support_append_left {V : Type u} {G : directed_simple_graph V} {u v w : V}
   (p : G.directed_walk u v) (q : G.directed_walk v w) :
   p.support ⊆ (p.append q).support :=
-by simp only [walk.support_append, list.subset_append_left]
+by simp only [support_append, list.subset_append_left]
 
 @[simp]
-lemma subset_support_append_right {V : Type u} {G : simple_graph V} {u v w : V}
+lemma subset_support_append_right {V : Type u} {G : directed_simple_graph V} {u v w : V}
   (p : G.directed_walk u v) (q : G.directed_walk v w) :
   q.support ⊆ (p.append q).support :=
 by { intro h, simp only [mem_support_append_iff, or_true, implies_true_iff] { contextual := tt }}
@@ -366,8 +367,9 @@ lemma coe_support_append {u v w : V} (p : G.directed_walk u v) (p' : G.directed_
   ((p.append p').support : multiset V) = {u} + p.support.tail + p'.support.tail :=
 by rw [support_append, ←multiset.coe_add, coe_support]
 
-lemma coe_support_append' [decidable_eq V] {u v w : V} (p : G.directed_walk u v) (p' : G.directed_walk v w) :
-  ((p.append p').support : multiset V) = p.support + p'.support - {v} :=
+lemma coe_support_append' [decidable_eq V] {u v w : V} (p : G.directed_walk u v)
+  (p' : G.directed_walk v w) :
+    ((p.append p').support : multiset V) = p.support + p'.support - {v} :=
 begin
   rw [support_append, ←multiset.coe_add],
   simp only [coe_support],
@@ -415,7 +417,7 @@ def support : Π {u v : V}, G.directed_walk u v → list V
 | u v nil := [u]
 | u v (cons h p) := u :: p.support
 
-/-- The `edges` of a walk is the list of edges it visits in order. 
+/-- The `edges` of a walk is the list of edges it visits in order.
 This is defined to be the list of edges underlying `simple_graph.walk.darts`. -/
 def edges : Π {u v : V} (p : G.directed_walk u v) : list (V × V) :=
 | u v nil := []
@@ -439,7 +441,7 @@ end directed_walk
 end directed_simple_graph
 
 
-/- 
+/-
 ### Weights for Simple Directed Graphs
 -/
 universe x
