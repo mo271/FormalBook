@@ -272,7 +272,7 @@ end
 @[simp] lemma length_eq_zero_iff {u : V} {p : G.directed_walk u u} : p.length = 0 ↔ p = nil :=
 by cases p; simp
 /-
-#### Directed Walk Support, Darts and edges TBC (simple_graph.connectivity l. 294 - 411)
+#### Directed Walk Support, Darts and Edges
 -/
 /-- The `support` of a walk is the list of vertices it visits in order. -/
 def support : Π {u v : V}, G.directed_walk u v → list V
@@ -287,7 +287,9 @@ def darts : Π {u v : V}, G.directed_walk u v → list G.dart
 /-- The `edges` of a walk is the list of edges it visits in order.
 This is defined to be the list of edges underlying `simple_directed_graph.directed_walk.darts`. -/
 def edges {u v : V} (p : G.directed_walk u v) : list (V × V) := p.darts.map (dart.edge G)
-
+/-
+#### Directed Walk Support Lemmata TBC (simple_graph.connectivity l. 308 - 416) (What does tail mean?)
+-/
 @[simp] lemma support_nil {u : V} : (nil : G.directed_walk u u).support = [u] := rfl
 
 @[simp] lemma support_cons {u v w : V} (h : G.adj u v) (p : G.directed_walk v w) :
@@ -299,11 +301,6 @@ def edges {u v : V} (p : G.directed_walk u v) : list (V × V) := p.darts.map (da
 lemma support_append {u v w : V} (p : G.directed_walk u v) (p' : G.directed_walk v w) :
   (p.append p').support = p.support ++ p'.support.tail :=
 by induction p; cases p'; simp [*]
-
--- first define reverse...
---@[simp]
---lemma support_reverse {u v : V} (p : G.directed_walk u v) : p.reverse.support = p.support.reverse :=
---by induction p; simp [support_append, *]
 
 lemma support_ne_nil {u v : V} (p : G.directed_walk u v) : p.support ≠ [] :=
 by cases p; simp
@@ -320,6 +317,9 @@ by cases p; simp
 
 @[simp] lemma end_mem_support {u v : V} (p : G.directed_walk u v) : v ∈ p.support :=
 by induction p; simp [*]
+
+@[simp] lemma support_nonempty {u v : V} (p : G.directed_walk u v) : {w | w ∈ p.support}.nonempty :=
+⟨u, by simp⟩
 
 lemma mem_support_iff {u v w : V} (p : G.directed_walk u v) :
   w ∈ p.support ↔ w = u ∨ w ∈ p.support.tail :=
@@ -405,45 +405,28 @@ lemma chain'_dart_adj_darts : Π {u v : V} (p : G.directed_walk u v), list.chain
 
 
 
-
 /-
 # TBC
 -/
-/-
-### Directed Walk Support and Edges
--/
-/-- The `support` of a walk is the list of vertices it visits in order. -/
-def support : Π {u v : V}, G.directed_walk u v → list V
-| u v nil := [u]
-| u v (cons h p) := u :: p.support
-
-/-- The `edges` of a walk is the list of edges it visits in order.
-This is defined to be the list of edges underlying `simple_graph.walk.darts`. -/
-def edges : Π {u v : V} (p : G.directed_walk u v) : list (V × V) :=
-| u v nil := []
-| u v (cons h p) := (u, v) :: p.edges
 /-
 ### Directed Trail
 -/
 /-- A `directed_trail` is a directed_walk with no repeating edges. -/
 structure is_trail {u v : V} (p : G.directed_walk u v) : Prop :=
 (edges_nodup : p.edges.nodup)
-
 /-
 ### Directed Path
 -/
 /-- A `directed_path` is a directed_walk with no repeating vertices. -/
 structure is_path {u v : V} (p : G.directed_walk u v) extends to_trail : is_trail p : Prop :=
 (support_nodup : p.support.nodup)
-
-end directed_walk
-
-end directed_simple_graph
-
-
 /-
 ### Weights for Simple Directed Graphs
 -/
 universe x
 variables {W : Type x}
 def weight (v1 v2 : V) : V → V → W := sorry
+
+end directed_walk
+
+end directed_simple_graph
