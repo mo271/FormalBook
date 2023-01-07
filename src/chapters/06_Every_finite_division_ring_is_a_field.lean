@@ -96,7 +96,7 @@ section wedderburn
 variables {R : Type*}  [decidable_eq R] [division_ring R]
 
 
-theorem wedderburn (h: fintype R): is_field R :=
+noncomputable theorem wedderburn (h: fintype R): is_field R :=
 begin
   let Z := center R,
   haveI : fintype R := h,
@@ -153,13 +153,13 @@ begin
       let a := real_part lamb,
       let b := imaginary_part lamb,
       have h_lamb: lamb ≠ 1 := by sorry,
-      have h_a_lt_one: (abs a) < 1 := by sorry,
+      have h_a_lt_one: ‖a‖ < 1 := by sorry,
       have h_ineq :=
         calc  (abs ((X - C lamb).eval (q : ℂ)))^2 = (abs ((q : ℂ) - lamb))^2 :
           by simp only [eval_sub, eval_X, eval_C]
         ... = (abs ((q : ℂ) - a - I*b))^2 : by sorry
-        ... = (abs ((q : ℂ) - a))^2 + (abs b)^2 : by sorry
-        ... = q^2 - 2*(abs a)*q + (abs a)^2 + (abs b)^2 : by sorry
+        ... = (abs ((q : ℂ) - a))^2 + ‖b‖^2 : by sorry
+        ... = q^2 - 2*‖a‖*q + ‖a‖^2 + ‖b‖^2 : by sorry
         ... > q^2 - 2*q + 1 : by sorry
         ... = (q - 1)^2 : by sorry,
       sorry, },
