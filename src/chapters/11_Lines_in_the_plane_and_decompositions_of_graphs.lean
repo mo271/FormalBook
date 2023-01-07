@@ -18,8 +18,6 @@ Authors: Moritz Firsching
 import tactic
 import geometry.euclidean.basic
 
-open inner_product_geometry
-
 noncomputable theory
 open_locale big_operators
 open_locale classical
