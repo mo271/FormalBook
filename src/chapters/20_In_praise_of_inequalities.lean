@@ -52,7 +52,6 @@ begin
   { cases em (a = 0),
     { rw h,
       intro x,
-      simp only [smul_zero, zero_add, self_eq_add_left],
       sorry, },
     { cases em (∃ (l : ℝ),  b = l•a),
       { sorry, },
