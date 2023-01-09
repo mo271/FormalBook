@@ -17,7 +17,7 @@ Authors: Moritz Firsching, Christopher Schmidt
 -/
 import tactic
 import data.rel
-import meta.rb_map 
+import meta.rb_map
 /-!
 # Lattice paths and determinants
 
@@ -110,11 +110,11 @@ darts in a walk -- that is, the first dart's second vertex is equal to
 the second dart's first vertex. -/
 def dart_adj (d d' : G.dart) : Prop := d.snd = d'.fst
 /-
-#### Directed Simple Graph Edge Set TBC 
+#### Directed Simple Graph Edge Set TBC
 -/
-def edge_set : directed_simple_graph V ↪ set (V × V) := sorry 
+def edge_set : directed_simple_graph V → set (V × V) := λ G, {p : V × V | G.adj p.1 p.2}
 
--- Original Def 
+-- Original Def
 
 --def edge_set : simple_graph V ↪o set (sym2 V) :=
 --order_embedding.of_map_le_iff (λ G, sym2.from_rel G.symm) $
@@ -122,9 +122,9 @@ def edge_set : directed_simple_graph V ↪ set (V × V) := sorry
 
 -- My Attempts
 
---def edge_set : directed_simple_graph V ↪ set (V × V) := 
-  --λ G, 
-    --∀ v1 v2 : V, if (G.adj v1 v2) then 
+--def edge_set : directed_simple_graph V ↪ set (V × V) :=
+  --λ G,
+    --∀ v1 v2 : V, if (G.adj v1 v2) then
 
 --variables {v1 v2 : V}
 --variables {S : set V}
@@ -314,7 +314,7 @@ def darts : Π {u v : V}, G.directed_walk u v → list G.dart
 This is defined to be the list of edges underlying `simple_directed_graph.directed_walk.darts`. -/
 def edges {u v : V} (p : G.directed_walk u v) : list (V × V) := p.darts.map (dart.edge G)
 /-
-#### Directed Walk Support Lemmata 
+#### Directed Walk Support Lemmata
 -/
 @[simp] lemma support_nil {u : V} : (nil : G.directed_walk u u).support = [u] := rfl
 
@@ -423,27 +423,29 @@ lemma chain'_dart_adj_darts : Π {u v : V} (p : G.directed_walk u v), list.chain
 | _ _ nil := trivial
 | _ _ (cons h p) := chain_dart_adj_darts rfl p
 /-
-#### Directed Walk Edges Lemmata 
+#### Directed Walk Edges Lemmata
 -/
 -- # TO DO (provide Definition for edge_set)
 /-- Every edge in a walk's edge list is an edge of the graph.
-It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/
-lemma edges_subset_edge_set : Π {u v : V} (p : G.directed_walk u v) ⦃e : V × V⦄
+It is written in this form (rather than using `⊆`) to avoid unsightly coercions.
+lemma edges_subset_edge_set : Π {u v : V} (p : G.directed_walk u v) (e : V × V)
   (h : e ∈ p.edges), e ∈ G.edge_set
 | _ _ (cons h' p') e h := by rcases h with ⟨rfl, h⟩; solve_by_elim
 
-lemma adj_of_mem_edges {u v x y : V} (p : G.directed_walk u v) (h : ⟦(x, y)⟧ ∈ p.edges) : G.adj x y :=
-edges_subset_edge_set p h
 
+lemma adj_of_mem_edges {u v x y : V} (p : G.directed_walk u v) (h : (x, y) ∈ p.edges) : G.adj x y :=
+begin
+  refine edges_subset_edge_set p _ h,
+  sorry,
+end
+-/
 /-
 #### Directed Walk Darts Lemmata (Reverse [cf. simple_graph.connectivity] is not applyable)
 -/
 -- # TODO (Fix for p.darts.map dart snd)
 variables {v1 v2 : V}
 variables {p1 : G.directed_walk v1 v2}
-#check p1.darts 
-#check p1.darts.map 
-#check p1.darts.map dart.snd
+
 
 @[simp] lemma darts_nil {u : V} : (nil : G.directed_walk u u).darts = [] := rfl
 
@@ -457,24 +459,6 @@ variables {p1 : G.directed_walk v1 v2}
   (p.append p').darts = p.darts ++ p'.darts :=
 by induction p; simp [*]
 
-lemma cons_map_snd_darts {u v : V} (p : G.directed_walk u v) :
-  u :: p.darts.map dart.snd = p.support :=
-by induction p; simp! [*]
-
-lemma map_snd_darts {u v : V} (p : G.directed_walk u v) :
-  p.darts.map dart.snd = p.support.tail :=
-by simpa using congr_arg list.tail (cons_map_snd_darts p)
-
-lemma map_fst_darts_append {u v : V} (p : G.directed_walk u v) :
-  p.darts.map dart.fst ++ [v] = p.support :=
-by induction p; simp! [*]
-
-lemma map_fst_darts {u v : V} (p : G.directed_walk u v) :
-  p.darts.map dart.fst = p.support.init :=
-by simpa! using congr_arg list.init (map_fst_darts_append p)
-/-
-#### Directed Walk Edges Lemmata (Reverse [cf. simple_graph.connectivity] is not applyable)
--/
 @[simp] lemma edges_nil {u : V} : (nil : G.directed_walk u u).edges = [] := rfl
 
 @[simp] lemma edges_cons {u v w : V} (h : G.adj u v) (p : G.directed_walk v w) :
@@ -489,7 +473,7 @@ by simp [edges]
 /-
 #### Directed Walk Length of Support, Darts and Edges
 -/
--- # Start here 
+-- # Start here
 @[simp] lemma length_support {u v : V} (p : G.directed_walk u v) : p.support.length = p.length + 1 :=
 by induction p; simp *
 
@@ -503,11 +487,6 @@ by simp [edges]
 
 
 
-
-
-/-
-# TBC
--/
 /-
 ### Directed Trail
 -/
@@ -523,9 +502,6 @@ structure is_path {u v : V} (p : G.directed_walk u v) extends to_trail : is_trai
 /-
 ### Weights for Simple Directed Graphs
 -/
-universe x
-variables {W : Type x}
-def weight (v1 v2 : V) : V → V → W := sorry
 
 end directed_walk
 
