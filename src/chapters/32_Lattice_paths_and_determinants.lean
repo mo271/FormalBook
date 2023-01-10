@@ -308,7 +308,7 @@ def darts : Π {u v : V}, G.directed_walk u v → list G.dart
 This is defined to be the list of edges underlying `simple_directed_graph.directed_walk.darts`. -/
 def edges {u v : V} (p : G.directed_walk u v) : list (V × V) := p.darts.map (dart.edge G)
 /-
-#### Directed Walk Support Lemmata
+#### Directed Walk Support Lemmata 
 -/
 @[simp] lemma support_nil {u : V} : (nil : G.directed_walk u u).support = [u] := rfl
 
@@ -474,7 +474,7 @@ by simp [edges]
 /-
 #### Directed Walk Length of Support, Darts and Edges
 -/
--- # Start here
+-- # Start here 
 @[simp] lemma length_support {u v : V} (p : G.directed_walk u v) : p.support.length = p.length + 1 :=
 by induction p; simp *
 
@@ -491,7 +491,7 @@ by simp [edges]
 
 
 /-
-TBC
+# TBC
 -/
 /-
 ### Directed Trail
