@@ -51,7 +51,7 @@ proceed analogous to combinatorics.simple_graph
 -/
 open function
 
-universes u v w
+universes u v 
 /-
 ### Directed Simple Graph
 -/
@@ -64,8 +64,8 @@ exact fintype.of_injective directed_simple_graph.adj directed_simple_graph.ext,}
 
 namespace directed_simple_graph
 
-variables {V : Type u} {V' : Type v} {V'' : Type w}
-variables (G : directed_simple_graph V) (G' : directed_simple_graph V') (G'' : directed_simple_graph V'')
+variables {V : Type u} {V' : Type v}
+variables (G : directed_simple_graph V) (G' : directed_simple_graph V')
 /-
 #### Directed Loopless Simple Graph (no self adjacency)
 -/
@@ -157,6 +157,8 @@ begin
   refl,
 end
 
+@[simp] lemma mem_edge_set {v w : V} : (v, w) ∈ G.edge_set ↔ G.adj v w := iff.rfl
+
 /-- `from_edge_set` constructs a `directed_simple_graph` from a set of edges. -/
 @[simps] 
 def from_edge_set (s : set (V × V)) : directed_simple_graph V := 
@@ -184,8 +186,13 @@ by { ext, simp [and_assoc, not_or_distrib] }
 @[simp] lemma delete_edges_empty_eq : G.delete_edges ∅ = G :=
 by { ext, simp }
 
---@[simp] lemma delete_edges_univ_eq : G.delete_edges set.univ = ⊥ :=
---by { ext, simp }
+instance : has_bot (directed_simple_graph V) := ⟨{ adj := ⊥ }⟩
+
+@[simp]
+lemma not_adj_bot (v w : V) : ¬ (⊥ : directed_simple_graph V).adj v w := false.elim
+
+@[simp] lemma delete_edges_univ_eq : G.delete_edges set.univ = ⊥ :=
+by { ext, simp }
 /-
 #### Directed Simple Graphs Maps
 -/
@@ -219,9 +226,107 @@ lemma map_adj {v w : V} (h : G.adj v w) : G'.adj (f v) (f w) := f.map_rel' h
 end hom
 
 end maps 
+
+end directed_simple_graph
+/-
+#### Directed Simple Subgraph
+-/
+namespace directed_simple_graph
+
+/-- A subgraph of a `simple_graph` is a subset of vertices along with a restriction of the adjacency
+relation that is symmetric and is supported by the vertex subset.  They also form a bounded lattice.
+Thinking of `V → V → Prop` as `set (V × V)`, a set of darts (i.e., half-edges), then
+`subgraph.adj_sub` is that the darts of a subgraph are a subset of the darts of `G`. -/
+@[ext]
+structure directed_subgraph {V : Type u} (G : directed_simple_graph V) extends directed_simple_graph V :=
+(verts : set V)
+(adj_sub : ∀ {v w : V}, adj v w → G.adj v w)
+(edge_vert : ∀ {v w : V}, adj v w → v ∈ verts ∧ w ∈ verts)
+
+variables {V : Type u}
+
+/-- The one-vertex subgraph. -/
+@[simps]
+protected def singleton_directed_subgraph (G : directed_simple_graph V) (v : V) : G.directed_subgraph :=
+{ verts := {v},
+  adj := ⊥,
+  adj_sub := by simp [-set.bot_eq_empty],
+  edge_vert := by simp [-set.bot_eq_empty] }
+
+/-- The one-edge subgraph. -/
+@[simps]
+def directed_subgraph_of_adj (G : directed_simple_graph V) {v w : V} (hvw : G.adj v w) : G.directed_subgraph :=
+{ verts := {v, w},
+  adj := λ a b, (v, w) = (a, b),
+  adj_sub := λ a b h, by 
+  { simp only [prod.mk.inj_iff] at h,
+    rw [←h.1, ← h.2],
+    exact hvw, },
+  edge_vert := λ a b h, by 
+  { simp only [set.mem_insert_iff, set.mem_singleton_iff], 
+    simp only [prod.mk.inj_iff] at h,
+    split, 
+    { left, exact eq.symm h.1},
+    { right, exact eq.symm h.2}, }}
+
+namespace directed_subgraph
+
+variables (G : directed_simple_graph V)
+
+protected lemma adj.adj_sub {H : G.directed_subgraph} {u v : V} (h : H.adj u v) : G.adj u v := 
+H.adj_sub h
+
+protected lemma adj.fst_mem {H : G.directed_subgraph} {u v : V} (h : H.adj u v) : u ∈ H.verts :=
+(H.edge_vert h).1
+
+protected lemma adj.snd_mem {H : G.directed_subgraph} {u v : V} (h : H.adj u v) : v ∈ H.verts :=
+(H.edge_vert h).2
+
+/-- Coercion from `G' : directed_subgraph G` to a `directed_simple_graph ↥G'.verts`. -/
+@[simps] protected def coe (G' : directed_subgraph G) : directed_simple_graph G'.verts :=
+{adj := λ v w, G'.adj v w}
+
+@[simp] lemma coe_adj_sub (G' : directed_subgraph G) (u v : G'.verts) (h : (G'.coe G).adj u v) : G.adj u v :=
+G'.adj_sub h
+
+/- Given `h : H.adj u v`, then `h.coe : H.coe.adj ⟨u, _⟩ ⟨v, _⟩`. -/
+protected lemma adj.coe {H : G.directed_subgraph} {u v : V} (h : H.adj u v) :
+  (H.coe G).adj ⟨u, (H.edge_vert h).1⟩ ⟨v, (H.edge_vert h).2⟩ := h
+
+/-- A subgraph is called a *spanning subgraph* if it contains all the vertices of `G`. -/
+def is_spanning (G' : directed_subgraph G) : Prop := ∀ (v : V), v ∈ G'.verts
+
+lemma is_spanning_iff {G' : directed_subgraph G} : G'.is_spanning G ↔ G'.verts = set.univ :=
+set.eq_univ_iff_forall.symm
+
+/-- Coercion from `subgraph G` to `directed_simple_graph V`.  If `G'` is a spanning
+subgraph, then `G'.spanning_coe` yields an isomorphic graph.
+In general, this adds in all vertices from `V` as isolated vertices. -/
+@[simps] protected def spanning_coe (G' : directed_subgraph G) : directed_simple_graph V :=
+{ adj := G'.adj}
+
+@[simp] lemma adj.of_spanning_coe {G' : directed_subgraph G} {u v : G'.verts}
+  (h : (G'.spanning_coe G).adj u v) : G.adj u v := G'.adj_sub h
+
+@[simps] def spanning_coe_equiv_coe_of_spanning (G' : directed_subgraph G) (h : is_spanning G G') :
+  G'.spanning_coe G  ≃g G'.coe G :=
+{ to_fun := λ v, ⟨v, h v⟩,
+  inv_fun := λ v, v,
+  left_inv := λ v, rfl,
+  right_inv := λ ⟨v, hv⟩, rfl,
+  map_rel_iff' := λ v w, iff.rfl }
+
+end directed_subgraph 
+
+end directed_simple_graph
 /-
 ### Directed Walk
 -/
+namespace directed_simple_graph
+
+variables {V : Type u} {V' : Type v}
+variables (G : directed_simple_graph V) (G' : directed_simple_graph V)
+
 @[derive decidable_eq]
 inductive directed_walk : V → V → Type u
 | nil {u : V} : directed_walk u u
@@ -1272,7 +1377,78 @@ lemma preconnected.subsingleton_connected_component (h : G.preconnected) :
 
 end connected_component
 /-
-### Directed Walks as subgraphs TBC l. 1519 - 1590
+### Directed Walks as Directed Subgraphs TBC l. 1519 - 1590
+-/
+/-
+namespace directed_walk
+
+variables {G G'} {u v w : V}
+ 
+/-- The subgraph consisting of the vertices and edges of the walk. -/
+@[simp] protected def to_directed_subgraph : Π {u v : V}, G.directed_walk u v → G.directed_subgraph
+| u _ nil := G.singleton_directed_subgraph u
+| _ _ (cons h p) := G.directed_subgraph_of_adj h ⊔ p.to_directed_subgraph
+
+lemma to_subgraph_cons_nil_eq_subgraph_of_adj (h : G.adj u v) :
+  (cons h nil).to_directed_subgraph = G.subgraph_of_adj h :=
+by simp
+
+lemma mem_verts_to_subgraph (p : G.directed_walk u v) :
+  w ∈ p.to_directed_subgraph.verts ↔ w ∈ p.support :=
+begin
+  induction p with _ x y z h p' ih,
+  { simp },
+  { have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
+      ⟨by rintro (rfl | h); simp [*], by simp { contextual := tt}⟩,
+    simp [ih, or_assoc, this] }
+end
+
+@[simp] lemma verts_to_subgraph (p : G.directed_walk u v) : p.to_subgraph.verts = {w | w ∈ p.support} :=
+set.ext (λ _, p.mem_verts_to_subgraph)
+
+lemma mem_edges_to_subgraph (p : G.directed_walk u v) {e : sym2 V} :
+  e ∈ p.to_subgraph.edge_set ↔ e ∈ p.edges :=
+by induction p; simp [*]
+
+@[simp] lemma edge_set_to_subgraph (p : G.directed_walk u v) : p.to_subgraph.edge_set = {e | e ∈ p.edges} :=
+set.ext (λ _, p.mem_edges_to_subgraph)
+
+@[simp] lemma to_subgraph_append (p : G.directed_walk u v) (q : G.directed_walk v w) :
+  (p.append q).to_subgraph = p.to_subgraph ⊔ q.to_subgraph :=
+by induction p; simp [*, sup_assoc]
+
+@[simp] lemma to_subgraph_reverse (p : G.directed_walk u v) :
+  p.reverse.to_subgraph = p.to_subgraph :=
+begin
+  induction p,
+  { simp },
+  { simp only [*, walk.to_subgraph, reverse_cons, to_subgraph_append, subgraph_of_adj_symm],
+    rw [sup_comm],
+    congr,
+    ext; simp [-set.bot_eq_empty], }
+end
+
+@[simp] lemma to_subgraph_rotate [decidable_eq V] (c : G.directed_walk v v) (h : u ∈ c.support) :
+  (c.rotate h).to_subgraph = c.to_subgraph :=
+by rw [rotate, to_subgraph_append, sup_comm, ← to_subgraph_append, take_spec]
+
+@[simp] lemma to_subgraph_map (f : G →g G') (p : G.directed_walk u v) :
+  (p.map f).to_subgraph = p.to_subgraph.map f :=
+by induction p; simp [*, subgraph.map_sup]
+
+@[simp] lemma finite_neighbor_set_to_subgraph (p : G.directed_walk u v) :
+  (p.to_subgraph.neighbor_set w).finite :=
+begin
+  induction p,
+  { rw [walk.to_subgraph, neighbor_set_singleton_subgraph],
+    apply set.to_finite, },
+  { rw [walk.to_subgraph, subgraph.neighbor_set_sup],
+    refine set.finite.union _ p_ih,
+    refine set.finite.subset _ (neighbor_set_subgraph_of_adj_subset p_h),
+    apply set.to_finite, },
+end
+
+end directed_walk
 -/
 /-
 ### Directed Walks of a given Length
@@ -1408,6 +1584,7 @@ end directed_simple_graph
 /-
 ### Weights
 -/
+/-
 namespace directed_simple_graph 
 
 variables {V : Type u} 
@@ -1425,3 +1602,4 @@ def directed_walk_weight {u v : V} : G.directed_walk u v → ℝ :=
 end directed_walk 
 
 end directed_simple_graph
+-/
