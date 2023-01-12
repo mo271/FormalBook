@@ -17,8 +17,14 @@ Authors: Moritz Firsching, Christopher Schmidt
 -/
 import tactic
 import data.rel
-import data.set.basic 
-import meta.rb_map 
+import data.real.basic
+--import data.set.basic 
+--import set_theory.zfc.basic
+--import meta.rb_map 
+
+--open nat 
+--open finset 
+open_locale big_operators 
 /-!
 # Lattice paths and determinants
 
@@ -28,7 +34,6 @@ import meta.rb_map
   - simple directed graphs (trivial to do)
     - acyclic
     - weights on edge set (trivial to do)
-    - Path
     - definition for weight of Path
   - path matrix
   - path system from A to B
@@ -101,6 +106,13 @@ instance neighbor_set.mem_decidable (v : V) [decidable_rel G.adj] :
 /-- The set of common neighbors between two vertices `v` and `w` in a graph `G` is the
 intersection of the neighbor sets of `v` and `w`. -/
 def common_neighbors (v w : V) : set V := G.neighbor_set v ∩ G.neighbor_set w
+
+/-- A graph is locally finite if every vertex has a finite neighbor set. -/
+@[reducible]
+def locally_finite := Π (v : V), fintype (G.neighbor_set v)
+
+@[simp] lemma mem_neighbor_set (v w : V) : w ∈ G.neighbor_set v ↔ G.adj v w :=
+iff.rfl
 /-
 #### Directed Simple Graph Dart
 -/
@@ -144,6 +156,69 @@ begin
   rw [set.le_eq_subset, set.set_of_subset_set_of, prod.forall],
   refl,
 end
+
+/-- `from_edge_set` constructs a `directed_simple_graph` from a set of edges. -/
+@[simps] 
+def from_edge_set (s : set (V × V)) : directed_simple_graph V := 
+{ adj := λ v w, (v, w) ∈ s }
+/-
+#### Directed Simple Graph Edge Deletion 
+-/
+/-- The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
+instance : has_sdiff (directed_simple_graph V) := ⟨λ x y, { adj := x.adj \ y.adj,}⟩
+
+/-- Given a set of vertex pairs, remove all of the corresponding edges from the
+graph's edge set, if present. -/
+def delete_edges (s : set (V × V)) : directed_simple_graph V := G \ from_edge_set s
+
+@[simp] lemma adj_sdiff (G G' : directed_simple_graph V) (v w : V) :
+  (G \ G').adj v w ↔ G.adj v w ∧ ¬ G'.adj v w := iff.rfl
+
+@[simp] lemma delete_edges_adj (s : set (V × V)) (v w : V) :
+  (G.delete_edges s).adj v w ↔ G.adj v w ∧ ¬ (v,w) ∈ s := iff.rfl
+
+@[simp] lemma delete_edges_delete_edges (s s' : set (V × V)) :
+  (G.delete_edges s).delete_edges s' = G.delete_edges (s ∪ s') :=
+by { ext, simp [and_assoc, not_or_distrib] }
+
+@[simp] lemma delete_edges_empty_eq : G.delete_edges ∅ = G :=
+by { ext, simp }
+
+--@[simp] lemma delete_edges_univ_eq : G.delete_edges set.univ = ⊥ :=
+--by { ext, simp }
+/-
+#### Directed Simple Graphs Maps
+-/
+section maps 
+/-- A graph homomorphism is a map on vertex sets that respects adjacency relations.
+The notation `G →g G'` represents the type of graph homomorphisms. -/
+abbreviation hom := rel_hom G.adj G'.adj
+
+/--
+A graph embedding is an embedding `f` such that for vertices `v w : V`, `G.adj f(v) f(w) ↔ G.adj v w `. 
+Its image is an induced subgraph of G'. The notation `G ↪g G'` represents the type of graph embeddings. -/
+abbreviation embedding := rel_embedding G.adj G'.adj
+
+/--
+A graph isomorphism is an bijective map on vertex sets that respects adjacency relations.
+The notation `G ≃g G'` represents the type of graph isomorphisms. -/
+abbreviation iso := rel_iso G.adj G'.adj
+
+infix ` →g ` : 50 := hom
+infix ` ↪g ` : 50 := embedding
+infix ` ≃g ` : 50 := iso
+
+namespace hom 
+variables {G G'} (f : G →g G')
+
+/-- The identity homomorphism from a graph to itself. -/
+abbreviation id : G →g G := rel_hom.id _
+
+lemma map_adj {v w : V} (h : G.adj v w) : G'.adj (f v) (f w) := f.map_rel' h
+
+end hom
+
+end maps 
 /-
 ### Directed Walk
 -/
@@ -495,7 +570,6 @@ by simp [edges]
 /-
 #### Directed Walk Length of Support, Darts and Edges
 -/
--- # Start here
 @[simp] lemma length_support {u v : V} (p : G.directed_walk u v) : p.support.length = p.length + 1 :=
 by induction p; simp *
 
@@ -980,14 +1054,14 @@ by simp [directed_walk.is_directed_cycle_def, directed_walk.cons_is_directed_tra
 
 end directed_path
 /-
-### Bypass of Directed Walk
+### Bypass of Directed Walk - Walk to Path
 -/
 namespace directed_walk
 variables {G} [decidable_eq V]
 
 /-- Given a walk, produces a walk from it by bypassing subwalks between repeated vertices.
-The result is a path, as shown in `simple_graph.directed_walk.bypass_is_directed_path`.
-This is packaged up in `simple_graph.walk.to_directed_path`. -/
+The result is a path, as shown in `directed_simple_graph.directed_walk.bypass_is_directed_path`.
+This is packaged up in `directed_simple_graph.walk.to_directed_path`. -/
 def bypass : Π {u v : V}, G.directed_walk u v → G.directed_walk u v
 | u v nil := nil
 | u v (cons ha p) :=
@@ -1070,172 +1144,284 @@ edges_bypass_subset _
 
 end directed_walk
 /-
-### Mapping paths TBC (problem with →g notation)
+### Mapping Directed Paths TBC l. 1028 - 1194
 -/
 /-
+### Transferring betweeen Directed Graphs TBC l. 1194 - 1276
+-/
+/-
+### Deleting Edges TBC l.1276 - 1325
+-/
+/-
+### Reachable and Connected (Reverse [cf. simple_graph.connectivity] is not applyable)
+-/
+/-- Two vertices are *reachable* if there is a walk between them. -/
+def reachable (u v : V) : Prop := nonempty (G.directed_walk u v)
+
+variables {G}
+
+lemma reachable_iff_nonempty_univ {u v : V} :
+  G.reachable u v ↔ (set.univ : set (G.directed_walk u v)).nonempty :=
+set.nonempty_iff_univ_nonempty
+
+protected lemma reachable.elim {p : Prop} {u v : V}
+  (h : G.reachable u v) (hp : G.directed_walk u v → p) : p :=
+nonempty.elim h hp
+
+protected lemma reachable.elim_directed_path {p : Prop} {u v : V}
+  (h : G.reachable u v) (hp : G.directed_path u v → p) : p :=
+begin
+  classical,
+  exact h.elim (λ q, hp q.to_directed_path),
+end
+
+protected lemma directed_walk.reachable {G : directed_simple_graph V} {u v : V} (p : G.directed_walk u v) :
+  G.reachable u v := ⟨p⟩
+
+protected lemma adj.reachable {u v : V} (h : G.adj u v) :
+  G.reachable u v := h.to_directed_walk.reachable
+
+@[refl] protected lemma reachable.refl (u : V) : G.reachable u u := by { fsplit, refl }
+protected lemma reachable.rfl {u : V} : G.reachable u u := reachable.refl _
+
+@[trans] protected lemma reachable.trans {u v w : V}
+  (huv : G.reachable u v) (hvw : G.reachable v w) :
+  G.reachable u w :=
+huv.elim (λ puv, hvw.elim (λ pvw, ⟨puv.append pvw⟩))
+
+lemma reachable_iff_refl_trans_gen (u v : V) :
+  G.reachable u v ↔ relation.refl_trans_gen G.adj u v :=
+begin
+  split,
+  { rintro ⟨h⟩,
+    induction h,
+    { refl, },
+    { exact (relation.refl_trans_gen.single h_h).trans h_ih, }, },
+  { intro h,
+    induction h with _ _ _ ha hr,
+    { refl, },
+    { exact reachable.trans hr ⟨directed_walk.cons ha directed_walk.nil⟩, }, },
+end
+
+variables (G)
+
+/-- A graph is preconnected if every pair of vertices is reachable from one another. -/
+def preconnected : Prop := ∀ (u v : V), G.reachable u v
+
+/-- A graph is connected if it's preconnected and contains at least one vertex.
+This follows the convention observed by mathlib that something is connected iff it has
+exactly one connected component.
+There is a `has_coe_to_fun` instance so that `h u v` can be used instead
+of `h.preconnected u v`. -/
+@[protect_proj, mk_iff]
+structure connected : Prop :=
+(preconnected : G.preconnected)
+[nonempty : nonempty V]
+
+instance : has_coe_to_fun G.connected (λ _, Π (u v : V), G.reachable u v) :=
+⟨λ h, h.preconnected⟩
+
+/-- The quotient of `V` by the `directed_simple_graph.reachable` relation gives the connected
+components of a graph. -/
+def connected_component := quot G.reachable
+
+/-- Gives the connected component containing a particular vertex. -/
+def connected_component_mk (v : V) : G.connected_component := quot.mk G.reachable v
+
+@[simps] instance connected_component.inhabited [inhabited V] : inhabited G.connected_component :=
+⟨G.connected_component_mk default⟩ 
+
+section connected_component
+variables {G}
+
+@[elab_as_eliminator]
+protected lemma connected_component.ind {β : G.connected_component → Prop}
+  (h : ∀ (v : V), β (G.connected_component_mk v)) (c : G.connected_component) : β c :=
+quot.ind h c
+
+@[elab_as_eliminator]
+protected lemma connected_component.ind₂ {β : G.connected_component → G.connected_component → Prop}
+  (h : ∀ (v w : V), β (G.connected_component_mk v) (G.connected_component_mk w))
+  (c d : G.connected_component) : β c d :=
+quot.induction_on₂ c d h
+
+protected lemma connected_component.sound {v w : V} :
+  G.reachable v w → G.connected_component_mk v = G.connected_component_mk w := quot.sound
+
+/-- The `connected_component` specialization of `quot.lift`. Provides the stronger
+assumption that the vertices are connected by a path. -/
+protected def connected_component.lift {β : Sort*} (f : V → β)
+  (h : ∀ (v w : V) (p : G.directed_walk v w), p.is_directed_path → f v = f w) : G.connected_component → β :=
+quot.lift f (λ v w (h' : G.reachable v w), h'.elim_directed_path (λ hp, h v w hp hp.2))
+
+@[simp] protected lemma connected_component.lift_mk {β : Sort*} {f : V → β}
+  {h : ∀ (v w : V) (p : G.directed_walk v w), p.is_directed_path → f v = f w} {v : V} :
+  connected_component.lift f h (G.connected_component_mk v) = f v := rfl
+
+protected lemma connected_component.«exists» {p : G.connected_component → Prop} :
+  (∃ (c : G.connected_component), p c) ↔ ∃ v, p (G.connected_component_mk v) :=
+(surjective_quot_mk G.reachable).exists
+
+protected lemma connected_component.«forall» {p : G.connected_component → Prop} :
+  (∀ (c : G.connected_component), p c) ↔ ∀ v, p (G.connected_component_mk v) :=
+(surjective_quot_mk G.reachable).forall
+
+lemma preconnected.subsingleton_connected_component (h : G.preconnected) :
+  subsingleton G.connected_component :=
+⟨connected_component.ind₂ (λ v w, connected_component.sound (h v w))⟩
+
+end connected_component
+/-
+### Directed Walks as subgraphs TBC l. 1519 - 1590
+-/
+/-
+### Directed Walks of a given Length
+-/
+section directed_walk_counting
+
+lemma set_walk_self_length_zero_eq (u : V) :
+  {p : G.directed_walk u u | p.length = 0} = {directed_walk.nil} :=
+by { ext p, simp }
+
+lemma set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
+  {p : G.directed_walk u v | p.length = 0} = ∅ :=
+begin
+  ext p,
+  simp only [set.mem_set_of_eq, set.mem_empty_iff_false, iff_false],
+  exact λ h', absurd (directed_walk.eq_of_length_eq_zero h') h,
+end
+
+lemma set_walk_length_succ_eq (u v : V) (n : ℕ) :
+  {p : G.directed_walk u v | p.length = n.succ} =
+    ⋃ (w : V) (h : G.adj u w), directed_walk.cons h '' {p' : G.directed_walk w v | p'.length = n} :=
+begin
+  ext p,
+  cases p with _ _ w _ huw pwv,
+  { simp [eq_comm], },
+  { simp only [nat.succ_eq_add_one, set.mem_set_of_eq, directed_walk.length_cons, add_left_inj,
+      set.mem_Union, set.mem_image, exists_prop],
+    split,
+    { rintro rfl,
+      exact ⟨w, huw, pwv, rfl, rfl, heq.rfl⟩, },
+    { rintro ⟨w, huw, pwv, rfl, rfl, rfl⟩,
+      refl, } },
+end
+
+variables (G) [decidable_eq V]
+
+section locally_finite
+variables [locally_finite G]
+
+/-- The `finset` of length-`n` walks from `u` to `v`.
+This is used to give `{p : G.directed_walk u v | p.length = n}` a `fintype` instance, and it
+can also be useful as a recursive description of this set when `V` is finite. -/
+def finset_walk_length : Π (n : ℕ) (u v : V), finset (G.directed_walk u v)
+| 0 u v := if h : u = v
+           then by { subst u, exact {directed_walk.nil} }
+           else ∅
+| (n+1) u v := finset.univ.bUnion (λ (w : G.neighbor_set u),
+                 (finset_walk_length n w v).map ⟨λ p, directed_walk.cons w.property p, λ p q, by simp⟩)
+
+lemma coe_finset_walk_length_eq (n : ℕ) (u v : V) :
+  (G.finset_walk_length n u v : set (G.directed_walk u v)) = {p : G.directed_walk u v | p.length = n} :=
+begin
+  induction n with n ih generalizing u v,
+  { obtain rfl | huv := eq_or_ne u v;
+    simp [finset_walk_length, set_walk_length_zero_eq_of_ne, *], },
+  { simp only [finset_walk_length, set_walk_length_succ_eq,
+      finset.coe_bUnion, finset.mem_coe, finset.mem_univ, set.Union_true],
+    ext p,
+    simp only [mem_neighbor_set, finset.coe_map, embedding.coe_fn_mk, set.Union_coe_set,
+      set.mem_Union, set.mem_image, finset.mem_coe, set.mem_set_of_eq],
+    congr' with w,
+    congr' with h,
+    congr' with q,
+    have := set.ext_iff.mp (ih w v) q,
+    simp only [finset.mem_coe, set.mem_set_of_eq] at this,
+    rw ← this,
+    refl, },
+end
+
+variables {G}
+
+lemma walk.mem_finset_walk_length_iff_length_eq {n : ℕ} {u v : V} (p : G.directed_walk u v) :
+  p ∈ G.finset_walk_length n u v ↔ p.length = n :=
+set.ext_iff.mp (G.coe_finset_walk_length_eq n u v) p
+
+variables (G)
+
+instance fintype_set_walk_length (u v : V) (n : ℕ) : fintype {p : G.directed_walk u v | p.length = n} :=
+fintype.of_finset (G.finset_walk_length n u v) $ λ p,
+by rw [←finset.mem_coe, coe_finset_walk_length_eq]
+
+lemma set_walk_length_to_finset_eq (n : ℕ) (u v : V) :
+  {p : G.directed_walk u v | p.length = n}.to_finset = G.finset_walk_length n u v :=
+by { ext p, simp [←coe_finset_walk_length_eq] }
+
+/- See `simple_graph.adj_matrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
+power of the adjacency matrix. -/
+lemma card_set_walk_length_eq (u v : V) (n : ℕ) :
+  fintype.card {p : G.directed_walk u v | p.length = n} = (G.finset_walk_length n u v).card :=
+fintype.card_of_finset (G.finset_walk_length n u v) $ λ p,
+  by rw [←finset.mem_coe, coe_finset_walk_length_eq]
+
+instance fintype_set_path_length (u v : V) (n : ℕ) :
+  fintype {p : G.directed_walk u v | p.is_directed_path ∧ p.length = n} :=
+fintype.of_finset ((G.finset_walk_length n u v).filter directed_walk.is_directed_path) $
+  by simp [walk.mem_finset_walk_length_iff_length_eq, and_comm]
+
+end locally_finite
+
+section finite
+variables [fintype V] [decidable_rel G.adj]
+
+lemma reachable_iff_exists_finset_walk_length_nonempty (u v : V) :
+  G.reachable u v ↔ ∃ (n : fin (fintype.card V)), (G.finset_walk_length n u v).nonempty :=
+begin
+  split,
+  { intro r,
+    refine r.elim_directed_path (λ p, _),
+    refine ⟨⟨_, p.is_directed_path.length_lt⟩, p, _⟩,
+    simp [walk.mem_finset_walk_length_iff_length_eq], },
+  { rintro ⟨_, p, _⟩, use p },
+end
+
+instance : decidable_rel G.reachable :=
+λ u v, decidable_of_iff' _ (reachable_iff_exists_finset_walk_length_nonempty G u v)
+
+--instance : fintype G.connected_component :=
+--@quotient.fintype _ _ G.reachable_setoid (infer_instance : decidable_rel G.reachable)
+
+instance : decidable G.preconnected :=
+by { unfold preconnected, apply_instance }
+
+instance : decidable G.connected :=
+by { rw [connected_iff, ← finset.univ_nonempty_iff], exact and.decidable }
+
+end finite
+
+end directed_walk_counting
+/-
+### Bridge Edges l. 1722 - 1840
+-/
+end directed_simple_graph
+/-
+### Weights
+-/
+namespace directed_simple_graph 
+
+variables {V : Type u} 
+variables (G : directed_simple_graph V)
+variables {e : edge_set G}
+
+constant edge_weight {G : directed_simple_graph V}: edge_set G → ℝ  
+
 namespace directed_walk
-variables {G G' G''}
 
-abbreviation hom := rel_hom G.adj G'.adj
-infix ` →g ` : 50 := hom
+noncomputable
+def directed_walk_weight {u v : V} : G.directed_walk u v → ℝ := 
+λ p, (∏ i in finset.range p.edges.length , edge_weight (p.edges(i + 1)) )
 
-namespace hom 
-
-variables {G G'} (f : G →g G')
-
-/-- Given a graph homomorphism, map walks to walks. -/
-protected def map (f : G →g G') : Π {u v : V}, G.directed_walk u v → G'.directed_walk (f u) (f v)
-| _ _ nil := nil
-| _ _ (cons h p) := cons (f.map_adj h) (map p)
-
-variables (f : G →g G') (f' : G' →g G'') {u v u' v' : V} (p : G.directed_walk u v)
-
-@[simp] lemma map_nil : (nil : G.directed_walk u u).map f = nil := rfl
-
-@[simp] lemma map_cons {w : V} (h : G.adj w u) :
-  (cons h p).map f = cons (f.map_adj h) (p.map f) := rfl
-
-@[simp] lemma map_copy (hu : u = u') (hv : v = v') :
-  (p.copy hu hv).map f = (p.map f).copy (by rw hu) (by rw hv) := by { subst_vars, refl }
-
-@[simp] lemma map_id (p : G.directed_walk u v) : p.map hom.id = p := by { induction p; simp [*] }
-
-@[simp] lemma map_map : (p.map f).map f' = p.map (f'.comp f) := by { induction p; simp [*] }
-
-/-- Unlike categories, for graphs vertex equality is an important notion, so needing to be able to
-to work with equality of graph homomorphisms is a necessary evil. -/
-lemma map_eq_of_eq {f : G →g G'} (f' : G →g G') (h : f = f') :
-  p.map f = (p.map f').copy (by rw h) (by rw h) := by { subst_vars, refl }
-
-@[simp] lemma map_eq_nil_iff {p : G.directed_walk u u} : p.map f = nil ↔ p = nil :=
-by cases p; simp
-
-@[simp] lemma length_map : (p.map f).length = p.length :=
-by induction p; simp [*]
-
-lemma map_append {u v w : V} (p : G.directed_walk u v) (q : G.directed_walk v w) :
-  (p.append q).map f = (p.map f).append (q.map f) :=
-by induction p; simp [*]
-
-@[simp] lemma reverse_map : (p.map f).reverse = p.reverse.map f :=
-by induction p; simp [map_append, *]
-
-@[simp] lemma support_map : (p.map f).support = p.support.map f :=
-by induction p; simp [*]
-
-@[simp] lemma darts_map : (p.map f).darts = p.darts.map f.map_dart :=
-by induction p; simp [*]
-
-@[simp] lemma edges_map : (p.map f).edges = p.edges.map (sym2.map f) :=
-by induction p; simp [*]
-
-variables {p f}
-
-lemma map_is_path_of_injective (hinj : function.injective f) (hp : p.is_path) :
-  (p.map f).is_path :=
-begin
-  induction p with w u v w huv hvw ih,
-  { simp, },
-  { rw walk.cons_is_path_iff at hp,
-    simp [ih hp.1],
-    intros x hx hf,
-    cases hinj hf,
-    exact hp.2 hx, },
-end
-
-protected lemma is_path.of_map {f : G →g G'} (hp : (p.map f).is_path) : p.is_path :=
-begin
-  induction p with w u v w huv hvw ih,
-  { simp },
-  { rw [map_cons, walk.cons_is_path_iff, support_map] at hp,
-    rw walk.cons_is_path_iff,
-    cases hp with hp1 hp2,
-    refine ⟨ih hp1, _⟩,
-    contrapose! hp2,
-    exact list.mem_map_of_mem f hp2, }
-end
-
-lemma map_is_path_iff_of_injective (hinj : function.injective f) :
-  (p.map f).is_path ↔ p.is_path :=
-⟨is_path.of_map, map_is_path_of_injective hinj⟩
-
-lemma map_is_trail_iff_of_injective (hinj : function.injective f) :
-  (p.map f).is_trail ↔ p.is_trail :=
-begin
-  induction p with w u v w huv hvw ih,
-  { simp },
-  { rw [map_cons, cons_is_trail_iff, cons_is_trail_iff, edges_map],
-    change _ ∧ sym2.map f ⟦(u, v)⟧ ∉ _ ↔ _,
-    rw list.mem_map_of_injective (sym2.map.injective hinj),
-    exact and_congr_left' ih, },
-end
-
-alias map_is_trail_iff_of_injective ↔ _ map_is_trail_of_injective
-
-lemma map_is_cycle_iff_of_injective {p : G.directed_walk u u} (hinj : function.injective f) :
-  (p.map f).is_cycle ↔ p.is_cycle :=
-by rw [is_cycle_def, is_cycle_def, map_is_trail_iff_of_injective hinj, ne.def, map_eq_nil_iff,
-       support_map, ← list.map_tail, list.nodup_map_iff hinj]
-
-alias map_is_cycle_iff_of_injective ↔ _ map_is_cycle_of_injective
-
-variables (p f)
-
-lemma map_injective_of_injective {f : G →g G'} (hinj : function.injective f) (u v : V) :
-  function.injective (walk.map f : G.directed_walk u v → G'.directed_walk (f u) (f v)) :=
-begin
-  intros p p' h,
-  induction p with _ _ _ _ _ _ ih generalizing p',
-  { cases p',
-    { refl },
-    simpa using h, },
-  { induction p',
-    { simpa using h, },
-    { simp only [map_cons] at h,
-      cases hinj h.1,
-      simp only [eq_self_iff_true, heq_iff_eq, true_and],
-      apply ih,
-      simpa using h.2, } },
-end
-
-end hom
-
-/-- The specialization of `simple_graph.walk.map` for mapping walks to supergraphs. -/
-@[reducible] def map_le {G G' : simple_graph V} (h : G ≤ G') {u v : V} (p : G.directed_walk u v) :
-  G'.directed_walk u v := p.map (hom.map_spanning_subgraphs h)
-
-@[simp] lemma map_le_is_trail {G G' : simple_graph V} (h : G ≤ G') {u v : V} {p : G.directed_walk u v} :
-  (p.map_le h).is_trail ↔ p.is_trail := map_is_trail_iff_of_injective (function.injective_id)
-
-alias map_le_is_trail ↔ is_trail.of_map_le is_trail.map_le
-
-@[simp] lemma map_le_is_path {G G' : simple_graph V} (h : G ≤ G') {u v : V} {p : G.directed_walk u v} :
-  (p.map_le h).is_path ↔ p.is_path := map_is_path_iff_of_injective (function.injective_id)
-
-alias map_le_is_path ↔ is_path.of_map_le is_path.map_le
-
-@[simp] lemma map_le_is_cycle {G G' : simple_graph V} (h : G ≤ G') {u : V} {p : G.directed_walk u u} :
-  (p.map_le h).is_cycle ↔ p.is_cycle := map_is_cycle_iff_of_injective (function.injective_id)
-
-alias map_le_is_cycle ↔ is_cycle.of_map_le is_cycle.map_le
-
-end directed_walk
--/
-
-
-
-
-
-
-
-
-
-
-/-
-### Weights for Simple Directed Graphs
--/
-universe x
-variables {W : Type x}
-def weight (v1 v2 : V) : V → V → W := sorry
+end directed_walk 
 
 end directed_simple_graph
