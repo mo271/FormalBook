@@ -55,6 +55,7 @@ universes u v
 /-
 ### Directed Simple Graph
 -/
+/-- A `directed simple graph`. -/
 @[ext]
 structure directed_simple_graph (V : Type u) := (adj : V → V → Prop)
 
@@ -69,6 +70,7 @@ variables (G : directed_simple_graph V) (G' : directed_simple_graph V')
 /-
 #### Directed Loopless Simple Graph (no self adjacency)
 -/
+/-- A `directed loopless simple graph`. -/
 @[ext]
 structure directed_loopless_simple_graph (V : Type u) extends directed_simple_graph V :=
 (loopless : irreflexive adj . obviously)
@@ -426,6 +428,14 @@ variables {G}
 /-- Pattern to get `walk.cons` with the vertices as explicit arguments. -/
 @[pattern] abbreviation cons' (u v w : V) (h : G.adj u v) (p : G.directed_walk v w) :
 G.directed_walk u w := directed_walk.cons h p
+/-
+### Acyclic Graph
+-/
+/-- A `directed acyclic simple graph`.-/
+@[ext]
+structure directed_acyclic_simple_graph {u : V}{p : G.directed_walk u u}(V : Type u) 
+  extends directed_loopless_simple_graph V :=
+(acyclic : p = nil)
 /-
 #### Directed Walk to Graph
 -/
@@ -1593,11 +1603,38 @@ end directed_walk_counting
 -/
 end directed_simple_graph
 /-
+### Path System
+-/
+namespace directed_simple_graph
+
+variables {V : Type u}
+variables {u v : V}
+variables (G : directed_simple_graph V)
+
+structure vertex_subset_n {n : ℕ} {V : Type u} :=
+(verts : finset V)
+(card : verts.card = n)
+
+namespace directed_walk
+
+end directed_walk
+
+end directed_simple_graph 
+/-
+# Testing
+-/
+variables {V' : set ℕ} 
+
+structure vertex_subset_n {n : ℕ} {V' : set ℕ} :=
+(verts : finset ℕ)
+(sub : ∀ v ∈ verts, v ∈ V')
+(card : verts.card = n)
+/-
 ### Weights
 -/
 namespace directed_simple_graph
 
-variables {V : Type u} {V' : Type u}
+variables {V : Type u} 
 variables {u v w : V}
 variables (G : directed_simple_graph V) (G' : directed_simple_graph V')
 
@@ -1614,6 +1651,3 @@ def walk_weight2 (wt : V → V → ℝ) : Π {u v : V}, G.directed_walk u v → 
 end directed_walk
 
 end directed_simple_graph
-/-
-### Path System
--/
