@@ -1639,8 +1639,6 @@ structure path_system2 {α : Type*} [fintype α] (A B : α ↪ V) :=
 (path : Π (i : α), G.directed_path (A i) (B (σ i)))
 (walk_disj : ∀ (i j : α), i ≠ j → list.disjoint (path i).1.support (path j).1.support)
 
-/- The path feature could be implemented more elegently. -/
-
 variables {G}
 
 /- First Approach. -/
