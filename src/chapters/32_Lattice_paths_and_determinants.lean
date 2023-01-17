@@ -18,11 +18,10 @@ Authors: Moritz Firsching, Christopher Schmidt
 import tactic
 import data.rel
 import data.real.basic
---import data.set.basic 
---import set_theory.zfc.basic
---import meta.rb_map 
+import data.list.defs
+import logic.equiv.defs
+import group_theory.perm.sign 
 
---open nat 
 --open finset 
 open_locale big_operators 
 /-!
@@ -46,8 +45,7 @@ open_locale big_operators
   - Theorem
     - proof
 
-## Defining missing Objects
-proceed analogous to combinatorics.simple_graph
+## Defining missing Objects analogous to mathlib (cf. simple_graphs)
 -/
 open function
 
@@ -433,9 +431,9 @@ G.directed_walk u w := directed_walk.cons h p
 -/
 /-- A `directed acyclic simple graph`.-/
 @[ext]
-structure directed_acyclic_simple_graph {u : V}{p : G.directed_walk u u}(V : Type u) 
+structure directed_acyclic_simple_graph {u : V}(V : Type u) 
   extends directed_loopless_simple_graph V :=
-(acyclic : p = nil)
+(acyclic : ∀ p : G.directed_walk u u, p = nil)
 /-
 #### Directed Walk to Graph
 -/
@@ -589,8 +587,8 @@ by cases p; simp
 -/
 /-- The `support` of a directed walk is the list of vertices it visits in order. -/
 def support : Π {u v : V}, G.directed_walk u v → list V
-| u v nil := [u]
-| u v (cons h p) := u :: p.support
+| u _ nil := [u]
+| u _ (cons h p) := u :: p.support
 
 /-- The `darts` of a directed walk is the list of darts it visits in order. -/
 def darts : Π {u v : V}, G.directed_walk u v → list G.dart
@@ -1603,51 +1601,80 @@ end directed_walk_counting
 -/
 end directed_simple_graph
 /-
-### Path System
+## Defining missing Object without an analogy to mathlib
+-/
+/-
+### Path System 
 -/
 namespace directed_simple_graph
 
-variables {V : Type u}
-variables {u v : V}
+variables {V : Type u} {u v w: V} 
+variables {n : ℕ} 
+variables {α : Type*} [fintype α]
 variables (G : directed_simple_graph V)
 
-structure vertex_subset_n {n : ℕ} {V : Type u} :=
+/- Maybe not needed. -/
+@[ext]
+structure vertex_subset_n (n : ℕ) (V : Type u) :=
 (verts : finset V)
 (card : verts.card = n)
 
-namespace directed_walk
+lemma A_card_eq_B_card (A B : vertex_subset_n n V): A.verts.card = B.verts.card := by 
+{rw A.card, rw B.card}
 
-end directed_walk
+lemma A_verts_list_length_eq_n (A B : vertex_subset_n n V) : A.verts.to_list.length = n := by 
+{simp only [finset.length_to_list], exact A.card}
+/- Till here. -/
 
-end directed_simple_graph 
-/-
-# Testing
--/
-variables {V' : set ℕ} 
+/- First Approach. -/
+structure path_system {α : Type*} [fintype α] (A B : α ↪ V) :=
+(B' : α ↪ V)
+(range_B' : set.range B' = set.range B)
+(path : Π (i : α), G.directed_path (A i) (B' i))
+(walk_disj : ∀ (i j : α), i ≠ j → list.disjoint (path i).1.support (path j).1.support)
 
-structure vertex_subset_n {n : ℕ} {V' : set ℕ} :=
-(verts : finset ℕ)
-(sub : ∀ v ∈ verts, v ∈ V')
-(card : verts.card = n)
+/- Second Approach. -/
+structure path_system2 {α : Type*} [fintype α] (A B : α ↪ V) :=
+(σ : equiv.perm α)
+(path : Π (i : α), G.directed_path (A i) (B (σ i)))
+(walk_disj : ∀ (i j : α), i ≠ j → list.disjoint (path i).1.support (path j).1.support)
+
+/- The path feature could be implemented more elegently. -/
+
+variables {G}
+
+/- First Approach. -/
+noncomputable def path_system.σ {α : Type*} [fintype α] {A B : α ↪ V} (s : G.path_system A B) : α ≃ α :=
+(equiv.of_injective s.B' s.B'.inj').trans
+  ((equiv.set.of_eq s.range_B').trans (equiv.of_injective B B.inj').symm)
+
+noncomputable def path_system.sign {α : Type*} [fintype α] {A B : α ↪ V} (s : G.path_system A B) :=
+equiv.perm.sign s.σ
+
+/- Second Approach. -/
+-- This definition is not actually necessary since one can write `s.σ.sign` just as easily as `s.sign`.
+noncomputable def path_system2.sign {α : Type*} [fintype α] {A B : α ↪ V} (s : G.path_system2 A B) :=
+s.σ.sign 
 /-
 ### Weights
 -/
-namespace directed_simple_graph
-
-variables {V : Type u} 
-variables {u v w : V}
-variables (G : directed_simple_graph V) (G' : directed_simple_graph V')
-
 namespace directed_walk
 
-def walk_weight (wt : G.edge_set → ℝ) : Π {u v : V}, G.directed_walk u v → ℝ
-| u v nil := 1
-| u v (cons h p) := wt ⟨(u, _), h⟩ * walk_weight p
+variables {A B : α ↪ V}
 
-def walk_weight2 (wt : V → V → ℝ) : Π {u v : V}, G.directed_walk u v → ℝ
+def walk_weight {G : directed_simple_graph V} (weight : G.edge_set → ℝ) : Π {u v : V}, G.directed_walk u v → ℝ
 | u v nil := 1
-| u v (@cons V G _ x _ h p) := wt u x * walk_weight2 p
+| u v (cons h p) := weight ⟨(u, _), h⟩ * walk_weight p
 
+def path_weight {G : directed_simple_graph V} (weight : G.edge_set → ℝ) (p: G.directed_path u v) : ℝ :=
+walk_weight weight (p.1)
+
+def path_system_weight {G : directed_simple_graph V} {A B : α ↪ V} (weight : G.edge_set → ℝ)
+(s : G.path_system A B) : ℝ :=
+∏ (i : α), path_weight weight (s.path i)
+/-
+### Path Matrix
+-/
 end directed_walk
 
 end directed_simple_graph
