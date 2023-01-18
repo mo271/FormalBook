@@ -16,29 +16,24 @@ limitations under the License.
 Authors: Moritz Firsching, Christopher Schmidt
 -/
 import tactic
-import data.rel
-import data.real.basic
-import data.list.defs
-import logic.equiv.defs
-import group_theory.perm.sign 
 
---open finset 
+import data.rel
+import data.list.defs
+import data.matrix.basic
+import data.fintype.card
+
+import logic.equiv.defs
+import group_theory.perm.sign
+
+import set_theory.zfc.basic
+
+import linear_algebra.matrix.determinant
+
 open_locale big_operators 
 /-!
 # Lattice paths and determinants
 
 ## TODO
-
- - missing definitions:
-  - simple directed graphs (trivial to do)
-    - acyclic
-    - weights on edge set (trivial to do)
-    - definition for weight of Path
-  - path matrix
-  - path system from A to B
-  - weight of path system
-  - vertex disjoint
-
 
   - Lemma
     - proof
@@ -87,6 +82,13 @@ protected lemma adj.ne {g : directed_loopless_simple_graph V} {a b : V} (h : g.a
 protected lemma adj.ne' {g : directed_loopless_simple_graph V} {a b : V} (h : g.adj a b) : b ≠ a := (adj.ne h).symm
 
 end directed_loopless_simple_graphs
+/-
+#### Directed Finite Simple Graph
+-/
+/-- A `directed finite simple graph`. -/
+@[ext]
+structure directed_finite_simple_graph (V : Type u) extends directed_simple_graph V :=
+(finite : fintype V)
 /-
 #### Directed Simple Graph Support
 -/
@@ -427,13 +429,20 @@ variables {G}
 @[pattern] abbreviation cons' (u v w : V) (h : G.adj u v) (p : G.directed_walk v w) :
 G.directed_walk u w := directed_walk.cons h p
 /-
-### Acyclic Graph
+### Directed Acyclic Loopless Finite Simple Graph
 -/
-/-- A `directed acyclic simple graph`.-/
+/- The Graph we need. -/
+/-- A `directed acyclic loopless finite simple graph`.-/
 @[ext]
-structure directed_acyclic_simple_graph {u : V}(V : Type u) 
-  extends directed_loopless_simple_graph V :=
-(acyclic : ∀ p : G.directed_walk u u, p = nil)
+structure directed_acyclic_loopless_finite_simple_graph (V : Type u) (G : directed_simple_graph V)
+  extends directed_simple_graph V :=
+(finite : fintype V)
+(loopless : irreflexive adj . obviously)
+(acyclic : ∀ v : V, (∀ p : G.directed_walk v v, p = nil))
+
+#check directed_acyclic_loopless_finite_simple_graph V G 
+variables {g : directed_acyclic_loopless_finite_simple_graph V G}
+#check g.to_directed_simple_graph
 /-
 #### Directed Walk to Graph
 -/
@@ -1609,22 +1618,9 @@ end directed_simple_graph
 namespace directed_simple_graph
 
 variables {V : Type u} {u v w: V} 
-variables {n : ℕ} 
+variables {k : ℕ} 
 variables {α : Type*} [fintype α]
 variables (G : directed_simple_graph V)
-
-/- Maybe not needed. -/
-@[ext]
-structure vertex_subset_n (n : ℕ) (V : Type u) :=
-(verts : finset V)
-(card : verts.card = n)
-
-lemma A_card_eq_B_card (A B : vertex_subset_n n V): A.verts.card = B.verts.card := by 
-{rw A.card, rw B.card}
-
-lemma A_verts_list_length_eq_n (A B : vertex_subset_n n V) : A.verts.to_list.length = n := by 
-{simp only [finset.length_to_list], exact A.card}
-/- Till here. -/
 
 /- First Approach. -/
 structure path_system {α : Type*} [fintype α] (A B : α ↪ V) :=
@@ -1653,26 +1649,60 @@ equiv.perm.sign s.σ
 -- This definition is not actually necessary since one can write `s.σ.sign` just as easily as `s.sign`.
 noncomputable def path_system2.sign {α : Type*} [fintype α] {A B : α ↪ V} (s : G.path_system2 A B) :=
 s.σ.sign 
+
+def all_path_systems {G : directed_simple_graph V} (A B : α ↪ V) : finset (G.path_system2 A B) :=
+sorry
 /-
 ### Weights
 -/
 namespace directed_walk
 
-variables {A B : α ↪ V}
+variables {R : Type} [field R]
 
-def walk_weight {G : directed_simple_graph V} (weight : G.edge_set → ℝ) : Π {u v : V}, G.directed_walk u v → ℝ
+def walk_weight {G : directed_simple_graph V} (weight : G.edge_set → R) : Π {u v : V}, G.directed_walk u v → R
 | u v nil := 1
 | u v (cons h p) := weight ⟨(u, _), h⟩ * walk_weight p
 
-def path_weight {G : directed_simple_graph V} (weight : G.edge_set → ℝ) (p: G.directed_path u v) : ℝ :=
-walk_weight weight (p.1)
+def path_weight {G : directed_simple_graph V} (weight : G.edge_set → R) : G.directed_path u v → R :=
+λ p, walk_weight weight (p.1)
 
-def path_system_weight {G : directed_simple_graph V} {A B : α ↪ V} (weight : G.edge_set → ℝ)
-(s : G.path_system A B) : ℝ :=
-∏ (i : α), path_weight weight (s.path i)
+def path_system_weight {G : directed_simple_graph V} (A B : α ↪ V) (weight : G.edge_set → R) :
+G.path_system2 A B → R :=
+λ s, ∏ (i : α), path_weight weight (s.path i)
 /-
 ### Path Matrix
 -/
+def all_path_ij (G : directed_simple_graph V) (A B : α ↪ V) (i j : α) : finset (G.directed_path (A i) (B j)) := 
+sorry
+
+def all_paths_ij_weight {G : directed_simple_graph V} (A B : α ↪ V) (i j : α) (weight : G.edge_set → R) : R := 
+∑ (p : (all_path_ij G A B i j)), path_weight weight p.1
+
+def path_matrix_map {α : Type*} [fintype α] (A B : α ↪ V) (weight : G.edge_set → R) : α → α → R :=
+λ i j, all_paths_ij_weight A B i j weight
+
+def path_matrix (A B : α ↪ V) (weight : G.edge_set → R) : matrix α α R := matrix.of (path_matrix_map A B weight)
+
 end directed_walk
 
+end directed_simple_graph
+/-
+## Lindström-Gessel-Viennot Lemma
+-/
+namespace directed_simple_graph
+namespace directed_walk 
+
+variables {R : Type} [field R]
+
+lemma Lindstroem_Gessel_Viennot
+  (V : Type u) (u v : V) (G : directed_simple_graph V) (g : directed_acyclic_loopless_finite_simple_graph V G)
+  (α : Type*) [fintype α] (A B : α ↪ V) (i j : α) (weight : g.to_directed_simple_graph.edge_set → R) :
+
+  (path_matrix A B weight).det = ∑ (s : all_path_systems A B), (s.1.sign) * (path_system_weight A B weight s.1) :=
+  
+begin 
+  sorry
+end 
+
+end directed_walk
 end directed_simple_graph
