@@ -175,7 +175,7 @@ have h_one_fac : 1 ≤ l → ∃! i ∈ (range k), p ∣ (n - i) := by
     cases hj,
     exact ⟨mem_range.mpr hj_left, hj_right ⟩, },
   cases h_exists with i h_i,
-  have h_unique: (i ∈ range k ∧ p ∣ n - i) ∧
+  have h_unique : (i ∈ range k ∧ p ∣ n - i) ∧
                  ∀ (y : ℕ), y ∈ range k → p ∣ n - y → y = i := by
   { split,
     {exact h_i,},
@@ -659,29 +659,36 @@ begin
 
 
   cases em (n ≥ 2*k) with h_2k,
-  { exact h_wlog k h_4lek h_klen4 h_2k, },
-  { /- This is just transforming the cases k -> n - k, so that we can use the
-    extra condition n ≥ 2*k in the proof above. -/
-    have h_klen4' : k ≤ n := le_trans h_klen4 (nat.sub_le n 4),
-    rw ←choose_symm h_klen4',
+  { exact h_wlog k h_4lek h_klen4 h_2k},
+  { -- transform ¬(n ≥ 2 * k) into (n < 2 * k)
+    simp only [not_le] at h,
+    -- transform (n.choose k) into (n.choose (n - k))
+    have h_klen : k ≤ n := le_trans h_klen4 (nat.sub_le n 4),
+    rw ←choose_symm h_klen,
+    -- define k' as n - k, such that k' can be used for h_wlog as k'
+    -- satisfies all required features
     let k' := n - k,
-    have h_4lek'_def: k' = n - k := by refl,
-    have: n ≥ 2*k':= by
-    { simp at h,
+    have h_k'_def : k' = n - k := by refl,
+    -- third requirement: 2 * k' ≤ n
+    have h_2k'len : 2 * k' ≤ n := by
+    { zify,
       have h': n ≤ 2 * k := le_of_lt h,
-      simp [h_4lek'_def],
-      zify,
       zify at h',
       ring_nf,
       rw sub_le_iff_le_add,
       have := add_le_add_right h' n,
       ring_nf at this,
       exact this, },
-    have h_4_n: 4 ≤ n := le_trans (le_trans h_4lek h_klen4) (nat.sub_le n 4),
-    have h_klen4_l : k' ≤ n - 4 := by
-    { simp [h_4lek'_def],
-      zify,
-      sorry, },
-    have h_4lek_l : 4 ≤ k' := by linarith,
-    exact h_wlog k' h_4lek_l h_klen4_l this, }
+    -- second requirement: k ≤ n - 4
+    have h_k'len4 : k' ≤ n - 4 := by
+    { simp [h_k'_def],
+      have help : k + k ≤ n - 4 + k := add_le_add_right h_klen4 k,  
+      rw ← (two_mul k) at help,
+      exact le_trans (le_of_lt h) help, },
+    -- first requirement: 4 ≤ k
+    have h_4lek' : 4 ≤ k' := by 
+    { have h_4len : 4 ≤ n := le_trans (le_trans h_4lek h_klen4) (nat.sub_le n 4),
+      linarith, },
+    -- now we can use h_wlog
+    exact h_wlog k' h_4lek' h_k'len4 h_2k'len,},
 end
