@@ -439,10 +439,6 @@ structure directed_acyclic_loopless_finite_simple_graph (V : Type u) (G : direct
 (finite : fintype V)
 (loopless : irreflexive adj . obviously)
 (acyclic : ∀ v : V, (∀ p : G.directed_walk v v, p = nil))
-
-#check directed_acyclic_loopless_finite_simple_graph V G 
-variables {g : directed_acyclic_loopless_finite_simple_graph V G}
-#check g.to_directed_simple_graph
 /-
 #### Directed Walk to Graph
 -/
