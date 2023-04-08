@@ -1,1 +1,1 @@
-import FormalBook.Test
+import FormalBook.Ch01_Six_proofs_of_the_infinity_of_primes
