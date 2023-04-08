@@ -3,7 +3,7 @@ on:
   pull_request:
 
 jobs:
-  update_lean_xyz_branch_and_build:
+  build:
     runs-on: ubuntu-latest
     name: Build project
     steps:
@@ -13,41 +13,24 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: update branch
-      if: github.ref == 'refs/heads/master'
-      uses: leanprover-contrib/update-versions-action@master
-
-    - name: Install elan
+    - name: install elan
       run: |
         set -o pipefail
         curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- --default-toolchain none -y
         ~/.elan/bin/lean --version
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
-    - name: install Python
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
+        echo "short_lean_version=$(~/.elan/bin/lean --run scripts/lean_version.lean)" >> $GITHUB_ENV
 
-    - name: Install leanproject
-      run: |
-        python3 -m pip install --user pipx
-        python3 -m pipx ensurepath
-        source ~/.profile
-        pipx install mathlibtools
-    - name: Set up olean cache
-      uses: actions/cache@v3
-      with:
-        path: _cache
-        key: oleans
+    - name: get mathlib cache
+      run: lake exe cache get
 
-    - name: Configure
+    - name: lake build
+      id: build
       run: |
-        leanpkg configure
-        leanproject get-mathlib-cache
-        leanproject get-cache --fallback=download-first || true
-    - name: Build
-      run: |
-        lean --json --make src | python3 _target/deps/mathlib/scripts/detect_errors.py
-    - name: Save olean cache
-      run: |
-        leanproject mk-cache
+        set -o pipefail
+        echo "Starting build at $(date +'%T')"
+        lake build
+        result_run1=$?
+        echo "Complete 🧱 at $(date +'%T'); return value $result_run1"
+
+# TODO: add linting?

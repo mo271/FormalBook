@@ -1,24 +1,28 @@
 # Formal BOOK
 
-A collaborative, work-in-progress attempt to formalize [Proofs from THE BOOK](https://link.springer.com/book/10.1007/978-3-662-57265-8) using [Lean](https://leanprover-community.github.io/).
+A collaborative, work-in-progress attempt to formalize [Proofs from THE BOOK](https://link.springer.com/book/10.1007/978-3-662-57265-8) using [Lean4](https://leanprover.github.io/lean4/doc/whatIsLean.html).
 
+
+> :exclamation_mark: Currently this repo is in the process of transitioning from lean3 to lean4.
+> The old lean3 files can be found in the [./scr/chapters/](./src) directory, while the new files will
+> appear in the [FormalBook][./FormalBook] directory.
 
 ![Formal Proofs from THE BOOK](formal_proofs_form_the_book.svg)
 
 ## Structure
 
-For each chapter in the book (we follow the latest, sixth edition), there is a lean source file containing as many formalized definitions, lemmas, theorems and proofs as we can reasonably currently formalize using [Lean's mathlib](https://github.com/leanprover-community/mathlib).
+For each chapter in the book (we follow the latest, sixth edition), there is a lean source file containing as many formalized definitions, lemmas, theorems and proofs as we can reasonably currently formalize using [Lean's mathlib4](https://github.com/leanprover-community/mathlib4).
 
 The goal is to make the formalizations of the proofs as close as possible to the proofs in the book, even if a different proof for a theorem might already be present in mathlib or is more suitable for formalization.
 
-We follow the [naming conventions](https://leanprover-community.github.io/contribute/naming.html) and [code style](https://leanprover-community.github.io/contribute/style.html) of mathlib.
+We follow the [naming conventions](https://github.com/leanprover-community/mathlib4/wiki/Porting-wiki#naming-convention) and [code style](https://leanprover-community.github.io/contribute/style.html) of mathlib4.
 
 ## Installation
 
-This is a leanproject currently using Lean 3. You first need to [install Lean](https://leanprover-community.github.io/get_started.html#regular-install) and then run
+This project uses Lean 4. You first need to [install elan and lean](https://leanprover.github.io/lean4/doc/setup.html) and then run
 ```shell
-leanproject get mo271/formal_book
-cd formal_book
+lake exe cache get
+lake build
 code .
 ```
 The last step only opens vscode in case you want to use that.
