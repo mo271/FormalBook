@@ -15,13 +15,22 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Cauchy's rigidity theorem
+# A theorem of Pólya on polynomials
 
 ## TODO
-  - statement
+  - Theorem 1
+  - Theorem 2
+  - Chebyschev's Theorem
+  - Corollary
     - proof
-  - Cauchy's arm lemma
+  - Proof of Theorem 2
+  - Two facts about polynomials with real roots
+  - Appendix: Chebyshev's theorem
     - proof
+      - (A)
+      - (B)
+      - proof of (A)
+      - proof of (B)
 -/

@@ -15,11 +15,14 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Buffon's needle problem
+# Touching simplices
 
 ## TODO
-  - statement
+  - Conjecture
+  - Theorem 1
+    - proof
+  - Theorem 2
     - proof
 -/

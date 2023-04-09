@@ -15,22 +15,27 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Borsuk's conjecture
+# One square and an odd number of triangles
 
 ## TODO
-  - statement
+  - Monsky's Theorem
     - proof
-      - (1)
-      - (2)
-      - (3)
-      - (4)
-  - Lemma
-    - proof
-  - Claim 1
-  - Claim 2
-  - Claim 3
-  - Claim 4
-  - Cleam 5
+      - Lemma 1
+        - proof
+      - Corollary
+        - proof
+      - Lemma 2
+        - proof
+          - (A)
+          - (B)
+  - Appendix: Extending valuations
+    - definition
+    - Theorem
+      - proof
+    - Lemma
+      - proof
+    - Claim
+    - Zorn's Lemma
 -/

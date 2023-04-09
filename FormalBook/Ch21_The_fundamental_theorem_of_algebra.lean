@@ -15,28 +15,36 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
+-- import Mathlib.Analysis.SpecialFunctions.Pow
+import Mathlib.Topology.Algebra.Polynomial
+open Complex Polynomial
+--open classical
 /-!
-# Three applications of Euler's formula
+# The fundamental theorem of algebra
 
 ## TODO
-  - Euler's formula
-    - proof
-  - Proposition
-    - (A)
-    - (B)
-    - (C)
+  - compare analysis.complex.polynomial
+  - statment
     - proof
       - (A)
       - (B)
       - (C)
-  - 1. The Sylvester-Gallai theorem
-    - proof
-  - 2. Monochromatic lines
-    - proof
-  - 3. Pick's theorem
     - Lemma
       - proof
-    - proof
-  - Lattice bases
+-/
+-- porting note: wait for
+-- https://leanprover-community.github.io/mathlib-port-status/file/analysis/special_functions/pow
+/-!
+
+-- TODO: check where the correct def of this is
+def polynomial.constant (f : Polynomial ℂ) : Prop := (0 < degree f)
+
+theorem fundamental_theorem_of_algebra (f : Polynomial ℂ) (h : Polynomial.constant f) :
+  ∃ z : ℂ, is_root f z :=
+begin
+  rw polynomial.constant at h,
+  sorry,
+end
+
 -/

@@ -15,30 +15,16 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
-import analysis.special_functions.pow
-import topology.algebra.polynomial
-open complex polynomial
-open_locale classical
+import Mathlib.Tactic
 /-!
-# The fundamental theorem of algebra
+# Cotangent and the Herglotz trick
 
 ## TODO
-  - compare analysis.complex.polynomial
-  - statment
+  - statement
     - proof
       - (A)
       - (B)
       - (C)
-    - Lemma
-      - proof
+      - (D)
+      - (E)
 -/
--- TODO: check if this definition already exists
-def polynomial.constant (f : polynomial ℂ) : Prop := (0 < degree f)
-
-theorem fundamental_theorem_of_algebra (f : polynomial ℂ) (h : polynomial.constant f) :
-  ∃ z : ℂ, is_root f z :=
-begin
-  rw polynomial.constant at h,
-  sorry,
-end

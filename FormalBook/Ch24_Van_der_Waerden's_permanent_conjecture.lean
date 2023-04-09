@@ -15,19 +15,24 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Three famous theorems on finite sets
+# Van der Waerden's permanent conjecture
 
 ## TODO
-  - Theorem 1
+  - statement
     - proof
-  - Theorem 2
+  - Gurvits' Proposition
+  - proof
+    - Claim 1
+    - Claim 2
+  - Lemma 1
     - proof
-      - Lemma
-        - proof
-  - Theorem 3
+  - Lemma 2
     - proof
-      - Case 1
-      - Case 2
+  - Proof of Gurvits' Proposition
+    - Case 1
+    - Case 2
+    - Claim
+  - Farkas Lemma
 -/

@@ -15,15 +15,15 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# The Borromean rings don't exist
+# Tiling rectangles
 
 ## TODO
-  - Theorem 1
+  - statement
+    - First proof
+    - Second proof
+    - Third proof
+  - Theorem
     - proof
-  - Theorem 2
-    - proof
-      - Claim
-  - Appendix: Basic notions of knots and links
 -/

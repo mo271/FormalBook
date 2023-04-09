@@ -15,22 +15,28 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# A theorem of Pólya on polynomials
+# Three applications of Euler's formula
 
 ## TODO
-  - Theorem 1
-  - Theorem 2
-  - Chebyschev's Theorem
-  - Corollary
+  - Euler's formula
     - proof
-  - Proof of Theorem 2
-  - Two facts about polynomials with real roots
-  - Appendix: Chebyshev's theorem
+  - Proposition
+    - (A)
+    - (B)
+    - (C)
     - proof
       - (A)
       - (B)
-      - proof of (A)
-      - proof of (B)
+      - (C)
+  - 1. The Sylvester-Gallai theorem
+    - proof
+  - 2. Monochromatic lines
+    - proof
+  - 3. Pick's theorem
+    - Lemma
+      - proof
+    - proof
+  - Lattice bases
 -/

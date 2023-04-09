@@ -15,14 +15,13 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Touching simplices
+# Cauchy's rigidity theorem
 
 ## TODO
-  - Conjecture
-  - Theorem 1
+  - statement
     - proof
-  - Theorem 2
+  - Cauchy's arm lemma
     - proof
 -/

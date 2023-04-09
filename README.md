@@ -48,7 +48,7 @@ Status of the chapters:
 
 ### Geometry
   10. :x: [Hilbert's third problem: decomposing polyhedra](./src/chapters/10_Hilbert's_third_problem_decomposing_polyhedra.lean)
-  11. :thought_balloon: [Lines in the plane and decompositions of graphs](./src/chapters/11_Lines_in_the_plane_and_decompositions_of_graphs.lean)
+  11. :x: [Lines in the plane and decompositions of graphs](./src/chapters/11_Lines_in_the_plane_and_decompositions_of_graphs.lean)
   12. :x: [The slope problem](./src/chapters/12_The_slope_problem.lean)
   13. :x: [Three applications of Euler's formula](./src/chapters/13_Three_applications_of_Euler's_formula.lean)
   14. :x: [Cauchy's rigidity theorem](./src/chapters/14_Cauchy's_rigidity_theorem.lean)
@@ -94,7 +94,7 @@ Contributions are most welcome! Feel free to
     - definitions, (if not yet in mathlib)
     - statements and
     - proofs
-  - fill in [`sorry`s](https://github.com/mo271/formal_book/search?q=sorry+extension%3Alean)
+  - fill in [`sorry`s](https://github.com/mo271/formal_book/search?q=sorry+extension%3Alean&type=code)
   - suggest improvements to proofs/code golf
   - correct typos/formatting/linting
 

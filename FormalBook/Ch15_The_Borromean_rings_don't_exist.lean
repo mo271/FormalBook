@@ -15,20 +15,15 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Four times $π^2/6$
+# The Borromean rings don't exist
 
 ## TODO
-  - statement
-    - first proof
-    - second proof
-    - The Substitution Formula
-    - third proof
-    - fourth proof
-  - Appendix: The Riemann zeta function
-    - (1)
-    - (2)
-    - (3)
-    - (4)
+  - Theorem 1
+    - proof
+  - Theorem 2
+    - proof
+      - Claim
+  - Appendix: Basic notions of knots and links
 -/

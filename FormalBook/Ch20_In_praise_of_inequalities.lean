@@ -15,11 +15,11 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
-import analysis.inner_product_space.basic
-import algebra.module.basic
-import data.real.basic
-open_locale real_inner_product_space
+import Mathlib.Tactic
+-- import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.Real.Basic
+-- open real_inner_product_space
 
 /-!
 # In praise of inequalities
@@ -43,8 +43,11 @@ open_locale real_inner_product_space
     - Second proof
 -/
 
+-- porting note: waiting for
+-- https://leanprover-community.github.io/mathlib-port-status/file/analysis/inner_product_space/basic
+/-!
 -- Not quite sure what we actually need here, want to have ℝ-vector space with inner product.
-variables {V : Type*}  [add_comm_group V] [module ℝ V] [inner_product_space ℝ V] [normed_space ℝ V]
+variables {V : Type _}  [add_comm_group V] [module ℝ V] [inner_product_space ℝ V] [normed_space ℝ V]
 
 theorem cauchy_schwarz_inequality (a b : V) : ⟪a, b⟫^2 ≤ ‖a‖^2 * ‖b‖^2 :=
 begin
@@ -58,3 +61,5 @@ begin
       { sorry, }, }, },
   sorry,
 end
+
+-/

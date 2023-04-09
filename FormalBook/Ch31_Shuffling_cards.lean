@@ -15,27 +15,19 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# One square and an odd number of triangles
+# Shuffling cards
 
 ## TODO
-  - Monsky's Theorem
-    - proof
-      - Lemma 1
-        - proof
-      - Corollary
-        - proof
-      - Lemma 2
-        - proof
-          - (A)
-          - (B)
-  - Appendix: Extending valuations
-    - definition
-    - Theorem
-      - proof
+  - The birthday paradox
+  - The coupon collector
+  - Top-in-ar-random shuffles
+  - Strong uniform stopping rules
     - Lemma
       - proof
-    - Claim
-    - Zorn's Lemma
+  - Theorem 1
+  - Riffle shuffles
+  - Theorem 2
+    - proof
 -/

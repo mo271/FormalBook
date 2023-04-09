@@ -15,16 +15,20 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Cotangent and the Herglotz trick
+# Four times $π^2/6$
 
 ## TODO
   - statement
-    - proof
-      - (A)
-      - (B)
-      - (C)
-      - (D)
-      - (E)
+    - first proof
+    - second proof
+    - The Substitution Formula
+    - third proof
+    - fourth proof
+  - Appendix: The Riemann zeta function
+    - (1)
+    - (2)
+    - (3)
+    - (4)
 -/

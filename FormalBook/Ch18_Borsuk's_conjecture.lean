@@ -15,24 +15,22 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Van der Waerden's permanent conjecture
+# Borsuk's conjecture
 
 ## TODO
   - statement
     - proof
-  - Gurvits' Proposition
-  - proof
-    - Claim 1
-    - Claim 2
-  - Lemma 1
+      - (1)
+      - (2)
+      - (3)
+      - (4)
+  - Lemma
     - proof
-  - Lemma 2
-    - proof
-  - Proof of Gurvits' Proposition
-    - Case 1
-    - Case 2
-    - Claim
-  - Farkas Lemma
+  - Claim 1
+  - Claim 2
+  - Claim 3
+  - Claim 4
+  - Cleam 5
 -/

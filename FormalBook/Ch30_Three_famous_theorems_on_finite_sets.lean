@@ -15,27 +15,19 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Pigeon-hole and double counting
+# Three famous theorems on finite sets
 
 ## TODO
-  - statement
-  - 1. Numbers
-    - Claim
-    - Claim
-  - 2. Sequences
-    - Claim
-      - proof
-  - 3. Sums
-    - Claim
-  - Double Counting
-  - 4. Numbers again
-  - 5. Graphs
-    - Theorem
-      - proof
-    - Claim
-  - 6. Sperner's Lemma
+  - Theorem 1
     - proof
-    - Proof of Brouwer's fixed point theorem (for $n = 2$)
+  - Theorem 2
+    - proof
+      - Lemma
+        - proof
+  - Theorem 3
+    - proof
+      - Case 1
+      - Case 2
 -/

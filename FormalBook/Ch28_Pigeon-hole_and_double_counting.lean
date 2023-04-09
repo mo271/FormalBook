@@ -15,15 +15,27 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Tiling rectangles
+# Pigeon-hole and double counting
 
 ## TODO
   - statement
-    - First proof
-    - Second proof
-    - Third proof
-  - Theorem
+  - 1. Numbers
+    - Claim
+    - Claim
+  - 2. Sequences
+    - Claim
+      - proof
+  - 3. Sums
+    - Claim
+  - Double Counting
+  - 4. Numbers again
+  - 5. Graphs
+    - Theorem
+      - proof
+    - Claim
+  - 6. Sperner's Lemma
     - proof
+    - Proof of Brouwer's fixed point theorem (for $n = 2$)
 -/

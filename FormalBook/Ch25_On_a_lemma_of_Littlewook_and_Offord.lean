@@ -15,7 +15,7 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
 # On a lemma of Littlewook and Offord
 

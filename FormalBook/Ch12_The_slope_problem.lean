@@ -15,19 +15,16 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Shuffling cards
+# The slope problem
 
 ## TODO
-  - The birthday paradox
-  - The coupon collector
-  - Top-in-ar-random shuffles
-  - Strong uniform stopping rules
-    - Lemma
-      - proof
-  - Theorem 1
-  - Riffle shuffles
-  - Theorem 2
+  - statement
     - proof
+      - (1)
+      - (2)
+      - (3)
+      - (4)
+      - (5)
 -/
