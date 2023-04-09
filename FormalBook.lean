@@ -1,2 +1,3 @@
 import FormalBook.Ch01_Six_proofs_of_the_infinity_of_primes
 import FormalBook.«Ch02_Bertrand's_postulate»
+import FormalBook.Ch04_Representing_numbers_as_sums_of_two_squares
