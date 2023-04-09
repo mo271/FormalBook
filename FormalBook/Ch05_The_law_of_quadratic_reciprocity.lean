@@ -15,17 +15,16 @@ limitations under the License.
 
 Authors: Moritz Firsching, Nikolas Kuhn
 -/
-import tactic
-import data.zmod.basic
-import data.finset.card
-import data.polynomial.basic
-import order.locally_finite
+import Mathlib.Tactic
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Polynomial.Basic
+import Mathlib.Order.LocallyFinite
 
 
-open zmod finset
-open polynomial (X)
-open_locale polynomial
-open_locale big_operators
+open ZMod Finset
+open Polynomial (X)
+open BigOperators
 
 /-!
 # The law of quadratic reciprocity
@@ -45,46 +44,39 @@ open_locale big_operators
     - proof
 -/
 
+section
 namespace book
 namespace quadratic_reciprocity
 
 
 
 
-section
 /- Throughout this section, `p` is an odd prime. -/
-variables (p : ℕ) (h_p : p ≠ 2) [fact (nat.prime p)]
+variable (p : ℕ) (h_p : p ≠ 2) [Fact (Nat.Prime p)]
 
 
 def legendre_sym (a : ℤ) : ℤ :=
-  ite ( (a : zmod p) = 0) 0 $
-    ite (∃ b : zmod p, a = b ^ 2) 1 (-1)
+  ite ( (a : ZMod p) = 0) 0 $
+    ite (∃ b : ZMod p, a = b ^ (2 : ℤ)) 1 (-1)
 
 /--
 Fermat's little theorem: If `a` is nonzero modulo the odd prime `p`, then `a ^ (p - 1) = -1`
 modulo `p`.
 -/
-lemma fermat_little (a : ℤ): (a ≠ (0 : zmod p)) → a ^ (p - 1) = (-1 : zmod p) :=
-begin
-  let units_finset := (finset.univ : finset (zmod p)).erase 0,
-  suffices : (units_finset).image (λ x : zmod p, (a : zmod p) * x) = units_finset, by
-    sorry,
-  sorry,
-end
+lemma fermat_little (a : ℤ): (a ≠ (0 : ZMod p)) → a ^ (p - 1) = (-1 : ZMod p) := by
+  let units_finset := (Finset.univ : Finset (ZMod p)).erase 0
+  let image_finset := (units_finset).image (fun x : ZMod p => (a : ZMod p) * x)
+  have : units_finset = image_finset := by sorry
+  sorry
+
 
 theorem euler_criterion (a : ℤ) :
-  a ≠ (0 : zmod p) → (legendre_sym p a : zmod p) = a ^ ((p - 1) / 2) :=
-begin
-  sorry,
-end
+  a ≠ (0 : ZMod p) → (legendre_sym p a : ZMod p) = a ^ ((p - 1) / 2) := by
+  sorry
 
 lemma product_rule (a b : ℤ) :
-  legendre_sym p (a * b) = (legendre_sym p a) * (legendre_sym p b) :=
-begin
-  sorry,
-end
-
-end
+  legendre_sym p (a * b) = (legendre_sym p a) * (legendre_sym p b) := by
+  sorry
 
 /-!
 ### First proof
@@ -93,17 +85,17 @@ For the statement, see `theorem quadratic_reciprocity_1`.
 
 -- Maybe define the function `r i` = "reduce p i" explicitly ?
 --TODO : This should probably be broken down a little bit first
-lemma lemma_of_Gauss (p : ℕ) [fact (nat.prime p)] (a : ℤ) (h_a : a ≠ (0 : zmod p))
+lemma lemma_of_Gauss (p : ℕ) [Fact (Nat.Prime p)] (a : ℤ) (h_a : a ≠ (0 : ZMod p))
   ( r : ℤ → ℤ ) (h_r : (∀ i, (- (p: ℤ) - 1)/2 ≤ r i ∧ r i ≤ ((p : ℤ) - 1)/2))
-  ( H : ∀ i, (r i : ℤ) = (a * i : zmod p) ) :
+  ( H : ∀ i, (r i : ℤ) = (a * i : ZMod p) ) :
+   -- TODO: check why this is needed after porting to lean4
+   have : LocallyFiniteOrder ℤ := by sorry
    legendre_sym p a =
-   card ((Icc (1 : ℤ) (((p : ℤ)-1)/2)).image r ∩ (Icc (-((p: ℤ) - 1)/2) (-1))):=
-begin
+   Finset.card ((Icc (1 : ℤ) (((p : ℤ)-1)/2)).image r ∩ (Icc (-((p: ℤ) - 1)/2) (-1))) := by
   sorry
-end
 
 theorem quadratic_reciprocity_1 (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2)
-  [fact (nat.prime p)] [fact (nat.prime q)] :
+  [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] :
   (legendre_sym p q) * (legendre_sym q p) = -1 ^ ((p-1) / 2 * (q - 1) / 2 ) :=
   sorry
 
@@ -118,39 +110,30 @@ TODO:
 -/
 
 /- The group of units of a finite field is cyclic, i.e. has a multiplicative generator-/
-lemma mult_cyclic (K : Type*) [field K] [fintype K] : ∃ ζ : Kˣ, ∀ α : Kˣ, ∃ k : ℤ, α = ζ ^ k :=
-begin
-  sorry,
-end
+lemma mult_cyclic (K : Type _) [Field K] [Fintype K] : ∃ ζ : Kˣ, ∀ α : Kˣ, ∃ k : ℤ, α = ζ ^ k := by
+  sorry
 
 
-
-lemma fact_A (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2) [fact (nat.prime p)] [fact (nat.prime q)]
-  (h_pq : p ≠ q) (K : Type*) [field K] [fintype K] (H : fintype.card K = q ^ (p - 1)) :
+lemma fact_A (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2) [Fact (Nat.Prime p)] [Fact (Nat.Prime q)]
+  (h_pq : p ≠ q) (K : Type _) [Field K] [Fintype K] (H : Fintype.card K = q ^ (p - 1)) :
   ∀ a b : K, (a + b) ^ q = a ^ q + b ^ q :=
-begin
-  sorry,
-end
+  sorry
 
 /-
 For any element `ζ` of multiplicative order `p` in a field `K`, we have a polynomial
 decomposition`X^p - 1 = (X - ζ) * (X - ζ ^ 2) * ... * (X - ζ ^ p)`.
 -/
-lemma fact_B (p : ℕ) [fact (prime p)] (K : Type*) [field K] (ζ : Kˣ) (h_1 : ζ ^ p = 1)
+lemma fact_B (p : ℕ) [Fact (Prime p)] (K : Type _) [Field K] (ζ : Kˣ) (h_1 : ζ ^ p = 1)
   (h_2 : ζ ≠ 1) :
-  X  ^ (p - 1) - (1 : K[X])  = ∏ i in Icc 1 p, (X - (polynomial.C (ζ : K)) ^ i) :=
-begin
-  sorry,
-end
+  X  ^ (p - 1) - 1  = ∏ i in Icc 1 p, (X - (Polynomial.C (ζ : K)) ^ i) := by
+  sorry
 
 theorem quadratic_reciprocity_2 (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2)
-  [fact (nat.prime p)] [fact (nat.prime q)] :
-  (legendre_sym p q) * (legendre_sym q p) = -1 ^ ((p-1) / 2 * (q - 1) / 2 ) :=
-begin
+  [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] :
+  (legendre_sym p q) * (legendre_sym q p) = -1 ^ ((p-1) / 2 * (q - 1) / 2 ) := by
   sorry
-end
 
 
 end quadratic_reciprocity
 end book
-
+end --section
