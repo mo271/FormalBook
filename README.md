@@ -5,7 +5,7 @@ A collaborative, work-in-progress attempt to formalize [Proofs from THE BOOK](ht
 
 > :warning: Currently this repo is in the process of transitioning from lean3 to lean4.
 > The unported old lean3 files can be found in the [./scr/chapters/](./src) directory,
-> while the new files will appear in the [FormalBook]()./FormalBook) directory.
+> while the new files will appear in the [FormalBook](./FormalBook) directory.
 
 ![Formal Proofs from THE BOOK](formal_proofs_form_the_book.svg)
 
