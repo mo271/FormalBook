@@ -15,13 +15,11 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Five-coloring plane graphs
+# Identities versus bijections
 
 ## TODO
   - statement
     - proof
-      - Case 1
-      - Case 2
 -/

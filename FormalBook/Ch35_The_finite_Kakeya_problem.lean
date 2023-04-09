@@ -15,18 +15,15 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Turán's graph theorem
+# The finite Kakeya problem
 
 ## TODO
   - statement
-    - First proof
-    - Second proof
-    - Third proof
-    - Fourth proof
-      - Claim
-    - Fifth proof
-      - Case 1
-      - Case 2
+    - Lemma 1
+      - proof
+    - Lemma 2
+  - Theorem
+     -proof
 -/

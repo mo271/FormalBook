@@ -15,22 +15,18 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Permanents and the power of entropy
+# Turán's graph theorem
 
 ## TODO
-  - Theorem 1
-    - proof
-  - Theorem 2
-  - Corollary
-    - proof
-  - Appendix: More about entropy
-    - (A)
-      - proof
-    - (B)
-      - proof
-    - (C)
-      - proof
-
+  - statement
+    - First proof
+    - Second proof
+    - Third proof
+    - Fourth proof
+      - Claim
+    - Fifth proof
+      - Case 1
+      - Case 2
 -/

@@ -15,17 +15,16 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# The Dinitz problem
+# Communicating without errors
 
 ## TODO
-  - Definition 1
-  - Lemma 1
-    - proof
-  - Definition 2
-  - Lemma 2
-    - proof
+  - Pentagons and the golden section
+  - (A)
+  - (B)
+  - (C)
   - Theorem
     - proof
+  - The eigenvalues of $C_m$
 -/

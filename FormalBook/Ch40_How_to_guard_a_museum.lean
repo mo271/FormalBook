@@ -15,16 +15,12 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# The chromatic number of Kneser graphs
+# How to guard a museum
 
 ## TODO
-  - Kneser's conjecture
-  - The Borsuk-Ulam theorem
-  - Theorem
-  - Proof of the Lysternik-Shnirel'man theorem using Borsuk-Ulam
-  - Gale's Theorem
-  - Proof of the Kneser conjecture.
-  - Appendix: A proof sketch for the Borsuk-Ulam theorem
+  - statement
+    - proof
+      - Claim
 -/

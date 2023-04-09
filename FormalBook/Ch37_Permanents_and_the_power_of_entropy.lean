@@ -15,18 +15,22 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Cayley's formula for the number of trees
+# Permanents and the power of entropy
 
 ## TODO
-  - statement
-    - First proof (Bijection)
-    - Second proof (Linear Algebra)
-      - Proposition
-        - proof
-    - Third proof (Recursion)
-      - Proposition
-        -proof
-    - Fourth proof (Double Counting)
+  - Theorem 1
+    - proof
+  - Theorem 2
+  - Corollary
+    - proof
+  - Appendix: More about entropy
+    - (A)
+      - proof
+    - (B)
+      - proof
+    - (C)
+      - proof
+
 -/

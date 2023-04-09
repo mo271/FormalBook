@@ -15,12 +15,17 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# How to guard a museum
+# Of friends and politicians
 
 ## TODO
+  - Check what can be ported from archive/100-theorems-list/83_friendship_graphs,
+  seems to follow the book closely!
+
   - statement
     - proof
-      - Claim
+      - (1)
+      - (2)
+  - Kotzig's Conjecture
 -/

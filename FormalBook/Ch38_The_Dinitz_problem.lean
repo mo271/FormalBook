@@ -15,13 +15,15 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Completing Latin squares
+# The Dinitz problem
 
 ## TODO
+  - Definition 1
   - Lemma 1
     - proof
+  - Definition 2
   - Lemma 2
     - proof
   - Theorem

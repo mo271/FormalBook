@@ -15,15 +15,18 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# The finite Kakeya problem
+# Cayley's formula for the number of trees
 
 ## TODO
   - statement
-    - Lemma 1
-      - proof
-    - Lemma 2
-  - Theorem
-     -proof
+    - First proof (Bijection)
+    - Second proof (Linear Algebra)
+      - Proposition
+        - proof
+    - Third proof (Recursion)
+      - Proposition
+        -proof
+    - Fourth proof (Double Counting)
 -/

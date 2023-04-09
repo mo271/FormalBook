@@ -27,3 +27,17 @@ import FormalBook.«Ch28_Pigeon-hole_and_double_counting»
 import FormalBook.Ch29_Tiling_rectangles
 import FormalBook.Ch30_Three_famous_theorems_on_finite_sets
 import FormalBook.Ch31_Shuffling_cards
+import FormalBook.«Ch33_Cayley's_formula_for_the_number_of_trees»
+import FormalBook.Ch34_Identities_versus_bijections
+import FormalBook.Ch35_The_finite_Kakeya_problem
+import FormalBook.Ch36_Completing_Latin_squares
+import FormalBook.Ch37_Permanents_and_the_power_of_entropy
+import FormalBook.Ch38_The_Dinitz_problem
+import FormalBook.«Ch39_Five-coloring_plane_graphs»
+import FormalBook.Ch40_How_to_guard_a_museum
+import FormalBook.«Ch41_Turán's_graph_theorem»
+import FormalBook.Ch42_Communicating_without_errors
+import FormalBook.Ch43_The_chromatic_number_of_Kneser_graphs
+import FormalBook.Ch44_Of_friends_and_politicians
+import FormalBook.«Ch45_Probability_makes_counting_(sometimes)_easy»
+

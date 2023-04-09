@@ -15,11 +15,15 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Identities versus bijections
+# Completing Latin squares
 
 ## TODO
-  - statement
+  - Lemma 1
+    - proof
+  - Lemma 2
+    - proof
+  - Theorem
     - proof
 -/

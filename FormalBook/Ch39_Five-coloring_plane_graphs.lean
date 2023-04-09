@@ -15,16 +15,13 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Communicating without errors
+# Five-coloring plane graphs
 
 ## TODO
-  - Pentagons and the golden section
-  - (A)
-  - (B)
-  - (C)
-  - Theorem
+  - statement
     - proof
-  - The eigenvalues of $C_m$
+      - Case 1
+      - Case 2
 -/

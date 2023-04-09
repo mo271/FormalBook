@@ -15,17 +15,16 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
-# Of friends and politicians
+# The chromatic number of Kneser graphs
 
 ## TODO
-  - Check what can be ported from archive/100-theorems-list/83_friendship_graphs,
-  seems to follow the book closely!
-
-  - statement
-    - proof
-      - (1)
-      - (2)
-  - Kotzig's Conjecture
+  - Kneser's conjecture
+  - The Borsuk-Ulam theorem
+  - Theorem
+  - Proof of the Lysternik-Shnirel'man theorem using Borsuk-Ulam
+  - Gale's Theorem
+  - Proof of the Kneser conjecture.
+  - Appendix: A proof sketch for the Borsuk-Ulam theorem
 -/
