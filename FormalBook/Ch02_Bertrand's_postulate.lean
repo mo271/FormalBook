@@ -15,8 +15,10 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
-import number_theory.bertrand -- follows the book-proof pretty closely!
+import Mathlib.Tactic
+-- not yet ported,
+-- see https://leanprover-community.github.io/mathlib-port-status/file/number_theory/bertrand
+-- import NumberTheory.Bertrand -- follows the book-proof pretty closely,
 /-!
 # Bertrand's postulate
 
