@@ -15,7 +15,7 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import tactic
+import Mathlib.Tactic
 /-!
 # The spectral theorem and Hadamard's determinant problem
 
