@@ -3,9 +3,9 @@
 A collaborative, work-in-progress attempt to formalize [Proofs from THE BOOK](https://link.springer.com/book/10.1007/978-3-662-57265-8) using [Lean4](https://leanprover.github.io/lean4/doc/whatIsLean.html).
 
 
-> :exclamation_mark: Currently this repo is in the process of transitioning from lean3 to lean4.
-> The old lean3 files can be found in the [./scr/chapters/](./src) directory, while the new files will
-> appear in the [FormalBook][./FormalBook] directory.
+> :warning: Currently this repo is in the process of transitioning from lean3 to lean4.
+> The unported old lean3 files can be found in the [./scr/chapters/](./src) directory,
+> while the new files will appear in the [FormalBook]()./FormalBook) directory.
 
 ![Formal Proofs from THE BOOK](formal_proofs_form_the_book.svg)
 
