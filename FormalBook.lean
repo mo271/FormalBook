@@ -2,6 +2,7 @@ import FormalBook.Ch01_Six_proofs_of_the_infinity_of_primes
 import FormalBook.«Ch02_Bertrand's_postulate»
 import FormalBook.Ch04_Representing_numbers_as_sums_of_two_squares
 import FormalBook.Ch05_The_law_of_quadratic_reciprocity
+import FormalBook.Ch06_Every_finite_division_ring_is_a_field
 import FormalBook.«Ch07_The_spectral_theorem_and_Hadamard's_determinant_problem»
 import FormalBook.Ch08_Some_irrational_numbers
 import FormalBook.«Ch09_Four_times_pi²_over_6»
