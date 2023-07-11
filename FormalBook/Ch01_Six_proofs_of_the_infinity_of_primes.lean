@@ -21,7 +21,7 @@ import Mathlib.Tactic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Parity
---import Mathlib.NumberTheory.LucasLehmer
+import Mathlib.NumberTheory.LucasLehmer
 
 open Finset Nat
 open BigOperators
@@ -133,31 +133,25 @@ theorem infinity_of_primes₃:
   ¬ (∃ (p : ℕ), Nat.Prime p ∧ (∀ (q : ℕ), (Nat.Prime q) → q ≤ p)) := by
   simp only [not_exists, not_and, not_forall, not_le, exists_prop]
   intros p h
-  -- Currently port still missing LucasLehmer:
-  -- https://github.com/leanprover-community/mathlib4/pull/2988
-  sorry
-  /- let m := Mersenne p
-  /- This m has a prime factor;
-  we pick the minimal one, the argument works with any prime factor -/
+  let m := mersenne p
+  -- This m has a prime factor;
+  -- we pick the minimal one, the argument works with any prime factor -/
   let q := m.minFac
   have h_mod_q : 2^p % q = 1 := by
-    have : (2^p - 1) % q = 0 :=  mod_eq_zero_of_dvd (min_fac_dvd m)
+    have : (2^p - 1) % q = 0 :=  mod_eq_zero_of_dvd (minFac_dvd m)
     sorry
   have h_piv_div_q_sub_one : p ∣ q - 1 := by
   -- Use Lagrange's theorem here!
     sorry
   use q
-  split
-  · refine min_fac_prime _
+  constructor
+  · refine' minFac_prime _
     have one_lt_mersenne : 1 < mersenne p := by
       dsimp [mersenne]
-      calc 1 < 2^2 - 1 : by norm_num
-         ... ≤ 2^p - 1 : pred_le_pred (pow_le_pow_of_le_right (nat.succ_pos 1) (prime.two_le h))
-    exact ne.symm (ne_of_lt one_lt_mersenne)
-    sorry
-  -/
-
-
+      calc 1 < 2^2 - 1 := by norm_num
+          _  ≤ 2^p - 1 := (pred_eq_sub_one 4).symm ▸ pred_le_pred <| pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp)
+    exact Nat.ne_of_gt one_lt_mersenne
+  · sorry
 /-!
 ### Fourth proof
 
