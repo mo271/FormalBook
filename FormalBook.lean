@@ -30,6 +30,7 @@ import FormalBook.Ch29_Tiling_rectangles
 import FormalBook.Ch30_Three_famous_theorems_on_finite_sets
 import FormalBook.Ch31_Shuffling_cards
 import FormalBook.«Ch33_Cayley's_formula_for_the_number_of_trees»
+import FormalBook.Ch32_Lattice_paths_and_determinants
 import FormalBook.Ch34_Identities_versus_bijections
 import FormalBook.Ch35_The_finite_Kakeya_problem
 import FormalBook.Ch36_Completing_Latin_squares
