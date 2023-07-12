@@ -149,7 +149,8 @@ theorem infinity_of_primes₃:
     have one_lt_mersenne : 1 < mersenne p := by
       dsimp [mersenne]
       calc 1 < 2^2 - 1 := by norm_num
-          _  ≤ 2^p - 1 := (pred_eq_sub_one 4).symm ▸ pred_le_pred <| pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp)
+          _  ≤ 2^p - 1 := (pred_eq_sub_one 4).symm ▸ pred_le_pred <|
+              pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le h)
     exact Nat.ne_of_gt one_lt_mersenne
   · sorry
 /-!
