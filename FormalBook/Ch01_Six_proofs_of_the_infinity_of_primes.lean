@@ -137,9 +137,16 @@ theorem infinity_of_primes₃:
   -- This m has a prime factor;
   -- we pick the minimal one, the argument works with any prime factor -/
   let q := m.minFac
-  have h_mod_q : 2^p % q = 1 := by
+  have h_mod_q : 2 ^ p  ≡ 1 [MOD q] := by
     have : (2^p - 1) % q = 0 :=  mod_eq_zero_of_dvd (minFac_dvd m)
-    sorry
+    change (2^p - 1) ≡ 0 [MOD q] at this
+    rw [modEq_iff_dvd, dvd_iff_exists_eq_mul_left] at *
+    obtain ⟨c, hc⟩ := this
+    use c
+    simp only [CharP.cast_eq_zero, ge_iff_le, gt_iff_lt, pow_pos, cast_pred, cast_pow, cast_ofNat,
+        zero_sub, neg_sub] at hc
+    simp only [cast_one, cast_pow, cast_ofNat, hc]
+
   have h_piv_div_q_sub_one : p ∣ q - 1 := by
   -- Use Lagrange's theorem here!
     sorry
@@ -152,7 +159,11 @@ theorem infinity_of_primes₃:
           _  ≤ 2^p - 1 := (pred_eq_sub_one 4).symm ▸ pred_le_pred <|
               pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le h)
     exact Nat.ne_of_gt one_lt_mersenne
-  · sorry
+  · have h2q : 2 ≤ q := by
+      exact Prime.two_le <| minFac_prime <| Nat.ne_of_gt <| lt_of_succ_lt <|
+          Nat.sub_le_sub_right ((pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le h))) 1
+    exact lt_of_le_of_lt (Nat.le_of_dvd  (Nat.sub_pos_of_lt <| h2q) h_piv_div_q_sub_one)
+        <| pred_lt <| Nat.ne_of_gt <| Nat.le_of_lt h2q
 /-!
 ### Fourth proof
 
