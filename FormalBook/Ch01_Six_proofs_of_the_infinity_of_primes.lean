@@ -20,7 +20,11 @@ import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Tactic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Pow
+import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Nat.Parity
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.GroupTheory.Coset
 import Mathlib.NumberTheory.LucasLehmer
 
 open Finset Nat
@@ -30,7 +34,7 @@ open BigOperators
 
 ## TODO
  - Seccond Proof : golf/formatting
- - Third Proof
+ - Third Proof : golf/formatting/comments
  - Fourth Proof
  - Fifth Proof
  - Sixth Proof
@@ -129,14 +133,30 @@ theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): coprime (F n) (F k) := b
 
 using Mersenne numbers
 -/
+lemma ZMod.one_ne_zero (q : ℕ) [Fact (1 < q)] : (1 : ZMod q) ≠ 0 := by
+  intro h
+  have := ZMod.val_one q ▸ (ZMod.val_eq_zero (1 : ZMod q)).mpr h
+  linarith
+
+lemma ZMod.two_ne_one (q : ℕ)  [Fact (1 < q)] : (2 : ZMod q) ≠ 1 := by
+  intro h1
+  have h : (2 - 1 : ZMod q) = 0 := by exact Iff.mpr sub_eq_zero h1
+  norm_num at h
+  have := ZMod.one_ne_zero q
+  exact this h
+
+
 theorem infinity_of_primes₃:
   ¬ (∃ (p : ℕ), Nat.Prime p ∧ (∀ (q : ℕ), (Nat.Prime q) → q ≤ p)) := by
   simp only [not_exists, not_and, not_forall, not_le, exists_prop]
-  intros p h
+  intros p hp
+  have : Fact (Nat.Prime p) := by exact { out := hp }
   let m := mersenne p
   -- This m has a prime factor;
-  -- we pick the minimal one, the argument works with any prime factor -/
+  -- we pick the minimal one, the argument works with any prime factor
   let q := m.minFac
+  have hq : q.Prime := minFac_prime <| Nat.ne_of_gt <| one_lt_mersenne <| Prime.one_lt hp
+  have : Fact (Nat.Prime q) := by exact { out := hq }
   have h_mod_q : 2 ^ p  ≡ 1 [MOD q] := by
     have : (2^p - 1) % q = 0 :=  mod_eq_zero_of_dvd (minFac_dvd m)
     change (2^p - 1) ≡ 0 [MOD q] at this
@@ -146,10 +166,45 @@ theorem infinity_of_primes₃:
     simp only [CharP.cast_eq_zero, ge_iff_le, gt_iff_lt, pow_pos, cast_pred, cast_pow, cast_ofNat,
         zero_sub, neg_sub] at hc
     simp only [cast_one, cast_pow, cast_ofNat, hc]
-
+  have h_mod_q' : (2 : (ZMod q)) ^ p = 1 := by
+    have := (ZMod.nat_cast_eq_nat_cast_iff _ _ _).mpr h_mod_q
+    norm_cast at this
+    rw [← this, cast_pow, cast_ofNat]
+  have : (2 : (ZMod q)) * (2 ^ (p - 1)) = 1 := by
+    convert h_mod_q'
+    nth_rw 1 [← pow_one 2]
+    rw [← pow_add 2 1 (p - 1)]
+    congr
+    exact add_sub_of_le <| Prime.pos hp
+  let two := Units.mkOfMulEqOne (2 : (ZMod q)) (2 ^ (p - 1)) this
+  have two_desc : ↑two = (2 : (ZMod q)) := by
+    convert Units.val_mkOfMulEqOne this
+  have h_two : two ^ p = 1 := by
+    ext
+    push_cast
+    rw [two_desc]
+    exact h_mod_q'
+  have two_ne_one : two ≠ 1 := by
+    by_contra h
+    rw [Units.ext_iff] at h
+    push_cast at h
+    rw [two_desc] at h
+    exact (ZMod.two_ne_one q) h
+  have : NeZero q := by
+    refine' { out := (Nat.Prime.ne_zero hq )}
+  have : Fintype (ZMod q) := by
+    refine' @ZMod.fintype q _
+  have order_two : orderOf ( two : ((ZMod q)ˣ)) = p := orderOf_eq_prime h_two two_ne_one
   have h_piv_div_q_sub_one : p ∣ q - 1 := by
-  -- Use Lagrange's theorem here!
-    sorry
+    -- The following shorter proof would work, but we want to use Lagrange's theorem
+    -- convert ZMod.orderOf_units_dvd_card_sub_one two
+    -- exact order_two.symm
+
+    -- Using Lagrange's theorem here!
+    convert Subgroup.card_subgroup_dvd_card (Subgroup.zpowers (two))
+    · rw [← order_two]
+      exact orderOf_eq_card_zpowers
+    · exact ((prime_iff_card_units q).mp hq).symm
   use q
   constructor
   · refine' minFac_prime _
@@ -157,11 +212,11 @@ theorem infinity_of_primes₃:
       dsimp [mersenne]
       calc 1 < 2^2 - 1 := by norm_num
           _  ≤ 2^p - 1 := (pred_eq_sub_one 4).symm ▸ pred_le_pred <|
-              pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le h)
+              pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp)
     exact Nat.ne_of_gt one_lt_mersenne
   · have h2q : 2 ≤ q := by
       exact Prime.two_le <| minFac_prime <| Nat.ne_of_gt <| lt_of_succ_lt <|
-          Nat.sub_le_sub_right ((pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le h))) 1
+          Nat.sub_le_sub_right ((pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp))) 1
     exact lt_of_le_of_lt (Nat.le_of_dvd  (Nat.sub_pos_of_lt <| h2q) h_piv_div_q_sub_one)
         <| pred_lt <| Nat.ne_of_gt <| Nat.le_of_lt h2q
 /-!
