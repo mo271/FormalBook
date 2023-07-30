@@ -57,12 +57,12 @@ theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ {q : ℕ} (_ : q ∈ S),
       intros q hq
       refine' Prime.pos <| h hq
     exact Nat.minFac_prime <| Nat.ne_of_gt <| lt_add_of_pos_right 1 hn
-  refine' ⟨hp,_⟩
+  refine' ⟨hp, _⟩
   by_contra a
   have h_p_div_prod : p ∣ ∏ q in S, q := dvd_prod_of_mem (fun (i : ℕ) => i) a
   have h_p_div_diff : p ∣ n - ∏ q in S, q := dvd_sub' (minFac_dvd n) h_p_div_prod
   have h_p_div_one : p ∣ 1 := by aesop
-  exact Nat.Prime.not_dvd_one (hp) h_p_div_one
+  exact Nat.Prime.not_dvd_one hp h_p_div_one
 
 
 /-!
@@ -113,21 +113,19 @@ theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): coprime (F n) (F k) := b
     have h_m_prod : m ∣ (∏ k in range n, F k) :=
       dvd_trans h_k (dvd_prod_of_mem F (mem_range.mpr h))
     have h_prod : (∏ k in range n, F k) + 2 = F n := by
-      rw [fermat_product]
-      rw [Nat.sub_add_cancel]
+      rw [fermat_product, Nat.sub_add_cancel]
       refine' le_of_lt _
       simp [fermat_bounded]
     refine' (Nat.dvd_add_right h_m_prod).mp _
     rw [h_prod]
     exact h_n
-  have h_one_or_two := (dvd_prime prime_two).mp h_m
-  cases' h_one_or_two with h_one h_two
+  cases' (dvd_prime prime_two).mp h_m with h_one h_two
   · exact h_one
   · by_contra
     rw [h_two] at h_n
     have h_even : Even (F n) := even_iff_two_dvd.mpr h_n
     have h_odd : Odd (F n) := fermat_odd
-    aesop
+    exact (odd_iff_not_even.mp h_odd) h_even
 /-!
 ### Third proof
 
@@ -190,30 +188,23 @@ theorem infinity_of_primes₃:
     push_cast at h
     rw [two_desc] at h
     exact (ZMod.two_ne_one q) h
-  have : NeZero q := by
-    refine' { out := (Nat.Prime.ne_zero hq )}
-  have : Fintype (ZMod q) := by
-    refine' @ZMod.fintype q _
-  have order_two : orderOf ( two : ((ZMod q)ˣ)) = p := orderOf_eq_prime h_two two_ne_one
   have h_piv_div_q_sub_one : p ∣ q - 1 := by
     -- The following shorter proof would work, but we want to use Lagrange's theorem
     -- convert ZMod.orderOf_units_dvd_card_sub_one two
-    -- exact order_two.symm
+    -- exact (orderOf_eq_prime h_two two_ne_one).symm
 
     -- Using Lagrange's theorem here!
     convert Subgroup.card_subgroup_dvd_card (Subgroup.zpowers (two))
-    · rw [← order_two]
+    · rw [← orderOf_eq_prime h_two two_ne_one]
       exact orderOf_eq_card_zpowers
     · exact ((prime_iff_card_units q).mp hq).symm
   use q
   constructor
-  · refine' minFac_prime _
-    have one_lt_mersenne : 1 < mersenne p := by
-      dsimp [mersenne]
-      calc 1 < 2^2 - 1 := by norm_num
-          _  ≤ 2^p - 1 := (pred_eq_sub_one 4).symm ▸ pred_le_pred <|
-              pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp)
-    exact Nat.ne_of_gt one_lt_mersenne
+  · refine' minFac_prime <| Nat.ne_of_gt _
+    dsimp [mersenne]
+    calc 1 < 2^2 - 1 := by norm_num
+        _  ≤ 2^p - 1 := (pred_eq_sub_one 4).symm ▸ pred_le_pred <|
+            pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp)
   · have h2q : 2 ≤ q := by
       exact Prime.two_le <| minFac_prime <| Nat.ne_of_gt <| lt_of_succ_lt <|
           Nat.sub_le_sub_right ((pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp))) 1
