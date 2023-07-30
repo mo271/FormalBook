@@ -90,7 +90,7 @@ Contributions are most welcome! Feel free to
     - definitions, (if not yet in mathlib)
     - statements and
     - proofs
-  - fill in [`sorry`s](https://github.com/mo271/formal_book/search?q=sorry+extension%3Alean&type=code)
+  - fill in [`sorry`s](https://github.com/search?q=repo%3Amo271%2Fformal_book+sorry+path%3A*.lean&type=code)
   - suggest improvements to proofs/code golf
   - correct typos/formatting/linting
 
