@@ -28,6 +28,7 @@ import Mathlib.GroupTheory.Coset
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.PrimeCounting
 import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Topology.Instances.ENNReal
 
 open Finset Nat
 open BigOperators
@@ -217,9 +218,9 @@ theorem infinity_of_primes₃:
 
 using elementary calculus
 -/
+open Filter
 
-
-theorem infinity_of_primes₄ : Filter.Tendsto π atTop atTop := by
+theorem infinity_of_primes₄ : Tendsto π atTop atTop := by
   -- two parts:
   -- (1) log x ≤ π x + 1
   -- (2) This implies that it is not bounded
@@ -232,12 +233,27 @@ using topology
 -/
 
 
+def N : ℕ → ℕ → Set ℤ := fun a b => {a + n * b | n : ℤ}
+
+theorem infinity_of_primes₅ : Fintype { p : ℕ // p.Prime } → False   := by
+  sorry
+
 /-!
 ### Sixth proof
 
 using the sum of inverses of primes
 -/
+-- see Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
+theorem infinity_of_primes₆ :
+  Tendsto (fun n => ∑ p in Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
+      atTop atTop := by
+  sorry
 
 /-!
 ### Appendix: Infinitely many more proofs
 -/
+
+def AlmostInjective (S : ℕ → ℕ) : Prop :=
+  ∃ c : ℕ, ∀ k : ℕ, ∃ h : Set.Finite {n : ℕ | S n = k }, (Set.Finite.toFinset h).card ≤ c
+
+def ofSubexponentialGrowth (S : ℕ → ℕ) : Prop := sorry
