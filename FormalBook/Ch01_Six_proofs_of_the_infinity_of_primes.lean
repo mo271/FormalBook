@@ -26,6 +26,8 @@ import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Coset
 import Mathlib.NumberTheory.LucasLehmer
+import Mathlib.NumberTheory.PrimeCounting
+import Mathlib.Order.Filter.AtTopBot
 
 open Finset Nat
 open BigOperators
@@ -216,11 +218,20 @@ theorem infinity_of_primes₃:
 using elementary calculus
 -/
 
+
+theorem infinity_of_primes₄ : Filter.Tendsto π atTop atTop := by
+  -- two parts:
+  -- (1) log x ≤ π x + 1
+  -- (2) This implies that it is not bounded
+  sorry
+
 /-!
 ### Fifth proof
 
 using topology
 -/
+
+
 /-!
 ### Sixth proof
 
