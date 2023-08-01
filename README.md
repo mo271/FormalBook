@@ -28,11 +28,12 @@ The last step only opens vscode in case you want to use that.
 Status of the chapters:
 
   - :x: chapter is just a stub
-  - :thought_balloon: work in progress
+  - :thought_balloon: work in progress, formalization of some statements still missing
+  - :speech_balloon: work in progress, all statements formalized, some proofs still missing
   - :tada: chapter is completely formalized
 
 ### Number Theory
-  1. :thought_balloon: [Six proofs of the infinity of primes](./src/chapters/01_Six_proofs_of_the_infinity_of_primes.lean)
+  1. :speech_balloon: [Six proofs of the infinity of primes](./src/chapters/01_Six_proofs_of_the_infinity_of_primes.lean)
   2. :thought_balloon: [Bertrand's postulate](./src/chapters/02_Bertrand's_postulate.lean)
   3. :thought_balloon: [Binomial coefficients are (almost) never powers](./src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean)
   4. :x: [Representing numbers as sums of two squares](./src/chapters/04_Representing_numbers_as_sums_of_two_squares.lean)

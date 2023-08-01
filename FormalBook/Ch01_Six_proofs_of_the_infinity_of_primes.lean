@@ -17,11 +17,14 @@ Authors: Moritz Firsching
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Tactic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Real.ENNReal
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Coset
@@ -29,6 +32,7 @@ import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.PrimeCounting
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Basic
 
 open Finset Nat
 open BigOperators
@@ -253,7 +257,20 @@ theorem infinity_of_primes₆ :
 ### Appendix: Infinitely many more proofs
 -/
 
-def AlmostInjective (S : ℕ → ℕ) : Prop :=
+def AlmostInjective (S : ℕ → ℤ) : Prop :=
   ∃ c : ℕ, ∀ k : ℕ, ∃ h : Set.Finite {n : ℕ | S n = k }, (Set.Finite.toFinset h).card ≤ c
 
-def ofSubexponentialGrowth (S : ℕ → ℕ) : Prop := sorry
+variable (fn : NNReal)
+
+open Real NNReal Topology
+
+namespace Asymptotics
+
+def ofSubexponentialGrowth (S : ℕ → ℤ) : Prop := ∃ f : ℕ → ℝ≥0, ∀ n,
+  |S n| ≤ (2 : ℝ) ^ (2 ^ (f n)) ∧ Tendsto (fun n => (f n) / (log 2 n)) atTop (𝓝 0)
+
+theorem infinitely_many_more_proofs (S : ℕ → ℤ)
+  (h₁ : AlmostInjective S) (h₂ : ofSubexponentialGrowth S) :
+  Fintype {p : Nat.Primes // ∃ n : ℕ, (p : ℤ) ∣ S n} → False := by
+  sorry
+
