@@ -146,7 +146,6 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have g : map (Int.castRingHom ℂ) (phi n) = ∏ lamb in (primitiveRoots n ℂ), (X - C lamb) := by
     dsimp only [phi]
     simp only [map_cyclotomic]
-    dsimp only
     sorry
   --#check ∀ (lamb : ℂ), lamb ∈ (primitiveRoots n ℂ) → (Complex.abs ((X - C lamb).eval (q : ℂ))) > (q - 1)
   have h_lamb_gt_q_sub_one : ∀ (lamb : ℂ),
