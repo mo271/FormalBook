@@ -73,7 +73,7 @@ theorem prime_div_descFactorial (n k m l p : ℕ) (h_klen : k ≤ n)
     norm_cast
     exact factorial_mul_factorial_dvd_factorial h_klen
   have h_fac_div' : ↑(n - k)! ∣ (n ! : ℤ) := dvd_of_mul_left_dvd h_fac_div
-  have h_fac_div'' :  (k ! : ℤ) ∣ (↑n ! / ↑(n - k)!) := by
+  have h_fac_div'' : (k ! : ℤ) ∣ (↑n ! / ↑(n - k)!) := by
     norm_cast
     refine' (dvd_div_iff ((Int.coe_nat_dvd).mp h_fac_div')).mpr _
     norm_cast at h_fac_div
