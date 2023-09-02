@@ -21,9 +21,6 @@ import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
--- not yet ported,
--- see https://leanprover-community.github.io/mathlib-port-status/file/number_theory/bertrand
--- import NumberTheory.Bertrand -- follows the book-proof pretty closely,
 /-!
 # Bertrand's postulate
 
@@ -32,6 +29,7 @@ the [proof](https://leanprover-community.github.io/mathlib4_docs/Mathlib/NumberT
 formalized by Patrick Stevens and Bolton Bailey.
 
 ## TODO
+  - rewrite the proof to follow even more closely what is done int The BOOK.
   - Appendix: Some estimates
     - Estimating via integrals
     - Estimating factorials - Stirling's formula
@@ -63,7 +61,6 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
   rw [← div_le_one (rpow_pos_of_pos four_pos x), ← div_div_eq_mul_div, ← rpow_sub four_pos, ←
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
     mul_one_div, ← log_nonpos_iff (hf' x h5), ← hf x h5]
-  -- porting note: the proof was rewritten, because it was too slow
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
     apply ConcaveOn.add
@@ -221,20 +218,21 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
     ∃ p, Nat.Prime p ∧ n < p ∧ p ≤ 2 * n := by
   -- Split into cases whether `n` is large or small
   cases' lt_or_le 511 n with h h
+  swap
+  · -- (1) First Betrand's postulate for n ≤ 511, actually even for n < 521.
+    replace h : n < 521 := h.trans_lt (by norm_num1)
+    revert h
+    -- For small `n`, supply a list of primes to cover the initial cases ("Landau's trick").
+    open Lean Elab Tactic in
+    run_tac do
+      for i in [317, 163, 83, 43, 23, 13, 7, 5, 3, 2] do
+        let i : Term := quote i
+        evalTactic <| ←
+          `(tactic| refine' exists_prime_lt_and_le_two_mul_succ $i (by norm_num1) (by norm_num1) _)
+    exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
   -- If `n` is large, apply the lemma derived from the inequalities on the central binomial
   -- coefficient.
   · exact exists_prime_lt_and_le_two_mul_eventually n h
-  replace h : n < 521 := h.trans_lt (by norm_num1)
-  revert h
-  -- For small `n`, supply a list of primes to cover the initial cases.
-  open Lean Elab Tactic in
-  run_tac do
-    for i in [317, 163, 83, 43, 23, 13, 7, 5, 3, 2] do
-      let i : Term := quote i
-      evalTactic <| ←
-        `(tactic| refine' exists_prime_lt_and_le_two_mul_succ $i (by norm_num1) (by norm_num1) _)
-  exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
-
 
 
 
