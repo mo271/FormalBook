@@ -204,9 +204,9 @@ theorem wedderburn (h: Fintype R): IsField R := by
     exact Polynomial.sub_one_lt_natAbs_cyclotomic_eval hn hq
 
   have h_q_sub_one : 0 ≠ (q : ℤ) - 1 := by
-    have h0 : 1 < q := by sorry
     have h1 : (q : ℤ) - 1 = (q - 1 : ℕ) := by
-      sorry
+      rw [Int.ofNat_sub $ le_of_lt this]
+      norm_num
     rw [h1]
     norm_cast
     exact Nat.ne_of_lt <| Nat.sub_pos_of_lt this
