@@ -20,6 +20,7 @@ import Mathlib.Data.Set.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Subring.Basic
+import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import Mathlib.Data.Polynomial.RingDivision
 import Mathlib.Algebra.Group.Conj
@@ -87,7 +88,8 @@ lemma phi_div_2 (n : ℕ) (k : ℕ) (_ : 1 ≠ k) (h₂ : k ∣ n) (h₃ : k < n
 
 variable {R : Type _}  [DecidableEq R] [DivisionRing R]
 
-
+-- this is currently not needed, because we use Polynomial.sub_one_lt_natAbs_cyclotomic_eval,
+-- TODO: add it later to stay close to the proof in the book.
 theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   lamb ∈ (primitiveRoots n ℂ) → ‖(X - (C lamb)).eval (q : ℂ)‖ > (q - 1) := by
   let a := lamb.re
@@ -132,7 +134,7 @@ theorem wedderburn (h: Fintype R): IsField R := by
 
   set q := Fintype.card Z
 
-  --conjugacy classes with more than one element
+  -- conjugacy classes with more than one element
   -- indexed from 1 to t in the book, here we use "S".
   have finclassa: ∀ (A : ConjClasses Rˣ), Fintype ↑(ConjClasses.carrier A) := by
     intro A
@@ -185,15 +187,31 @@ theorem wedderburn (h: Fintype R): IsField R := by
     --refine (Nat.dvd_add_iff_left h₂_dvd).mpr h₁_dvd
   by_contra
 
-
-
   have g : map (Int.castRingHom ℂ) (phi n) = ∏ lamb in (primitiveRoots n ℂ), (X - C lamb) := by
     dsimp only [phi]
     simp only [map_cyclotomic]
-    sorry
-  -- what we need here is in mathlib as: Polynomial.sub_one_lt_natAbs_cyclotomic_eval
-  have h_gt : |(phi n).eval (q : ℤ)| > q - 1 := by sorry
-  have h_q_sub_one : 0 ≠ (q : ℤ) - 1 := by sorry
+    have : n ≠ 0 := by sorry
+    have := isPrimitiveRoot_exp n this
+    rw [cyclotomic_eq_prod_X_sub_primitiveRoots this]
+
+  have : 2 ≤ q := by
+    refine' Fintype.one_lt_card_iff.mpr _
+    exact exists_pair_ne { x // x ∈ Z }
+  -- here the book uses h_lamb_gt_q_sub_one from above
+  have h_gt :  ((cyclotomic n ℤ).eval ↑q).natAbs > q - 1 := by
+    have hn : 1 < n := by
+      sorry
+    have hq : q ≠ 1 := by exact Nat.ne_of_gt this
+    exact Polynomial.sub_one_lt_natAbs_cyclotomic_eval hn hq
+
+  have h_q_sub_one : 0 ≠ (q : ℤ) - 1 := by
+    have h0 : 1 < q := by sorry
+    have h1 : (q : ℤ) - 1 = (q - 1 : ℕ) := by
+      sorry
+    rw [h1]
+    norm_cast
+    exact Nat.ne_of_lt <| Nat.sub_pos_of_lt this
+
   have : 1 ≤ Fintype.card { x // x ∈ center R } := by
     refine' Fintype.card_pos_iff.mpr _
     exact One.nonempty
@@ -202,6 +220,15 @@ theorem wedderburn (h: Fintype R): IsField R := by
     exact this
   have h_norm := le_abs_of_dvd h_q_sub_one h_phi_dvd_q_sub_one
   rw [h_q] at h_norm
-  exact not_le_of_gt h_gt h_norm
+
+  refine' not_le_of_gt h_gt _
+  have : (q - 1 : ℕ) = (q : ℤ) - 1 := by
+    exact Int.coe_pred_of_pos this
+  rw [← this] at h_norm
+  have : Int.natAbs (eval (↑q) (cyclotomic n ℤ)) = |eval (↑q) (phi n)| := by
+    simp only [Int.coe_natAbs]
+    rfl
+  rw [← this] at h_norm
+  exact_mod_cast h_norm
 
 end wedderburn
