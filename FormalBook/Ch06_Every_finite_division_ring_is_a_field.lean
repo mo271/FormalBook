@@ -40,7 +40,7 @@ This is a TODO in `RingTheory.IntegralDomain`.
 -/
 
 
---Define cyclotomic polynomials and check their basic properties
+-- Define cyclotomic polynomials and check their basic properties
 
 
 -- TODO: find the appropriate lemmas for use in the end of the proof...
@@ -87,10 +87,6 @@ lemma phi_div_2 (n : ℕ) (k : ℕ) (_ : 1 ≠ k) (h₂ : k ∣ n) (h₃ : k < n
 
 variable {R : Type _}  [DecidableEq R] [DivisionRing R]
 
-example (n : ℕ): n + 12 > n + 7 := by
-  calc
-    n + 12 = 12 + n := by sorry
-    _ > n + 7 := by sorry
 
 theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   lamb ∈ (primitiveRoots n ℂ) → ‖(X - (C lamb)).eval (q : ℂ)‖ > (q - 1) := by
@@ -102,15 +98,19 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   have h_ineq :
       ‖((X - C lamb).eval (q : ℂ))‖^2 > ((q : ℝ) - 1)^2  := by
     calc
-      _ = ‖q - lamb‖^2 := by sorry
+      _ = ‖q - lamb‖^2 := by
+        simp only [eval_sub, eval_X, eval_C, norm_eq_abs]
       _ = ‖(q : ℂ) - a - I*b‖^2 := by sorry
       _ = ‖(q : ℂ) - a‖^2 + ‖b‖^2 := by sorry
       _ = (q : ℝ)^2 - 2*‖a‖*q + ‖a‖^2 + ‖b‖^2 := by sorry
       _ > ((q : ℝ) - 1)^2 := by sorry
-      _ = (q - (1 : ℝ))^2 := by sorry
-  sorry
 
-
+  have : 0 ≤ ((q : ℝ) - 1)^2 := by exact sq_nonneg ((q : ℝ) - 1)
+  have g := (Real.sqrt_lt_sqrt_iff this).mpr (h_ineq)
+  have : Real.sqrt (((q:ℝ) - 1) ^ 2) = ((q : ℝ) - 1) := by sorry
+  rw [this] at g
+  simp only [norm_eq_abs, map_nonneg, Real.sqrt_sq] at g
+  exact g
 
 section wedderburn
 
@@ -186,14 +186,20 @@ theorem wedderburn (h: Fintype R): IsField R := by
   by_contra
 
 
+
   have g : map (Int.castRingHom ℂ) (phi n) = ∏ lamb in (primitiveRoots n ℂ), (X - C lamb) := by
     dsimp only [phi]
     simp only [map_cyclotomic]
     sorry
-  -- what we need is in mathlib as: Polynomial.sub_one_lt_natAbs_cyclotomic_eval
+  -- what we need here is in mathlib as: Polynomial.sub_one_lt_natAbs_cyclotomic_eval
   have h_gt : |(phi n).eval (q : ℤ)| > q - 1 := by sorry
   have h_q_sub_one : 0 ≠ (q : ℤ) - 1 := by sorry
-  have h_q : |((q : ℤ) - 1)| = q - 1 := by sorry
+  have : 1 ≤ Fintype.card { x // x ∈ center R } := by
+    refine' Fintype.card_pos_iff.mpr _
+    exact One.nonempty
+  have h_q : |((q : ℤ) - 1)| = q - 1 := by
+    norm_num
+    exact this
   have h_norm := le_abs_of_dvd h_q_sub_one h_phi_dvd_q_sub_one
   rw [h_q] at h_norm
   exact not_le_of_gt h_gt h_norm
