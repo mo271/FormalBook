@@ -112,7 +112,7 @@ lemma fermat_product (n : ℕ) : ∏ k in range n, F k = F n - 2 := by
   rw [succ_eq_add_one, mul_comm, ← Nat.sq_sub_sq]
   ring_nf
 
-theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): coprime (F n) (F k) := by
+theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): Coprime (F n) (F k) := by
   let m := (F n).gcd (F k)
   have h_n : m ∣ F n := (F n).gcd_dvd_left (F k)
   have h_k : m ∣ F k := (F n).gcd_dvd_right (F k)
