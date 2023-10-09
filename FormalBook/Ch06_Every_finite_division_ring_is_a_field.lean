@@ -84,12 +84,33 @@ lemma phi_div_2 (n : ℕ) (k : ℕ) (_ : 1 ≠ k) (h₂ : k ∣ n) (h₃ : k < n
   have h_proper_div : k ∈ n.properDivisors := Nat.mem_properDivisors.mpr ⟨h₂, h₃⟩
   exact X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ h_proper_div
 
-lemma test (R : Type) :  ¬ ∃ (x y : R), x = y ↔ ∀ (x y : R), ¬ x = y:= by
-  exact?
---  rw [← not_not]
-
 
 variable {R : Type _}  [DecidableEq R] [DivisionRing R]
+
+example (n : ℕ): n + 12 > n + 7 := by
+  calc
+    n + 12 = 12 + n := by sorry
+    _ > n + 7 := by sorry
+
+theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
+  lamb ∈ (primitiveRoots n ℂ) → ‖(X - (C lamb)).eval (q : ℂ)‖ > (q - 1) := by
+  let a := lamb.re
+  let b := lamb.im
+  intro h
+  have h_lamb: lamb ≠ 1 := by sorry
+  have h_a_lt_one: ‖a‖ < 1 := by sorry
+  have h_ineq :
+      ‖((X - C lamb).eval (q : ℂ))‖^2 > ((q : ℝ) - 1)^2  := by
+    calc
+      _ = ‖q - lamb‖^2 := by sorry
+      _ = ‖(q : ℂ) - a - I*b‖^2 := by sorry
+      _ = ‖(q : ℂ) - a‖^2 + ‖b‖^2 := by sorry
+      _ = (q : ℝ)^2 - 2*‖a‖*q + ‖a‖^2 + ‖b‖^2 := by sorry
+      _ > ((q : ℝ) - 1)^2 := by sorry
+      _ = (q - (1 : ℝ))^2 := by sorry
+  sorry
+
+
 
 section wedderburn
 
@@ -169,34 +190,12 @@ theorem wedderburn (h: Fintype R): IsField R := by
     dsimp only [phi]
     simp only [map_cyclotomic]
     sorry
-  --#check ∀ (lamb : ℂ), lamb ∈ (primitiveRoots n ℂ) → (Complex.abs ((X - C lamb).eval (q : ℂ))) > (q - 1)
-  have h_lamb_gt_q_sub_one : ∀ (lamb : ℂ),
-      lamb ∈ (primitiveRoots n ℂ) → (Complex.abs ((X - (C lamb)).eval (q : ℂ))) > (q - 1) := by
-    sorry
-    /-TODO: repair proof
-    intro lamb
-    let a := realPart lamb
-    let b := imaginaryPart lamb
-    have h_lamb: lamb ≠ 1 := by sorry
-    have h_a_lt_one: ‖a‖ < 1 := by sorry
-    have h_ineq :
-        (Complex.abs ((X - C lamb).eval (q : ℂ)))^2 = (abs ((q : ℂ) - lamb))^2 > (q - 1)^2 := by
-      sorry
-      /- calc  (Complex.abs ((X - C lamb).eval (q : ℂ)))^2 = (abs ((q : ℂ) - lamb))^2 :
-            by simp only [eval_sub, eval_X, eval_C]
-          ... = (abs ((q : ℂ) - a - I*b))^2 : by sorry
-          ... = (abs ((q : ℂ) - a))^2 + ‖b‖^2 : by sorry
-          ... = q^2 - 2*‖a‖*q + ‖a‖^2 + ‖b‖^2 : by sorry
-          ... > q^2 - 2*q + 1 : by sorry
-          ... = (q - 1)^2 : by sorry
-        sorry-/
-  have h_gt: |(phi n).eval q| > q - 1 := by sorry
+  -- what we need is in mathlib as: Polynomial.sub_one_lt_natAbs_cyclotomic_eval
+  have h_gt : |(phi n).eval (q : ℤ)| > q - 1 := by sorry
   have h_q_sub_one : 0 ≠ (q : ℤ) - 1 := by sorry
   have h_q : |((q : ℤ) - 1)| = q - 1 := by sorry
-  have h_norm := le_abs_of_dvd h_q_sub_one h_phi_dvd_q_sub_one,
-  rw h_q at h_norm,
+  have h_norm := le_abs_of_dvd h_q_sub_one h_phi_dvd_q_sub_one
+  rw [h_q] at h_norm
   exact not_le_of_gt h_gt h_norm
-  --/
-  sorry
 
 end wedderburn
