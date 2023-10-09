@@ -84,6 +84,9 @@ lemma phi_div_2 (n : ℕ) (k : ℕ) (_ : 1 ≠ k) (h₂ : k ∣ n) (h₃ : k < n
   have h_proper_div : k ∈ n.properDivisors := Nat.mem_properDivisors.mpr ⟨h₂, h₃⟩
   exact X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ h_proper_div
 
+lemma test (R : Type) :  ¬ ∃ (x y : R), x = y ↔ ∀ (x y : R), ¬ x = y:= by
+  exact?
+--  rw [← not_not]
 
 
 variable {R : Type _}  [DecidableEq R] [DivisionRing R]
@@ -96,25 +99,44 @@ theorem wedderburn (h: Fintype R): IsField R := by
 
   obtain ⟨n, h_card⟩ := VectorSpace.card_fintype Z R
 
-  have h_n : n ≠ 0 := by sorry
+  have H : (∃ x y : R, x ≠ y) := by exact exists_pair_ne R
+
+  have h_n : n ≠ 0 := by
+    by_contra h
+    subst h
+    simp only [_root_.pow_zero] at h_card
+    rcases H with ⟨x, y, H⟩
+    absurd H
+    exact Fintype.card_le_one_iff.mp (Nat.le_of_eq h_card) x y
 
   set q := Fintype.card Z
 
   --conjugacy classes with more than one element
   -- indexed from 1 to t in the book, here we use "S".
-  have finclassa: ∀ (A : ConjClasses Rˣ), Fintype ↑(ConjClasses.carrier A) := by sorry
-
-  have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out' A}) := by sorry
+  have finclassa: ∀ (A : ConjClasses Rˣ), Fintype ↑(ConjClasses.carrier A) := by
+    intro A
+    exact ConjClasses.instFintypeElemCarrier
+  have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out' A}) := by
+    intro A
+    exact setFintype (Set.centralizer {Quotient.out' A})
   have fintypea : ∀ (A :  ConjClasses Rˣ), Fintype ↑{A |
-      have := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1} := by sorry
+      have := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1} := by
+    intro A
+    exact
+      setFintype
+        {A |
+          let_fun this := finclassa A;
+          Fintype.card ↑(ConjClasses.carrier A) > 1}
   have : Fintype ↑{A |
-      have := finclassa A;  Fintype.card ↑(ConjClasses.carrier A) > 1} := by sorry
+      have := finclassa A;  Fintype.card ↑(ConjClasses.carrier A) > 1} :=
+    setFintype {A |
+                  let_fun this := finclassa A;
+                  Fintype.card ↑(ConjClasses.carrier A) > 1}
   let S' := {A : ConjClasses Rˣ |  (Fintype.card A.carrier) > 1}
-  have : Fintype S' := by sorry
+  have : Fintype S' := by exact this
   let S := S'.toFinset
   let n_k :ConjClasses Rˣ → ℕ := fun A => Fintype.card
     (Set.centralizer ({(Quotient.out' (A : ConjClasses Rˣ))} : Set Rˣ))
-  --sorry
 
   have : ((q : ℤ) ^ n - 1) = (q - 1  + ∑ A in S, (q ^ n - 1) / (q ^ (n_k A) - 1)) := by
     sorry
