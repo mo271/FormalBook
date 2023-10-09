@@ -190,15 +190,14 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have g : map (Int.castRingHom ℂ) (phi n) = ∏ lamb in (primitiveRoots n ℂ), (X - C lamb) := by
     dsimp only [phi]
     simp only [map_cyclotomic]
-    have : n ≠ 0 := by sorry
-    have := isPrimitiveRoot_exp n this
+    have := isPrimitiveRoot_exp n h_n
     rw [cyclotomic_eq_prod_X_sub_primitiveRoots this]
 
   have : 2 ≤ q := by
     refine' Fintype.one_lt_card_iff.mpr _
     exact exists_pair_ne { x // x ∈ Z }
   -- here the book uses h_lamb_gt_q_sub_one from above
-  have h_gt :  ((cyclotomic n ℤ).eval ↑q).natAbs > q - 1 := by
+  have h_gt : ((cyclotomic n ℤ).eval ↑q).natAbs > q - 1 := by
     have hn : 1 < n := by
       sorry
     have hq : q ≠ 1 := by exact Nat.ne_of_gt this
