@@ -117,9 +117,10 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
 section wedderburn
 
 theorem wedderburn (h: Fintype R): IsField R := by
+  -- Z is a finite field ...
   let Z := center R
-  haveI : Fintype R := h
 
+  -- .. and we can view R as a vector space of dimension n over R
   obtain ⟨n, h_card⟩ := VectorSpace.card_fintype Z R
 
   have H : (∃ x y : R, x ≠ y) := by exact exists_pair_ne R
@@ -139,9 +140,11 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have finclassa: ∀ (A : ConjClasses Rˣ), Fintype ↑(ConjClasses.carrier A) := by
     intro A
     exact ConjClasses.instFintypeElemCarrier
+
   have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out' A}) := by
     intro A
     exact setFintype (Set.centralizer {Quotient.out' A})
+
   have fintypea : ∀ (A :  ConjClasses Rˣ), Fintype ↑{A |
       have := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1} := by
     intro A
@@ -150,19 +153,35 @@ theorem wedderburn (h: Fintype R): IsField R := by
         {A |
           let_fun this := finclassa A;
           Fintype.card ↑(ConjClasses.carrier A) > 1}
+
   have : Fintype ↑{A |
       have := finclassa A;  Fintype.card ↑(ConjClasses.carrier A) > 1} :=
     setFintype {A |
                   let_fun this := finclassa A;
                   Fintype.card ↑(ConjClasses.carrier A) > 1}
+
   let S' := {A : ConjClasses Rˣ |  (Fintype.card A.carrier) > 1}
   have : Fintype S' := by exact this
   let S := S'.toFinset
-  let n_k :ConjClasses Rˣ → ℕ := fun A => Fintype.card
+  let n_k : ConjClasses Rˣ → ℕ := fun A => Fintype.card
     (Set.centralizer ({(Quotient.out' (A : ConjClasses Rˣ))} : Set Rˣ))
+
+  have h_R: Fintype.card Rˣ = q ^ n - 1 := by
+    have : Fintype.card Rˣ + 1 = Fintype.card R := Fintype.card_eq_card_units_add_one.symm
+    rw [← h_card, ← this]
+    simp only [ge_iff_le, add_le_iff_nonpos_left, nonpos_iff_eq_zero, Fintype.card_ne_zero,
+    add_tsub_cancel_right]
+
+  have h_Z : Fintype.card Zˣ = q - 1 := by
+    have h : Fintype.card Zˣ + 1 = Fintype.card Z := Fintype.card_eq_card_units_add_one.symm
+    have : Fintype.card Z = q := rfl
+    rw [← this, ← h]
+    simp only [center_toSubsemiring, Subsemiring.center_toSubmonoid, ge_iff_le,
+      add_le_iff_nonpos_left, nonpos_iff_eq_zero, Fintype.card_ne_zero, add_tsub_cancel_right]
 
   have : ((q : ℤ) ^ n - 1) = (q - 1  + ∑ A in S, (q ^ n - 1) / (q ^ (n_k A) - 1)) := by
     sorry
+
   --class  formula (1)
   have h_n_k_A_dvd: ∀ A : ConjClasses Rˣ, (n_k A ∣ n) := by sorry
   --rest of proof
@@ -175,8 +194,12 @@ theorem wedderburn (h: Fintype R): IsField R := by
       intro A
       intro hs
       apply(Int.dvd_div_of_mul_dvd _)
-      have h_one_neq: 1 ≠ (n_k A) := by sorry
-      have h_k_n_lt_n: n_k A < n := by sorry
+      have h_one_neq: 1 ≠ (n_k A) := by
+        dsimp only
+        sorry
+      have h_k_n_lt_n: n_k A < n := by
+        dsimp only
+        sorry
       have h_noneval := phi_div_2 n (n_k A) h_one_neq (h_n_k_A_dvd A) h_k_n_lt_n
       have := @eval_dvd ℤ _ _ _ q h_noneval
       simp only [eval_mul, eval_sub, eval_pow, eval_X, eval_one, IsUnit.mul_iff] at this
