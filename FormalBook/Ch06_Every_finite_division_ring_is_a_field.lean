@@ -179,9 +179,8 @@ theorem wedderburn (h: Fintype R): IsField R := by
     simp only [center_toSubsemiring, Subsemiring.center_toSubmonoid, ge_iff_le,
       add_le_iff_nonpos_left, nonpos_iff_eq_zero, Fintype.card_ne_zero, add_tsub_cancel_right]
 
-  have : ((q : ℤ) ^ n - 1) = (q - 1  + ∑ A in S, (q ^ n - 1) / (q ^ (n_k A) - 1)) := by
+  have h1 : ((q : ℤ) ^ n - 1) = ((q : ℤ) - 1  + ∑ A in S, ((q : ℤ) ^ n - 1) / ((q : ℤ) ^ (n_k A) - 1)) := by
     sorry
-
   --class  formula (1)
   have h_n_k_A_dvd: ∀ A : ConjClasses Rˣ, (n_k A ∣ n) := by sorry
   --rest of proof
@@ -205,9 +204,9 @@ theorem wedderburn (h: Fintype R): IsField R := by
       simp only [eval_mul, eval_sub, eval_pow, eval_X, eval_one, IsUnit.mul_iff] at this
       exact this
     simp only [eval_sub, eval_pow, eval_X, eval_one] at h₁_dvd
-    rw [this] at h₁_dvd
-    sorry
-    --refine (Nat.dvd_add_iff_left h₂_dvd).mpr h₁_dvd
+    rw [h1] at h₁_dvd
+    exact (Int.dvd_add_left h₂_dvd).mp h₁_dvd
+
   by_contra
 
   have g : map (Int.castRingHom ℂ) (phi n) = ∏ lamb in (primitiveRoots n ℂ), (X - C lamb) := by
