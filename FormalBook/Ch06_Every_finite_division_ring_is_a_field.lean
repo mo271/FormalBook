@@ -28,7 +28,7 @@ import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Complex.Basic
-import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.ClassEquation
 
 open Finset Subring Polynomial Complex BigOperators Nat
 /-!
@@ -161,8 +161,8 @@ theorem wedderburn (h: Fintype R): IsField R := by
                   let_fun this := finclassa A;
                   Fintype.card ↑(ConjClasses.carrier A) > 1}
 
-  let S' := {A : ConjClasses Rˣ |  (Fintype.card A.carrier) > 1}
-  have : Fintype S' := by exact this
+  let S' := ConjClasses.noncenter Rˣ
+  haveI : Fintype S' := Fintype.ofFinite ↑S'
   let S := S'.toFinset
   let n_k : ConjClasses Rˣ → ℕ := fun A => Fintype.card
     (Set.centralizer ({(Quotient.out' (A : ConjClasses Rˣ))} : Set Rˣ))
@@ -181,12 +181,18 @@ theorem wedderburn (h: Fintype R): IsField R := by
       add_le_iff_nonpos_left, nonpos_iff_eq_zero, Fintype.card_ne_zero, add_tsub_cancel_right]
 
   --class  formula (1)
-  have h1 : ((q : ℕ) ^ n - 1) = ((q : ℕ) - 1  + ∑ A in S, ((q : ℕ) ^ n - 1) / ((q : ℕ) ^ (n_k A) - 1)) := by
-    rw [← h_R]
-    convert MulAction.card_eq_sum_card_group_div_card_stabilizer Rˣ Rˣ
-    { sorry }
-    { exact Fintype.ofFinite (Quotient (MulAction.orbitRel Rˣ Rˣ))}
-    { exact fun b => Fintype.ofFinite { x // x ∈ MulAction.stabilizer Rˣ b }}
+
+  have H1:= (Group.card_center_add_sum_card_noncenter_eq_card Rˣ).symm
+  let e := Subgroup.centerUnitsEquivUnitsCenter R
+  --Note: This is fishy, it seems like it's just tautological
+  let f : { x // x ∈ Submonoid.center R }ˣ ≃ { x // x ∈ Z }ˣ :=
+      Equiv.inv { x // x ∈ Submonoid.center R }ˣ
+  rw [h_R, Fintype.card_congr (e.toEquiv.trans f), h_Z] at H1
+
+  have h1 : (q ^ n - 1) = q - 1  + ∑ A in S, (q ^ n - 1) / (q ^ (n_k A) - 1) := by
+    convert H1
+    sorry
+
 
   have h_n_k_A_dvd: ∀ A : ConjClasses Rˣ, (n_k A ∣ n) := by sorry
   --rest of proof
