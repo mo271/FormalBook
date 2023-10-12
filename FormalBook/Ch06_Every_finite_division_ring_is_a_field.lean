@@ -28,6 +28,7 @@ import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Complex.Basic
+import Mathlib.GroupTheory.GroupAction.Quotient
 
 open Finset Subring Polynomial Complex BigOperators Nat
 /-!
@@ -179,9 +180,14 @@ theorem wedderburn (h: Fintype R): IsField R := by
     simp only [center_toSubsemiring, Subsemiring.center_toSubmonoid, ge_iff_le,
       add_le_iff_nonpos_left, nonpos_iff_eq_zero, Fintype.card_ne_zero, add_tsub_cancel_right]
 
-  have h1 : ((q : ℤ) ^ n - 1) = ((q : ℤ) - 1  + ∑ A in S, ((q : ℤ) ^ n - 1) / ((q : ℤ) ^ (n_k A) - 1)) := by
-    sorry
   --class  formula (1)
+  have h1 : ((q : ℕ) ^ n - 1) = ((q : ℕ) - 1  + ∑ A in S, ((q : ℕ) ^ n - 1) / ((q : ℕ) ^ (n_k A) - 1)) := by
+    rw [← h_R]
+    convert MulAction.card_eq_sum_card_group_div_card_stabilizer Rˣ Rˣ
+    { sorry }
+    { exact Fintype.ofFinite (Quotient (MulAction.orbitRel Rˣ Rˣ))}
+    { exact fun b => Fintype.ofFinite { x // x ∈ MulAction.stabilizer Rˣ b }}
+
   have h_n_k_A_dvd: ∀ A : ConjClasses Rˣ, (n_k A ∣ n) := by sorry
   --rest of proof
   have h_phi_dvd_q_sub_one : (phi n).eval (q : ℤ) ∣ (q - 1) := by
