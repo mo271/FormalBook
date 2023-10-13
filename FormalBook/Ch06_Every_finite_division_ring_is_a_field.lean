@@ -116,6 +116,67 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   exact g
 
 
+
+
+lemma test' (b : ℕ): (a : ℕ) → a = b := by
+  sorry
+
+lemma test (b : ℕ) (a : ℕ) : a = b := by
+  have := test' b
+
+  sorry
+
+lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
+    (H : q ^ k - 1 ∣ q ^ n - 1) : k ∣ n := by
+  revert H
+  revert hn
+  apply Nat.strongInductionOn n
+  intro m h hm H
+  have hq' := zero_lt_of_lt hq
+  by_cases hkeqm : k = m
+  · exact Eq.dvd hkeqm
+
+  have hkm : k ≤ m := by
+    have : 0 < q ^ m - 1 := by
+      have : 1 < q ^ m := by
+        calc
+          _ < q := hq
+          _ = q^1 := (Nat.pow_one q).symm
+          _ ≤ q ^ m := (pow_le_pow_iff hq).mpr hm
+      exact Nat.sub_pos_of_lt this
+    have : q ^ k - 1 ≤ q ^ m - 1 := Nat.le_of_dvd this H
+    have :  q ^ k ≤ q ^ m  := by
+      zify at this
+      simp at this
+      simpa [Nat.sub_add_cancel <| one_le_pow m q hq'] using this
+    exact (pow_le_pow_iff hq).mp this
+
+  have : q ^ m - 1 = q^(m - k)*(q ^ k - 1) + (q^(m - k) - 1) := by
+    zify
+    simp [one_le_pow m q hq', one_le_pow k q hq', one_le_pow (m - k) q hq']
+    push_cast
+    rw [mul_sub, mul_one]
+    ring_nf
+    simp only [ge_iff_le, add_right_inj]
+    exact (pow_sub_mul_pow (q : ℤ) hkm).symm
+
+  have h1 : q ^ k - 1 ∣ q ^ (m - k) - 1 := by
+    refine' (@Nat.dvd_add_iff_right (q ^ k - 1 ) (q ^ (m - k) * (q ^ k - 1)) (q ^ (m - k) - 1) _ ).mpr _
+    exact Nat.dvd_mul_left (q ^ k - 1) (q ^ (m - k))
+    rw [← this]
+    exact H
+
+  have hmk : m - k < m := by
+    zify
+    rw [cast_sub]
+    linarith
+    exact hkm
+  have h0mk : 0 < m - k := by exact Nat.sub_pos_of_lt <| Nat.lt_of_le_of_ne hkm hkeqm
+  convert Nat.dvd_add_self_right.mpr (h (m - k) hmk h0mk h1)
+  exact Nat.eq_add_of_sub_eq hkm rfl
+
+
+
 def ConjAct_stabilizer_centralizer_eq :
     ∀ x : Rˣ,  Set.centralizer {x} ≃ MulAction.stabilizer (ConjAct Rˣ) x := by
   intro x
