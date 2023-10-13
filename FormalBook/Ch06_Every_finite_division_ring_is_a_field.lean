@@ -115,17 +115,6 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   simp only [norm_eq_abs, map_nonneg, Real.sqrt_sq] at g
   exact g
 
-
-
-
-lemma test' (b : ℕ): (a : ℕ) → a = b := by
-  sorry
-
-lemma test (b : ℕ) (a : ℕ) : a = b := by
-  have := test' b
-
-  sorry
-
 lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
     (H : q ^ k - 1 ∣ q ^ n - 1) : k ∣ n := by
   revert H
