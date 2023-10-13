@@ -115,6 +115,50 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   simp only [norm_eq_abs, map_nonneg, Real.sqrt_sq] at g
   exact g
 
+
+def ConjAct_stabilizer_centralizer_eq :
+    ∀ x : Rˣ,  Set.centralizer {x} ≃ MulAction.stabilizer (ConjAct Rˣ) x := by
+  intro x
+  exact {
+    toFun:= by
+      intro g
+      refine' ⟨ (ConjAct.toConjAct (g : Rˣ)), _⟩
+      have := g.2
+      refine MulAction.mem_stabilizer_iff.mpr ?_
+      rw [ConjAct.smul_def]
+      simp only [ConjAct.ofConjAct_toConjAct]
+      exact (eq_mul_inv_of_mul_eq (this x rfl)).symm
+    invFun := by
+      intro g
+      refine'⟨ (ConjAct.ofConjAct (g : ConjAct Rˣ)), _⟩
+      have := g.2
+      refine Set.mem_centralizer_iff.mpr ?_
+      intro m hm
+      apply Eq.symm
+      apply eq_mul_of_mul_inv_eq
+      rw [← ConjAct.smul_def, hm]
+      exact this
+    left_inv := congrFun rfl
+    right_inv := congrFun rfl}
+
+-- Orbit stabilizer theorem, specialized to conjugacy classes
+lemma orbit_stabilizer [Fintype R] (A: ConjClasses Rˣ) [Fintype A.carrier] :
+  Fintype.card Rˣ = (Fintype.card A.carrier) *
+    (@Fintype.card  (Set.centralizer {ConjClasses.exists_rep A|>.choose}) (
+      Fintype.ofFinite (Set.centralizer {ConjClasses.exists_rep A|>.choose}))) := by
+  letI := Fintype.ofFinite (Set.centralizer {ConjClasses.exists_rep A|>.choose})
+  letI : Fintype ↑(MulAction.orbit (ConjAct Rˣ) (ConjClasses.exists_rep A|>.choose))
+      := by refine Set.fintypeRange fun m => m • Exists.choose ?_
+  letI : Fintype { x // x ∈ MulAction.stabilizer (ConjAct Rˣ)
+        (ConjClasses.exists_rep A|>.choose) } := Fintype.ofFinite _
+  have := MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct Rˣ)
+      (ConjClasses.exists_rep A|>.choose)
+  replace this := this.symm
+  rw [Fintype.card_congr <| ConjAct_stabilizer_centralizer_eq (ConjClasses.exists_rep A|>.choose)]
+  convert this
+  rw [ConjAct.orbit_eq_carrier_conjClasses, (ConjClasses.exists_rep A|>.choose_spec)]
+
+
 section wedderburn
 
 theorem wedderburn (h: Fintype R): IsField R := by
@@ -146,7 +190,7 @@ theorem wedderburn (h: Fintype R): IsField R := by
     intro A
     exact setFintype (Set.centralizer {Quotient.out' A})
 
-  have fintypea : ∀ (A :  ConjClasses Rˣ), Fintype ↑{A |
+  letI fintypea : ∀ (A :  ConjClasses Rˣ), Fintype ↑{A |
       have := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1} := by
     intro A
     exact
@@ -164,8 +208,9 @@ theorem wedderburn (h: Fintype R): IsField R := by
   let S' := ConjClasses.noncenter Rˣ
   haveI : Fintype S' := Fintype.ofFinite ↑S'
   let S := S'.toFinset
-  let n_k : ConjClasses Rˣ → ℕ := fun A => Fintype.card
-    (Set.centralizer ({(Quotient.out' (A : ConjClasses Rˣ))} : Set Rˣ))
+  --This was wrong: n_k should be the dimension of the centralizer( in `R`), not the cardinality
+  let n_k : S' → ℕ := sorry -- fun A => Fintype.card
+    --(Set.centralizer ({(Quotient.out' (A : ConjClasses Rˣ))} : Set Rˣ))
 
   have h_R: Fintype.card Rˣ = q ^ n - 1 := by
     have : Fintype.card Rˣ + 1 = Fintype.card R := Fintype.card_eq_card_units_add_one.symm
@@ -189,7 +234,12 @@ theorem wedderburn (h: Fintype R): IsField R := by
       Equiv.inv { x // x ∈ Submonoid.center R }ˣ
   rw [h_R, Fintype.card_congr (e.toEquiv.trans f), h_Z] at H1
 
-  have h1 : (q ^ n - 1) = q - 1  + ∑ A in S, (q ^ n - 1) / (q ^ (n_k A) - 1) := by
+  -- Orbit stabilizer formula for non-singleton conjugacy classes
+  have : ∀ A : S', (Fintype.card <| ConjClasses.carrier (A : ConjClasses Rˣ)) * (q ^ (n_k A) - 1)
+      = q ^ n - 1 := by
+    sorry
+
+  have h1 : (q ^ n - 1) = q - 1  + ∑ A : S', (q ^ n - 1) / (q ^ (n_k A) - 1) := by
     convert H1
     sorry
   have hq_pow_pos : ∀ m,  1 ≤ q ^ m := by
@@ -197,14 +247,14 @@ theorem wedderburn (h: Fintype R): IsField R := by
     refine' one_le_pow m q _
     exact Fintype.card_pos
 
-  have h_n_k_A_dvd: ∀ A : ConjClasses Rˣ, (n_k A ∣ n) := by sorry
+  have h_n_k_A_dvd: ∀ A : S', (n_k A ∣ n) := by sorry
   --rest of proof
   have h_phi_dvd_q_sub_one : (phi n).eval (q : ℤ) ∣ (((q - (1 : ℕ)) : ℕ ) : ℤ) := by
     have hq : q = (Fintype.card { x // x ∈ center R }) := by rfl
     have h₁_dvd : (phi n).eval (q : ℤ) ∣ ((X : ℤ[X])  ^ n - 1).eval (q : ℤ)  := by
       exact eval_dvd <| phi_dvd n
     have h₂_dvd :
-        (phi n).eval (q : ℤ) ∣ ∑ A in S, (((q ^ n - 1) : ℕ):ℤ) / ((q ^ (n_k A) - 1) : ℕ):= by
+        (phi n).eval (q : ℤ) ∣ ∑ A : S', (((q ^ n - 1) : ℕ):ℤ) / ((q ^ (n_k A) - 1) : ℕ):= by
       refine' Finset.dvd_sum _
       intro A
       intro hs
@@ -224,8 +274,8 @@ theorem wedderburn (h: Fintype R): IsField R := by
       · simp [hq_pow_pos n]
     simp only [eval_sub, eval_pow, eval_X, eval_one] at h₁_dvd
     have h1' :  (((q:ℤ) ^ n - (1 : ℕ)) : ℤ) =
-        ((q - (1 :ℕ) : ℕ):ℤ) + ∑ A in S, (q ^ n - 1) / (q ^ (n_k A) - 1) := by
-      have : ((q ^ n - 1 : ℕ) : ℤ ) = (q - 1 + ∑ A in S, (q ^ n - 1) / (q ^ n_k A - 1) : ℕ) :=
+        ((q - (1 :ℕ) : ℕ):ℤ) + ∑ A : S', (q ^ n - 1) / (q ^ (n_k A) - 1) := by
+      have : ((q ^ n - 1 : ℕ) : ℤ ) = (q - 1 + ∑ A : S', (q ^ n - 1) / (q ^ n_k A - 1) : ℕ) :=
         congrArg Nat.cast h1
       rw [cast_add] at this
       rw [← this]
