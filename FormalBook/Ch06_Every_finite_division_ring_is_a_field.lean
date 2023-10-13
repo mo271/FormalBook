@@ -192,20 +192,24 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have h1 : (q ^ n - 1) = q - 1  + ∑ A in S, (q ^ n - 1) / (q ^ (n_k A) - 1) := by
     convert H1
     sorry
-
+  have hq_pow_pos : ∀ m,  1 ≤ q ^ m := by
+    intro m
+    refine' one_le_pow m q _
+    exact Fintype.card_pos
 
   have h_n_k_A_dvd: ∀ A : ConjClasses Rˣ, (n_k A ∣ n) := by sorry
   --rest of proof
-  have h_phi_dvd_q_sub_one : (phi n).eval (q : ℤ) ∣ (q - 1) := by
+  have h_phi_dvd_q_sub_one : (phi n).eval (q : ℤ) ∣ (((q - (1 : ℕ)) : ℕ ) : ℤ) := by
+    have hq : q = (Fintype.card { x // x ∈ center R }) := by rfl
     have h₁_dvd : (phi n).eval (q : ℤ) ∣ ((X : ℤ[X])  ^ n - 1).eval (q : ℤ)  := by
       exact eval_dvd <| phi_dvd n
     have h₂_dvd :
-     (phi n).eval (q : ℤ) ∣ ∑ A in S, ((q : ℤ)^ n - 1) / ((q : ℤ) ^ (n_k A) - 1) := by
+        (phi n).eval (q : ℤ) ∣ ∑ A in S, (((q ^ n - 1) : ℕ):ℤ) / ((q ^ (n_k A) - 1) : ℕ):= by
       refine' Finset.dvd_sum _
       intro A
       intro hs
       apply(Int.dvd_div_of_mul_dvd _)
-      have h_one_neq: 1 ≠ (n_k A) := by
+      have h_one_neq: 1 ≠ n_k A := by
         dsimp only
         sorry
       have h_k_n_lt_n: n_k A < n := by
@@ -214,9 +218,21 @@ theorem wedderburn (h: Fintype R): IsField R := by
       have h_noneval := phi_div_2 n (n_k A) h_one_neq (h_n_k_A_dvd A) h_k_n_lt_n
       have := @eval_dvd ℤ _ _ _ q h_noneval
       simp only [eval_mul, eval_sub, eval_pow, eval_X, eval_one, IsUnit.mul_iff] at this
-      exact this
+      rw [← hq] at *
+      convert this
+      · simp [hq_pow_pos <| n_k A]
+      · simp [hq_pow_pos n]
     simp only [eval_sub, eval_pow, eval_X, eval_one] at h₁_dvd
-    rw [h1] at h₁_dvd
+    have h1' :  (((q:ℤ) ^ n - (1 : ℕ)) : ℤ) =
+        ((q - (1 :ℕ) : ℕ):ℤ) + ∑ A in S, (q ^ n - 1) / (q ^ (n_k A) - 1) := by
+      have : ((q ^ n - 1 : ℕ) : ℤ ) = (q - 1 + ∑ A in S, (q ^ n - 1) / (q ^ n_k A - 1) : ℕ) :=
+        congrArg Nat.cast h1
+      rw [cast_add] at this
+      rw [← this]
+      simp [hq_pow_pos n]
+    simp [hq] at h1'
+    simp [h1'] at h₁_dvd
+    rw [← hq] at h₁_dvd
     exact (Int.dvd_add_left h₂_dvd).mp h₁_dvd
 
   by_contra
@@ -244,6 +260,12 @@ theorem wedderburn (h: Fintype R): IsField R := by
     rw [h1]
     norm_cast
     exact Nat.ne_of_lt <| Nat.sub_pos_of_lt this
+
+  have hq_eq : (q : ℤ) - 1 = (q - 1 : ℕ) := by
+    have : 1 ≤ q := Fintype.card_pos
+    simp [this]
+
+  rw [← hq_eq] at h_phi_dvd_q_sub_one
 
   have : 1 ≤ Fintype.card { x // x ∈ center R } := by
     refine' Fintype.card_pos_iff.mpr _
