@@ -16,6 +16,8 @@ limitations under the License.
 Authors: Moritz Firsching
 -/
 import Mathlib.Tactic
+import Mathlib.Data.Matrix.Basic
+import Mathlib.LinearAlgebra.Matrix.Hermitian
 /-!
 # The spectral theorem and Hadamard's determinant problem
 
@@ -30,3 +32,19 @@ import Mathlib.Tactic
   - Hadamard matreices esixt for all $n = 2^m$
   - Theorem 2.
 -/
+
+namespace chapter07
+
+open Matrix
+
+theorem Theorem₁ (n : ℕ) (A : Matrix (Fin n) (Fin n) ℝ) (h : IsHermitian A) :
+    ∃ Q : Matrix (Fin n) (Fin n) ℝ,
+    Q ∈ Matrix.orthogonalGroup (Fin n) ℝ ∧
+    ∃ (d : (Fin n) → ℝ), diagonal d = (Q.conjTranspose * A * Q) := by
+  sorry
+
+
+theorem Theorem₂ (n : ℕ) : ∃ (M : Matrix (Fin n) (Fin n) ℤ),
+    (∀ i j, M i j = -1 ∨ M i j = 1) ∧
+    M.det > Real.sqrt n.factorial := by
+  sorry
