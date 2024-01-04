@@ -93,18 +93,15 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
   · have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
-    have : (512 : ℝ) = 2 ^ (9 : ℕ)
-    · rw [rpow_nat_cast 2 9]; norm_num1
-    conv_lhs => rw [this]
-    have : (1024 : ℝ) = 2 ^ (10 : ℕ)
-    · rw [rpow_nat_cast 2 10]; norm_num1
-    rw [this, ← rpow_mul, ← rpow_add] <;> norm_num1
-    have : (4 : ℝ) = 2 ^ (2 : ℕ)
-    · rw [rpow_nat_cast 2 2]; norm_num1
-    rw [this, ← rpow_mul] <;> norm_num1
-    apply rpow_le_rpow_of_exponent_le <;> norm_num1
-    apply rpow_pos_of_pos four_pos
-
+    · conv in 512 => equals 2 ^ 9 => norm_num1
+      conv in 1024 => equals 2 ^ 10 => norm_num1
+      conv in 32 => rw [← Nat.cast_ofNat]
+      rw [rpow_nat_cast, ← pow_mul, ← pow_add]
+      conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
+      rw [← rpow_mul, ← rpow_nat_cast]
+      apply rpow_le_rpow_of_exponent_le
+      all_goals norm_num1
+    · apply rpow_pos_of_pos four_pos
 end Bertrand
 
 
@@ -172,13 +169,13 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
     have : (Finset.Icc 1 (Nat.sqrt (2 * n))).card = Nat.sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
     rw [Finset.prod_const]
-    refine' pow_le_pow n2_pos ((Finset.card_le_of_subset fun x hx => _).trans this.le)
+    refine' pow_le_pow_right n2_pos ((Finset.card_le_card fun x hx => _).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
   · refine' le_trans _ (primorial_le_4_pow (2 * n / 3))
     refine' (Finset.prod_le_prod' fun p hp => (_ : f p ≤ p)).trans _
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
-      refine' (pow_le_pow (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
+      refine' (pow_le_pow_right (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
     refine' Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) _
     exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le
@@ -207,8 +204,9 @@ for each number ≤ n.
 theorem exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Prime p)
     (covering : p ≤ 2 * q) (H : n < q → ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) (hn : n < p) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
-  by_cases p ≤ 2 * n; · exact ⟨p, prime_p, hn, h⟩
-  exact H (lt_of_mul_lt_mul_left' (lt_of_lt_of_le (not_le.1 h) covering))
+  by_cases h : p ≤ 2 * n
+  · exact ⟨p, prime_p, hn, h⟩
+  · exact H (lt_of_mul_lt_mul_left' (lt_of_lt_of_le (not_le.1 h) covering))
 
 /--
 **Bertrand's Postulate**: For any positive natural number, there is a prime which is greater than

@@ -87,7 +87,7 @@ lemma fermat_stricly_monotone {n : ℕ} : F n < F n.succ := by
   have : NeZero 1 := by infer_instance
   rw [F, F]
   simp only [add_lt_add_iff_right, Nat.pow_succ]
-  refine' (pow_lt_pow_iff one_lt_two).mpr _
+  refine' (pow_lt_pow_iff_right one_lt_two).mpr _
   norm_num
 
 lemma fermat_bounded (n : ℕ) : 2 < F n := by
@@ -170,7 +170,7 @@ theorem infinity_of_primes₃:
     use c
     simp only [CharP.cast_eq_zero, ge_iff_le, gt_iff_lt, pow_pos, cast_pred, cast_pow, cast_ofNat,
         zero_sub, neg_sub] at hc
-    simp only [cast_one, cast_pow, cast_ofNat, hc]
+    simp [cast_one, cast_pow, cast_ofNat, hc.symm]
   have h_mod_q' : (2 : (ZMod q)) ^ p = 1 := by
     have := (ZMod.nat_cast_eq_nat_cast_iff _ _ _).mpr h_mod_q
     norm_cast at this
@@ -203,7 +203,7 @@ theorem infinity_of_primes₃:
     -- Using Lagrange's theorem here!
     convert Subgroup.card_subgroup_dvd_card (Subgroup.zpowers (two))
     · rw [← orderOf_eq_prime h_two two_ne_one]
-      exact orderOf_eq_card_zpowers
+      exact Fintype.card_zpowers.symm
     · exact ((prime_iff_card_units q).mp hq).symm
   use q
   constructor
@@ -267,10 +267,9 @@ open Real NNReal Topology
 namespace Asymptotics
 
 def ofSubexponentialGrowth (S : ℕ → ℤ) : Prop := ∃ f : ℕ → ℝ≥0, ∀ n,
-  |S n| ≤ (2 : ℝ) ^ (2 ^ (f n)) ∧ Tendsto (fun n => (f n) / (log 2 n)) atTop (𝓝 0)
+  |S n| ≤ (2 : ℝ) ^ ((2 : ℝ) ^ (f n : ℝ)) ∧ Tendsto (fun n => (f n) / (log 2 n)) atTop (𝓝 0)
 
 theorem infinitely_many_more_proofs (S : ℕ → ℤ)
   (h₁ : AlmostInjective S) (h₂ : ofSubexponentialGrowth S) :
   Fintype {p : Nat.Primes // ∃ n : ℕ, (p : ℤ) ∣ S n} → False := by
   sorry
-
