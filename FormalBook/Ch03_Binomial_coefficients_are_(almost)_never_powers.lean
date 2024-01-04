@@ -158,7 +158,8 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
         have h_klen4i : n - i ≤ n := Nat.sub_le n i
         exact le_trans this h_klen4i
       · exact ⟨
-            Nat.pow_lt_pow_of_lt_left (h_klp) (gt_of_ge_of_gt h_2lel two_pos),-- prove k^l < p^l
+            -- prove k^l < p^l
+            Nat.pow_lt_pow_left (h_klp) (Nat.ne_of_gt <| gt_of_ge_of_gt h_2lel two_pos),
             Nat.pow_le_pow_of_le_right (pos_of_gt h_4lek) h_2lel -- prove k² ≤ k^l
             ⟩
 

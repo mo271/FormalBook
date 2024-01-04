@@ -54,10 +54,9 @@ namespace quadratic_reciprocity
 /- Throughout this section, `p` is an odd prime. -/
 variable (p : ℕ) (h_p : p ≠ 2) [Fact (Nat.Prime p)]
 
-
 def legendre_sym (a : ℤ) : ℤ :=
   ite ( (a : ZMod p) = 0) 0 $
-    ite (∃ b : ZMod p, a = b ^ (2 : ℤ)) 1 (-1)
+    ite (∃ b : ZMod p, a = (b ^ (2 : ℤ) : ZMod p)) 1 (-1)
 
 /--
 Fermat's little theorem: If `a` is nonzero modulo the odd prime `p`, then `a ^ (p - 1) = -1`
