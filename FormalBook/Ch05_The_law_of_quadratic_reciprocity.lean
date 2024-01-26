@@ -62,7 +62,7 @@ def legendre_sym (a : ℤ) : ℤ :=
 Fermat's little theorem: If `a` is nonzero modulo the odd prime `p`, then `a ^ (p - 1) = -1`
 modulo `p`.
 -/
-lemma fermat_little (a : ℤ): (a ≠ (0 : ZMod p)) → a ^ (p - 1) = (-1 : ZMod p) := by
+lemma fermat_little (a : ℤ): (a : ZMod p) ≠ 0 → a ^ (p - 1) = (-1 : ZMod p) := by
   let units_finset := (Finset.univ : Finset (ZMod p)).erase 0
   let image_finset := (units_finset).image (fun x : ZMod p => (a : ZMod p) * x)
   have : units_finset = image_finset := by sorry
@@ -70,7 +70,7 @@ lemma fermat_little (a : ℤ): (a ≠ (0 : ZMod p)) → a ^ (p - 1) = (-1 : ZMod
 
 
 theorem euler_criterion (a : ℤ) :
-  a ≠ (0 : ZMod p) → (legendre_sym p a : ZMod p) = a ^ ((p - 1) / 2) := by
+  (a : ZMod p) ≠ 0 → (legendre_sym p a : ZMod p) = a ^ ((p - 1) / 2) := by
   sorry
 
 lemma product_rule (a b : ℤ) :
@@ -84,7 +84,7 @@ For the statement, see `theorem quadratic_reciprocity_1`.
 
 -- Maybe define the function `r i` = "reduce p i" explicitly ?
 --TODO : This should probably be broken down a little bit first
-lemma lemma_of_Gauss (p : ℕ) [Fact (Nat.Prime p)] (a : ℤ) (h_a : a ≠ (0 : ZMod p))
+lemma lemma_of_Gauss (p : ℕ) [Fact (Nat.Prime p)] (a : ℤ) (h_a : (a : ZMod p) ≠ 0)
   ( r : ℤ → ℤ ) (h_r : (∀ i, (- (p: ℤ) - 1)/2 ≤ r i ∧ r i ≤ ((p : ℤ) - 1)/2))
   ( H : ∀ i, (r i : ℤ) = (a * i : ZMod p) ) :
    -- TODO: check why this is needed after porting to lean4
