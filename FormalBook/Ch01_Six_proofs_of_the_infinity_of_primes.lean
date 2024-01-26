@@ -24,7 +24,6 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Nat.Parity
-import Mathlib.Data.Real.ENNReal
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Coset

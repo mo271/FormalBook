@@ -82,26 +82,20 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
   refine' ⟨18, 512, by norm_num1, by norm_num1, n_large, _, _⟩
   · have : sqrt (2 * 18) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
-    rw [hf, log_nonneg_iff, this]
-    rw [one_le_div] <;> norm_num1
-    apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
-    apply Real.rpow_le_rpow <;> norm_num1
-    apply rpow_nonneg_of_nonneg; norm_num1
-    apply rpow_pos_of_pos; norm_num1
-    apply hf' 18; norm_num1
+    rw [hf _ (by norm_num1), log_nonneg_iff (by positivity), this, one_le_div (by norm_num1)]
     norm_num1
   · have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
-    rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
-    · conv in 512 => equals 2 ^ 9 => norm_num1
-      conv in 1024 => equals 2 ^ 10 => norm_num1
-      conv in 32 => rw [← Nat.cast_ofNat]
-      rw [rpow_nat_cast, ← pow_mul, ← pow_add]
-      conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
-      rw [← rpow_mul, ← rpow_nat_cast]
-      apply rpow_le_rpow_of_exponent_le
-      all_goals norm_num1
-    · apply rpow_pos_of_pos four_pos
+    rw [hf _ (by norm_num1), log_nonpos_iff (hf' _ (by norm_num1)), this,
+        div_le_one (by positivity)]
+    conv in 512 => equals 2 ^ 9 => norm_num1
+    conv in 2 * 512 => equals 2 ^ 10 => norm_num1
+    conv in 32 => rw [← Nat.cast_ofNat]
+    rw [rpow_nat_cast, ← pow_mul, ← pow_add]
+    conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
+    rw [← rpow_mul, ← rpow_nat_cast]
+    apply rpow_le_rpow_of_exponent_le
+    all_goals norm_num1
 end Bertrand
 
 
@@ -113,17 +107,13 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ Nat.sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
   simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
-  have n_pos : 0 < n := (by decide : 0 < 512).trans_le n_large
-  have n2_pos : 1 ≤ 2 * n := mul_pos (by decide) n_pos
-  refine' _root_.trans (mul_le_mul _ _ _ _)
-      (Bertrand.real_main_inequality (by exact_mod_cast n_large))
-  · refine' mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg _)
-    refine' Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast n2_pos) _
-    exact_mod_cast Real.nat_sqrt_le_real_sqrt
-  · exact Real.rpow_le_rpow_of_exponent_le (by norm_num1) (cast_div_le.trans (by norm_cast))
-  · exact Real.rpow_nonneg_of_nonneg (by norm_num1) _
-  · refine' mul_nonneg (Nat.cast_nonneg _) _
-    exact Real.rpow_nonneg_of_nonneg (mul_nonneg zero_le_two (Nat.cast_nonneg _)) _
+  refine' _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
+  gcongr
+  · have n2_pos : 0 < 2 * n := by positivity
+    exact mod_cast n2_pos
+  · exact_mod_cast Real.nat_sqrt_le_real_sqrt
+  · norm_num1
+  · exact cast_div_le.trans (by norm_cast)
 
 /-- A lemma that tells us that, in the case where Bertrand's postulate does not hold, the prime
 factorization of the central binomial coefficent only has factors at most `2 * n / 3 + 1`.

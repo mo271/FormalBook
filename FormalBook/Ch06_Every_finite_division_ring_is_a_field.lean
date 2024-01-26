@@ -369,7 +369,7 @@ theorem wedderburn (h: Fintype R): IsField R := by
 
   have : 1 ≤ Fintype.card { x // x ∈ center R } := by
     refine' Fintype.card_pos_iff.mpr _
-    exact One.nonempty
+    exact ⟨1, Subring.one_mem (center R)⟩
   have h_q : |((q : ℤ) - 1)| = q - 1 := by
     norm_num
     exact this
