@@ -15,20 +15,10 @@ limitations under the License.
 
 Authors: Moritz Firsching, Nick Kuhn
 -/
-import Mathlib.Tactic
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Fintype.Card
-import Mathlib.RingTheory.IntegralDomain
-import Mathlib.RingTheory.Subring.Basic
-import Mathlib.RingTheory.RootsOfUnity.Complex
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
-import Mathlib.Data.Polynomial.RingDivision
-import Mathlib.Algebra.Group.Conj
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Basis
-import Mathlib.Data.Polynomial.Basic
-import Mathlib.Data.Complex.Basic
-import Mathlib.GroupTheory.ClassEquation
+import Mathlib.RingTheory.Henselian
+import Mathlib.RingTheory.HopfAlgebra
+import Mathlib.RingTheory.LittleWedderburn
+import Mathlib.Algebra.Lie.OfAssociative
 
 open Finset Subring Polynomial Complex BigOperators Nat
 /-!
@@ -112,8 +102,9 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   have g := (Real.sqrt_lt_sqrt_iff this).mpr (h_ineq)
   have : Real.sqrt (((q:ℝ) - 1) ^ 2) = ((q : ℝ) - 1) := by sorry
   rw [this] at g
-  simp only [norm_eq_abs, map_nonneg, Real.sqrt_sq] at g
-  exact g
+  rw [norm_eq_abs, Real.sqrt_sq] at g
+  · exact g
+  · aesop
 
 lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
     (H : q ^ k - 1 ∣ q ^ n - 1) : k ∣ n := by
@@ -131,14 +122,14 @@ lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
         calc
           _ < q := hq
           _ = q^1 := (Nat.pow_one q).symm
-          _ ≤ q ^ m := (pow_le_pow_iff hq).mpr hm
+          _ ≤ q ^ m := (pow_le_pow_iff_right hq).mpr hm
       exact Nat.sub_pos_of_lt this
     have : q ^ k - 1 ≤ q ^ m - 1 := Nat.le_of_dvd this H
     have :  q ^ k ≤ q ^ m  := by
       zify at this
       simp at this
       simpa [Nat.sub_add_cancel <| one_le_pow m q hq'] using this
-    exact (pow_le_pow_iff hq).mp this
+    exact (pow_le_pow_iff_right hq).mp this
 
   have : q ^ m - 1 = q^(m - k)*(q ^ k - 1) + (q^(m - k) - 1) := by
     zify
@@ -310,10 +301,8 @@ theorem wedderburn (h: Fintype R): IsField R := by
       intro hs
       apply(Int.dvd_div_of_mul_dvd _)
       have h_one_neq: 1 ≠ n_k A := by
-        dsimp only
         sorry
       have h_k_n_lt_n: n_k A < n := by
-        dsimp only
         sorry
       have h_noneval := phi_div_2 n (n_k A) h_one_neq (h_n_k_A_dvd A) h_k_n_lt_n
       have := @eval_dvd ℤ _ _ _ q h_noneval
@@ -330,14 +319,15 @@ theorem wedderburn (h: Fintype R): IsField R := by
       rw [cast_add] at this
       rw [← this]
       simp [hq_pow_pos n]
-    simp [hq] at h1'
+    --rw [hq] at h1'
+    norm_num at h1'
     simp [h1'] at h₁_dvd
-    rw [← hq] at h₁_dvd
-    exact (Int.dvd_add_left h₂_dvd).mp h₁_dvd
+    refine (Int.dvd_add_left h₂_dvd).mp ?_
+    convert h₁_dvd
 
   by_contra
 
-  have g : map (Int.castRingHom ℂ) (phi n) = ∏ lamb in (primitiveRoots n ℂ), (X - C lamb) := by
+  have g : Polynomial.map (Int.castRingHom ℂ) (phi n) = ∏ lamb in (primitiveRoots n ℂ), (X - C lamb) := by
     dsimp only [phi]
     simp only [map_cyclotomic]
     have := isPrimitiveRoot_exp n h_n
@@ -378,10 +368,10 @@ theorem wedderburn (h: Fintype R): IsField R := by
 
   refine' not_le_of_gt h_gt _
   have : (q - 1 : ℕ) = (q : ℤ) - 1 := by
-    exact Int.coe_pred_of_pos this
+    exact Int.natCast_pred_of_pos this
   rw [← this] at h_norm
   have : Int.natAbs (eval (↑q) (cyclotomic n ℤ)) = |eval (↑q) (phi n)| := by
-    simp only [Int.coe_natAbs]
+    simp only [Int.natCast_natAbs]
     rfl
   rw [← this] at h_norm
   exact_mod_cast h_norm

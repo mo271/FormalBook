@@ -15,23 +15,9 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Tactic
-import Mathlib.Data.Nat.Prime
-import Mathlib.Data.Nat.Pow
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Data.Nat.Parity
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.GroupTheory.Coset
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.PrimeCounting
-import Mathlib.Order.Filter.AtTopBot
-import Mathlib.Topology.Instances.ENNReal
-import Mathlib.Topology.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 open Finset Nat
 open BigOperators
@@ -146,8 +132,6 @@ lemma ZMod.two_ne_one (q : ℕ)  [Fact (1 < q)] : (2 : ZMod q) ≠ 1 := by
   intro h1
   have h : (2 - 1 : ZMod q) = 0 := by exact Iff.mpr sub_eq_zero h1
   norm_num at h
-  have := ZMod.one_ne_zero q
-  exact this h
 
 
 theorem infinity_of_primes₃:

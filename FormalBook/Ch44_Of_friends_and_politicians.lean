@@ -85,7 +85,7 @@ theorem friendship_theorem [Nonempty V]
           refine' Fintype.one_lt_card_iff.mpr _
           use v
           use x
-        rw [eq₁] at this
+        rw [(show Fintype.card V = n by rfl), eq₁] at this
         tauto
     -- In case k = 2, we have G = K₃
     · norm_num at eq₁
@@ -104,7 +104,7 @@ theorem friendship_theorem [Nonempty V]
           exact fun h => ⟨(G.ne_of_adj h).symm, Finset.mem_univ _⟩
         convert_to 2 ≤ _
         · convert_to _ = Fintype.card V - 1
-          · rw [eq₁]
+          · rw [(show Fintype.card V = n by rfl), eq₁]
           · exact Finset.card_erase_of_mem (Finset.mem_univ _)
         · rw [hregular]
       rw [this]

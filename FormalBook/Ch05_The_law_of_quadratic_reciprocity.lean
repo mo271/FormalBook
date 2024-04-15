@@ -15,12 +15,8 @@ limitations under the License.
 
 Authors: Moritz Firsching, Nikolas Kuhn
 -/
-import Mathlib.Tactic
+import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Polynomial.Basic
-import Mathlib.Order.LocallyFinite
-
 
 open ZMod Finset
 open Polynomial (X)
