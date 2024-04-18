@@ -229,6 +229,18 @@ theorem infinity_of_primes₄ : Tendsto π atTop atTop := by
   -- (2) This implies that it is not bounded
   sorry
 
+-- This might be useful for the proof. Rename as you like.
+lemma H_P4_1 {k p: ℝ} (hk: k > 0) (hp: p ≥ k + 1): p / (p - 1) ≤ (k + 1) / k := by
+  have h_k_nonzero: k ≠ 0 := ne_iff_lt_or_gt.mpr (Or.inr hk)
+  have h_p_pred_pos: p - 1 > 0 := by linarith
+  have h_p_pred_nonzero: p - 1 ≠ 0 := ne_iff_lt_or_gt.mpr (Or.inr h_p_pred_pos)
+  have h₁: p / (p - 1) = 1 + 1 / (p - 1) := by
+    rw [one_add_div h_p_pred_nonzero, sub_add_cancel]
+  rw [← one_add_div h_k_nonzero, h₁, add_le_add_iff_left,
+    one_div_le_one_div h_p_pred_pos hk, @le_sub_iff_add_le]
+  exact hp
+
+
 /-!
 ### Fifth proof
 
