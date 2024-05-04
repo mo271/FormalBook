@@ -208,7 +208,7 @@ using elementary calculus
 open Filter
 
 noncomputable def primeCountingReal (x : ℝ) : ℕ :=
-  if (x > 0) then primeCounting ⌊x⌋.natAbs else 0
+  if (x ≤ 0) then 0 else primeCounting ⌊x⌋₊
 
 def S₁ (x : ℝ) : Set ℕ :=
  { n | ∀ p, Nat.Prime p → p ∣ n → p ≤ x }
@@ -229,7 +229,17 @@ theorem infinity_of_primes₄ : Tendsto π atTop atTop := by
   sorry
 
 -- This might be useful for the proof. Rename as you like.
-theorem monotone_primeCountingReal : Monotone primeCountingReal := by sorry
+theorem monotone_primeCountingReal : Monotone primeCountingReal := by
+  intro a b hab
+  unfold primeCountingReal
+  by_cases ha : a ≤ 0
+  · by_cases hb : b ≤ 0
+    · simp [ha, hb]
+    · simp [ha, hb]
+  · by_cases hb : b ≤ 0
+    · linarith
+    · simp [ha, hb]
+      exact monotone_primeCounting <| Nat.floor_mono hab
 
 lemma H_P4_1 {k p: ℝ} (hk: k > 0) (hp: p ≥ k + 1): p / (p - 1) ≤ (k + 1) / k := by
   have h_k_nonzero: k ≠ 0 := ne_iff_lt_or_gt.mpr (Or.inr hk)
