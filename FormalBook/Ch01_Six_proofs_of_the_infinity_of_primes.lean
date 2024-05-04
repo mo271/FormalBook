@@ -239,7 +239,7 @@ lemma prod_Icc_succ_div (n : ℕ) (hn : 2 ≤ n) : (∏ x in Icc 1 n, ((x + 1) :
     rw [h]
     ring
 
-lemma H_P4_2 (hx : x ≥ 3) (hpi3 : (π 3) = 2): (∏ x in Icc 1 (π x), ((x + 1) : ℝ) / x) = (π x) + 1 := by
+lemma H_P4_2 (hx : x ≥ 3) (hpi3 : (π 3) = 2) : (∏ x in Icc 1 (π x), ((x + 1) : ℝ) / x) = (π x) + 1 := by
   rw [prod_Icc_succ_div]
   rw [← hpi3]
   refine Monotone.imp monotone_primeCounting ?h
