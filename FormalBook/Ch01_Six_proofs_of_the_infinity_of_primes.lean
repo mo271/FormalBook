@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Authors: Moritz Firsching
+Authors: Moritz Firsching, Ralf Stephan
 -/
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.PrimeCounting
@@ -224,6 +224,26 @@ lemma H_P4_1 {k p: ℝ} (hk: k > 0) (hp: p ≥ k + 1): p / (p - 1) ≤ (k + 1) /
     one_div_le_one_div h_p_pred_pos hk, @le_sub_iff_add_le]
   exact hp
 
+lemma prod_Icc_succ_div (n : ℕ) (hn : 2 ≤ n) : (∏ x in Icc 1 n, ((x + 1) : ℝ) / x) = n + 1 := by
+  rw [← Nat.Ico_succ_right]
+  induction' n with n h
+  · simp
+  · rw [Finset.prod_Ico_succ_top <| Nat.le_add_left 1 n]
+    norm_num
+    cases' lt_or_ge n 2 with _ h2
+    · interval_cases n
+      · tauto
+      · norm_num
+    specialize h h2
+    field_simp [Finset.prod_eq_zero_iff] at h ⊢
+    rw [h]
+    ring
+
+lemma H_P4_2 (hx : x ≥ 3) (hpi3 : (π 3) = 2) : (∏ x in Icc 1 (π x), ((x + 1) : ℝ) / x) = (π x) + 1 := by
+  rw [prod_Icc_succ_div]
+  rw [← hpi3]
+  refine Monotone.imp monotone_primeCounting ?h
+  linarith
 
 /-!
 ### Fifth proof
