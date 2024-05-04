@@ -207,13 +207,30 @@ using elementary calculus
 -/
 open Filter
 
+noncomputable def primeCountingReal (x : ℝ) : ℕ :=
+  if (x > 0) then primeCounting ⌊x⌋.natAbs else 0
+
+def S₁ (x : ℝ) : Set ℕ :=
+ { n | ∀ p, Nat.Prime p → p ∣ n → p ≤ x }
+
 theorem infinity_of_primes₄ : Tendsto π atTop atTop := by
   -- two parts:
   -- (1) log x ≤ π x + 1
   -- (2) This implies that it is not bounded
+  have H_log_le_primeCountingReal_add_one (n : ℕ) (x : ℝ) (hxge : x ≥ n) (hxlt : x < n + 1) :
+      Real.log x ≤ primeCountingReal x + 1 :=
+    calc
+      Real.log x ≤ ∑ k in Icc 1 n, (k : ℝ)⁻¹ := by sorry
+      _ ≤ (∑' m : (S₁ x), (m : ℝ)⁻¹) := by sorry
+      _ ≤ (∏ p in primesBelow ⌊x⌋.natAbs, (∑' k : ℕ, (p ^ k : ℝ)⁻¹)) := by sorry
+      _ ≤ (∏ k in Icc 1 (primeCountingReal x), (nth Nat.Prime k) / ((nth Nat.Prime k) - 1)) := by sorry
+      _ ≤ (∏ k in Icc 1 (primeCountingReal x), (k + 1) / k) := by sorry
+      _ ≤ primeCountingReal x + 1 := by sorry
   sorry
 
 -- This might be useful for the proof. Rename as you like.
+theorem monotone_primeCountingReal : Monotone primeCountingReal := by sorry
+
 lemma H_P4_1 {k p: ℝ} (hk: k > 0) (hp: p ≥ k + 1): p / (p - 1) ≤ (k + 1) / k := by
   have h_k_nonzero: k ≠ 0 := ne_iff_lt_or_gt.mpr (Or.inr hk)
   have h_p_pred_pos: p - 1 > 0 := by linarith
