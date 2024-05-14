@@ -133,11 +133,9 @@ lemma ZMod.two_ne_one (q : ℕ)  [Fact (1 < q)] : (2 : ZMod q) ≠ 1 := by
   intro h1
   have h : (2 - 1 : ZMod q) = 0 := by exact Iff.mpr sub_eq_zero h1
   norm_num at h
-#check pred_le_pred
 
 lemma sub_one_le_sub_one {n m : ℕ} : n ≤ m → n - 1 ≤ m - 1 := by
-  intro h
-  exact pred_le_pred h
+  exact fun h => pred_le_pred h
 
 
 theorem infinity_of_primes₃:
