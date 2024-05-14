@@ -94,8 +94,9 @@ lemma fermat_product (n : ℕ) : ∏ k in range n, F k = F n - 2 := by
   rw [prod_range_succ, hn]
   unfold F
   norm_num
-  rw [succ_eq_add_one, mul_comm, ← Nat.sq_sub_sq]
+  rw [mul_comm, (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by aesop),  ← Nat.sq_sub_sq]
   ring_nf
+  omega
 
 theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): Coprime (F n) (F k) := by
   let m := (F n).gcd (F k)
@@ -132,6 +133,11 @@ lemma ZMod.two_ne_one (q : ℕ)  [Fact (1 < q)] : (2 : ZMod q) ≠ 1 := by
   intro h1
   have h : (2 - 1 : ZMod q) = 0 := by exact Iff.mpr sub_eq_zero h1
   norm_num at h
+#check pred_le_pred
+
+lemma sub_one_le_sub_one {n m : ℕ} : n ≤ m → n - 1 ≤ m - 1 := by
+  intro h
+  exact pred_le_pred h
 
 
 theorem infinity_of_primes₃:
@@ -143,7 +149,7 @@ theorem infinity_of_primes₃:
   -- This m has a prime factor;
   -- we pick the minimal one, the argument works with any prime factor
   let q := m.minFac
-  have hq : q.Prime := minFac_prime <| Nat.ne_of_gt <| one_lt_mersenne <| Prime.one_lt hp
+  have hq : q.Prime := minFac_prime <| Nat.ne_of_gt <| one_lt_mersenne.mpr <| Prime.one_lt hp
   have : Fact (Nat.Prime q) := by exact { out := hq }
   have h_mod_q : 2 ^ p  ≡ 1 [MOD q] := by
     have : (2^p - 1) % q = 0 :=  mod_eq_zero_of_dvd (minFac_dvd m)
@@ -155,7 +161,7 @@ theorem infinity_of_primes₃:
         zero_sub, neg_sub] at hc
     simp [cast_one, cast_pow, cast_ofNat, hc.symm]
   have h_mod_q' : (2 : (ZMod q)) ^ p = 1 := by
-    have := (ZMod.nat_cast_eq_nat_cast_iff _ _ _).mpr h_mod_q
+    have := (ZMod.natCast_eq_natCast_iff _ _ _).mpr h_mod_q
     norm_cast at this
     rw [← this, cast_pow, cast_ofNat]
   have : (2 : (ZMod q)) * (2 ^ (p - 1)) = 1 := by
@@ -193,13 +199,13 @@ theorem infinity_of_primes₃:
   · refine' minFac_prime <| Nat.ne_of_gt _
     dsimp [mersenne]
     calc 1 < 2^2 - 1 := by norm_num
-        _  ≤ 2^p - 1 := (pred_eq_sub_one 4).symm ▸ pred_le_pred <|
-            pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp)
+        _  ≤ 2^p - 1 := sub_one_le_sub_one <| pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp)
   · have h2q : 2 ≤ q := by
       exact Prime.two_le <| minFac_prime <| Nat.ne_of_gt <| lt_of_succ_lt <|
           Nat.sub_le_sub_right ((pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp))) 1
     exact lt_of_le_of_lt (Nat.le_of_dvd  (Nat.sub_pos_of_lt <| h2q) h_piv_div_q_sub_one)
         <| pred_lt <| Nat.ne_of_gt <| Nat.le_of_lt h2q
+
 /-!
 ### Fourth proof
 

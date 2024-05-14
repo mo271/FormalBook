@@ -283,9 +283,12 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have h1 : (q ^ n - 1) = q - 1  + ∑ A : S', (q ^ n - 1) / (q ^ (n_k A) - 1) := by
     convert H1
     sorry
+  have hZ : Nonempty <| @Subtype R fun x => x ∈ Z := by
+      exact Zero.instNonempty
   have hq_pow_pos : ∀ m,  1 ≤ q ^ m := by
     intro m
     refine' one_le_pow m q _
+
     exact Fintype.card_pos
 
   have h_n_k_A_dvd: ∀ A : S', (n_k A ∣ n) := by sorry
