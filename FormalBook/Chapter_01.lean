@@ -82,7 +82,7 @@ lemma fermat_bounded (n : ℕ) : 2 < F n := by
   · exact lt_trans h fermat_stricly_monotone
 
 lemma fermat_odd {n : ℕ} : Odd (F n) := by
-  rw [F, odd_iff_not_even, even_add_one, not_not, even_pow]
+  rw [F, ← not_even_iff_odd, even_add_one, not_not, even_pow]
   refine' ⟨even_two, Nat.ne_of_gt (pow_pos _ _)⟩
   exact zero_lt_two
 
@@ -93,7 +93,6 @@ lemma fermat_product (n : ℕ) : ∏ k in range n, F k = F n - 2 := by
   · trivial
   rw [prod_range_succ, hn]
   unfold F
-  norm_num
   rw [mul_comm, (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by aesop),  ← Nat.sq_sub_sq]
   ring_nf
   omega
@@ -118,7 +117,7 @@ theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): Coprime (F n) (F k) := b
     rw [h_two] at h_n
     have h_even : Even (F n) := even_iff_two_dvd.mpr h_n
     have h_odd : Odd (F n) := fermat_odd
-    exact (odd_iff_not_even.mp h_odd) h_even
+    exact (not_even_iff_odd.mpr h_odd) h_even
 /-!
 ### Third proof
 
@@ -190,8 +189,10 @@ theorem infinity_of_primes₃:
     -- Using Lagrange's theorem here!
     convert Subgroup.card_subgroup_dvd_card (Subgroup.zpowers (two))
     · rw [← orderOf_eq_prime h_two two_ne_one]
+      simp only [card_eq_fintype_card]
       exact Fintype.card_zpowers.symm
-    · exact ((prime_iff_card_units q).mp hq).symm
+    · simp only [card_eq_fintype_card, ZMod.card_units_eq_totient]
+      exact Eq.symm (totient_prime hq)
   use q
   constructor
   · refine' minFac_prime <| Nat.ne_of_gt _
@@ -210,6 +211,7 @@ theorem infinity_of_primes₃:
 using elementary calculus
 -/
 open Filter
+open Nat.Prime
 
 noncomputable def primeCountingReal (x : ℝ) : ℕ :=
   if (x ≤ 0) then 0 else primeCounting ⌊x⌋₊

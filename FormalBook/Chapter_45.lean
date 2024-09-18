@@ -15,14 +15,7 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import Mathlib.Tactic
-import Mathlib.Data.Finset.Basic
-import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
-import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
-import Mathlib.Order.WellFoundedSet
-import Mathlib.Data.Set.Basic
+import Mathlib.Combinatorics.SimpleGraph.Maps
 --import Mathlib.Analysis.SpecialFunctions.Exp
 --import Mathlib.Analysis.SpecialFunctions.Log.Base
 

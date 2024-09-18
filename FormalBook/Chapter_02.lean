@@ -15,12 +15,13 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import Mathlib.Tactic
-import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Data.Nat.PrimeNormNum
-import Mathlib.NumberTheory.Primorial
+import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Data.Nat.Choose.Factorization
+import Mathlib.Data.Real.StarOrdered
+import Mathlib.NumberTheory.Primorial
+import Mathlib.Tactic.NormNum.Prime
 /-!
 # Bertrand's postulate
 

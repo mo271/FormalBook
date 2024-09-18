@@ -51,7 +51,7 @@ open BigOperators
 -/
 
 namespace book
-namespace irrational
+namespace Irrational
 
 /-- A real number is irrational if it is not rational. This is the same definition as in mathlib -/
 def irrational (x : ℝ) := x ∉ Set.range (fun (q : ℚ) => (q : ℝ))
@@ -143,5 +143,5 @@ theorem Theorem_3 (n : ℕ) (h_n : n ≥ 3) : irrational ( arccos (1 / (n : ℝ)
   sorry
 -/
 
-end irrational
+end Irrational
 end book

@@ -114,7 +114,7 @@ theorem friendship_theorem [Nonempty V]
 
 
   -- Consider the adjacency matrix
-  let A := G.adjMatrix R
-  have : (A ^ 2) = (k - 1) • (1 : Matrix V V R) + of (fun _ _ => 1) := by sorry
+  let A := G.adjMatrix ℝ
+  have : (A ^ 2) = (k - 1) • (1 : Matrix V V ℝ) + of (fun _ _ => 1) := by sorry
 
   sorry

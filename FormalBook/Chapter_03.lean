@@ -15,9 +15,10 @@ limitations under the License.
 
 Authors: Moritz Firsching, Christopher Schmidt
 -/
-import Mathlib.Tactic
-import Mathlib.RingTheory.Prime
-import Mathlib.Data.Nat.Prime
+import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Data.Int.Star
+import Mathlib.Data.Rat.Star
+import Mathlib.Tactic.Qify
 --import data.nat.sqrt
 --set_option trace.simp_lemmas true
 
@@ -75,7 +76,7 @@ theorem prime_div_descFactorial (n k m l p : ℕ) (h_klen : k ≤ n)
   have h_fac_div' : ↑(n - k)! ∣ (n ! : ℤ) := dvd_of_mul_left_dvd h_fac_div
   have h_fac_div'' : (k ! : ℤ) ∣ (↑n ! / ↑(n - k)!) := by
     norm_cast
-    refine' (dvd_div_iff ((Int.coe_nat_dvd).mp h_fac_div')).mpr _
+    refine' (dvd_div_iff_mul_dvd ((Int.natCast_dvd_natCast).mp h_fac_div')).mpr _
     norm_cast at h_fac_div
     rw [mul_comm]
     exact h_fac_div

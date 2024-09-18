@@ -134,7 +134,6 @@ lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
   have : q ^ m - 1 = q^(m - k)*(q ^ k - 1) + (q^(m - k) - 1) := by
     zify
     simp [one_le_pow m q hq', one_le_pow k q hq', one_le_pow (m - k) q hq']
-    push_cast
     rw [mul_sub, mul_one]
     ring_nf
     simp only [ge_iff_le, add_right_inj]
