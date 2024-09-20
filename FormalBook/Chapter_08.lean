@@ -133,6 +133,8 @@ theorem Theorem_1 (r : ℚ) (h_r : r ≠ 0) : irrational (exp r) := by
     sorry
   sorry
 
+open Real
+
 theorem Theorem_2 (r : ℚ) (h_r : r ≠ 0) : irrational (π ^ 2) := by
   sorry
 
