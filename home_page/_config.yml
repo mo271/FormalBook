@@ -21,8 +21,8 @@
 title: Formal BOOK
 #email: your-email@example.com
 description: by Moritz Firsching
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://mo271.github.io/formal_book" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "formal_book" # the subpath of your site, e.g. /blog
+url: "firsching.ch" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username:
 github_username: mo271
 repository: mo271/formal_book
