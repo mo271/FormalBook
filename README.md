@@ -101,6 +101,7 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details.
 
   - [Moritz Firsching](https://github.com/mo271)
   - [Nick Kuhn](https://github.com/nick-kuhn)
+  - [Ralf Stephan](https://github.com/rwst)
   - [Christopher Schmidt](https://github.com/C-h-r-i-s-x)
 
 ## License
