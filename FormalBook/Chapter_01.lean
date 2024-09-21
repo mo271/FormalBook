@@ -36,20 +36,20 @@ open BigOperators
 ### Euclid's Proof
 
 -/
-theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ {q : ℕ} (_ : q ∈ S), Nat.Prime q):
+theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ q ∈ S, Nat.Prime q):
   ∃ (p : ℕ), Nat.Prime p ∧ p ∉ S := by
   let n := 1 + ∏ q in S, q
-  /- This `n` has a prime divisor;
+  /- "This `n` has a prime divisor":
   we pick the minimal one, the argument works with any prime divisor -/
   let p := n.minFac
   use p
   have hp : Nat.Prime p := by
     have hn : 0 < ∏ q in S, q := by
-      refine' Finset.prod_pos _
+      refine Finset.prod_pos ?_
       intros q hq
-      refine' Prime.pos <| h hq
+      exact Prime.pos <| h q hq
     exact Nat.minFac_prime <| Nat.ne_of_gt <| lt_add_of_pos_right 1 hn
-  refine' ⟨hp, _⟩
+  refine ⟨hp, ?_⟩
   by_contra a
   have h_p_div_prod : p ∣ ∏ q in S, q := dvd_prod_of_mem (fun (i : ℕ) => i) a
   have h_p_div_diff : p ∣ n - ∏ q in S, q := dvd_sub' (minFac_dvd n) h_p_div_prod
@@ -61,6 +61,7 @@ theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ {q : ℕ} (_ : q ∈ S),
 ### Second proof
 
 using Fermat numbers
+# TODO: upstream this, see https://github.com/leanprover-community/mathlib4/pull/17000
 -/
 def F : ℕ → ℕ := fun n => 2^2^n + 1
 
@@ -286,11 +287,42 @@ using topology
 -/
 
 
-def N : ℕ → ℕ → Set ℤ := fun a b => {a + n * b | n : ℤ}
+def N : ℤ → ℤ → Set ℤ := fun a b => {a + n * b | n : ℤ}
 
-theorem infinity_of_primes₅ : Fintype { p : ℕ // p.Prime } → False   := by
+def isOpen : Set ℤ → Prop := by
+  intro O
+  exact O = ∅ ∨ ∀ a ∈ O, ∃ b > 0, N a b ⊆ O
+
+
+theorem infinity_of_primes₅ : { p : ℕ | p.Prime }.Finite := by
+  have TopoSpace : TopologicalSpace ℤ := by
+    refine TopologicalSpace.mk isOpen ?_ ?_ ?_
+    · unfold isOpen
+      right
+      intro a
+      intro _
+      use 1
+      constructor
+      · decide
+      · exact Set.subset_univ _
+    · sorry
+    · intro S
+      intro h
+      unfold isOpen
+      right
+      intros z hz
+      obtain ⟨t, ⟨tS, zt⟩⟩ := hz
+      have := (h t tS)
+      unfold isOpen at this
+      rcases this with empty| ha'
+      · aesop
+      obtain ⟨b, hb⟩ := ha' z zt
+      use b
+      simp [hb]
+      exact fun ⦃a⦄ a_1 ↦ Set.subset_sUnion_of_subset S t (fun ⦃a⦄ a ↦ a) tS (hb.2 a_1)
+  have : ∀ X, ¬ TopoSpace.IsOpen X → X.Infinite := by sorry
+  have : ∀ a b, TopoSpace.IsOpen (N a b)ᶜ := by sorry
   sorry
-
 /-!
 ### Sixth proof
 
@@ -320,5 +352,5 @@ def ofSubexponentialGrowth (S : ℕ → ℤ) : Prop := ∃ f : ℕ → ℝ≥0, 
 
 theorem infinitely_many_more_proofs (S : ℕ → ℤ)
   (h₁ : AlmostInjective S) (h₂ : ofSubexponentialGrowth S) :
-  Fintype {p : Nat.Primes // ∃ n : ℕ, (p : ℤ) ∣ S n} → False := by
+  {p : Nat.Primes | ∃ n : ℕ, (p : ℤ) ∣ S n}.Finite := by
   sorry

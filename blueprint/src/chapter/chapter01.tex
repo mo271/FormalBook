@@ -1,0 +1,247 @@
+\chapter{Six proofs of the infinity of primes}
+
+\begin{theorem}[Euclid's proof]
+    \label{thm:eulids_proof}
+    \lean{infinity_of_primes₁}
+    \leanok
+    A finite set $\{p_1, \dots, p_r\}$ cannot be the collection of
+    \emph{all} prime numbers.
+\end{theorem}
+\begin{proof}
+    \leanok
+    For any finite set $\{p_1, \dots, p_r\}$, consider the number
+    $n = p_1p_2\dots p_r + 1$. This $n$ has a prime divisor $p$.
+    But $p$ is not one of the $p_i$s: otherwise $p$ would be a divisor of $n$ and of the product
+    $p_1p_2\dots p_r$, and thus also of the difference $n - p_1p_2\dots p_r = 1$,
+    which is impossible. So a finite set $\{p_1, \dots, p_r\}$ cannot be the collection of
+    \emph{all} prime numbers.
+\end{proof}
+
+
+\begin{theorem}[Second Proof]
+    \label{thm:second_proof}
+    \lean{infinity_of_primes₂}
+    \leanok
+    Any two Fermat numbers $F_n := 2^{2^n} + 1$ are relatively prime.
+\end{theorem}
+\begin{proof}
+    \leanok
+    Let us first look at the Fermat numbers \(F_n = 2^{2^n} +1\) for \(n = 0,1,2,\dots\).
+    We will show that any two Fermat numbers are relatively prime;
+    hence there must be infinitely many primes. To this end, we verify the recursion
+
+    \[
+    \prod_{k=0}^{n-1} F_k = F_n - 2,
+    \]
+    from which our assertion follows immediately.
+    Indeed, if \(m\) is a divisor of, say,
+    \(F_k\) and \(F_n\) (with \(k < n\)), then \(m\) divides 2, and hence \(m = 1\) or \(2\).
+    But \(m = 2\) is impossible since all Fermat numbers are odd.
+    To prove the recursion we use induction on \(n\).
+    For \(n = 1\), we have \(F_0 = 3\) and \(F_1 - 2 = 3\).
+    With induction we now conclude
+    \[
+    \prod_{k=0}^{n} F_k = \left( \prod_{k=0}^{n-1} F_k \right) F_n =
+        (F_n - 2)F_n = (2^{2^n} - 1)(2^{2^n} + 1) = 2^{2^{n+1}} - 1 = F_{n+1} - 2.
+    \]
+\end{proof}
+
+\begin{theorem}[Third Proof]
+    \label{thm:third_proof}
+    \lean{infinity_of_primes₃}
+    \leanok
+    There is no largest prime.
+\end{theorem}
+\begin{proof}
+    \leanok
+    \uses{Subgroup.card_subgroup_dvd_card}
+    Suppose \(\mathbb{P}\) is finite and \(p\) is the largest prime.
+    We consider the so-called \emph{Mersenne number} \(2^p - 1\)
+    and show that any prime factor \(q\) of \(2^p - 1\) is bigger than \(p\),
+    which will yield the desired conclusion.
+    Let \(q\) be a prime dividing \(2^p - 1\), so we have \(2^p \equiv 1 \pmod{q}\). Since \(p\) is prime,
+    this means that the element 2 has order \(p\) in the multiplicative group \(\mathbb{Z}_q \setminus \{0\}\)
+    of the field \(\mathbb{Z}_q\). This group has \(q - 1\) elements.
+    By Lagrange's theorem, we know that the order of every element divides the size of the group, that is,
+    we have \(p \mid q - 1\), and hence \(p < q\).
+\end{proof}
+
+\begin{theorem}[Fourth Proof]
+    \label{thm:fourth_proof}
+    \lean{infinity_of_primes₄}
+    \leanok
+    The prime counting function is unbounded
+\end{theorem}
+\begin{proof}
+    Let \(\pi(x) := \#\{p \leq x : p \in \mathbb{P}\}\) be the number of primes that are less than or equal to the real number \(x\).
+    We number the primes \(\mathbb{P} = \{p_1, p_2, p_3, \dots \}\) in increasing order.
+    Consider the natural logarithm \(\log x\), defined as
+
+    \[
+    \log x = \int_1^x \frac{1}{t} dt.
+    \]
+
+    Now we compare the area below the graph of \(f(t) = \frac{1}{t}\) with an upper step function.
+    (See also the appendix for this method.) Thus for \(n \leq x < n+1\) we have
+
+    \[
+    \log x \leq 1 + \frac{1}{2} + \frac{1}{3} + \dots + \frac{1}{n-1} + \frac{1}{n} \leq \sum \frac{1}{m},
+    \]
+    where the sum extends over all \(m \in \mathbb{N}\) which have only prime divisors \(p \leq x\).
+
+    Since every such \(m\) can be written in a unique way as a product of the form \(\prod_{p \leq x} p^{k_p}\),
+    we see that the last sum is equal to
+
+    \[
+    \prod_{p \in \mathbb{P}, p \leq x} \left( \sum_{k \geq 0} \frac{1}{p^k} \right).
+    \]
+
+    The inner sum is a geometric series with ratio \(\frac{1}{p}\), hence
+
+    \[
+    \log x \leq \prod_{p \leq x} \frac{1}{1 - \frac{1}{p}} = \prod_{p \leq x} \frac{p}{p - 1} = \prod_{k=1}^{\pi(x)} \frac{p_k}{p_k - 1}.
+    \]
+
+    Now clearly \(p_k \geq k+1\), and thus
+
+    \[
+    \frac{p_k}{p_k - 1} = 1 + \frac{1}{p_k - 1} \leq 1 + \frac{1}{k} = \frac{k+1}{k},
+    \]
+    and therefore
+
+    \[
+    \log x \leq \prod_{k=1}^{\pi(x)} \frac{k+1}{k} = \pi(x) + 1.
+    \]
+
+    Everybody knows that \(\log x\) is not bounded, so we conclude that \(\pi(x)\) is unbounded as well, and so there are infinitely many primes.
+\end{proof}
+
+\begin{theorem}[Fifth Proof]
+    \label{thm:fifth_proof}
+    \lean{infinity_of_primes₅}
+    \leanok
+    The set of primes \(\mathbb{P}\) if infinite.
+\end{theorem}
+\begin{proof}
+   Consider the following curious topology on the set \(\mathbb{Z}\) of integers. For \(a, b \in \mathbb{Z}, b > 0\), we set
+
+    \[
+    N_{a,b} = \{a + nb : n \in \mathbb{Z}\}.
+    \]
+
+    Each set \(N_{a,b}\) is a two-way infinite arithmetic progression.
+    Now call a set \(O \subseteq \mathbb{Z}\) open if either \(O\) is empty, or if to every \(a \in O\) there exists some \(b > 0\) with \(N_{a,b} \subseteq O\).
+    Clearly, the union of open sets is open again. If \(O_1, O_2\) are open,
+    and \(a \in O_1 \cap O_2\) with \(N_{a,b_1} \subseteq O_1\) and \(N_{a,b_2} \subseteq O_2\), then \(a \in N_{a, b_1 b_2} \subseteq O_1 \cap O_2\). So we conclude that any finite intersection of open sets is again open. Therefore, this family of open sets induces a bona fide topology on \(\mathbb{Z}\).
+
+    Let us note two facts:
+    Consider the following curious topology on the set \(\mathbb{Z}\) of integers. For \(a, b \in \mathbb{Z}, b > 0\), we set
+
+    \[
+    N_{a,b} = \{a + nb : n \in \mathbb{Z}\}.
+    \]
+
+    Each set \(N_{a,b}\) is a two-way infinite arithmetic progression.
+    Now call a set \(O \subseteq \mathbb{Z}\) open if either \(O\) is empty, or if to every \(a \in O\) there exists some \(b > 0\) with \(N_{a,b} \subseteq O\).
+    Clearly, the union of open sets is open again. If \(O_1, O_2\) are open, and \(a \in O_1 \cap O_2\) with \(N_{a,b_1} \subseteq O_1\) and \(N_{a,b_2} \subseteq O_2\),
+    then \(a \in N_{a, b_1 b_2} \subseteq O_1 \cap O_2\). So we conclude that any finite intersection of open sets is again open.
+    Therefore, this family of open sets induces a bona fide topology on \(\mathbb{Z}\).
+
+    Let us note two facts:
+
+    \begin{itemize}
+        \item[(A)] Any nonempty open set is infinite.
+        \item[(B)] Any set \(N_{a,b}\) is closed as well.
+    \end{itemize}
+
+    Indeed, the first fact follows from the definition. For the second, we observe
+
+    \[
+    N_{a,b} = \mathbb{Z} \setminus \bigcup_{i=1}^{b-1} N_{a+i,b},
+    \]
+
+    which proves that \(N_{a,b}\) is the complement of an open set and hence closed.
+
+    So far, the primes have not yet entered the picture — but here they come.
+    Since any number \(n \neq 1, -1\) has a prime divisor \(p\), and hence is contained in \(N_{0,p}\), we conclude
+
+    \[
+    \mathbb{Z} \setminus \{1, -1\} = \bigcup_{p \in \mathbb{P}} N_{0,p}.
+    \]
+
+    Now if \(\mathbb{P}\) were finite, then \(\bigcup_{p \in \mathbb{P}} N_{0,p}\) would be a finite union of closed sets (by (B)), and hence closed.
+    Consequently, \(\{1, -1\}\) would be an open set, in violation of (A).
+\end{proof}
+
+\begin{theorem}[Sixth Proof]
+    \label{thm:sixth_proof}
+    \lean{infinity_of_primes₆}
+    \leanok
+    The series \(\sum_{p\in\mathbb{P}}\frac 1 p\) diverges.
+\end{theorem}
+\begin{proof}
+    Our final proof goes a considerable step further and demonstrates not only that there are infinitely many primes,
+    but also that the series \(\sum_{p \in \mathbb{P}} \frac{1}{p}\) diverges.
+    The first proof of this important result was given by Euler (and is interesting in its own right), but our proof, devised by Erdős, is of compelling beauty.
+
+    Let \(p_1, p_2, p_3, \dots\) be the sequence of primes in increasing order, and assume that \(\sum_{p \in \mathbb{P}} \frac{1}{p}\) converges.
+    Then there must be a natural number \(k\) such that \(\sum_{i \geq k+1} \frac{1}{p_i} < \frac{1}{2}\).
+    Let us call \(p_1, \dots, p_k\) the small primes, and \(p_{k+1}, p_{k+2}, \dots\) the big primes. For an arbitrary natural number \(N\), we therefore find
+
+    \[
+    \sum_{i \geq k+1} \frac{N}{p_i} < \frac{N}{2}. \tag{1}
+    \]
+
+    Let \(N_b\) be the number of positive integers \(n \leq N\) which are divisible by at least one big prime,
+    and \(N_s\) the number of positive integers \(n \leq N\) which have only small prime divisors. We are going to show that for a suitable \(N\)
+
+    \[
+    N_b + N_s < N,
+    \]
+
+    which will be our desired contradiction, since by definition \(N_b + N_s\) would have to be equal to \(N\).
+
+    To estimate \(N_b\), note that \(\left\lfloor \frac{N}{p_i} \right\rfloor\) counts the positive
+    integers \(n \leq N\) which are multiples of \(p_i\). Hence by (1) we obtain
+
+    \[
+    N_b \leq \sum_{i \geq k+1} \left\lfloor \frac{N}{p_i} \right\rfloor < \frac{N}{2}. \tag{2}
+    \]
+
+    Let us now look at \(N_s\). We write every \(n \leq N\) which has only small prime
+    divisors in the form \(n = a_n b_n^2\), where \(a_n\) is the square-free part. Every \(a_n\)
+    is thus a product of different small primes, and we conclude that there are precisely \(2^k\)
+    different square-free parts. Furthermore, as \(b_n^2 \leq n \leq N\), we find that there are at most \(\sqrt{N}\) different square parts, and so
+
+    \[
+    N_s \leq 2^k \sqrt{N}.
+    \]
+
+    Since (2) holds for any \(N\), it remains to find a number \(N\) with \(2^k \sqrt{N} < \frac{N}{2}\), or \(2^{k+1} < \sqrt{N}\), and for this \(N = 2^{2k+2}\) will do.
+\end{proof}
+
+
+
+\section{Appendix: Infinitely many more proofs} \label{appendix:more_primes}
+\begin{theorem}
+    \label{thm:infty_proof}
+    \lean{Asymptotics.infinitely_many_more_proofs}
+    \leanok
+    If the sequence \(S = (s_1, s_2, s_3, \dots)\) is almost injective and of subexponential growth,
+    then the set \(\mathbb{P}_S\) of primes that divide some member of $S$ is infinite.
+\end{theorem}
+\begin{proof}
+    %TODO: add proof here
+\end{proof}
+
+% This is just to group things together more nicely in the dependency graph.
+\begin{theorem}[Infinity of primes]
+    \label{thm:infinity_of_primes}
+    There are infinitely many primes. (Six + infinitely many proofs)
+    \leanok
+\end{theorem}
+\begin{proof}
+    See theorems in this chapter.
+    \uses{thm:eulids_proof, thm:second_proof, thm:third_proof, thm:fourth_proof,
+        thm:fifth_proof, thm:sixth_proof, thm:infty_proof}
+\end{proof}
