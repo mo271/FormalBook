@@ -8,4 +8,4 @@ group :jekyll_plugins do
 end
 
 # Used for locally serving the website.
-gem "webrick", "~> 1.7"
+gem "webrick", ">= 1.7"
