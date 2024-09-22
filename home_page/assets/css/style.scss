@@ -1,7 +1,10 @@
----
----
 
 /* In this file you can add css rules overriding rules defined by your Jekyll theme.  */
+
+$section-headings-color: #9c160a;
+$header-bg-color: #9c160a;
+$header-bg-color-secondary: #fff581;
+
 
 /* Import the CSS from the specified theme */
 @import "{{ site.theme }}";
