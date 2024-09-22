@@ -41,6 +41,5 @@ open BigOperators
     - proof
 
   There is a lengthy attempt to at this chapter version of the lean3 version here:
-https://github.com/mo271/formal_book/blob/92f57b44cbbc1cd02ca77994efe8d8e6de050a19/src/chapters/32_Lattice_paths_and_determinants.lean
+https://github.com/mo271/FormalBook/blob/92f57b44cbbc1cd02ca77994efe8d8e6de050a19/src/chapters/32_Lattice_paths_and_determinants.lean
 -/
-

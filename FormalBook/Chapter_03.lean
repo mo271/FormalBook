@@ -38,7 +38,7 @@ open BigOperators
   - (3)
   - (4)
   There is a somewhat more detailed, but quite messy version of the lean3 version here:
-  https://github.com/mo271/formal_book/blob/92f57b44cbbc1cd02ca77994efe8d8e6de050a19/src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean
+  https://github.com/mo271/FormalBook/blob/92f57b44cbbc1cd02ca77994efe8d8e6de050a19/src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean
   Let's not follow that, but keep the proof cleaner.
 ### Sylvester's Theorem
 There is no proof given in the book, perhaps check out Erdős' for a proof to formalize.
