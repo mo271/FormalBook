@@ -11,3 +11,37 @@
     \leanok
     TODO: make this follow the book proof more closely!
 \end{proof}
+
+\section{Appendix: Some estimates}
+
+\begin{theorem}
+    \label{thm:estimate_integral}
+    \lean{chapter2.harmonic_number_bounds}
+    \leanok
+    For all \(n \in \mathbb{N}\)
+    \[
+    \log n + \frac 1 n < H_n < \log n + 1.
+    \]
+\end{theorem}
+\begin{proof}
+\end{proof}
+
+
+\begin{theorem}
+    \label{thm:estimate_factorials}
+    \lean{bound_factorial}
+    \leanok
+    For all \(n \in \mathbb{N}\)
+    \[
+    n! = n(n -1)! < ne^{n \log n - n + 1}= e\left(\frac n e\right)^n.
+    \]
+\end{theorem}
+\begin{proof}
+\end{proof}
+
+\begin{theorem}
+    \label{thm:estimate_binomial_coefficient}
+    TODO
+\end{theorem}
+\begin{proof}
+\end{proof}

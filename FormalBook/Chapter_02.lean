@@ -21,6 +21,7 @@ import Mathlib.Data.Nat.Choose.Factorization
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.NumberTheory.Harmonic.Defs
 /-!
 # Bertrand's postulate
 
@@ -223,6 +224,13 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
   -- coefficient.
   · exact exists_prime_lt_and_le_two_mul_eventually n h
 
+theorem harmonic_number_bounds {n : ℕ} :
+    Real.log n + 1 / n < harmonic n ∧
+    harmonic n <  Real.log n + 1 := by sorry
 
+noncomputable def e := exp 1
+
+theorem bound_factorial {n : ℕ} :
+  n.factorial < e*(n / e)^n := by sorry
 
 end chapter2
