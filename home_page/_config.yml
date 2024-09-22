@@ -20,7 +20,7 @@
 
 title: Formal BOOK
 #email: your-email@example.com
-description: by Moritz Firsching
+description: formalizing "Proofs from THE BOOK" by Martin Aigner and Günter M. Ziegler
 baseurl: "FormalBook/" # the subpath of your site, e.g. /blog
 url: "firsching.ch" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username:

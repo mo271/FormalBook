@@ -8,7 +8,7 @@ usemathjax: true
 
 Useful links:
 
-* [Zulip chat for Lean](https://leanprover.zulipchat.com/) for coordination
+* [Zulip chat for Lean](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Proofs.20from.20the.20book) for coordination
 * [Blueprint](blueprint/)
 * [Blueprint as pdf](blueprint.pdf)
 * [Dependency graph](blueprint/dep_graph_document.html)
