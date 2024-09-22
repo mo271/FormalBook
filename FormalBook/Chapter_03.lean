@@ -43,7 +43,7 @@ open BigOperators
 ### Sylvester's Theorem
 There is no proof given in the book, perhaps check out Erdős' for a proof to formalize.
 -/
-namespace chapter03
+namespace chapter3
 
 theorem sylvester (k n : ℕ) (h : n ≥ 2*k): ∃ p, p > k ∧ p.Prime ∧ p ∣ choose n k :=
   sorry
@@ -113,6 +113,7 @@ theorem prime_div_descFactorial (n k m l p : ℕ) (h_klen : k ≤ n)
   rw [descFactorial_eq_div h_klen]
   convert h_pl_div_fac_part
 
+/- now in mathlib? -/
 lemma factor_in_descFactorial (n k p l : ℕ) (h_klen : k ≤ n) (h_klp : k < p) (hp: p.Prime)
 (h_pow_div: p^l ∣ n.descFactorial k) (h_1lel : 1 ≤ l):
 ∃ (i : ℕ), (i ≤ k - 1) ∧ p^l ∣ (n - i) := by sorry
@@ -212,4 +213,4 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
     exact h_wlog k' h_4lek' h_k'len4 h_2k'len
 
 
-end chapter03
+end chapter3

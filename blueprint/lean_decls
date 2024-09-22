@@ -9,3 +9,5 @@ chapter2.exists_prime_lt_and_le_two_mul
 chapter2.harmonic_number_bounds
 chapter2.bound_factorial
 chapter2.bound_binomial_coeff
+chapter3.sylvester
+chapter3.binomials_coefficients_never_powers
