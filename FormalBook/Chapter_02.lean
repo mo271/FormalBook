@@ -22,6 +22,7 @@ import Mathlib.Data.Real.StarOrdered
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.NumberTheory.Harmonic.Defs
+import Mathlib
 /-!
 # Bertrand's postulate
 
@@ -232,5 +233,10 @@ noncomputable def e := exp 1
 
 theorem bound_factorial {n : ℕ} :
   n.factorial < e*(n / e)^n := by sorry
+
+theorem bound_binomial_coeff {k n : ℕ} :
+  Nat.choose n k ≤ n ^ k / n.factorial ∧
+  n ^ k / n.factorial ≤ n ^ k / 2 ^ (k - 1) := by sorry
+
 
 end chapter2
