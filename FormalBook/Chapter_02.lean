@@ -15,7 +15,6 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 import Mathlib.Data.Nat.Choose.Factorization
@@ -38,7 +37,7 @@ formalized by Patrick Stevens and Bolton Bailey.
 -/
 open scoped BigOperators
 
-namespace chapter02
+namespace chapter2
 
 open Real
 
@@ -226,4 +225,4 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
 
 
 
-end chapter02
+end chapter2
