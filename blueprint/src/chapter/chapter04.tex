@@ -1,1 +1,59 @@
 \chapter{Representing numbers as sums of two squares}
+
+\begin{lemma}[Lemma 1]
+  \label{ch3.lemma1}
+  For primes \(p = 4m + 1\) the equation \(s^2 \equiv -1 (\mod p)\) has two
+  solutions \(s \in \{1, 2, \dots, p - 1\}\), for \(p = 2\) there is one such solution, while
+  for primes of the form \(p = 4m + 3\) there is no solution.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+
+\begin{lemma}[Lemma 2]
+  \label{ch3.lemma2}
+  No number \(n = 4m + 3\) is a sum of two squares.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{proposition}[First proof]
+  \label{ch3.proposition1}
+  Every prime of the form \(p = 4m + 1\) is a sum of two squares,
+  that is, it can be written as \(p = x^2 + y^2\) for some natural numbers \(x,y \in \mathbb{N}\).
+\end{proposition}
+\begin{proof}
+  \uses{ch3.lemma1}
+  TODO
+\end{proof}
+
+\begin{proposition}[Second proof]
+  \label{ch3.proposition2}
+  Every prime of the form \(p = 4m + 1\) is a sum of two squares,
+  that is, it can be written as \(p = x^2 + y^2\) for some natural numbers \(x,y \in \mathbb{N}\).
+\end{proposition}
+\begin{proof}
+  TODO (Zagier's one line proof is in mathlib by now, follow this!)
+\end{proof}
+
+\begin{proposition}[Third proof]
+  \label{ch3.proposition3}
+  Every prime of the form \(p = 4m + 1\) is a sum of two squares,
+  that is, it can be written as \(p = x^2 + y^2\) for some natural numbers \(x,y \in \mathbb{N}\).
+\end{proposition}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{sum_of_two_squares}
+  A natural number \(n\) can be represented as a sum of two squares
+  if and only if every prime factor of the form \(p = 4m + 3\) appears with an
+  even exponent in the prime decomposition of \(n\).
+\end{theorem}
+\begin{proof}
+  \uses{ch3.lemma2, ch3.proposition1, ch3.proposition2, ch3.proposition3}
+  TODO
+\end{proof}
