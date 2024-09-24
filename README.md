@@ -13,6 +13,10 @@ The goal is to make the formalizations of the proofs as close as possible to the
 
 We follow the [naming conventions](https://github.com/leanprover-community/mathlib4/wiki/Porting-wiki#naming-convention) and [code style](https://leanprover-community.github.io/contribute/style.html) of mathlib4.
 
+## Blueprint
+
+Checkout the [project's blueprint](https://firsching.ch/FormalBook)!
+
 ## Installation
 
 This project uses Lean 4. You first need to [install elan and lean](https://leanprover.github.io/lean4/doc/setup.html) and then run
@@ -21,6 +25,7 @@ lake exe cache get
 lake build
 code .
 ```
+
 The last step only opens vscode in case you want to use that.
 
 ## Chapters
@@ -91,7 +96,8 @@ Contributions are most welcome! Feel free to
     - definitions, (if not yet in mathlib)
     - statements and
     - proofs
-  - fill in [`sorry`s](https://github.com/search?q=repo%3Amo271%2FFormalBook+sorry+path%3A*.lean&type=code)
+  - fill in [`sorry`s](https://github.com/search?q=repo%3Amo271%2FFormalBook+sorry+path%3A*.lean&type=code) in lean files
+  - fill in ['TODO's](https://github.com/search?q=repo%3Amo271%2FFormalBook+TODO+path%3A*.tex&type=code) in LaTeX files in the [blueprint](https://firsching.ch/FormalBook)
   - suggest improvements to proofs/code golf
   - correct typos/formatting/linting
 
@@ -99,10 +105,8 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details.
 
 ## Authors
 
-  - [Moritz Firsching](https://github.com/mo271)
-  - [Nick Kuhn](https://github.com/nick-kuhn)
-  - [Ralf Stephan](https://github.com/rwst)
-  - [Christopher Schmidt](https://github.com/C-h-r-i-s-x)
+A list of contributors can be found here: [AUTHORS](AUTHORS.md)
+or look at the [github stats](https://github.com/mo271/FormalBook/graphs/contributors).
 
 ## License
 
