@@ -11,3 +11,12 @@ chapter2.bound_factorial
 chapter2.bound_binomial_coeff
 chapter3.sylvester
 chapter3.binomials_coefficients_never_powers
+book.quadratic_reciprocity.fermat_little
+book.quadratic_reciprocity.euler_criterion
+book.quadratic_reciprocity.product_rule
+book.quadratic_reciprocity.lemma_of_Gauss
+book.quadratic_reciprocity.quadratic_reciprocity_1
+book.quadratic_reciprocity.mult_cyclic
+book.quadratic_reciprocity.fact_A
+book.quadratic_reciprocity.fact_B
+book.quadratic_reciprocity.quadratic_reciprocity_2
