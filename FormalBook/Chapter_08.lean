@@ -51,7 +51,7 @@ open BigOperators
 -/
 
 namespace book
-namespace Irrational
+namespace irrational
 
 /-- A real number is irrational if it is not rational. This is the same definition as in mathlib -/
 def irrational (x : ℝ) := x ∉ Set.range (fun (q : ℚ) => (q : ℝ))
@@ -116,14 +116,11 @@ lemma lem_aux_ii (n : ℕ) (x : ℝ) (h_1 : 0 < x) (h_2 : x < 0) :
 /-!
 WARNING: There might be a better way to state this, not sure what the best API for derivatives of
 smooth (polynomial) functions is
-
- porting note: wait for
- https://leanprover-community.github.io/mathlib-port-status/file/analysis/calculus/iterated_deriv
-
-lemma lem_aux_iii (n : ℕ) (k : ℕ): iterated_deriv k (f_aux n) 0 ∈  set.range (coe : ℚ → ℝ) ∧
-  iterated_deriv k (f_aux n) 1 ∈ set.range (coe : ℚ → ℝ) := by
-  sorry
 -/
+lemma lem_aux_iii (n : ℕ) (k : ℕ): iteratedDeriv k (f_aux n) 0 ∈  Set.range (fun (q : ℚ) ↦ (q : ℝ)) ∧
+  iteratedDeriv k (f_aux n) 1 ∈ Set.range (fun (q : ℚ) ↦ (q : ℝ))  := by
+  sorry
+
 
 /-!### Theorems 1 to 3-/
 
@@ -138,12 +135,9 @@ open Real
 theorem Theorem_2 (r : ℚ) (h_r : r ≠ 0) : irrational (π ^ 2) := by
   sorry
 
--- porting note: wait for
--- https://leanprover-community.github.io/mathlib-port-status/file/analysis/special_functions/trigonometric/inverse
-/-!
 theorem Theorem_3 (n : ℕ) (h_n : n ≥ 3) : irrational ( arccos (1 / (n : ℝ).sqrt) / π) := by
   sorry
--/
 
-end Irrational
+
+end irrational
 end book

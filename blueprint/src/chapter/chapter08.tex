@@ -1,1 +1,114 @@
 \chapter{Some irrational numbers}
+
+
+\begin{theorem}
+  \label{e_irrational}
+  \lean{book.irrational.e_irrational}
+  \leanok
+  \(e\) is irrational
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{e_pow_2_irrational}
+  \lean{book.irrational.e_pow_2_irrational}
+  \leanok
+  \(e ^ 2\) is irrational
+\end{theorem}
+\begin{proof}
+  \uses{e_irrational}
+  TODO
+\end{proof}
+
+
+\begin{theorem}[Little Lemma]
+  \label{little_lemma}
+  \lean{book.irrational.little_lemma}
+  \leanok
+  TODO
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{e_pow_4_irrational}
+  \lean{book.irrational.e_pow_4_irrational}
+  \leanok
+  \(e ^ 4\) is irrational
+\end{theorem}
+\begin{proof}
+  \uses{little_lemma, e_pow_2_irrational}
+  TODO
+\end{proof}
+
+\begin{lemma}
+  \label{lem_aux_i}
+  \lean{book.irrational.lem_aux_i}
+  \leanok
+  TODO
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{lemma}
+  \label{lem_aux_ii}
+  \lean{book.irrational.lem_aux_ii}
+  \leanok
+  TODO
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+
+\begin{lemma}
+  \label{lem_aux_iii}
+  \lean{book.irrational.lem_aux_iii}
+  \leanok
+  TODO
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{e_pow_irrational}
+  \label{book.irrational.Theorem_1}
+  \leanok
+  \(e^r\) is irrational for every \(r\in\\mathbb{Q}\setminus\{0\}\).
+\end{theorem}
+\begin{proof}
+  \uses{lem_aux_i, lem_aux_ii, lem_aux_iii}
+  TODO
+\end{proof}
+
+
+\begin{theorem}
+  \label{pi_pow_2_irrational}
+  \label{book.irrational.Theorem_2}
+  \leanok
+  \(\pi^2\) is irrational.
+\end{theorem}
+\begin{proof}
+  \uses{lem_aux_ii, lem_aux_iii}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{arccos_irrational}
+  \label{book.irrational.Theorem_3}
+  \leanok
+  For every odd integer \(n \ge 3\), the number
+  \[
+  A(n)\colonequals \frac{1}{\pi}\arccos\left(\frac{1}{\sqrt{n}}\right)
+  \]
+  is irrational.
+\end{theorem}
+\begin{proof}
+  \uses{pi_pow_2_irrational}
+  TODO
+\end{proof}
