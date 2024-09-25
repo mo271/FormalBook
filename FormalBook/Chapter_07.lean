@@ -33,7 +33,7 @@ import Mathlib.LinearAlgebra.Matrix.Hermitian
   - Theorem 2.
 -/
 
-namespace chapter07
+namespace chapter7
 
 open Matrix
 
@@ -48,3 +48,5 @@ theorem Theorem₂ (n : ℕ) : ∃ (M : Matrix (Fin n) (Fin n) ℤ),
     (∀ i j, M i j = -1 ∨ M i j = 1) ∧
     M.det > Real.sqrt n.factorial := by
   sorry
+
+end chapter7
