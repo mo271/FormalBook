@@ -1,1 +1,126 @@
 \chapter{Hilbert's third problem: decomposing polyhedra}
+
+
+\begin{lemma}[Pearl Lemma]
+  \label{pearl_lemma}
+  If $P$ and $Q$ are equidecomposable, then one can place
+  a positive number of pearls (that is, assign positive integers) to all the
+  segments of the decompositions
+  $P = P_1 \cup \cdots \cup P_n$ and $Q = Q_1 \cup \cdots \cup Q_n$
+  in such a way that each edge of a piece $P_k$ receives the same number of
+  pearls as the corresponding edge of $Q_k$.
+\end{lemma}
+\begin{proof}
+  Assign a variable $x_i$ to each segment in the decomposition of $P$
+  and a variable $y_j$ to each segment in the decomposition of $Q$. Now we have
+  to find positive \emph{integer} values for the variables $x_i$ and $y_j$ in such a way
+  that the $x_i$-variables corresponding to the segments of any edge of some $P_k$
+  yield the same sum as the $y_j$-variables assigned to the segments of the corresponding
+  edge of $Q_k$. This yields conditions that require that ``some
+  $x_i$-variables have the same sum as some $y_j$-values'', namely
+\[
+\sum_{i : s_i \subseteq e} x_i - \sum_{j : s'_j \subseteq e'} y_j = 0
+\]
+where the edge $e \subseteq P_k$ decomposes into the segments $s_i$, while the
+corresponding edge $e' \subseteq Q_k$ decomposes into the segments $s'_j$. This is a linear
+equation with integer coefficients.
+
+We note, however, that positive \emph{real} values satisfying all these requirements
+exist, namely the (real) lengths of the segments! Thus we are done, in view
+of the following lemma.
+\end{proof}
+
+\begin{lemma}[Cone Lemma]
+  \label{cone_lemma}
+  If a system of homogeneous linear equations with integer
+  coefficients has a positive \emph{real} solution, then it also has a positive
+  \emph{integer} solution.
+\end{lemma}
+\begin{proof}
+   The name of this lemma stems from the interpretation that the set
+  \[
+  C = \{x \in \mathbb{R}^N : Ax = 0, x > 0\}
+  \]
+  given by an integer matrix \( A \in \mathbb{Z}^{M \times N} \) describes a (relatively open) rational
+  cone. We have to show that if this is nonempty, then it also contains integer
+  points: \( C \cap \mathbb{N}^N \neq \emptyset \).
+
+  If \( C \) is nonempty, then so is \(\overline{C} := \{x \in \mathbb{R}^N : Ax = 0, x \geq 1\}\), since
+  for any positive vector a suitable multiple will have all coordinates equal to or
+  larger than 1. (Here 1 denotes the vector with all coordinates equal to 1.)
+  It suffices to verify that \( \overline{C} \subseteq C \) contains a point with \emph{rational} coordinates,
+  since then multiplication with a common denominator for all coordinates
+  will yield an integer point in \( \overline{C} \subseteq C \).
+
+  There are many ways to prove this. We follow a well-trodden path that was
+  first explored by Fourier and Motzkin \([8, \text{Lecture 1}]\): By ``Fourier-Motzkin
+  elimination" we show that the lexicographically smallest solution to the
+  system
+  \[
+  Ax = 0, x \geq 1
+  \]
+  exists, and that it is rational if the matrix \( A \) is integral.
+
+  Indeed, any linear equation \( a^T x = 0 \) can be equivalently enforced by two
+  inequalities \( a^T x \geq 0, -a^T x \geq 0 \). (Here \( a \) denotes a column vector and
+  \( a^T \) its transpose.) Thus it suffices to prove that any system of the type
+  \[
+  Ax \geq b, x \geq 1
+  \]
+  with integral \( A \) and \( b \) has a lexicographically smallest solution, which is
+  rational, provided that the system has any real solution at all.
+
+  For this we argue with induction on \( N \). The case \( N = 1 \) is clear. For \( N > 1 \)
+  look at all the inequalities that involve \( x_N \). If \( x' = (x_1, \ldots, x_{N-1}) \) is fixed,
+  these inequalities give lower bounds on \( x_N \) (among them \( x_N \geq 1 \)) and
+  possibly also upper bounds. So we form a new system \( A' x' \geq b \), \( x' \geq 1 \)
+  in \( N-1 \) variables, which contains all the inequalities from the system
+  \( Ax \geq b \) that do not involve \( x_N \), as well as all the inequalities obtained
+  by requiring that all upper bounds on \( x_N \) (if there are any) are larger or
+  equal to all the lower bounds on \( x_N \) (which include \( x_N \geq 1 \)). This system
+  in \( N-1 \) variables has a solution, and thus by induction it has a l
+  exicographically minimal solution \( x'_*\), which is rational. And then the smallest
+  \( x_N \) compatible with this solution \( x'_*\) is easily found, it is determined by a
+  linear equation or inequality with integer coefficients, and thus it is rational as well.
+\end{proof}
+
+
+\begin{theorem}[Bricard's condition]
+  \label{bricard_condition}
+  TODO
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}[Example 1]
+  \label{example1}
+  TODO
+\end{theorem}
+\begin{proof}
+    TODO
+\end{proof}
+
+\begin{theorem}[Example 2]
+  \label{example2}
+  TODO
+\end{theorem}
+\begin{proof}
+    TODO
+\end{proof}
+
+\begin{theorem}[Example 3]
+  \label{example2}
+  TODO
+\end{theorem}
+\begin{proof}
+    TODO
+\end{proof}
+
+\begin{theorem}[Hilbert's third problem]
+  \label{hilberts_third}
+  TODO
+\end{theorem}
+\begin{proof}
+  \uses{pearl_lemma, cone_lemma, bricard_condition, example1, example2, example3}
+\end{proof}
