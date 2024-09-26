@@ -61,7 +61,7 @@ theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ q ∈ S, Nat.Prime q):
 ### Second proof
 
 using Fermat numbers
-# TODO: upstream this, see https://github.com/leanprover-community/mathlib4/pull/17000
+TODO: upstream this, see https://github.com/leanprover-community/mathlib4/pull/17000
 -/
 def F : ℕ → ℕ := fun n => 2^2^n + 1
 
