@@ -1,1 +1,30 @@
 \chapter{Every large point set has an obtuse angle}
+
+\begin{theorem}
+  \label{ch17theorem1}
+  For every \(d\), one has the following chain of inequalities:
+\begin{align}
+    2^d &\leq_{\text{(1)}} \max \left\{ \#S \,|\, S \subseteq \mathbb{R}^d, \angle(s_i, s_j, s_k) \leq \frac{\pi}{2} \text{ for every } \{s_i, s_j, s_k\} \subseteq S \right\} \\
+    &\leq_{\text{(2)}} \max \left\{ \#S \,|\, S \subseteq \mathbb{R}^d \text{ such that for any two points } \{s_i, s_j\} \subseteq S, \right. \nonumber \\
+    &\qquad\qquad \left. \text{there is a strip } S(i, j) \text{ that contains } S, \text{ with } s_i \text{ and } s_j \text{ lying in the parallel boundary hyperplanes of } S(i, j) \right\} \\
+    &=_{\text{(3)}} \max \left\{ \#S \,|\, S \subseteq \mathbb{R}^d \text{ such that the translates } P - s_i, s_i \in S, \text{ of the convex hull } P := \text{conv}(S) \right. \nonumber \\
+    &\qquad\qquad \left. \text{intersect in a common point, but they only touch} \right\} \\
+    &\leq_{\text{(4)}} \max \left\{ \#S \,|\, S \subseteq \mathbb{R}^d \text{ such that the translates } Q + s_i \text{ of some d-dimensional convex polytope } Q \subseteq \mathbb{R}^d \text{ touch pairwise} \right\} \\
+    &=_{\text{(5)}} \max \left\{ \#S \,|\, S \subseteq \mathbb{R}^d \text{ such that the translates } Q^* + s_i \text{ of some d-dimensional centrally symmetric convex polytope } Q^* \subseteq \mathbb{R}^d \text{ touch pairwise} \right\} \\
+    &\leq_{\text{(6)}} 2^d.
+\end{align}
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{ch17theorem2}
+  For every \(d\ge 2\), there is a set \(S\subset\{0, 1\}^d\) of \(2\lfloor\frac{sqrt{6}}{9}(\frac{2}{\sqrt(3)})^d\rfloor\)
+  points in \(\mathbb{R}^n\) (vertices of the unit \(d\)-cube) that determine only acute angels.
+  In particular, in dimension \(d = 34\) ther is a set of \(72 > 2*34 - 1\) points
+  with only acute angels.
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
