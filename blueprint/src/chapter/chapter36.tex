@@ -1,1 +1,36 @@
 \chapter{Completing Latin squares}
+
+\begin{lemma}
+  \label{ch36lemma1}
+  Any $(r \times n)$-Latin rectangle, $r < n$, can be extended to an $((r+1) \times n)$-Latin
+  rectangle and hence can be completed to a Latin square.
+\end{lemma}
+\begin{proof}
+  We apply Hall's theorem \ref{ch30theorem3} (see Chapter \ref{chapter30}). Let $A_j$ be the set of numbers that do
+  not appear in column $j$. An admissible $(r+1)$-st row corresponds then precisely to a system of
+  distinct representatives for the collection $A_1, \dots, A_n$. To prove the lemma we
+  therefore have to verify Hall's condition (H). Every set $A_j$ has size $n - r$, and every
+  element is in precisely $n - r$ sets $A_j$ (since it appears $r$ times in the rectangle).
+  Any $m$ of the sets $A_j$ contain together $m(n - r)$ elements and therefore at least $m$
+  different ones, which is just condition (H).
+\end{proof}
+
+\begin{lemma}
+  \label{ch36lemma2}
+  Let $P$ be a partial Latin square of order $n$ with at most $n - 1$ cells filled and at
+  most $\frac{n}{2}$ distinct elements, then $P$ can be completed to a Latin square of
+  order $n$.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+
+\begin{theorem}[Smetaniuk's theorem]
+  \label{smetaniuk_theorem}
+  Any partial Latin square of order $n$ with at most $n - 1$ filled cells can be completed to a
+  Latin square of the same order.
+\end{theorem}
+\begin{proof}
+  \uses{ch36lemma1, ch36lemma2}
+\end{proof}
