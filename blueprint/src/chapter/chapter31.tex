@@ -1,1 +1,72 @@
 \chapter{Shuffling cards}
+% TOOD:
+%  - The birthday paradox
+%  - The coupon collector
+%  - Top-in-ar-random shuffles
+\begin{lemma}
+  \label{ch31lemma}
+Let $\mathbb{Q} : \mathfrak{S}_n \longrightarrow \mathbb{R}$ be any probability distribution
+that defines a shuffling process $\mathbb{Q}^*k$ with a strong uniform stopping rule
+whose stopping time is $T$. Then for all $k \geq 0$,
+\[
+||\mathbb{Q}^*k - \mathbb{U}|| \leq \text{Prob}[T > k].
+\]
+\end{lemma}
+\begin{proof}
+If $X$ is a random variable with values in $\mathfrak{S}_n$, with probability distribution $\mathbb{Q}$, then we write $\mathbb{Q}(S)$ for the probability that $X$ takes a value in $S \subseteq \mathfrak{S}_n$. Thus $\mathbb{Q}(S) = \text{Prob}[X \in S]$, and in the case of the uniform distribution $\mathbb{Q} = \mathbb{U}$ we get
+\[
+\mathbb{U}(S) = \text{Prob}[X \in S] = \frac{|S|}{n!}.
+\]
+
+For every subset $S \subseteq \mathfrak{S}_n$, we get the probability that after $k$ steps our deck is ordered according to a permutation in $S$ as
+\[
+\mathbb{Q}^*k(S) = \text{Prob}[X_k \in S]
+= \sum_{j \leq k} \text{Prob}[X_k \in S \land T = j] + \text{Prob}[X_k \in S \land T > k]
+\]
+\[
+= \sum_{j \leq k} \mathbb{U}(S) \cdot \text{Prob}[T = j] + \text{Prob}[X_k \in S | T > k] \cdot \text{Prob}[T > k]
+\]
+\[
+= \mathbb{U}(S) (1 - \text{Prob}[T > k]) + \text{Prob}[X_k \in S | T > k] \cdot \text{Prob}[T > k]
+\]
+\[
+= \mathbb{U}(S) + (\text{Prob}[X_k \in S | T > k] - \mathbb{U}(S)) \cdot \text{Prob}[T > k].
+\]
+
+This yields
+\[
+|\mathbb{Q}^*k(S) - \mathbb{U}(S)| \leq \text{Prob}[T > k]
+\]
+since
+\[
+\text{Prob}[X_k \in S | T > k] - \mathbb{U}(S)
+\]
+is a difference of two probabilities, so it has absolute value at most 1.
+\end{proof}
+
+
+\begin{theorem}
+  \label{ch31theorem1}
+   Let $c \geq 0$ and $k := \lceil n \log n + cn \rceil$.
+   Then after performing $k$ top-in-at-random shuffles on a deck of $n$ cards,
+   the variation distance from the uniform distribution satisfies
+  \[
+  d(k) := ||\text{Top}^*k - \mathbb{U}|| \leq e^{-c}.
+  \]
+\end{theorem}
+\begin{proof}
+  \uses{ch31lemma}
+  TODO
+\end{proof}
+
+
+\begin{theorem}
+  \label{ch31theorem2}
+  After performing $k$ riffle shuffles on a deck of $n$ cards, the variation distance from a uniform distribution satisfies
+\[
+||\text{Rif}^*k - \mathbb{U}|| \leq 1 - \prod_{i=1}^{n-1} \left( 1 - \frac{i}{2^k} \right).
+\]
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
