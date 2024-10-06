@@ -39,3 +39,15 @@ import Mathlib.Tactic
     - proof
     - Proof of Brouwer's fixed point theorem (for $n = 2$)
 -/
+
+theorem pigeon_hole_principle (n r : ℕ) (h : r < n) (object_to_boxes : Fin n → Fin r) :
+  ∃ box : Fin r, ∃ object₁ object₂ : Fin n,
+  object₁ ≠ object₂ ∧
+  object_to_boxes object₁ = box ∧
+  object_to_boxes object₂ = box := by
+  have ⟨object₁, object₂, h_object⟩ :=
+      Fintype.exists_ne_map_eq_of_card_lt object_to_boxes (by convert h <;> simp)
+  use object_to_boxes object₁
+  use object₁
+  use object₂
+  tauto

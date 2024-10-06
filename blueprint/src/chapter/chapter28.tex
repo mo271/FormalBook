@@ -1,1 +1,147 @@
 \chapter{Pigeon-hole and double counting}
+
+\begin{theorem}[Pigeon-hole princinple]
+  \label{pigeon_hole_principle}
+  \lean{pigeon_hole_principle}
+  If $n$ objects are placed in $r$ boxes, where $r < n$, then at least one of the boxes contains
+  more than one object.
+\end{theorem}
+\begin{proof}
+  \leanok
+  obvious
+\end{proof}
+
+\begin{theorem}[Double counting]
+  \label{double_counting}
+  Suppose that we are given two finite sets $R$ and $C$ and a subset $S \subseteq R \times C$.
+  Whenever $(p, q) \in S$, then we say $p$ and $q$ are incident.
+  If $r_p$ denotes the number of elements that are incident to $p \in R$, and $c_q$
+  denotes the number of elements that are incident to $q \in C$, then
+  \[
+  \sum_{p \in R} r_p = |S| = \sum_{q \in C} c_q. \tag{3}
+  \]
+\end{theorem}
+\begin{proof}
+  ``nothing to prove''
+\end{proof}
+
+\section{Numbers}
+\begin{theorem}[Claim]
+  \label{ch28claim1}
+  Consider the numbers $1, 2, 3, \dots 2n$, and take away $n + 1$
+  of them. Then there are two among these $n + 1$ numbers which are
+  relatively prime.
+\end{theorem}
+\begin{proof}
+  \uses{pigeon_hole_princinple}
+  obvious
+\end{proof}
+
+\begin{theorem}[Claim]
+  \label{ch28claim2}
+  Suppose again $A\subset\{1, 2, \dots, 2n\}$ with $|A| = n + 1$. Then
+  there are always two numbers in $A$ such that one divides the other.
+\end{theorem}
+\begin{proof}
+  \uses{pigeon_hole_princinple}
+  Write every number $a \in A$ in the form $a = 2^k m$, where $m$ is an odd number between 1 and $2n - 1$.
+  Since there are $n + 1$ numbers in $A$, but only $n$ different odd parts, there must be two numbers
+  in $A$ with the same odd part. Hence one is a multiple of the other.
+\end{proof}
+
+\section{Sequences}
+
+\begin{theorem}[Claim]
+  \label{ch28claim3}
+  In any sequence $a_1, a_2, \ldots, a_{mn+1}$ of $mn+1$ distinct real numbers, there exists an increasing subsequence
+\[
+a_{i_1} < a_{i_2} < \cdots < a_{i_{m+1}} \quad (i_1 < i_2 < \cdots < i_{m+1})
+\]
+of length $m+1$, or a decreasing subsequence
+\[
+a_{j_1} > a_{j_2} > \cdots > a_{j_{n+1}} \quad (j_1 < j_2 < \cdots < j_{n+1})
+\]
+of length $n+1$, or both.
+\end{theorem}
+\begin{proof}
+  \uses{pigeon_hole_principle}
+This time the application of the pigeon-hole principle is not immediate.
+Associate to each $a_i$ the number $t_i$, which is the length of a longest
+increasing subsequence starting at $a_i$. If $t_i \geq m+1$ for some $i$,
+then we have an increasing subsequence of length $m+1$. Suppose then
+that $t_i \leq m$ for all $i$. The function $f : a_i \mapsto t_i$ mapping
+$\{a_1, \dots, a_{mn+1}\}$ to $\{1, \dots, m\}$ tells us by (1) that there
+is some $s \in \{1, \dots, m\}$ such that $f(a_i) = s$ for $\frac{mn}{m} + 1 = n + 1$
+numbers $a_i$. Let $a_{j_1}, a_{j_2}, \dots, a_{j_{n+1}}$ $(j_1 < \cdots < j_{n+1})$
+be these numbers. Now look at two consecutive numbers $a_{j_i} < a_{j_{i+1}}$,
+then we would obtain an increasing subsequence of length $s$ starting
+at $a_{j_{i+1}}$, and consequently an increasing subsequence of length $s+1$
+starting at $a_{j_i}$, which cannot be since $f(a_{j_i}) = s$.
+We thus obtain a decreasing subsequence $a_{j_1} > a_{j_2} > \cdots > a_{j_{n+1}}$
+of length $n+1$.
+\end{proof}
+
+\section{Sums}
+
+\begin{theorem}[Claim]
+  \label{ch28claim4}
+  Suppose we are given $n$ integers $a_1, \dots, a_n$, which need not be distinct.
+  Then there is always a set of consecutive numbers $a_{k+1}, a_{k+2}, \dots, a_{\ell}$
+  whose sum $\sum_{i=k+1}^{\ell} a_i$ is a multiple of $n$.
+\end{theorem}
+\begin{proof}
+  \uses{pigeon_hole_principle}
+  For the proof we set $N = \{0, 1, \dots, n\}$ and $R = \{0, 1, \dots, n-1\}$.
+  Consider the map $f : N \to R$, where $f(m)$ is the remainder of $a_1 + \cdots + a_m$
+  upon division by $n$. Since $|N| = n+1 > n = |R|$,
+  it follows that there are two sums $a_1 + \cdots + a_k, a_1 + \cdots + a_{\ell}$ $(k < \ell)$
+  with the same remainder, where the first sum may be the empty sum denoted by $0$. It follows that
+  \[
+  \sum_{i=k+1}^{\ell} a_i = \sum_{i=1}^{\ell} a_i - \sum_{i=1}^{k} a_i
+  \]
+  has remainder 0 — end of proof.
+\end{proof}
+
+\section{Numbers again}
+ TODO
+
+\section{Graphs}
+\begin{theorem}
+  \label{ch28theorem}
+  If the graph $G$ on $n$ vertices contains no $4$-cycles, then
+  \[
+  |E| \le \lfloor\frac{n}{4}(1 + \sqrt{4n - 3})\rfloor
+  \]
+\end{theorem}
+\begin{proof}
+  \uses{double_counting}
+  TODO
+\end{proof}
+
+\section{Sperner's Lemma}
+\begin{lemma}[Sperner's Lemma]
+  \label{sperner}
+  Suppose that some “big” triangle with vertices $V_1, V_2, V_3$ is triangulated (that is, decomposed into a finite number of “small” triangles that fit together edge-by-edge).
+Assume that the vertices in the triangulation get “colors” from the set $\{1, 2, 3\}$ such that $V_i$ receives the color $i$ (for each $i$), and only the colors $i$ and $j$ are used for vertices along the edge from $V_i$ to $V_j$ (for $i \neq j$), while the interior vertices are colored arbitrarily with 1, 2, or 3.
+Then in the triangulation there must be a small “tricolored” triangle, which has all three different vertex colors.
+\end{lemma}
+\begin{proof}
+  \uses{pigeon_hole_principle}
+  We will prove a stronger statement: The number of tricolored triangles is not only nonzero, it is always \textit{odd}.
+
+Consider the dual graph to the triangulation, but don’t take all its edges — only those which cross an edge that has endvertices with the (different) colors 1 and 2. Thus we get a “partial dual graph” which has degree 1 at all vertices that correspond to tricolored triangles, degree 2 for all triangles in which the two colors 1 and 2 appear, and degree 0 for triangles that do not have both colors 1 and 2. Thus only the tricolored triangles correspond to vertices of odd degree (of degree 1).
+
+However, the vertex of the dual graph which corresponds to the outside of the triangulation has odd degree: in fact, along the big edge from $V_1$ to $V_2$, there is an odd number of changes between 1 and 2. Thus an odd number of edges of the partial dual graph crosses this big edge, while the other big edges cannot have both 1 and 2 occurring as colors.
+
+Now since the number of odd-degree vertices in any finite graph is even (by equation (4)), we find that the number of small triangles with three different colors (corresponding to odd inside vertices of our dual graph) is odd.
+\end{proof}
+
+\begin{theorem}[Brower's Fixpoint (for $n=2$)]
+  \label{brower}
+  Every continuous function $f : B^2 \longrightarrow B^2$ of an $2$-dimensional ball to
+  itself has a fixed point (a point $x \in B^2$ with $f(x) = x$).
+\end{theorem}
+\begin{proof}
+  \uses{sperner}
+  TODO
+\end{proof}
