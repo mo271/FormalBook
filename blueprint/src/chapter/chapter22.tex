@@ -1,1 +1,91 @@
 \chapter{One square and an odd number of triangles}
+
+
+\begin{definition}[valutaion on $\mathbb{R}$]
+  \label{valuation}
+  \uses{valuation_on_reals}
+\end{definition}
+
+\begin{definition}[Three-coloring of plane]
+  \label{three_coloring}
+  \uses{valuation}
+  TODO
+\end{definition}
+
+\begin{definition}[Rainbow triangle]
+  \label{rainbow_triangle}
+  \uses{three_coloring}
+  TODO
+\end{definition}
+
+
+\begin{lemma}
+  \label{ch22lemma1}
+  For any blue point $p_0 = (x_b, y_b)$, green point $(x_g, y_g)$, and
+  red point $(x_r, y_r)$, the $v$-value of the determinant
+  \[
+  \det \begin{bmatrix}
+    x_b & y_b & 1 \\
+    x_g & y_g & 1 \\
+    x_r & y_r & 1
+  \end{bmatrix}
+  \] is at least $1$.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{corollary}
+  \label{ch22corollary}
+  Any line of the plane receives at most two different colors.
+  The area of a rainbow triangle cannot be $0$, and it cannot be
+  $\frac{1}{n}$ for odd $n$.
+  \uses{three_coloring, rainbow_triangle}
+\end{corollary}
+\begin{proof}
+  \uses{ch22lemma1}
+  Follow from \ref{ch22lemma1}
+\end{proof}
+
+\begin{lemma}
+  \label{ch22lemma2}
+  Every dissection of the unit square $S = [0, 1]^2$ into finitely
+  many triangles contains an odd number of rainbow triangles, and thus at least one.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+
+\begin{theorem}[Monsky's theorem]
+  \label{monsky_theorem}
+  It is not possible to dissect a square into an odd number of triangles of equal algebra area.
+\end{theorem}
+\begin{proof}
+  \uses{ch22lemma2, ch22corollary}
+  TODO
+\end{proof}
+
+
+\section*{Appendix: Extending valuations}
+
+\begin{lemma}
+  \label{valuation_lemma}
+  A proper subring $R\subset K$ is a valuation ring with respect to some
+  valuation $v$ into some ordered group $G$ if and only if $K = R \cup R^{-1}$.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{valuation_on_reals}
+  The field of real numbers $\mathbb{R}$ has a non-Archimedean valuation
+  to an ordered abelian group
+  \[v: \mathbb{R} \to \{0\} \cup G\]
+  such that $v(\frac{1}{2}) > 1$.
+\end{theorem}
+\begin{proof}
+  \uses{valuation_lemma}
+  TODO
+\end{proof}

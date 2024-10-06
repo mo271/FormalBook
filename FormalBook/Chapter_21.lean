@@ -16,10 +16,10 @@ limitations under the License.
 Authors: Moritz Firsching
 -/
 import Mathlib.Tactic
--- import Mathlib.Analysis.SpecialFunctions.Pow
+import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Mathlib.Topology.Algebra.Polynomial
 open Complex Polynomial
---open classical
+
 /-!
 # The fundamental theorem of algebra
 
@@ -33,18 +33,10 @@ open Complex Polynomial
     - Lemma
       - proof
 -/
--- porting note: wait for
--- https://leanprover-community.github.io/mathlib-port-status/file/analysis/special_functions/pow
-/-!
 
--- TODO: check where the correct def of this is
-def polynomial.constant (f : Polynomial ℂ) : Prop := (0 < degree f)
+def Polynomial.constant (f : Polynomial ℂ) : Prop := (0 < degree f)
 
-theorem fundamental_theorem_of_algebra (f : Polynomial ℂ) (h : Polynomial.constant f) :
-  ∃ z : ℂ, is_root f z :=
-begin
-  rw polynomial.constant at h,
-  sorry,
-end
-
--/
+theorem fundamental_theorem_of_algebra (f : Polynomial ℂ) (h : ¬ Polynomial.constant f) :
+  ∃ z : ℂ, IsRoot f z := by
+  rw [Polynomial.constant] at h
+  sorry
