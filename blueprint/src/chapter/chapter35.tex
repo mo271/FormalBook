@@ -1,1 +1,104 @@
 \chapter{The finite Kakeya problem}
+
+Let $F$ be a finite field.
+
+\begin{lemma}
+  \label{ch35lemma1}
+  Every nonzero polynomial $p(x) \in F[x_1, \dots, x_n]$ of degree $d$ has at
+  most $dq^{n-1}$ roots in $F^n$.
+\end{lemma}
+\begin{proof}
+  We use induction on $n$, with fact (1) above as the starting case $n = 1$. Let us split $p(x)$ into
+  summands according to the powers of $x_n$,
+\[
+p(x) = g_0 + g_1 x_n + g_2 x_n^2 + \cdots + g_\ell x_n^\ell,
+\]
+where $g_i \in F[x_1, \dots, x_{n-1}]$ for $0 \leq i \leq \ell \leq d$, and $g_\ell$ is nonzero.
+We write every $v \in F^n$ in the form $v = (a, b)$ with $a \in F^{n-1}$, $b \in F$, and
+estimate the number of roots $p(a, b) = 0$.
+
+\textbf{Case 1.} Roots $(a, b)$ with $g_\ell(a) = 0$.
+Since $g_\ell \neq 0$ and $\deg g_\ell \leq d - \ell$, by induction the polynomial $g_\ell$ has at
+most $(d - \ell) q^{n-2}$ roots in $F^{n-1}$, and for each $a$ there are at most $q$ different
+choices for $b$, which gives at most $(d - \ell)q^{n-1}$ such roots for $p(x)$ in $F^n$.
+
+\textbf{Case 2.} Roots $(a, b)$ with $g_\ell(a) \neq 0$.
+Here $p(a, x_n) \in F[x_n]$ is not the zero polynomial in the single variable $x_n$, it has degree
+$\ell$, and hence for each $a$ by (1) there are at most $\ell$ elements $b$ with $p(a, b) = 0$. Since the number of $a$'s is at most $q^{n-1}$ we get at most $\ell q^{n-1}$ roots for $p(x)$ in this way.
+
+Summing the two cases gives at most
+\[
+(d - \ell)q^{n-1} + \ell q^{n-1} = dq^{n-1}
+\]
+roots for $p(x)$, as asserted.
+\end{proof}
+
+\begin{lemma}
+  \label{ch35lemma2}
+For every set $E \subseteq F^n$ of size $|E| < \binom{n+d}{d}$ there is a nonzero
+polynomial $p(x) \in F[x_1, \dots, x_n]$ of degree at most $d$ that vanishes on $E$.
+\end{lemma}
+\begin{proof}
+Consider the vector space $V_d$ of all polynomials in $F[x_1, \dots, x_n]$ of degree at most $d$.
+A basis for $V_d$ is provided by the monomials $x_1^{s_1} \dots x_n^{s_n}$ with $\sum s_i \leq d$:
+\[
+1, x_1, \dots, x_n, x_1^2, x_1 x_2, \dots, x_1^3, \dots, x_n^d.
+\]
+The following pleasing argument shows that the number of monomials $x_1^{s_1} \dots x_n^{s_n}$ of
+degree at most $d$ equals the binomial coefficient $\binom{n+d}{d}$. What we want to count is
+the number of $n$-tuples $(s_1, \dots, s_n)$ of nonnegative integers with
+$s_1 + \cdots + s_n \leq d$. To do this, we map every $n$-tuple $(s_1, \dots, s_n)$ to the
+increasing sequence
+\[
+s_1 + 1 < s_1 + s_2 + 2 < \cdots < s_1 + \cdots + s_n + n,
+\]
+which determines an $n$-subset of $\{1, 2, \dots, d + n\}$. The map is bijective, so the number of
+ monomials is $\binom{n+d}{d}$.
+
+Next look at the vector space $F^E$ of all functions $f : E \to F$; it has dimension $|E|$,
+which by assumption is less than $\binom{n+d}{d} = \dim V_d$. The evaluation
+map $p(x) \mapsto (p(a))_{a \in E}$ from $V_d$ to $F^E$ is a linear map of vector spaces.
+We conclude that it has a nonzero kernel,
+containing as desired a nonzero polynomial that vanishes on $E$. \(\square\)
+\end{proof}
+
+\begin{theorem}[finite Kakeya problem]
+  \label{kakeya}
+  Let $K \subseteq F^n$ be a Kakeya set. Then
+\[
+|K| \geq \binom{|F| + n - 1}{n} \geq \frac{|F|^n}{n!}.
+\]
+\end{theorem}
+\begin{proof}
+  \uses{ch35lemma1, ch35lemma2}
+  The second inequality is clear from the definition of binomial coefficients. For the first,
+  set again $q = |F|$ and suppose for a contradiction that
+\[
+|K| < \binom{q + n - 1}{n} = \binom{n + q - 1}{q - 1}.
+\]
+By Lemma \ref{ch35lemma2} there exists a nonzero
+polynomial $p(x) \in F[x_1, \dots, x_n]$ of degree $d \leq q - 1$ that
+vanishes on $K$. Let us write
+\[
+p(x) = p_0(x) + p_1(x) + \cdots + p_d(x), \tag{1}
+\]
+where $p_i(x)$ is the sum of the monomials of degree $i$; in particular, $p_d(x)$ is nonzero.
+Since $p(x)$ vanishes on the nonempty set $K$, we have $d > 0$.
+Take any $v \in F^n \setminus \{0\}$. By the Kakeya property for this $v$ there
+exists a $w \in F^n$ such that
+\[
+p(w + tv) = 0 \quad \text{for all} \ t \in F.
+\]
+Here comes the trick: Consider $p(w + tv)$ as a polynomial in the single variable $t$.
+It has degree at most $d \leq q - 1$ but vanishes on all $q$ points of $F$,
+whence $p(w + tv)$ is the zero polynomial in $t$. Looking at (1) above we see that the
+coefficient of $t^d$ in $p(w + tv)$ is precisely $p_d(v)$, which must therefore be 0.
+But $v \in F^n \setminus \{0\}$ was arbitrary and $p_d(0) = 0$ since $d > 0$,
+and we conclude that $p_d(x)$ vanishes on all of $F^n$. Since
+\[
+dq^{n-1} \leq (q - 1)q^{n-1} < q^n,
+\]
+Lemma \ref{ch35lemma1}, however, tells us that $p_d(x)$ must then be the zero polynomial —
+contradiction and end of the proof.
+
+\end{proof}
