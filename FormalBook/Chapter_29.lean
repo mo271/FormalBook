@@ -24,6 +24,4 @@ import Mathlib.Tactic
     - First proof
     - Second proof
     - Third proof
-  - Theorem
-    - proof
 -/
