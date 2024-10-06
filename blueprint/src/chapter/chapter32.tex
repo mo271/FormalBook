@@ -1,1 +1,26 @@
 \chapter{Lattice paths and determinants}
+
+\begin{lemma}
+  \label{ch32lemma}
+  Let $G = (V, E)$ be a finite weighted acyclic directed graph, $A = \{A_1, \dots, A_n\}$ and $\mathcal{B} = \{B_1, \dots, B_n\}$ two $n$-sets of vertices, and $M$ the path matrix from $A$ to $\mathcal{B}$. Then
+  \[
+  \det M = \sum_{\mathcal{P} \text{ vertex-disjoint path system}} \text{sign}(\mathcal{P}) \, w(\mathcal{P}). \tag{3}
+  \]
+\end{lemma}
+\begin{proof}
+  TOOD
+\end{proof}
+
+\begin{theorem}
+  \label{ch32theorem}
+  Let $G = (V, E)$ be a finite weighted acyclic directed graph,
+  $A = \{A_1, \dots, A_n\}$ and $\mathcal{B} = \{B_1, \dots, B_n\}$
+  two $n$-sets of vertices, and $M$ the path matrix from $A$ to $\mathcal{B}$. Then
+  \[
+  \det M = \sum_{\mathcal{P} \text{ vertex-disjoint path system}} \text{sign}(\mathcal{P}) \, w(\mathcal{P}). \tag{3}
+  \]
+\end{theorem}
+\begin{proof}
+  \uses{ch32lemma}
+  TODO
+\end{proof}
