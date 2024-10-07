@@ -1,1 +1,196 @@
 \chapter{Turán's graph theorem}
+
+\begin{theorem}[First Proof]
+  \label{ch41proof1}
+If a graph $G = (V, E)$ on $n$ vertices has no $p$-clique, $p \geq 2$, then
+\[
+|E| \leq \left(1 - \frac{1}{p - 1}\right) \frac{n^2}{2}. \tag{1}
+\]
+\end{theorem}
+\begin{proof}
+   We use induction on $n$. One easily computes that (1) is true for $n < p$.
+   Let $G$ be a graph on $V = \{v_1, \dots, v_n\}$ without $p$-cliques with a maximal number of
+   edges, where $n \geq p$. $G$ certainly contains $(p - 1)$-cliques, since otherwise we could
+   add edges. Let $A$ be a $(p - 1)$-clique, and set $B := V \setminus A$.
+
+$A$ contains $\binom{p - 1}{2}$ edges, and we now estimate the edge-number $e_B$ in $B$ and the
+edge-number $e_{A, B}$ between $A$ and $B$. By induction,
+we have $e_B \leq \frac{1}{2} \left(1 - \frac{1}{p - 1}\right) (n - p + 1)^2$.
+Since $G$ has no $p$-clique, every $v_j \in B$ is adjacent to at most $p - 2$ vertices in $A$,
+and we obtain $e_{A, B} \leq (p - 2)(n - p + 1)$. Altogether, this yields
+\[
+|E| \leq \binom{p - 1}{2} + \frac{1}{2} \left(1 - \frac{1}{p - 1}\right) (n - p + 1)^2 + (p - 2)(n - p + 1),
+\]
+which is precisely $\left(1 - \frac{1}{p - 1}\right) \frac{n^2}{2}$.
+\end{proof}
+
+\begin{theorem}[Second Proof]
+  \label{ch41proof2}
+If a graph $G = (V, E)$ on $n$ vertices has no $p$-clique, $p \geq 2$, then
+\[
+|E| \leq \left(1 - \frac{1}{p - 1}\right) \frac{n^2}{2}. \tag{1}
+\]
+\end{theorem}
+\begin{proof}
+  This proof makes use of the structure of the Turán graphs. Let $v_m \in V$ be a vertex of
+  maximal degree $d_m = \max_{1 \leq j \leq n} d_j$. Denote by $S$ the set of neighbors of
+  $v_m$, $|S| = d_m$, and set $T := V \setminus S$. As $G$ contains no $p$-clique, and $v_m$ is
+  adjacent to all vertices of $S$, we note that $S$ contains no $(p - 1)$-clique.
+
+We now construct the following graph $H$ on $V$ (see the figure). $H$ corresponds to $G$ on $S$ and
+contains all edges between $S$ and $T$, but no edges within $T$. In other words, $T$ is an
+independent set in $H$, and we conclude that $H$ has again no $p$-cliques. Let $d'_j$ be the
+degree of $v_j$ in $H$. If $v_j \in S$, then we certainly have $d'_j \geq d_j$ by the
+construction of $H$, and for $v_j \in T$, we see $d'_j = |S| = d_m \geq d_j$ by the choice of $v_m$.
+We infer $|E(H)| \geq |E|$, and find that among all graphs with a maximal number of edges,
+there must be one of the form of $H$. By induction, the graph induced by $S$ has at most as many
+edges as a suitable graph $K_{n_1, \dots, n_{p - 2}}$ on $S$.
+So $|E| \leq |E(H)| \leq E(K_{n_1, \dots, n_{p - 1}})$ with $n_{p - 1} = |T|$, which implies (1).
+\end{proof}
+
+\begin{theorem}[Third Proof]
+  \label{ch41proof3}
+If a graph $G = (V, E)$ on $n$ vertices has no $p$-clique, $p \geq 2$, then
+\[
+|E| \leq \left(1 - \frac{1}{p - 1}\right) \frac{n^2}{2}. \tag{1}
+\]
+\end{theorem}
+\begin{proof}
+Consider a \emph{probability distribution} $\mathbf{w} = (w_1, \dots, w_n)$ on the vertices,
+that is, an assignment of values $w_i \geq 0$ to the vertices with $\sum_{i=1}^n w_i = 1$.
+Our goal is to maximize the function
+\[
+f(\mathbf{w}) = \sum_{v_i v_j \in E} w_i w_j.
+\]
+
+Suppose $\mathbf{w}$ is any distribution, and let $v_i$ and $v_j$ be a pair of nonadjacent
+vertices with positive weights $w_i, w_j$. Let $s_i$ be the sum of the weights of all vertices
+adjacent to $v_i$, and define $s_j$ similarly for $v_j$, where we may assume that $s_i \geq s_j$.
+Now we move the weight from $v_j$ to $v_i$, that is, the new weight of $v_i$ is $w_i + w_j$,
+while the weight of $v_j$ drops to 0. For the new distribution $\mathbf{w'}$ we find
+\[
+f(\mathbf{w'}) = f(\mathbf{w}) + w_j s_i - w_j s_j \geq f(\mathbf{w}).
+\]
+
+We repeat this (reducing the number of vertices with a positive weight by one in each step) until
+there are no nonadjacent vertices of positive weight anymore. Thus we conclude that there is an
+optimal distribution whose nonzero weights are concentrated on a clique, say on a $k$-clique.
+Now if, say, $w_1 \geq w_2 > 0$, then choose $w_1' = w_1 - \varepsilon w_1 - w_2$ and
+change $w_1$ to $w_1 - \varepsilon$ and $w_2$ to $w_2 + \varepsilon$. The new distribution
+$\mathbf{w'}$ satisfies
+$f(\mathbf{w'}) = f(\mathbf{w}) + \varepsilon (w_2 s_1 - w_1 s_2) \geq f(\mathbf{w})$, and we infer
+that the maximal value of $f(\mathbf{w})$ is attained for $w_i = 1/k$ on a $k$-clique and $w_i = 0$
+otherwise. Since a $k$-clique contains $\binom{k}{2}$ edges, we obtain
+\[
+f(\mathbf{w}) = \binom{k}{2} \frac{1}{k^2} = \frac{1}{2} \left(1 - \frac{1}{k}\right).
+\]
+
+Since this expression is increasing in $k$, the best we can do is to set $k = p - 1$
+(since $G$ has no $p$-cliques). So we conclude
+\[
+f(\mathbf{w}) \leq \frac{1}{2} \left(1 - \frac{1}{p - 1}\right)
+\]
+for any distribution $\mathbf{w}$. In particular, this inequality holds for the \emph{uniform}
+distribution given by $w_i = \frac{1}{n}$ for all $i$. Thus we find
+\[
+\frac{|E|}{n^2} = f\left(\mathbf{w} = \frac{1}{n}\right) \leq \frac{1}{2} \left(1 - \frac{1}{p - 1}\right),
+\]
+which is precisely (1).
+\end{proof}
+
+
+\begin{theorem}[Fourth Proof]
+  \label{ch41proof4}
+If a graph $G = (V, E)$ on $n$ vertices has no $p$-clique, $p \geq 2$, then
+\[
+|E| \leq \left(1 - \frac{1}{p - 1}\right) \frac{n^2}{2}. \tag{1}
+\]
+\end{theorem}
+\begin{proof}
+This time we use some concepts from probability theory. Let $G$ be an arbitrary graph on the vertex
+set $V = \{v_1, \dots, v_n\}$. Denote the degree of $v_i$ by $d_i$, and write $\omega(G)$ for the
+number of vertices in a largest clique, called the clique number of $G$.
+
+\textbf{Claim.} We have $\omega(G) \geq \sum_{i=1}^n \frac{1}{n - d_i}$.
+
+We choose a random permutation $\pi = v_1 v_2 \dots v_n$ of the vertex set $V$, where each
+permutation is supposed to appear with the same probability $\frac{1}{n!}$, and then consider the
+following set $C_{\pi}$. We put $v_i$ into $C_{\pi}$ if and only if $v_i$ is adjacent to all
+$v_j$ $(j < i)$ preceding $v_i$. By definition, $C_{\pi}$ is a clique in $G$. Let $X = |C_{\pi}|$
+be the corresponding random variable. We have $X = \sum_{i=1}^n X_i$, where $X_i$ is the indicator
+random variable of the vertex $v_i$, that is, $X_i = 1$ or $X_i = 0$ depending on whether
+$v_i \in C_{\pi}$ or $v_i \notin C_{\pi}$. Note that $v_i$ belongs to $C_{\pi}$ with respect to the
+permutation $v_1 v_2 \dots v_n$ if and only if $v_i$ appears before all $n - 1 - d_i$ vertices which
+are not adjacent to $v_i$, or in other words, if $v_i$ is the first among $v_i$ and its $n - 1 - d_i$
+non-neighbors. The probability that this happens is $\frac{1}{n - d_i}$,
+hence $E X_i = \frac{1}{n - d_i}$.
+
+Thus by linearity of expectation (see ?) we obtain
+\[
+E(|C_{\pi}|) = E X = \sum_{i=1}^n E X_i = \sum_{i=1}^n \frac{1}{n - d_i}.
+\]
+
+Consequently, there must be a clique of at least that size, and this was our claim. To deduce
+Turán’s theorem from the claim we use the Cauchy–Schwarz inequality from Chapter \ref{chapter20},
+\[
+\left( \sum_{i=1}^n a_i b_i \right)^2 \leq \left( \sum_{i=1}^n a_i^2 \right) \left( \sum_{i=1}^n b_i^2 \right).
+\]
+Set $a_i = \sqrt{n - d_i}$, $b_i = \frac{1}{\sqrt{n - d_i}}$, then $a_i b_i = 1$, and so
+\[
+n^2 \leq \left( \sum_{i=1}^n (n - d_i) \right) \left( \sum_{i=1}^n \frac{1}{n - d_i} \right) \leq \omega(G) \sum_{i=1}^n (n - d_i). \tag{2}
+\]
+
+At this point we apply the hypothesis $\omega(G) \leq p - 1$ of Turán’s theorem.
+Using also $\sum_{i=1}^n d_i = 2|E|$ from the chapter on double counting, inequality (2) leads to
+\[
+n^2 \leq (p - 1)(n^2 - 2|E|),
+\]
+and this is equivalent to Turán’s inequality.
+\end{proof}
+
+
+\begin{theorem}[Fifth Proof]
+  \label{ch41proof5}
+If a graph $G = (V, E)$ on $n$ vertices has no $p$-clique, $p \geq 2$, then
+\[
+|E| \leq \left(1 - \frac{1}{p - 1}\right) \frac{n^2}{2}. \tag{1}
+\]
+\end{theorem}
+\begin{proof}
+Let $G$ be a graph on $n$ vertices without a $p$-clique and with a maximal number of edges.
+
+\textbf{Claim.} \textit{G does not contain three vertices $u$, $v$, $w$ such that $vw \in E$, but $uv \notin E$, $uw \notin E$.}
+
+Suppose otherwise, and consider the following cases.
+
+\textbf{Case 1:} $d(u) < d(v)$ or $d(u) < d(w)$.
+We may suppose that $d(u) < d(v)$. Then we duplicate $v$, that is, we create a new vertex $v'$
+which has exactly the same neighbors as $v$ (but $v'$ is not an edge), delete $u$, and keep the rest unchanged.
+The new graph $G'$ has again no $p$-clique, and for the number of edges we find
+\[
+|E(G')| = |E(G)| + d(v) - d(u) > |E(G)|,
+\]
+a contradiction.
+
+\textbf{Case 2:} $d(u) \geq d(v)$ and $d(u) \geq d(w)$.
+Duplicate $u$ twice and delete $v$ and $w$ (as illustrated in the margin).
+Again, the new graph $G'$ has no $p$-clique, and we compute (the $-1$ results from the edge $vw$):
+\[
+|E(G')| = |E(G)| + 2d(u) - (d(v) + d(w) - 1) > |E(G)|.
+\]
+So we have a contradiction once more.
+A moment’s thought shows that the claim we have proved is equivalent to the statement that
+\[
+u \sim v : \iff uv \notin E(G)
+\]
+defines an equivalence relation. Thus $G$ is a complete multipartite graph, $G = K_{n_1, \dots, n_{p-1}}$,
+and we are finished.
+\end{proof}
+
+\begin{theorem}[Five proofs of Turán's graph theorem]
+  \label{turan_graph}
+  Collecting the proofs from the chapter...
+\end{theorem}
+\begin{proof}
+  \uses{ch41proof1, ch41proof1, ch41proof1, ch41proof4, ch41proof5}
+\end{proof}
