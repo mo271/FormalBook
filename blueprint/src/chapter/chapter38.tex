@@ -1,1 +1,108 @@
 \chapter{The Dinitz problem}
+
+\begin{definition}
+  \label{ch38definition1}
+  Let $\vec{G} = (V, E)$ be a directed graph. A \textit{kernel} $K \subseteq V$ is a subset of the vertices such that
+\begin{itemize}
+    \item[(i)] $K$ is independent in $G$, and
+    \item[(ii)] for every $u \notin K$ there exists a vertex $v \in K$ with an edge $u \rightarrow v$.
+\end{itemize}
+\end{definition}
+
+\begin{lemma}
+  \label{ch38lemma1}
+  \uses{ch38definition1}
+  Let $\vec{G} = (V, E)$ be a directed graph, and suppose that for each vertex $v \in V$ we have
+  a color set $C(v)$ that is larger than the outdegree, $|C(v)| \geq d^+(v) + 1$.
+  If every induced subgraph of $\vec{G}$ possesses a kernel, then there exists a list coloring
+  of $G$ with a color from $C(v)$ for each $v$.
+\end{lemma}
+\begin{proof}
+We proceed by induction on $|V|$. For $|V| = 1$ there is nothing to prove. Choose a color
+$c \in \mathcal{C} = \bigcup_{v \in V} C(v)$ and set
+\[
+A(c) := \{v \in V : c \in C(v)\}.
+\]
+By hypothesis, the induced subgraph $G_{A(c)}$ possesses a kernel $K(c)$. Now we color all
+$v \in K(c)$ with the color $c$ (this is possible since $K(c)$ is independent),
+and delete $K(c)$ from $G$ and $c$ from $C$. Let $G'$ be the induced subgraph of $G$ on
+$V \setminus K(c)$ with $C'(v) = C(v) \setminus \{c\}$ as the new list of color sets.
+Notice that for each $v \in A(c) \setminus K(c)$, the outdegree $d^+(v)$ is decreased by at
+least 1 (due to condition (ii) of a kernel). So $d^+(v) + 1 \leq |C'(v)|$ still holds in $\vec{G'}$.
+The same condition also holds for the vertices outside $A(c)$, since in this case the color
+sets $C(v)$ remain unchanged. The new graph $G'$ contains fewer vertices than $G$, and we are done
+by induction.
+\end{proof}
+
+
+\begin{definition}
+  \label{ch38definition2}
+A matching $M$ of $G = (X \cup Y, E)$ is called \textit{stable} if the following condition holds:
+Whenever $uv \in E \setminus M$, $u \in X$, $v \in Y$, then either $uy \in M$ with
+$y > v$ in $N(u)$ or $xv \in M$ with $x > u$ in $N(v)$, or both.
+\end{definition}
+
+
+\begin{lemma}
+  \label{ch38lemma2}
+  \uses{ch38definition2}
+  A stable matching always exists.
+\end{lemma}
+\begin{proof}
+Consider the following algorithm. In the first stage all men $u \in X$ propose to their top choice.
+If a girl receives more than one proposal she picks the one she likes best and keeps him on a
+string, and if she receives just one proposal she keeps that one on a string. The remaining men
+are rejected and form the reservoir $R$. In the second stage all men in $R$ propose to their next
+choice. The women compare the proposals (together with the one on the string, if there is one),
+pick their favorite and put him on the string. The rest is rejected and forms the new set $R$.
+Now the men in $R$ propose to their next choice, and so on. A man who has proposed to his last
+choice and is again rejected drops out from further consideration (as well as from the reservoir).
+Clearly, after some time the reservoir $R$ is empty, and at this point the algorithm stops.
+
+\textbf{Claim.} When the algorithm stops, then the men on the strings together with the
+corresponding girls form a stable matching.
+
+Notice first that the men on the string of a particular girl move there in increasing
+preference (of the girl) since at each stage the girl compares the new proposals with the
+present mate and then picks the new favorite. Hence if $uv \in E$ but $uv \notin M$, then
+either $u$ never proposed to $v$ in which case he found a better mate before he even got
+around to $v$, implying $uy \in M$ with $y > v$ in $N(u)$, or $u$ proposed to $v$ but was
+rejected, implying $xv \in M$ with $x > u$ in $N(v)$. But this is exactly the condition of a
+stable matching.
+\end{proof}
+
+
+\begin{theorem}
+  \label{ch38theorem}
+  We have $\chi_\ell(S_n) = n$ for all $n$.
+\end{theorem}
+\begin{proof}
+  \uses{ch38lemma1, ch38lemma2}
+As before we denote the vertices of $S_n$ by $(i, j)$, $1 \leq i, j \leq n$. Thus $(i, j)$ and
+$(r, s)$ are adjacent if and only if $i = r$ or $j = s$. Take any Latin square $L$ with letters
+from $\{1, 2, \dots, n\}$ and denote by $L(i, j)$ the entry in cell $(i, j)$. Next make $S_n$ into
+a directed graph $\vec{S}_n$ by orienting the horizontal edges $(i, j) \rightarrow (i, j')$ if
+$L(i, j) < L(i, j')$ and the vertical edges $(i, j) \rightarrow (i', j)$ if $L(i, j) > L(i', j)$.
+Thus, horizontally we orient from the smaller to the larger element, and vertically the other
+way around. (In the margin we have an example for $n = 3$.)
+
+Notice that we obtain $d^+(i, j) = n - 1$ for all $(i, j)$. In fact, if $L(i, j) = k$, then $n - k$
+cells in row $i$ contain an entry larger than $k$, and $k - 1$ cells in column $j$ have an entry
+ smaller than $k$.
+
+By Lemma 1 it remains to show that every induced subgraph of $\vec{S}_n$ possesses a kernel.
+Consider a subset $A \subseteq V$, and let $X$ be the set of rows of $L$, and $Y$ the set of
+its columns. Associate to $A$ the bipartite graph $G = (X \cup Y, A)$, where every $(i, j) \in A$ is
+represented by the edge $ij$ with $i \in X, j \in Y$. In the example in the margin the cells of $A$
+are shaded.
+
+The orientation on $S_n$ naturally induces a ranking on the neighborhoods in $G = (X \cup Y, A)$
+by setting $j' > j$ in $N(i)$ if $(i, j) \rightarrow (i, j')$ in $\vec{S}_n$
+respectively $i' > i$ in $N(j)$ if $(i, j) \rightarrow (i', j)$. By Lemma 2, $G = (X \cup Y, A)$
+possesses a stable matching $M$. This $M$, viewed as a subset of $A$, is our desired kernel!
+To see why, note first that $M$ is independent in $A$ since for edges in $G = (X \cup Y, A)$
+they do not share an endvertex $i$ or $j$. Secondly, if $(i, j) \in A \setminus M$, then by the
+definition of a stable matching there either exists $(i, j') \in M$ with $j' > j$ or
+$(i', j) \in M$ with $i' > i$, which for $\vec{S}_n$ means $(i, j) \rightarrow (i, j') \in M$
+ or $(i, j) \rightarrow (i', j) \in M$, and the proof is complete.
+\end{proof}
