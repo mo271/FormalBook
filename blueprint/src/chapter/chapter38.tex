@@ -90,7 +90,7 @@ Notice that we obtain $d^+(i, j) = n - 1$ for all $(i, j)$. In fact, if $L(i, j)
 cells in row $i$ contain an entry larger than $k$, and $k - 1$ cells in column $j$ have an entry
  smaller than $k$.
 
-By Lemma 1 it remains to show that every induced subgraph of $\vec{S}_n$ possesses a kernel.
+By Lemma \ref{ch38lemma1} it remains to show that every induced subgraph of $\vec{S}_n$ possesses a kernel.
 Consider a subset $A \subseteq V$, and let $X$ be the set of rows of $L$, and $Y$ the set of
 its columns. Associate to $A$ the bipartite graph $G = (X \cup Y, A)$, where every $(i, j) \in A$ is
 represented by the edge $ij$ with $i \in X, j \in Y$. In the example in the margin the cells of $A$
@@ -98,7 +98,8 @@ are shaded.
 
 The orientation on $S_n$ naturally induces a ranking on the neighborhoods in $G = (X \cup Y, A)$
 by setting $j' > j$ in $N(i)$ if $(i, j) \rightarrow (i, j')$ in $\vec{S}_n$
-respectively $i' > i$ in $N(j)$ if $(i, j) \rightarrow (i', j)$. By Lemma 2, $G = (X \cup Y, A)$
+respectively $i' > i$ in $N(j)$ if $(i, j) \rightarrow (i', j)$. By Lemma \ref{ch38lemma2},
+ $G = (X \cup Y, A)$
 possesses a stable matching $M$. This $M$, viewed as a subset of $A$, is our desired kernel!
 To see why, note first that $M$ is independent in $A$ since for edges in $G = (X \cup Y, A)$
 they do not share an endvertex $i$ or $j$. Secondly, if $(i, j) \in A \setminus M$, then by the

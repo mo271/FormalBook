@@ -1,1 +1,28 @@
 \chapter{How to guard a museum}
+
+\begin{theorem}
+  \label{museum_guards}
+  For any museum with $n$ walls, $\lfloor \frac{n}{3} \rfloor$ guards suffice.
+\end{theorem}
+\begin{proof}
+  First of all, let us draw $n - 3$ noncrossing diagonals between corners of the walls until the
+  interior is triangulated. For example, we can draw 9 diagonals in the museum depicted in the
+  margin to produce a triangulation. It does not matter which triangulation we choose, any one
+  will do. Now think of the new figure as a plane graph with the corners as vertices and the
+   walls and diagonals as edges.
+
+\textbf{Claim.} \textit{This graph is 3-colorable.}
+
+For $n = 3$ there is nothing to prove. Now for $n > 3$ pick any two vertices $u$ and $v$ which are
+connected by a diagonal. This diagonal will split the graph into two smaller triangulated graphs
+both containing the edge $uv$. By induction we may color each part with 3 colors where we may
+choose color 1 for $u$ and color 2 for $v$ in each coloring. Pasting the colorings together
+yields a 3-coloring of the whole graph.
+
+The rest is easy. Since there are $n$ vertices, at least one of the color clsses, say the
+ vertices colored 1, contains at most $\left\lfloor \frac{n}{3} \right\rfloor$ vertices, and
+  this is where we place the guards. Since every triangle contains a vertex of color 1 we infer
+  that every triangle is guarded, and hence so is the whole museum.
+
+  %TODO: show triangulation exists!
+\end{proof}
