@@ -1,1 +1,84 @@
 \chapter{Of friends and politicians}
+
+\begin{theorem}
+  \label{friendship}
+  \lean{friendship_theorem}
+  Suppose that $G$ is a finite graph in which any two vertices have precisely one common neighbor.
+  Then there is a vertex which is adjacent to all other vertices.
+\end{theorem}
+\begin{proof}
+  Suppose the assertion is false, and $G$ is a counterexample, that is, no vertex of $G$ is
+  adjacent to all other vertices. To derive a contradiction,
+   we proceed in two steps. The first part is combinatorics, and the second part is linear algebra.
+
+(1) We claim that $G$ is a regular graph, that is, $d(u) = d(v)$ for any $u, v \in V$.
+
+Note first that the condition of the theorem implies that there are no cycles of length
+4 in $G$. Let us call this the \emph{$C_4$-condition}.
+
+We first prove that any two \emph{nonadjacent} vertices $u$ and $v$ have equal degree $d(u) = d(v)$.
+Suppose $d(u) = k$, where $w_1, \dots, w_k$ are the neighbors of $u$. Exactly one of the
+ $w_i$, say $w_2$, is adjacent to $v$, and $w_2$ is adjacent to exactly one of the other $w_i$'s,
+ say $w_1$, so that we have the situation of the figure to the left. The vertex $v$ has with $w_1$
+ the common neighbor $w_2$, and with $w_i$ $(i \geq 2)$ a common neighbor $z_i$ $(i \geq 2)$.
+ By the $C_4$-condition, all these $z_i$ must be distinct. We conclude $d(v) \geq k = d(u)$, and
+ thus $d(u) = d(v) = k$ by symmetry.
+
+To finish the proof of (1), observe that any vertex different from $w_2$ is not adjacent to either
+ $u$ or $v$, and hence has degree $k$, by what we already proved. But since $w_2$ also has a
+ non-neighbor, it has degree $k$ as well, and thus $G$ is $k$-regular.
+
+Summing over the degrees of the $k$ neighbors of $u$ we get $k^2$. Since every vertex (except $u$)
+has exactly one common neighbor with $u$, we have counted every vertex once, except for $u$,
+which was counted $k$ times. So the total number of vertices of $G$ is
+\[
+n = k^2 - k + 1.
+\]
+
+(2) The rest of the proof is a beautiful application of some standard results of linear algebra.
+Note first that $k$ must be greater than 2, since for $k \leq 2$ only $G = K_1$ and $G = K_3$
+are possible by (1), both of which are trivial windmill graphs. Consider the adjacency
+matrix $A = (a_{ij})$, as defined on page 282. By part (1), any row has exactly $k$ 1's,
+and by the condition of the theorem, for any two rows there is exactly one column where they
+both have a 1. Note further that the main diagonal consists of 0's. Hence we have
+\[
+A^2 = \begin{pmatrix}
+k & 1 & \dots & 1 \\
+1 & k & 1 \\
+\vdots & \ddots & \ddots & \vdots \\
+1 & \dots & 1 & k
+\end{pmatrix} = (k - 1) I + J,
+\]
+where $I$ is the identity matrix, and $J$ the matrix of all 1's. It is immediately checked
+that $J$ has the eigenvalues $n$ (of multiplicity 1) and $0$ (of multiplicity $n - 1$). It
+follows that $A^2$ has the eigenvalues $k - 1 + n = k^2$ (of multiplicity 1) and $k - 1$
+(of multiplicity $n - 1$).
+
+Since $A$ is symmetric and hence diagonalizable, we conclude that $A$ has the eigenvalues $k$
+(of multiplicity 1) and $\pm \sqrt{k - 1}$. Suppose $r$ of the eigenvalues are equal to
+$\sqrt{k - 1}$ and $s$ of them are equal to $-\sqrt{k - 1}$, with $r + s = n - 1$.
+Now we are almost home. Since the sum of the eigenvalues of $A$ equals the trace (which is 0),
+we find
+\[
+k + r\sqrt{k - 1} - s\sqrt{k - 1} = 0,
+\]
+and, in particular, $r \neq s$, and
+\[
+\sqrt{k - 1} = \frac{k}{s - r}.
+\]
+Now if the square root $\sqrt{m}$ of a natural number $m$ is rational, then it is an integer!
+An elegant proof for this was presented by Dedekind in 1858: Let $n_0$ be the smallest natural
+number with $n_0 \sqrt{m} \in \mathbb{N}$. If $\sqrt{m} \not\in \mathbb{N}$, then there exists
+$\ell \in \mathbb{N}$ with $0 < \sqrt{m} - \ell < 1$. Setting $n_1 := n_0(\sqrt{m} - \ell)$,
+we find $n_1 \in \mathbb{N}$ and
+$n_1 \sqrt{m} = n_0 (\sqrt{m} - \ell) \sqrt{m} = n_0 m - \ell (n_0 \sqrt{m}) \in \mathbb{N}$.
+With $n_1 < n_0$ this yields a contradiction to the choice of $n_0$.
+
+Returning to our equation, let us set $h = \sqrt{k - 1} \in \mathbb{N}$, then
+\[
+h(s - r) = k = h^2 + 1.
+\]
+
+Since $h$ divides $h^2 + 1$ and $h^2$, we find that $h$ must be equal to $1$, and thus $k = 2$,
+which we have already excluded. So we have arrived at a contradiction, and the proof is complete.
+\end{proof}
