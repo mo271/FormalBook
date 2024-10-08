@@ -38,7 +38,7 @@ open SimpleGraph
 
 
 section
-
+namespace chapter45
 
 variable {α : Type _} {X : Finset α}
 variable {d : ℕ} {h_d : d ≥ 2}

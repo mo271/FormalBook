@@ -35,6 +35,7 @@ Contributions are most welcome! Feel free to
     - definitions, (if not yet in mathlib)
     - statements and
     - proofs
+  - partial proofs with new `sorry` are also great!
   - fill in [`sorry`s](https://github.com/search?q=repo%3Amo271%2FFormalBook+sorry+path%3A*.lean&type=code) in lean files
   - fill in ['TODO's](https://github.com/search?q=repo%3Amo271%2FFormalBook+TODO+path%3A*.tex&type=code) in LaTeX files in the [blueprint](https://firsching.ch/FormalBook)
   - suggest improvements to proofs/code golf
