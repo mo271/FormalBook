@@ -43,10 +43,10 @@ example (i j : ℕ) (gj: 0 ≠ j) (h: i ∣ j): i ≤ j:= by
   · by_contra
     rw [hc] at h₀
     simp only [mul_zero] at h₀
-    exact gj (Eq.symm h₀)
+    exact gj h₀.symm
   · calc
       i ≤ i*c := le_mul_of_le_of_one_le rfl.ge (zero_lt_iff.mpr h)
-      _ = j := (Eq.symm h₀)
+      _ = j := h₀.symm
 
 
 lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| := by
@@ -56,12 +56,11 @@ lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| := by
   · by_contra
     rw [hc] at h₀
     simp only [mul_zero] at h₀
-    exact gj (Eq.symm h₀)
+    exact gj h₀.symm
   · calc
-      |i| ≤ (|i|)*|c| := by
-          exact le_mul_of_le_of_one_le' rfl.ge (Int.one_le_abs h) (abs_nonneg c) (abs_nonneg i)
-        _ = |i*c| := Eq.symm (abs_mul i c)
-        _ = |j| := by rw [Eq.symm h₀]
+      |i| ≤ (|i|)*|c| := by exact le_mul_of_le_of_one_le' rfl.ge (Int.one_le_abs h) (abs_nonneg c) (abs_nonneg i)
+        _ = |i*c| := (abs_mul i c).symm
+        _ = |j| := by rw [h₀.symm]
 
 
 noncomputable
@@ -98,8 +97,8 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
       _ = (q : ℝ)^2 - 2*‖a‖*q + ‖a‖^2 + ‖b‖^2 := by sorry
       _ > ((q : ℝ) - 1)^2 := by sorry
 
-  have : 0 ≤ ((q : ℝ) - 1)^2 := by exact sq_nonneg ((q : ℝ) - 1)
-  have g := (Real.sqrt_lt_sqrt_iff this).mpr (h_ineq)
+  have : 0 ≤ ((q : ℝ) - 1)^2 := sq_nonneg ((q : ℝ) - 1)
+  have g := (Real.sqrt_lt_sqrt_iff (sq_nonneg ((q : ℝ) - 1))).mpr (h_ineq)
   have : Real.sqrt (((q:ℝ) - 1) ^ 2) = ((q : ℝ) - 1) := by sorry
   rw [this] at g
   rw [norm_eq_abs, Real.sqrt_sq] at g
@@ -141,43 +140,31 @@ lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
 
   have h1 : q ^ k - 1 ∣ q ^ (m - k) - 1 := by
     refine' (@Nat.dvd_add_iff_right (q ^ k - 1 ) (q ^ (m - k) * (q ^ k - 1)) (q ^ (m - k) - 1) _ ).mpr _
-    exact Nat.dvd_mul_left (q ^ k - 1) (q ^ (m - k))
-    rw [← this]
-    exact H
+    · exact Nat.dvd_mul_left (q ^ k - 1) (q ^ (m - k))
+    · exact this ▸ H
 
   have hmk : m - k < m := by
     zify
     rw [cast_sub]
     linarith
     exact hkm
-  have h0mk : 0 < m - k := by exact Nat.sub_pos_of_lt <| Nat.lt_of_le_of_ne hkm hkeqm
+  have h0mk : 0 < m - k := Nat.sub_pos_of_lt <| Nat.lt_of_le_of_ne hkm hkeqm
   convert Nat.dvd_add_self_right.mpr (h (m - k) hmk h0mk h1)
   exact Nat.eq_add_of_sub_eq hkm rfl
-
-
 
 def ConjAct_stabilizer_centralizer_eq :
     ∀ x : Rˣ,  Set.centralizer {x} ≃ MulAction.stabilizer (ConjAct Rˣ) x := by
   intro x
   exact {
     toFun:= by
-      intro g
-      refine' ⟨ (ConjAct.toConjAct (g : Rˣ)), _⟩
-      have := g.2
-      refine MulAction.mem_stabilizer_iff.mpr ?_
-      rw [ConjAct.smul_def]
-      simp only [ConjAct.ofConjAct_toConjAct]
-      exact (eq_mul_inv_of_mul_eq (this x rfl)).symm
+      refine fun g ↦ ⟨ (ConjAct.toConjAct (g : Rˣ)), MulAction.mem_stabilizer_iff.mpr ?_⟩
+      rw [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct]
+      exact (eq_mul_inv_of_mul_eq (g.2 x rfl)).symm
     invFun := by
-      intro g
-      refine'⟨ (ConjAct.ofConjAct (g : ConjAct Rˣ)), _⟩
-      have := g.2
-      refine Set.mem_centralizer_iff.mpr ?_
-      intro m hm
-      apply Eq.symm
-      apply eq_mul_of_mul_inv_eq
+      refine fun g ↦ ⟨ (ConjAct.ofConjAct (g : ConjAct Rˣ)), Set.mem_centralizer_iff.mpr
+        fun m hm ↦ ((eq_mul_of_mul_inv_eq ?_).symm)⟩
       rw [← ConjAct.smul_def, hm]
-      exact this
+      exact g.2
     left_inv := congrFun rfl
     right_inv := congrFun rfl}
 
