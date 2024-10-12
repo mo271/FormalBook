@@ -43,10 +43,10 @@ example (i j : ℕ) (gj: 0 ≠ j) (h: i ∣ j): i ≤ j:= by
   · by_contra
     rw [hc] at h₀
     simp only [mul_zero] at h₀
-    exact gj (Eq.symm h₀)
+    exact gj h₀.symm
   · calc
       i ≤ i*c := le_mul_of_le_of_one_le rfl.ge (zero_lt_iff.mpr h)
-      _ = j := (Eq.symm h₀)
+      _ = j := h₀.symm
 
 
 lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| := by
@@ -56,12 +56,12 @@ lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| := by
   · by_contra
     rw [hc] at h₀
     simp only [mul_zero] at h₀
-    exact gj (Eq.symm h₀)
+    exact gj h₀.symm
   · calc
       |i| ≤ (|i|)*|c| := by
           exact le_mul_of_le_of_one_le' rfl.ge (Int.one_le_abs h) (abs_nonneg c) (abs_nonneg i)
-        _ = |i*c| := Eq.symm (abs_mul i c)
-        _ = |j| := by rw [Eq.symm h₀]
+        _ = |i*c| := (abs_mul i c).symm
+        _ = |j| := by rw [h₀.symm]
 
 
 noncomputable
@@ -161,23 +161,14 @@ def ConjAct_stabilizer_centralizer_eq :
   intro x
   exact {
     toFun:= by
-      intro g
-      refine' ⟨ (ConjAct.toConjAct (g : Rˣ)), _⟩
-      have := g.2
-      refine MulAction.mem_stabilizer_iff.mpr ?_
-      rw [ConjAct.smul_def]
-      simp only [ConjAct.ofConjAct_toConjAct]
-      exact (eq_mul_inv_of_mul_eq (this x rfl)).symm
+      refine fun g ↦ ⟨ (ConjAct.toConjAct (g : Rˣ)), MulAction.mem_stabilizer_iff.mpr ?_⟩
+      rw [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct]
+      exact (eq_mul_inv_of_mul_eq (g.2 x rfl)).symm
     invFun := by
-      intro g
-      refine'⟨ (ConjAct.ofConjAct (g : ConjAct Rˣ)), _⟩
-      have := g.2
-      refine Set.mem_centralizer_iff.mpr ?_
-      intro m hm
-      apply Eq.symm
-      apply eq_mul_of_mul_inv_eq
+      refine fun g ↦ ⟨ (ConjAct.ofConjAct (g : ConjAct Rˣ)), Set.mem_centralizer_iff.mpr
+        fun m hm ↦ ((eq_mul_of_mul_inv_eq ?_).symm)⟩
       rw [← ConjAct.smul_def, hm]
-      exact this
+      exact g.2
     left_inv := congrFun rfl
     right_inv := congrFun rfl}
 
