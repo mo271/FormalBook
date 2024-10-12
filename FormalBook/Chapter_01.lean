@@ -25,7 +25,7 @@ open BigOperators
 # Six proofs of the infinity of primes
 
 ## TODO
- - Seccond Proof : golf/formatting
+ - Second Proof : golf/formatting
  - Third Proof : golf/formatting/comments
  - Fourth Proof
  - Fifth Proof

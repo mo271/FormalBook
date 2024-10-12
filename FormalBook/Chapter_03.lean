@@ -173,9 +173,9 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
     --have h₃ : a_values l n k = s_1tok k := by
     -- divide in two cases
     cases em (l = 2)
-    -- Special Case l = 2 by Contradicition
+    -- Special Case l = 2 by Contradiction
     ·  sorry
-    -- STEP (4) : l ≥ 3 by Contradiciton
+    -- STEP (4) : l ≥ 3 by Contradiction
     -- case l ≥ 3
     · have h_3lel : 3 ≤ l := by
         sorry
