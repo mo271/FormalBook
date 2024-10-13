@@ -47,7 +47,7 @@ theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ q ∈ S, Nat.Prime q):
     (Finset.prod_pos fun q hq ↦ Prime.pos <| h q hq)
   refine ⟨hp, ?_⟩
   by_contra a
-  have h_p_div_prod : p ∣ ∏ q in S, q := dvd_prod_of_mem (fun (i : ℕ) => i) a
+  have h_p_div_prod : p ∣ ∏ q in S, q := dvd_prod_of_mem (fun (i : ℕ) ↦ i) a
   have h_p_div_diff : p ∣ n - ∏ q in S, q := dvd_sub' (minFac_dvd n) h_p_div_prod
   have h_p_div_one : p ∣ 1 := by aesop
   exact Nat.Prime.not_dvd_one hp h_p_div_one
@@ -59,7 +59,7 @@ theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ q ∈ S, Nat.Prime q):
 using Fermat numbers
 TODO: upstream this, see https://github.com/leanprover-community/mathlib4/pull/17000
 -/
-def F : ℕ → ℕ := fun n => 2^2^n + 1
+def F : ℕ → ℕ := fun n ↦ 2^2^n + 1
 
 lemma F₀: F 0 = 3 := by
   rw [F, Nat.pow_zero, pow_one]
@@ -121,7 +121,7 @@ lemma ZMod.two_ne_one (q : ℕ)  [Fact (1 < q)] : (2 : ZMod q) ≠ 1 := by
   norm_num at h
 
 lemma sub_one_le_sub_one {n m : ℕ} : n ≤ m → n - 1 ≤ m - 1 :=
-  fun h => pred_le_pred h
+  fun h ↦ pred_le_pred h
 
 
 theorem infinity_of_primes₃:
@@ -263,9 +263,9 @@ lemma H_P4_2 (x : ℕ) (hx : x ≥ 3) :
 using topology
 -/
 
-def N : ℤ → ℤ → Set ℤ := fun a b => {a + n * b | n : ℤ}
+def N : ℤ → ℤ → Set ℤ := fun a b ↦ {a + n * b | n : ℤ}
 
-def isOpen : Set ℤ → Prop := fun O => O = ∅ ∨ ∀ a ∈ O, ∃ b > 0, N a b ⊆ O
+def isOpen : Set ℤ → Prop := fun O ↦ O = ∅ ∨ ∀ a ∈ O, ∃ b > 0, N a b ⊆ O
 
 theorem infinity_of_primes₅ : { p : ℕ | p.Prime }.Finite := by
   have TopoSpace : TopologicalSpace ℤ := by
@@ -294,7 +294,7 @@ using the sum of inverses of primes
 -/
 -- see Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
 theorem infinity_of_primes₆ :
-  Tendsto (fun n => ∑ p in Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
+  Tendsto (fun n ↦ ∑ p in Finset.filter (fun p ↦ Nat.Prime p) (range n), 1 / (p : ℝ))
       atTop atTop := by
   sorry
 
@@ -312,7 +312,7 @@ open Real NNReal Topology
 namespace Asymptotics
 
 def ofSubexponentialGrowth (S : ℕ → ℤ) : Prop := ∃ f : ℕ → ℝ≥0, ∀ n,
-  |S n| ≤ (2 : ℝ) ^ ((2 : ℝ) ^ (f n : ℝ)) ∧ Tendsto (fun n => (f n) / (log 2 n)) atTop (𝓝 0)
+  |S n| ≤ (2 : ℝ) ^ ((2 : ℝ) ^ (f n : ℝ)) ∧ Tendsto (fun n ↦ (f n) / (log 2 n)) atTop (𝓝 0)
 
 theorem infinitely_many_more_proofs (S : ℕ → ℤ)
   (h₁ : AlmostInjective S) (h₂ : ofSubexponentialGrowth S) :

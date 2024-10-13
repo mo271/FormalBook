@@ -70,42 +70,32 @@ theorem prime_div_descFactorial (n k m l p : ℕ) (h_klen : k ≤ n)
     exact h_pl_div_binom
 
   -- here we start using qify to handle division
-  have h_fac_div : ((↑k ! * ↑(n - k)!) : ℤ)  ∣ (n ! : ℤ) := by
-    norm_cast
-    exact factorial_mul_factorial_dvd_factorial h_klen
+  have h_fac_div : ((↑k ! * ↑(n - k)!) : ℤ)  ∣ (n ! : ℤ) :=
+    mod_cast factorial_mul_factorial_dvd_factorial h_klen
   have h_fac_div' : ↑(n - k)! ∣ (n ! : ℤ) := dvd_of_mul_left_dvd h_fac_div
   have h_fac_div'' : (k ! : ℤ) ∣ (↑n ! / ↑(n - k)!) := by
-    norm_cast
-    refine' (dvd_div_iff_mul_dvd ((Int.natCast_dvd_natCast).mp h_fac_div')).mpr _
-    norm_cast at h_fac_div
+    refine' mod_cast (dvd_div_iff_mul_dvd ((Int.natCast_dvd_natCast).mp h_fac_div')).mpr _
     rw [mul_comm]
-    exact h_fac_div
+    exact mod_cast h_fac_div
   have h_kfac_ne_zero : (k ! : ℚ) ≠ 0 := cast_ne_zero.mpr (factorial_ne_zero k)
   have h_nkfac_ne_zero : ((n - k)! : ℚ) ≠ 0 := cast_ne_zero.mpr (n - k).factorial_ne_zero
   have : (k ! * (n - k)! : ℚ) ≠ 0 := mul_ne_zero h_kfac_ne_zero h_nkfac_ne_zero
   have h_fraction: (n.factorial / (k.factorial * (n - k).factorial)) =
     (n.factorial / (n - k).factorial) / k.factorial := by
-    zify
     qify
     field_simp
     rw [mul_comm]
-    left
-    rfl
+    exact Or.inl rfl
   rw [h_fraction] at h_pl_div_fac
   have h_pl_div_fac_part: p^l ∣ (n.factorial / (n - k).factorial) := by
     have h_eq_pl_with_k := exists_eq_mul_right_of_dvd h_pl_div_fac
     have h_eq_pl : ∃ (r : ℕ), r * p^l = n.factorial / (n - k).factorial := by
       cases' h_eq_pl_with_k with j h_eq
       use (j * k.factorial)
-      have h_rew : j * k.factorial * p^l = p^l * j * k.factorial := by
-        rw [mul_comm, mul_assoc]
-      rw [h_rew]
-      rw [← h_eq]
-      zify
+      rw [(mul_rotate _ _ _).symm, ← h_eq]
       qify
       field_simp
-      rw [mul_comm ((n - k)! : ℚ) _]
-      rw [mul_assoc]
+      rw [mul_comm ((n - k)! : ℚ) _, mul_assoc]
     cases' h_eq_pl with j h_eq
     refine' Dvd.intro j _
     rw [mul_comm]
@@ -150,12 +140,7 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
         have : p^l ≤ n - i := by
           refine' Nat.le_of_dvd _ hi_right
           simp only [tsub_pos_iff_lt]
-          have h_ilk : i < k := by
-            have hk : 0 < k := lt_of_lt_of_le four_pos h_4lek
-            zify at hi_left
-            zify
-            norm_cast at hi_left ⊢
-            exact Iff.mpr (lt_iff_le_pred hk) hi_left
+          have h_ilk : i < k := Iff.mpr (lt_iff_le_pred (lt_of_lt_of_le four_pos h_4lek)) hi_left
           exact lt_of_lt_of_le h_ilk h_klen
         have h_klen4i : n - i ≤ n := Nat.sub_le n i
         exact le_trans this h_klen4i
@@ -201,14 +186,13 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
       sorry
     -- second requirement: k ≤ n - 4
     have h_k'len4 : k' ≤ n - 4 := by
-      simp [h_k'_def]
+      simp only [h_k'_def, tsub_le_iff_right]
       have help : k + k ≤ n - 4 + k := add_le_add_right h_klen4 k
       rw [← (two_mul k)] at help
       exact le_trans (le_of_lt h) help
     -- first requirement: 4 ≤ k
-    have h_4lek' : 4 ≤ k' := by
-      have h_4len : 4 ≤ n := le_trans (le_trans h_4lek h_klen4) (Nat.sub_le n 4)
-      exact Iff.mp (le_tsub_iff_le_tsub h_klen h_4len) h_klen4
+    have h_4lek' : 4 ≤ k' := Iff.mp (le_tsub_iff_le_tsub h_klen (le_trans (le_trans h_4lek h_klen4)
+      (Nat.sub_le n 4))) h_klen4
     -- now we can use h_wlog
     exact h_wlog k' h_4lek' h_k'len4 h_2k'len
 
