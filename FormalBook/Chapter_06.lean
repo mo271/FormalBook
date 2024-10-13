@@ -125,10 +125,8 @@ lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
       exact Nat.sub_pos_of_lt this
     have : q ^ k - 1 ≤ q ^ m - 1 := Nat.le_of_dvd this H
     have :  q ^ k ≤ q ^ m  := by
-      zify at this
-      simp at this
-      simpa [Nat.sub_add_cancel <| one_le_pow m q hq'] using this
-    exact (pow_le_pow_iff_right hq).mp this
+      simpa [Nat.sub_add_cancel <| one_le_pow m q hq'] using (this)
+    exact (pow_le_pow_iff_right hq).mp (this)
 
   have : q ^ m - 1 = q^(m - k)*(q ^ k - 1) + (q^(m - k) - 1) := by
     zify
