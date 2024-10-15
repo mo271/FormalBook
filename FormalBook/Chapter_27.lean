@@ -29,6 +29,8 @@ import FormalBook.Mathlib.EdgeFinset
     - proof
 -/
 
+section HandshakingLemma
+
 variable {α : Type*} [Fintype α] [DecidableEq α]
 variable {G : SimpleGraph α} [DecidableRel G.Adj]
 
@@ -45,3 +47,5 @@ lemma handshaking : ∑ v, d(v) = 2 * #E := by
     _ = ∑ e ∈ E, 2             := Finset.sum_congr rfl (λ e he ↦ (G.card_filter_mem_of_mem_edgeFinset e he))
     _ = 2 * ∑ e ∈ E, 1         := (Finset.mul_sum E (λ _ ↦ 1) 2).symm
     _ = 2 * #E                 := by rw [Finset.card_eq_sum_ones E]
+
+end HandshakingLemma

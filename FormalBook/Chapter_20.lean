@@ -57,6 +57,8 @@ open Classical
 -- porting note: waiting for
 -- https://leanprover-community.github.io/mathlib-port-status/file/analysis/inner_product_space/basic
 
+section Inequalities
+
 -- Not quite sure what we actually need here, want to have ℝ-vector space with inner product.
 variable (V : Type*) [NormedAddCommGroup V] [InnerProductSpace ℝ V] [DecidableEq V]
 
@@ -137,6 +139,7 @@ theorem harmonic_geometric_arithmetic₃ (n : ℕ) (hn : 1 ≤ n)
   ((harmonic = geometric) ↔ all_equal) ∧
   ((geometric = arithmetic) ↔ all_equal) := by sorry
 
+end Inequalities
 
 
 
