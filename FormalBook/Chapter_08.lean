@@ -54,10 +54,10 @@ namespace book
 namespace irrational
 
 /-- A real number is irrational if it is not rational. This is the same definition as in mathlib -/
-def irrational (x : ℝ) := x ∉ Set.range (fun (q : ℚ) => (q : ℝ))
+def Irrational (x : ℝ) := x ∉ Set.range (fun (q : ℚ) => (q : ℝ))
 
 /-- This is `irrational_iff_ne_rational` in mathlib. -/
-lemma irrational_iff_not_fraction (x : ℝ) : irrational x ↔ ∀ a b : ℤ, x ≠ (a : ℝ) / b := by
+lemma irrational_iff_not_fraction (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, x ≠ (a : ℝ) / b := by
   sorry
 
 
@@ -74,10 +74,10 @@ theorem exponential_series (x : ℝ) : HasSum (fun n : ℕ => x ^ n / (n.factori
 -/
 
 
-theorem e_irrational : irrational e := by
+theorem e_irrational : Irrational e := by
   sorry
 
-theorem e_pow_2_irrational : irrational (e ^ 2) := by
+theorem e_pow_2_irrational : Irrational (e ^ 2) := by
   sorry
 
 /--
@@ -88,7 +88,7 @@ lemma little_lemma (n : ℕ) (h_n : n ≠ 0) :
   ¬ (2 ^ n ∣ n.factorial) ∧ (2 ^ (n - 1) ∣ n.factorial ↔ ∃ m : ℕ, n = 2 ^ m) := by
   sorry
 
-theorem e_pow_4_irrational : irrational (e ^ 4) := by
+theorem e_pow_4_irrational : Irrational (e ^ 4) := by
   sorry
 
 /-!  ### Proofs of the main theorems-/
@@ -125,17 +125,17 @@ lemma lem_aux_iii (n : ℕ) (k : ℕ): iteratedDeriv k (f_aux n) 0 ∈  Set.rang
 /-!### Theorems 1 to 3-/
 
 /--For any non-zero rational number `r`, the exponential `e ^ r` is irrational.-/
-theorem Theorem_1 (r : ℚ) (h_r : r ≠ 0) : irrational (exp r) := by
-  have : ∀ k : ℤ, k > 0 → irrational (exp k) := by
+theorem Theorem_1 (r : ℚ) (h_r : r ≠ 0) : Irrational (exp r) := by
+  have : ∀ k : ℤ, k > 0 → Irrational (exp k) := by
     sorry
   sorry
 
 open Real
 
-theorem Theorem_2 (r : ℚ) (h_r : r ≠ 0) : irrational (π ^ 2) := by
+theorem Theorem_2 (r : ℚ) (h_r : r ≠ 0) : Irrational (π ^ 2) := by
   sorry
 
-theorem Theorem_3 (n : ℕ) (h_n : n ≥ 3) : irrational ( arccos (1 / (n : ℝ).sqrt) / π) := by
+theorem Theorem_3 (n : ℕ) (h_n : n ≥ 3) : Irrational ( arccos (1 / (n : ℝ).sqrt) / π) := by
   sorry
 
 
