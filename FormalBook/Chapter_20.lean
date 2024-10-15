@@ -83,12 +83,13 @@ theorem cauchy_schwarz_inequality (a b : V) : ⟪ a, b ⟫ ^ 2 ≤ ‖a‖ ^ 2 *
       have : ∀ (x : ℝ), 0 <  x ^ 2 * ‖a‖ ^ 2 + 2 * x * ⟪a, b⟫ + ‖b‖ ^ 2 := by
         convert this
         exact (h _).symm
-      have : ∀ (x : ℝ), 0 <  ‖a‖ ^ 2 * x * x  + 2 * ⟪a, b⟫ * x + ‖b‖ ^ 2 := by
+      have : ∀ (x : ℝ), 0 <  ‖a‖ ^ 2 * (x * x)  + 2 * ⟪a, b⟫ * x + ‖b‖ ^ 2 := by
         intro x
         calc
           0 <  x ^ 2 * ‖a‖ ^ 2 + 2 * x * ⟪a, b⟫ + ‖b‖ ^ 2 := this x
-          _ = ‖a‖ ^ 2 * x * x  + 2 * ⟪a, b⟫ * x + ‖b‖ ^ 2  := by ring_nf
+          _ = ‖a‖ ^ 2 * (x * x)  + 2 * ⟪a, b⟫ * x + ‖b‖ ^ 2  := by ring_nf
       have ha_sq : ‖a‖ ^ 2 ≠ 0 := by aesop
+
       have := discrim_lt_zero ha_sq this
       unfold discrim at this
       have  : (2 * inner a b) ^ 2 < 4 * ‖a‖ ^ 2 * ‖b‖ ^ 2 := by linarith
@@ -127,4 +128,3 @@ theorem harmonic_geometric_arithmetic₃ (n : ℕ) (hn : 1 ≤ n)
   harmonic ≤ geometric ∧ geometric ≤ arithmetic ∧
   ((harmonic = geometric) ↔ all_equal) ∧
   ((geometric = arithmetic) ↔ all_equal) := by sorry
-
