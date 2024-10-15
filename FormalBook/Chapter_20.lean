@@ -148,7 +148,7 @@ section MantelCauchyProof
 variable {α : Type*} [Fintype α] [DecidableEq α]
 variable {G : SimpleGraph α} [DecidableRel G.Adj]
 
-prefix:100 "#" => Finset.card
+local prefix:100 "#" => Finset.card
 local notation "V" => @Finset.univ α _
 local notation "E" => G.edgeFinset
 local notation "I(" v ")" => G.incidenceFinset v
@@ -176,7 +176,7 @@ theorem mantel (h: G.CliqueFree 3) : #E ≤ (n^2 / 4) := by
   -- ... and establish a variant of adj_degree_bnd ...
   have adj_degree_bnd' (e : Sym2 α) (he: e ∈ E) : sum_deg e ≤ n := by
     induction e with | _ v w => simp at he; exact adj_degree_bnd v w (by simp [he])
-  
+
   -- ... and the identity for the sum of the squares of the degrees ...
   have sum_sum_deg_eq_sum_deg_sq : ∑ e ∈ E, sum_deg e = ∑ v ∈ V, d(v)^2 := by
     calc  ∑ e ∈ E, sum_deg e
@@ -200,7 +200,7 @@ theorem mantel (h: G.CliqueFree 3) : #E ≤ (n^2 / 4) := by
   rw [Nat.pow_two (#E)] at this
   rw [(Nat.mul_assoc 4 (#E) (#E)).symm] at this
   rw [Nat.mul_comm (4 * #E) (#E)] at this
-  
+
   -- Now we can show #E ≤ n^2 / 4 by "simply" dividing by 4 * #E
   by_cases hE : #E = 0
   · simp [hE]
