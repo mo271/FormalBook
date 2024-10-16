@@ -98,12 +98,35 @@ and thus the discriminant $\langle a, b \rangle^2 - |a|^2 |b|^2$ is less than 0.
 
 \begin{theorem}
   \label{ch20theorem3proof1}
+  \lean{mantel}
   Suppose $G$ is a graph on $n$ vertices without triangles. Then $G$
   has at most $\frac{n^2}{4}$ edges, and equality holds only when $n$ is even and $G$ is the
   complete bipartite graph $K_{n/2, n/2}$.
 \end{theorem}
 \begin{proof}
-  TODO
+  This proof, using Cauchy's inequality, is due to Mantel.
+  Let $V = \{1, \dots, n\}$ be the vertex set and $E$ the edge set of $G$.
+  By $d_i$ we denote the degree of $i$, hence $\sum_{i \in V} d_i = 2|E|$
+  (see chapter \ref{chapter28}). Suppose $ij$ is an edge.
+  Since $G$ has no triangles, we find $d_i + d_j \leq n$ since no vertex is a
+  neighbor of both $i$ and $j$.
+
+  It follows that
+  \[
+  \sum_{ij \in E} (d_i + d_j) \leq n|E|.
+  \]
+  Note that $d_i$ appears exactly $d_i$ times in the sum, so we get
+  \[
+  n|E| \geq \sum_{ij \in E} (d_i + d_j) = \sum_{i \in V} d_i^2,
+  \]
+  and hence with Cauchy's inequality applied to the vectors $(d_1, \dots, d_n)$ and $(1, \dots, 1)$,
+  \[
+  n|E| \geq \sum_{i \in V} d_i^2 \geq \frac{\left( \sum d_i \right)^2}{n} = \frac{4|E|^2}{n},
+  \]
+  and the result follows. In the case of equality we find $d_i = d_j$ for all $i, j$, and further
+  $d_i = \frac{n}{2}$ (since $d_i + d_j = n$). Since $G$ is triangle-free, $G = K_{n/2, n/2}$ is
+  immediately seen from this.
+
 \end{proof}
 
 \begin{theorem}
