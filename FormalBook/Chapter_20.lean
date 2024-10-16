@@ -54,9 +54,6 @@ open Classical
     - Second proof
 -/
 
--- porting note: waiting for
--- https://leanprover-community.github.io/mathlib-port-status/file/analysis/inner_product_space/basic
-
 section Inequalities
 
 -- Not quite sure what we actually need here, want to have ℝ-vector space with inner product.
@@ -88,7 +85,7 @@ theorem cauchy_schwarz_inequality (a b : V) : ⟪ a, b ⟫ ^ 2 ≤ ‖a‖ ^ 2 *
         use -x
         rw [← add_zero (-x•a), ← hx]
         simp only [neg_smul, neg_add_cancel_left]
-      have : ∀ (x : ℝ), 0 < ‖x • a + b‖^2 := by
+      have : ∀ (x : ℝ), 0 < ‖x • a + b‖ ^ 2 := by
         exact fun x ↦ sq_pos_of_pos (this x)
       have : ∀ (x : ℝ), 0 <  x ^ 2 * ‖a‖ ^ 2 + 2 * x * ⟪a, b⟫ + ‖b‖ ^ 2 := by
         convert this
@@ -99,7 +96,6 @@ theorem cauchy_schwarz_inequality (a b : V) : ⟪ a, b ⟫ ^ 2 ≤ ‖a‖ ^ 2 *
           0 <  x ^ 2 * ‖a‖ ^ 2 + 2 * x * ⟪a, b⟫ + ‖b‖ ^ 2 := this x
           _ = ‖a‖ ^ 2 * (x * x)  + 2 * ⟪a, b⟫ * x + ‖b‖ ^ 2  := by ring_nf
       have ha_sq : ‖a‖ ^ 2 ≠ 0 := by aesop
-
       have := discrim_lt_zero ha_sq this
       unfold discrim at this
       have  : (2 * inner a b) ^ 2 < 4 * ‖a‖ ^ 2 * ‖b‖ ^ 2 := by linarith
@@ -155,6 +151,7 @@ local notation "I(" v ")" => G.incidenceFinset v
 local notation "d(" v ")" => G.degree v
 local notation "n" => Fintype.card α
 
+-- TODO: equality #E = (n^2 / 4) iff G = K_{n/2, n/2}
 theorem mantel (h: G.CliqueFree 3) : #E ≤ (n^2 / 4) := by
 
   -- The degrees of two adjacent vertices cannot sum to more than n
