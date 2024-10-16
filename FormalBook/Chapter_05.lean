@@ -126,7 +126,7 @@ lemma fact_B (p : ℕ) [Fact (Prime p)] (K : Type _) [Field K] (ζ : Kˣ) (h_1 :
 theorem quadratic_reciprocity_2 (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2)
   [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] :
   (legendre_sym p q) * (legendre_sym q p) = -1 ^ ((p-1) / 2 * (q - 1) / 2 ) := by
-  sorry
+  exact book.quadratic_reciprocity.quadratic_reciprocity_1 p q hp hq
 
 
 end quadratic_reciprocity
