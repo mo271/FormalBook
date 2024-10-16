@@ -17,6 +17,7 @@ Authors: Moritz Firsching, Ralf Stephan
 -/
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.PrimeCounting
+import Mathlib.NumberTheory.Fermat
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 open Finset Nat
@@ -56,39 +57,24 @@ theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ q ∈ S, Nat.Prime q):
 /-!
 ### Second proof
 
-using Fermat numbers
-TODO: upstream this, see https://github.com/leanprover-community/mathlib4/pull/17000
 -/
-def F : ℕ → ℕ := fun n ↦ 2^2^n + 1
 
-lemma F₀: F 0 = 3 := by
-  rw [F, Nat.pow_zero, pow_one]
-
-lemma fermat_stricly_monotone {n : ℕ} : F n < F n.succ := by
-  rw [F, F, add_lt_add_iff_right, Nat.pow_succ]
-  exact (pow_lt_pow_iff_right one_lt_two).mpr (by norm_num)
-
-lemma fermat_bounded (n : ℕ) : 2 < F n := by
-  induction' n with n h
-  · exact Nat.lt_add_one 2
-  · exact lt_trans h fermat_stricly_monotone
-
-lemma fermat_odd {n : ℕ} : Odd (F n) := by
-  rw [F, ← not_even_iff_odd, even_add_one, not_not, even_pow]
-  exact ⟨even_two, Nat.ne_of_gt (pow_pos zero_lt_two _)⟩
+local notation "F" => fermatNumber
 
 -- We actually prove something slighly stronger that what is in the book:
 -- also for n = 0, the statement is true.
-lemma fermat_product (n : ℕ) : ∏ k in range n, F k = F n - 2 := by
+-- This is in mathlib as `fermatNumber_product`
+lemma fermatProduct (n : ℕ) : ∏ k in range n, F k = F n - 2 := by
   induction' n with n hn
   · trivial
   · rw [prod_range_succ, hn]
-    unfold F
+    unfold fermatNumber
     rw [mul_comm, (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by aesop),  ← Nat.sq_sub_sq]
     ring_nf
     omega
 
-theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): Coprime (F n) (F k) := by
+-- This is in mathlib as coprime_fermatNumber_fermatNumber
+theorem infinity_of_primes₂  (k n : ℕ) (h : k < n) : Coprime (F n) (F k) := by
   let m := (F n).gcd (F k)
   have h_n : m ∣ F n := (F n).gcd_dvd_left (F k)
   have h_k : m ∣ F k := (F n).gcd_dvd_right (F k)
@@ -96,15 +82,16 @@ theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): Coprime (F n) (F k) := b
     have h_m_prod : m ∣ (∏ k in range n, F k) :=
       dvd_trans h_k (dvd_prod_of_mem F (mem_range.mpr h))
     have h_prod : (∏ k in range n, F k) + 2 = F n := by
-      rw [fermat_product, Nat.sub_add_cancel]
+      rw [fermatProduct, Nat.sub_add_cancel]
       refine' le_of_lt _
-      simp [fermat_bounded]
+      simp [two_lt_fermatNumber]
     exact (Nat.dvd_add_right h_m_prod).mp (h_prod ▸ h_n)
   cases' (dvd_prime prime_two).mp h_m with h_one h_two
   · exact h_one
   · by_contra
     rw [h_two] at h_n
-    exact (not_even_iff_odd.mpr fermat_odd) (even_iff_two_dvd.mpr h_n)
+    exact (not_even_iff_odd.mpr <| odd_fermatNumber n) (even_iff_two_dvd.mpr h_n)
+
 /-!
 ### Third proof
 
