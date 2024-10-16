@@ -48,6 +48,12 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details.
 A list of contributors can be found here: [AUTHORS](AUTHORS.md)
 or look at the [github stats](https://github.com/mo271/FormalBook/graphs/contributors).
 
+
+Some contributions come the repo
+[FordUniver/thebook.lean](https://github.com/FordUniver/thebook.lean),
+which also has a nice [blog](https://thebook.zib.de/) on the proofs formalized there.
+
+
 ## License
 
 Apache 2.0; see [`LICENSE`](LICENSE) for details.
