@@ -46,7 +46,6 @@ theorem euler_series_3 :
   ∑' (n : ℕ+), (1 : ℝ) / n = π ^ 2  / 6 := by
   sorry
 
-
 theorem euler_series_4 :
   ∑' (n : ℕ+), (1 : ℝ) / n = π ^ 2  / 6 := by
   sorry
