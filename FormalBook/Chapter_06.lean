@@ -48,7 +48,6 @@ example (i j : ℕ) (gj: 0 ≠ j) (h: i ∣ j): i ≤ j:= by
       i ≤ i*c := le_mul_of_le_of_one_le rfl.ge (zero_lt_iff.mpr h)
       _ = j := h₀.symm
 
-
 lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| := by
   dsimp [Dvd.dvd] at h
   cases' h with c h₀
@@ -61,7 +60,6 @@ lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| := by
       |i| ≤ (|i|)*|c| := by exact le_mul_of_le_of_one_le' rfl.ge (Int.one_le_abs h) (abs_nonneg c) (abs_nonneg i)
         _ = |i*c| := (abs_mul i c).symm
         _ = |j| := by rw [h₀.symm]
-
 
 noncomputable
 def phi (n : ℕ) : ℤ[X] := cyclotomic n ℤ
@@ -137,17 +135,13 @@ lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
       simp only [ge_iff_le, add_right_inj]
       exact (pow_sub_mul_pow (q : ℤ) hkm).symm
 
-    have h1 : q ^ k - 1 ∣ q ^ (m - k) - 1 := by
-      refine'
-        (@Nat.dvd_add_iff_right (q ^ k - 1 ) (q ^ (m - k) * (q ^ k - 1)) (q ^ (m - k) - 1) _ ).mpr _
-      · exact Nat.dvd_mul_left (q ^ k - 1) (q ^ (m - k))
-      · exact this ▸ H
+    have h1 : q ^ k - 1 ∣ q ^ (m - k) - 1 :=
+      (Nat.dvd_add_iff_right ((q ^ k - 1).dvd_mul_left _) ).mpr (this ▸ H)
 
     have hmk : m - k < m := by
       zify
       rw [cast_sub]
       linarith
-
       exact hkm
     have h0mk : 0 < m - k := Nat.sub_pos_of_lt <| Nat.lt_of_le_of_ne hkm hkeqm
     convert Nat.dvd_add_self_right.mpr (h (m - k) hmk h0mk h1)
@@ -211,9 +205,8 @@ theorem wedderburn (h: Fintype R): IsField R := by
 
   -- conjugacy classes with more than one element
   -- indexed from 1 to t in the book, here we use "S".
-  have finclassa: ∀ (A : ConjClasses Rˣ), Fintype ↑(ConjClasses.carrier A) := by
-    intro A
-    exact ConjClasses.instFintypeElemCarrier
+  have finclassa: ∀ (A : ConjClasses Rˣ), Fintype ↑(ConjClasses.carrier A) :=
+    fun _ ↦ ConjClasses.instFintypeElemCarrier
 
   have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out' A}) := by
     intro A
