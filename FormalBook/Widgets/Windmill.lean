@@ -22,6 +22,7 @@ deriving DecidableEq, Repr, Inhabited,  Lean.ToJson, Lean.FromJson
 structure WindmillWidgetProps where
   triple? : Option WindmillTriple := none
   colors? : Option WindmillColors := some default
+  mirrow : Bool := false
   deriving Lean.Server.RpcEncodable
 
 open ProofWidgets
@@ -52,8 +53,12 @@ def WindmillWidget : Component WindmillWidgetProps where
         const squareSize = z * subSquareSize;
         const rectWidth = y * subSquareSize;
         const rectHeight = x * subSquareSize;
-        const startX = 120;
-        const startY = 120;
+
+        // Calculate the start positions to center the square in the view
+        const centerX = 200;  // Assuming the viewBox width is 400
+        const centerY = 200;  // Assuming the viewBox height is 400
+        const startX = centerX - (squareSize / 2);
+        const startY = centerY - (squareSize / 2);
 
         // Create SVG for the central square and the four rectangles
         const createSquares = () => {
@@ -117,6 +122,7 @@ def WindmillWidget : Component WindmillWidgetProps where
         }
       }, React.createElement(WindmillPattern));
     }"
+
 
 def greyColors := ( some <| {
     square? := some "lightgrey",
