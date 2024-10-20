@@ -1,8 +1,8 @@
 \chapter{Representing numbers as sums of two squares}
 
 \begin{lemma}[Lemma 1]
-  \lean{ch4.lemma₁}
-  \label{ch4.lemma1}
+  \lean{ch04.lemma₁}
+  \label{ch04.lemma1}
   For primes \(p = 4m + 1\) the equation \(s^2 \equiv -1 (\mod p)\) has two
   solutions \(s \in \{1, 2, \dots, p - 1\}\), for \(p = 2\) there is one such solution, while
   for primes of the form \(p = 4m + 3\) there is no solution.
@@ -38,8 +38,8 @@ and this contains the two solutions of $s^2 \equiv -1$ that we were looking for.
 
 
 \begin{lemma}[Lemma 2]
-  \label{ch4.lemma2}
-  \lean{ch4.lemma₂}
+  \label{ch04.lemma2}
+  \lean{ch04.lemma₂}
   No number \(n = 4m + 3\) is a sum of two squares.
 \end{lemma}
 \begin{proof}
@@ -50,13 +50,13 @@ and this contains the two solutions of $s^2 \equiv -1$ that we were looking for.
 \end{proof}
 
 \begin{proposition}[First proof]
-  \label{ch4.proposition1}
-  \lean{ch4.theorem₁}
+  \label{ch04.proposition1}
+  \lean{ch04.theorem₁}
   Every prime of the form \(p = 4m + 1\) is a sum of two squares,
   that is, it can be written as \(p = x^2 + y^2\) for some natural numbers \(x,y \in \mathbb{N}\).
 \end{proposition}
 \begin{proof}
-  \uses{ch4.lemma1}
+  \uses{ch04.lemma1}
   Consider the pairs $(x', y')$ of integers with $0 \leq x', y' \leq \sqrt{p}$, that is,
   $x', y' \in \{0, 1, \dots, \lfloor \sqrt{p} \rfloor\}$.
   There are $(\lfloor \sqrt{p} \rfloor + 1)^2$ such pairs.
@@ -89,8 +89,8 @@ and this contains the two solutions of $s^2 \equiv -1$ that we were looking for.
 \end{proof}
 
 \begin{proposition}[Second proof]
-  \label{ch4.proposition2}
-  \lean{ch4.theorem₂}
+  \label{ch04.proposition2}
+  \lean{ch04.theorem₂}
   Every prime of the form \(p = 4m + 1\) is a sum of two squares,
   that is, it can be written as \(p = x^2 + y^2\) for some natural numbers \(x,y \in \mathbb{N}\).
 \end{proposition}
@@ -168,7 +168,7 @@ $x$ and $y$, there are at most two values for $z$.
 \end{proof}
 
 \begin{proposition}[Third proof]
-  \label{ch4.proposition3}
+  \label{ch04.proposition3}
   Every prime of the form \(p = 4m + 1\) is a sum of two squares,
   that is, it can be written as \(p = x^2 + y^2\) for some natural numbers \(x,y \in \mathbb{N}\).
 \end{proposition}
@@ -222,6 +222,6 @@ with $x = y$, and hence at least one, and this yields a solution to $(2x)^2 + z^
   even exponent in the prime decomposition of \(n\).
 \end{theorem}
 \begin{proof}
-  \uses{ch4.lemma2, ch4.proposition1, ch4.proposition2, ch4.proposition3}
+  \uses{ch04.lemma2, ch04.proposition1, ch04.proposition2, ch04.proposition3}
   TODO
 \end{proof}
