@@ -11,6 +11,10 @@ chapter2.bound_factorial
 chapter2.bound_binomial_coeff
 chapter3.sylvester
 chapter3.binomials_coefficients_never_powers
+ch04.lemma₁
+ch04.lemma₂
+ch04.theorem₁
+ch04.theorem₂
 book.quadratic_reciprocity.fermat_little
 book.quadratic_reciprocity.euler_criterion
 book.quadratic_reciprocity.product_rule
