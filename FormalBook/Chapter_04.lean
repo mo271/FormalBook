@@ -270,11 +270,11 @@ def xyz := ((4, 3, 5) : ℤ × ℤ × ℤ)
 def toTriple := fun (xyz : ℤ × ℤ × ℤ) ↦
     (some <|  {x := xyz.1.natAbs, y := xyz.2.1.natAbs, z := xyz.2.2.natAbs} : Option WindmillTriple)
 
-#widget WindmillWidget with { triple? :=(toTriple xyz) : WindmillWidgetProps }
+#widget WindmillWidget with ({ triple? :=toTriple xyz, mirror := true} : WindmillWidgetProps )
 
 -- ... and its winged shape
 
-#widget WindmillWidget with ({ triple? := (toTriple xyz), colors? := greyColors} : WindmillWidgetProps)
+#widget WindmillWidget with ({ triple? := (toTriple xyz), colors? := greyColors, mirror := true} : WindmillWidgetProps)
 
 -- The second winged derived from the windeg shape of are 73 using `secondInvo`:
 

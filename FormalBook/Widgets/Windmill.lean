@@ -22,7 +22,7 @@ deriving DecidableEq, Repr, Inhabited,  Lean.ToJson, Lean.FromJson
 structure WindmillWidgetProps where
   triple? : Option WindmillTriple := none
   colors? : Option WindmillColors := some default
-  mirrow : Bool := false
+  mirror : Bool := false
   deriving Lean.Server.RpcEncodable
 
 open ProofWidgets
@@ -38,9 +38,9 @@ def WindmillWidget : Component WindmillWidgetProps where
         const subSquareSize = 20;
 
         // Extract the values from props
-        const z = props.triple.z || 5;
-        const x = props.triple.x || 2;
-        const y = props.triple.y || 3;
+        const z = (props.triple && props.triple.z) || 5;
+        const x = (props.triple && props.triple.x) || 2;
+        const y = (props.triple && props.triple.y) || 3;
 
         // Use colors from props
         const colors = props.colors || {};
@@ -104,12 +104,17 @@ def WindmillWidget : Component WindmillWidgetProps where
           return elements;
         };
 
+        // Apply mirror transformation if mirror prop is true
+        const transformGroup = props.mirror
+          ? React.createElement('g', { transform: 'scale(-1,1) translate(-400,0)' }, createSquares())
+          : createSquares();
+
         return React.createElement('svg', {
           width: '100%',
           height: '100%',
           viewBox: '0 0 400 400',  // Adjust based on your SVG dimensions
           style: { display: 'block', margin: '0 auto' } // Center horizontally
-        }, createSquares());
+        }, transformGroup);
       };
 
       return React.createElement('div', {
@@ -123,7 +128,6 @@ def WindmillWidget : Component WindmillWidgetProps where
       }, React.createElement(WindmillPattern));
     }"
 
-
 def greyColors := ( some <| {
     square? := some "lightgrey",
     north? := some "lightgrey",
@@ -133,6 +137,11 @@ def greyColors := ( some <| {
   } : Option WindmillColors)
 
 #widget WindmillWidget with { triple? := some <| {x := 2, y :=7, z := 3} : WindmillWidgetProps }
+
+#widget WindmillWidget with ({
+  triple? := some ({x := 2, y :=7, z := 3}),
+  mirror := True
+  }: WindmillWidgetProps)
 
 #widget WindmillWidget with { triple? := some <| {x := 5, y := 5, z := 3} : WindmillWidgetProps }
 
