@@ -263,18 +263,20 @@ theorem theorem₂ {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
 
 
 
--- The windged sqaure of area 4xy + z^2 = 73 that corresponds to (x,y,z) = (3,4,5)
+-- The windged square of area 4xy + z^2 = 73 that corresponds to (x,y,z) = (3,4,5)
 
 def xyz := ((4, 3, 5) : ℤ × ℤ × ℤ)
 
 def toTriple := fun (xyz : ℤ × ℤ × ℤ) ↦
     (some <|  {x := xyz.1.natAbs, y := xyz.2.1.natAbs, z := xyz.2.2.natAbs} : Option WindmillTriple)
 
-#widget WindmillWidget with ({ triple? :=toTriple xyz, mirror := true} : WindmillWidgetProps )
+#widget WindmillWidget with ({ triple? :=toTriple xyz, mirror := true} : WindmillWidgetProps)
 
 -- ... and its winged shape
 
-#widget WindmillWidget with ({ triple? := (toTriple xyz), colors? := greyColors, mirror := true} : WindmillWidgetProps)
+#widget WindmillWidget with ({ triple? := (toTriple xyz),
+                               colors? := greyColors,
+                               mirror := true} : WindmillWidgetProps)
 
 -- The second winged derived from the windeg shape of are 73 using `secondInvo`:
 

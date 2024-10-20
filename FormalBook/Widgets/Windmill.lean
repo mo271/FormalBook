@@ -112,7 +112,7 @@ def WindmillWidget : Component WindmillWidgetProps where
         return React.createElement('svg', {
           width: '100%',
           height: '100%',
-          viewBox: '0 0 400 400',  // Adjust based on your SVG dimensions
+          viewBox: '0 0 400 400',
           style: { display: 'block', margin: '0 auto' } // Center horizontally
         }, transformGroup);
       };
