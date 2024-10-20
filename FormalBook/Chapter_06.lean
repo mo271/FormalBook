@@ -37,24 +37,20 @@ This is a TODO in `RingTheory.IntegralDomain`.
 
 -- TODO: find the appropriate lemmas for use in the end of the proof...
 example (i j : ℕ) (gj: 0 ≠ j) (h: i ∣ j): i ≤ j:= by
-  dsimp [Dvd.dvd] at h
   cases' h with c h₀
   cases' em (c = 0) with hc h
   · by_contra
     rw [hc] at h₀
-    simp only [mul_zero] at h₀
     exact gj h₀.symm
   · calc
       i ≤ i*c := le_mul_of_le_of_one_le rfl.ge (zero_lt_iff.mpr h)
       _ = j := h₀.symm
 
 lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| := by
-  dsimp [Dvd.dvd] at h
   cases' h with c h₀
   cases' em (c = 0) with hc h
   · by_contra
-    rw [hc] at h₀
-    simp only [mul_zero] at h₀
+    rw [hc, mul_zero] at h₀
     exact gj h₀.symm
   · calc
       |i| ≤ (|i|)*|c| := by exact le_mul_of_le_of_one_le' rfl.ge (Int.one_le_abs h) (abs_nonneg c) (abs_nonneg i)
@@ -69,9 +65,8 @@ lemma phi_dvd (n : ℕ) : phi n ∣ X ^ n - 1 := by
   exact cyclotomic.dvd_X_pow_sub_one n ℤ
 
 lemma phi_div_2 (n : ℕ) (k : ℕ) (_ : 1 ≠ k) (h₂ : k ∣ n) (h₃ : k < n) :
-  (X ^ k - 1) * (phi n)∣ (X ^ n - 1) := by
-  have h_proper_div : k ∈ n.properDivisors := Nat.mem_properDivisors.mpr ⟨h₂, h₃⟩
-  exact X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ h_proper_div
+    (X ^ k - 1) * (phi n)∣ (X ^ n - 1) :=
+  X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ (Nat.mem_properDivisors.mpr ⟨h₂, h₃⟩)
 
 
 variable {R : Type _}  [DecidableEq R] [DivisionRing R]
@@ -180,7 +175,6 @@ lemma orbit_stabilizer [Fintype R] (A: ConjClasses Rˣ) [Fintype A.carrier] :
   rw [Fintype.card_congr <| ConjAct_stabilizer_centralizer_eq (ConjClasses.exists_rep A|>.choose)]
   convert this
   rw [ConjAct.orbit_eq_carrier_conjClasses, (ConjClasses.exists_rep A|>.choose_spec)]
-
 
 section wedderburn
 
