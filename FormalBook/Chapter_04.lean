@@ -157,12 +157,14 @@ theorem sameCard : Fintype.card (U k) = Fintype.card (T k) := by
 
 /- 2. -/
 
+def secondInvo_fun := fun ((x,y,z) : ℤ × ℤ × ℤ) ↦ (x - y + z, y, 2 * y - z)
+
 /-- The second involution that we study is an involution on the set U. -/
 def secondInvo : Function.End (U k) := fun ⟨⟨x, y, z⟩, h⟩ =>
-  ⟨⟨x - y + z, y, 2 * y - z⟩, by
+  ⟨secondInvo_fun (x, y, z), by
   obtain ⟨hS, h⟩ := h
   simp [U]
-  simp [S] at *
+  simp [S, secondInvo_fun] at *
   constructor
   · constructor
     · rw [← hS.1]
@@ -177,7 +179,8 @@ theorem secondInvo_sq : secondInvo k ^ 2 = 1 := by
   change secondInvo k ∘ secondInvo k = id
   funext ⟨⟨x, y, z⟩, h⟩
   rw [comp_apply]
-  simp [secondInvo]
+  simp only [secondInvo, secondInvo_fun, sub_sub_cancel, id_eq, Subtype.mk.injEq, Prod.mk.injEq,
+    and_true]
   ring
 
 variable [hk : Fact (4 * k + 1).Prime]
@@ -201,8 +204,8 @@ def singletonFixedPoint : Finset (U k) :=
 
 /-- Any fixed point of `complexInvo k` must be `(1, 1, k)`. -/
 theorem eq_of_mem_fixedPoints : fixedPoints (secondInvo k) = singletonFixedPoint k := by
-  simp only [fixedPoints, IsFixedPt, secondInvo, singletonFixedPoint, Prod.mk_one_one,
-    Finset.coe_singleton]
+  simp only [fixedPoints, IsFixedPt, secondInvo, secondInvo_fun,
+    singletonFixedPoint, Prod.mk_one_one, Finset.coe_singleton]
   ext t
   constructor
   · intro ht
@@ -275,8 +278,6 @@ def toTriple := fun (xyz : ℤ × ℤ × ℤ) ↦
 
 -- The second winged derived from the windeg shape of are 73 using `secondInvo`:
 
-def secondInvo_of_xyz := (((ch04.secondInvo 18) ⟨xyz, sorry⟩).1)
+#eval secondInvo_fun xyz
 
-#eval! secondInvo_of_xyz
-
-#widget WindmillWidget with ({triple? := (toTriple secondInvo_of_xyz)} : WindmillWidgetProps)
+#widget WindmillWidget with ({triple? := (toTriple <| secondInvo_fun xyz)} : WindmillWidgetProps)

@@ -118,13 +118,6 @@ def WindmillWidget : Component WindmillWidgetProps where
       }, React.createElement(WindmillPattern));
     }"
 
-
-#widget WindmillWidget with { triple? := some <| {x := 2, y :=7, z := 3} : WindmillWidgetProps }
-
-#widget WindmillWidget with { triple? := some <| {x := 5, y := 5, z := 3} : WindmillWidgetProps }
-
-#widget WindmillWidget with { triple? := some <| {x := 3, y := 7, z := 2} : WindmillWidgetProps }
-
 def greyColors := ( some <| {
     square? := some "lightgrey",
     north? := some "lightgrey",
@@ -133,13 +126,13 @@ def greyColors := ( some <| {
     west? := some "lightgrey"
   } : Option WindmillColors)
 
+#widget WindmillWidget with { triple? := some <| {x := 2, y :=7, z := 3} : WindmillWidgetProps }
+
+#widget WindmillWidget with { triple? := some <| {x := 5, y := 5, z := 3} : WindmillWidgetProps }
+
+#widget WindmillWidget with { triple? := some <| {x := 3, y := 7, z := 2} : WindmillWidgetProps }
+
 #widget WindmillWidget with ({
   triple? := some <| {x := 3, y := 7, z := 2},
-  colors? := some <| {
-    square? := some "lightgrey",
-    north? := some "lightgrey",
-    east? := some "lightgrey",
-    south? := some "lightgrey",
-    west? := some "lightgrey"
-  }
+  colors? := greyColors
 } : WindmillWidgetProps)
