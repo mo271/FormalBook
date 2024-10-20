@@ -44,9 +44,9 @@
 \end{theorem}
 \begin{proof}
   \uses{chapter28.pigeon_hole_principle}
-  Write every number $a \in A$ in the form $a = 2^k m$, where $m$ is an odd number between 1 and $2n - 1$.
-  Since there are $n + 1$ numbers in $A$, but only $n$ different odd parts, there must be two numbers
-  in $A$ with the same odd part. Hence one is a multiple of the other.
+  Write every number $a \in A$ in the form $a = 2^k m$, where $m$ is an odd number between $1$
+  and $2n - 1$. Since there are $n + 1$ numbers in $A$, but only $n$ different odd parts, there must
+  be two numbers in $A$ with the same odd part. Hence one is a multiple of the other.
 \end{proof}
 
 \section{Sequences}
@@ -108,12 +108,13 @@ of length $n+1$.
 \section{Graphs}
 
 \begin{lemma}[Handshaking]
+  \ref{handshaking}
   \lean{chapter28.handshaking}
   \leanok
   Let $G$ be a finite simple graph with vertex set $V$ and edge set $E$ and let
   $d(v)$ denote the degree of a vertex $v$. Then
   \[
-  \sum_{v\in V}d(v) = 2* |E|.
+  \sum_{v\in V}d(v) = 2|E|.
   \]
 \end{lemma}
 \begin{proof}
