@@ -107,9 +107,55 @@ variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 /-- We study the set S -/
 def S : Set (ℤ × ℤ × ℤ) := {((x, y, z) : ℤ × ℤ × ℤ) | 4 * x * y + z ^ 2 = 4 * k + 1 ∧ x > 0 ∧ y > 0}
 
-noncomputable instance : Fintype (S k) := by
+omit hk in
+lemma S_lower_bound {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) : 0 < x ∧ 0 < y  := by
+  simp only [gt_iff_lt, cast_pos, S, mem_setOf_eq]  at h
+  constructor
+  · exact h.2.1
+  · exact h.2.2
 
-  sorry
+omit hk in
+lemma S_upper_bound {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) :
+    x ≤ k ∧ y ≤ k := by
+  obtain ⟨_, _⟩ := S_lower_bound k h
+  simp [S, mem_setOf_eq] at h
+  refine ⟨?_, ?_,⟩
+  all_goals try nlinarith
+
+-- todo use Fin 2 instead of ({(0 : ℤ), 1})
+def embed_S : S k → Ioc (0 : ℤ) k ×ˢ Ioc (0 : ℤ) k ×ˢ ({(0 : ℤ), 1}) :=
+  fun  (⟨⟨x, y, z⟩, h⟩ : S k) ↦ by
+  have lb := S_lower_bound k h
+  have ub := S_upper_bound k h
+  exact ⟨⟨x, y, if 0 ≤ z then 1 else 0⟩, ⟨⟨lb.1, ub.1⟩, ⟨lb.2, ub.2⟩, by
+    simp; exact
+    Int.lt_or_le z 0 ⟩⟩
+
+omit hk in
+lemma embed_S_injective : Function.Injective (embed_S k):= by
+  intro s1 s2 hS
+  simp [embed_S] at hS
+  ext
+  · exact hS.1
+  · exact hS.2.1
+  · have := hS.2.2
+    have ⟨⟨x1, y1, z1⟩, ⟨h1, _, _⟩⟩ := s1
+    have ⟨⟨x2, y2, z2⟩, ⟨h2, _, _⟩⟩ := s2
+    have hz_eq_z: z1 ^ 2 = z2 ^ 2 := by
+      nlinarith
+    simp at this
+    by_cases hz1 : 0 ≤ z1
+    · simp [hz1] at this
+      by_cases hz2 : 0 ≤ z2
+      · nlinarith
+      · simp [hz2] at this
+    · by_cases hz2 : 0 ≤ z2
+      · simp [hz2] at this
+        tauto
+      · nlinarith
+
+noncomputable instance : Fintype (S k) := by
+  refine' Fintype.ofInjective (embed_S k) (embed_S_injective k)
 
 end Sets
 
@@ -159,8 +205,6 @@ theorem sameCard : Fintype.card (U k) = Fintype.card (T k) := by
 /- 2. -/
 
 def secondInvo_fun := fun ((x,y,z) : ℤ × ℤ × ℤ) ↦ (x - y + z, y, 2 * y - z)
-
-#check (U k : Set (S k))
 
 /-- The second involution that we study is an involution on the set U. -/
 def secondInvo : Function.End (U k) := fun ⟨⟨⟨x, y, z⟩, hS⟩, h⟩ =>
