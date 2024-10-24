@@ -79,10 +79,8 @@ lemma lemma₂ (n m : ℕ) (hn : n = 4 * m + 3) :
   have hx : ∀ (x : ZMod 4),  x ^2 ∈ ({0, 1} : Finset (ZMod 4)) := by
     intro x
     fin_cases x <;> simp
-    · left
-      rfl
-    · right
-      rfl
+    · exact Or.inl rfl
+    · exact Or.inr rfl
   have ha := hx <| a
   have hb := hx  <| b
   generalize hA: (a : ZMod 4) ^ 2 = A
@@ -108,18 +106,14 @@ variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 def S : Set (ℤ × ℤ × ℤ) := {((x, y, z) : ℤ × ℤ × ℤ) | 4 * x * y + z ^ 2 = 4 * k + 1 ∧ x > 0 ∧ y > 0}
 
 omit hk in
-lemma S_lower_bound {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) : 0 < x ∧ 0 < y  := by
-  simp only [gt_iff_lt, cast_pos, S, mem_setOf_eq]  at h
-  constructor
-  · exact h.2.1
-  · exact h.2.2
+lemma S_lower_bound {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) : 0 < x ∧ 0 < y  := ⟨h.2.1, h.2.2⟩
 
 omit hk in
 lemma S_upper_bound {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) :
     x ≤ k ∧ y ≤ k := by
   obtain ⟨_, _⟩ := S_lower_bound k h
   simp [S, mem_setOf_eq] at h
-  refine ⟨?_, ?_,⟩
+  refine ⟨?_, ?_⟩
   all_goals try nlinarith
 
 -- todo use Fin 2 instead of ({(0 : ℤ), 1})
@@ -175,13 +169,11 @@ def linearInvo : Function.End (S k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨y, x,
 theorem linearInvo_sq : linearInvo k ^2  = (1 : Function.End (S k)) := by
   change linearInvo k ∘ linearInvo k = id
   funext x
-  simp only [linearInvo, comp_apply, neg_neg, Prod.mk.eta, Subtype.coe_eta]
-  rfl
+  simp [linearInvo]
 
 theorem linearInvo_no_fixedPoints : IsEmpty (fixedPoints (linearInvo k)) := by
-  simp
-  intro x y z h
-  intro hfixed
+  simp only [isEmpty_subtype, mem_fixedPoints, Subtype.forall, Prod.forall]
+  intro x y z h hfixed
   simp only [IsFixedPt, linearInvo, Subtype.mk.injEq, Prod.mk.injEq] at hfixed
   have : z = 0 := by linarith
   obtain ⟨h, _, _⟩ := h
@@ -196,8 +188,7 @@ noncomputable instance : Fintype <| T k := by
 
 def U : Set (S k) := {⟨(x, y, z), _⟩ | (x - y) + z > 0}
 
-noncomputable instance : Fintype <| U k := by
-  exact Fintype.ofFinite ↑(U k)
+noncomputable instance : Fintype <| U k := Fintype.ofFinite ↑(U k)
 
 theorem sameCard : Fintype.card (U k) = Fintype.card (T k) := by
   sorry
@@ -211,13 +202,10 @@ def secondInvo : Function.End (U k) := fun ⟨⟨⟨x, y, z⟩, hS⟩, h⟩ =>
   ⟨⟨secondInvo_fun ⟨x, y, z⟩, by
   simp [S, secondInvo_fun] at *
   constructor
-  · rw [← hS.1]
-    ring_nf
-  constructor
-  · exact h
-  · exact hS.2.2
+  · rw [← hS.1]; ring
+  refine ⟨h, hS.2.2⟩
   ⟩, by
-    simp [U, secondInvo_fun]
+    simp only [U, gt_iff_lt, secondInvo_fun, Set.mem_setOf_eq]
     ring_nf
     exact hS.2.1⟩
 
@@ -313,12 +301,9 @@ theorem theorem₂ {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
   rw [← div_add_mod p 4, hp] at h ⊢
   let k := p / 4
   have ⟨a, b, h⟩ := sq_add_sq_of_nonempty_fixedPoints k <| trivialInvo_fixedPoints k
-  use a.natAbs
-  use b.natAbs
-  unfold k at h
+  refine ⟨a.natAbs, b.natAbs, ?_⟩
   zify
   simpa only [sq_abs] using h
-
 
 
 -- The windged square of area 4xy + z^2 = 73 that corresponds to (x,y,z) = (3,4,5)
