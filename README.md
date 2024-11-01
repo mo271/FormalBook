@@ -1,5 +1,11 @@
 # Formal BOOK
 
+> 🚀 **Pull Requests Welcome!** 🎉
+> 
+> We warmly welcome contributions from everyone.
+> No experience is necessary, and partial proofs help with LaTex are appreciated!
+
+
 A collaborative, work-in-progress attempt to formalize [Proofs from THE BOOK](https://link.springer.com/book/10.1007/978-3-662-57265-8) using [Lean4](https://leanprover.github.io/lean4/doc/whatIsLean.html).
 
 
