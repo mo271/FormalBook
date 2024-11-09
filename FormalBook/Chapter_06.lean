@@ -93,10 +93,9 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   have : 0 ≤ ((q : ℝ) - 1)^2 := sq_nonneg ((q : ℝ) - 1)
   have g := (Real.sqrt_lt_sqrt_iff (sq_nonneg ((q : ℝ) - 1))).mpr (h_ineq)
   have : Real.sqrt (((q:ℝ) - 1) ^ 2) = ((q : ℝ) - 1) := by sorry
-  rw [this] at g
-  rw [norm_eq_abs, Real.sqrt_sq] at g
+  rw [this, norm_eq_abs, Real.sqrt_sq] at g
   · exact g
-  · aesop
+  · exact AbsoluteValue.nonneg Complex.abs (eval (↑q) (X - C lamb))
 
 lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
     (H : q ^ k - 1 ∣ q ^ n - 1) : k ∣ n := by
@@ -202,18 +201,13 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have finclassa: ∀ (A : ConjClasses Rˣ), Fintype ↑(ConjClasses.carrier A) :=
     fun _ ↦ ConjClasses.instFintypeElemCarrier
 
-  have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out' A}) := by
-    intro A
-    exact setFintype (Set.centralizer {Quotient.out' A})
+  have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out' A}) :=
+    fun _ ↦ setFintype (Set.centralizer {Quotient.out' _})
 
   letI fintypea : ∀ (A :  ConjClasses Rˣ), Fintype ↑{A |
-      have := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1} := by
-    intro A
-    exact
-      setFintype
-        {A |
-          let_fun this := finclassa A;
-          Fintype.card ↑(ConjClasses.carrier A) > 1}
+      have := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1} :=
+        fun A ↦
+          setFintype {A | let_fun this := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1}
 
   have : Fintype ↑{A |
       have := finclassa A;  Fintype.card ↑(ConjClasses.carrier A) > 1} :=
@@ -258,13 +252,8 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have h1 : (q ^ n - 1) = q - 1  + ∑ A : S', (q ^ n - 1) / (q ^ (n_k A) - 1) := by
     convert H1
     sorry
-  have hZ : Nonempty <| @Subtype R fun x => x ∈ Z := by
-      exact Zero.instNonempty
-  have hq_pow_pos : ∀ m,  1 ≤ q ^ m := by
-    intro m
-    refine' one_le_pow m q _
-
-    exact Fintype.card_pos
+  have hZ : Nonempty <| @Subtype R fun x => x ∈ Z := Zero.instNonempty
+  have hq_pow_pos : ∀ m,  1 ≤ q ^ m := fun m ↦ one_le_pow m q Fintype.card_pos
 
   have h_n_k_A_dvd: ∀ A : S', (n_k A ∣ n) := by sorry
   --rest of proof
@@ -274,14 +263,9 @@ theorem wedderburn (h: Fintype R): IsField R := by
       exact eval_dvd <| phi_dvd n
     have h₂_dvd :
         (phi n).eval (q : ℤ) ∣ ∑ A : S', (((q ^ n - 1) : ℕ):ℤ) / ((q ^ (n_k A) - 1) : ℕ):= by
-      refine' Finset.dvd_sum _
-      intro A
-      intro hs
-      apply(Int.dvd_div_of_mul_dvd _)
-      have h_one_neq: 1 ≠ n_k A := by
-        sorry
-      have h_k_n_lt_n: n_k A < n := by
-        sorry
+      refine Finset.dvd_sum fun A hs ↦ (Int.dvd_div_of_mul_dvd ?_)
+      have h_one_neq: 1 ≠ n_k A := by sorry
+      have h_k_n_lt_n: n_k A < n := by sorry
       have h_noneval := phi_div_2 n (n_k A) h_one_neq (h_n_k_A_dvd A) h_k_n_lt_n
       have := @eval_dvd ℤ _ _ _ q h_noneval
       simp only [eval_mul, eval_sub, eval_pow, eval_X, eval_one, IsUnit.mul_iff] at this
@@ -312,9 +296,7 @@ theorem wedderburn (h: Fintype R): IsField R := by
     have := isPrimitiveRoot_exp n h_n
     rw [cyclotomic_eq_prod_X_sub_primitiveRoots this]
 
-  have : 2 ≤ q := by
-    refine' Fintype.one_lt_card_iff.mpr _
-    exact exists_pair_ne { x // x ∈ Z }
+  have : 2 ≤ q := Fintype.one_lt_card_iff.mpr (exists_pair_ne { x // x ∈ Z })
   -- here the book uses h_lamb_gt_q_sub_one from above
   have h_gt : ((cyclotomic n ℤ).eval ↑q).natAbs > q - 1 := by
     have hn : 1 < n := by
@@ -327,8 +309,7 @@ theorem wedderburn (h: Fintype R): IsField R := by
       rw [Int.ofNat_sub $ le_of_lt this]
       norm_num
     rw [h1]
-    norm_cast
-    exact Nat.ne_of_lt <| Nat.sub_pos_of_lt this
+    exact_mod_cast Nat.ne_of_lt <| Nat.sub_pos_of_lt this
 
   have hq_eq : (q : ℤ) - 1 = (q - 1 : ℕ) := by
     have : 1 ≤ q := Fintype.card_pos
@@ -336,9 +317,8 @@ theorem wedderburn (h: Fintype R): IsField R := by
 
   rw [← hq_eq] at h_phi_dvd_q_sub_one
 
-  have : 1 ≤ Fintype.card { x // x ∈ center R } := by
-    refine' Fintype.card_pos_iff.mpr _
-    exact ⟨1, Subring.one_mem (center R)⟩
+  have : 1 ≤ Fintype.card { x // x ∈ center R } :=
+    Fintype.card_pos_iff.mpr (⟨1, Subring.one_mem (center R)⟩)
   have h_q : |((q : ℤ) - 1)| = q - 1 := by
     norm_num
     exact this
@@ -346,8 +326,7 @@ theorem wedderburn (h: Fintype R): IsField R := by
   rw [h_q] at h_norm
 
   refine' not_le_of_gt h_gt _
-  have : (q - 1 : ℕ) = (q : ℤ) - 1 := by
-    exact Int.natCast_pred_of_pos this
+  have : (q - 1 : ℕ) = (q : ℤ) - 1 := Int.natCast_pred_of_pos this
   rw [← this] at h_norm
   have : Int.natAbs (eval (↑q) (cyclotomic n ℤ)) = |eval (↑q) (phi n)| := by
     simp only [Int.natCast_natAbs]
