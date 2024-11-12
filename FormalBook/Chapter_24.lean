@@ -15,7 +15,8 @@ limitations under the License.
 
 Authors: Moritz Firsching
 -/
-import Mathlib.Tactic
+import Mathlib.Data.Matrix.DoublyStochastic
+import Mathlib.Data.Real.Basic
 /-!
 # Van der Waerden's permanent conjecture
 
@@ -36,3 +37,15 @@ import Mathlib.Tactic
     - Claim
   - Farkas Lemma
 -/
+
+
+
+open Equiv
+namespace Matrix
+
+variable {n : ℕ}
+
+def per (M : Matrix (Fin n) (Fin n) ℝ) := ∑ σ : Perm (Fin n), ∏ i, M (σ i) i
+
+theorem permanent_conjecture (M : Matrix (Fin n) (Fin n) ℝ) :
+    M ∈ doublyStochastic ℝ (Fin n) → per M ≥ (n.factorial)/(n ^ n) := sorry
