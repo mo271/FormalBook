@@ -254,26 +254,91 @@ def N : ℤ → ℤ → Set ℤ := fun a b ↦ {a + n * b | n : ℤ}
 
 def isOpen : Set ℤ → Prop := fun O ↦ O = ∅ ∨ ∀ a ∈ O, ∃ b > 0, N a b ⊆ O
 
-theorem infinity_of_primes₅ : { p : ℕ | p.Prime }.Finite := by
-  have TopoSpace : TopologicalSpace ℤ := by
-    refine TopologicalSpace.mk isOpen ?_ ?_ ?_
-    · exact Or.inr fun a _ ↦ ⟨1, Int.zero_lt_one, Set.subset_univ _⟩
-    · sorry
-    · intro S
-      intro h
-      right
-      intros z hz
-      obtain ⟨t, ⟨tS, zt⟩⟩ := hz
-      have := (h t tS)
-      rcases this with empty| ha'
+theorem infinity_of_primes₅ : { p : ℕ | p.Prime }.Infinite := by
+  let TopoSpace : TopologicalSpace ℤ := {
+    IsOpen := isOpen
+    isOpen_univ := Or.inr fun a _ ↦ ⟨1, Int.zero_lt_one, Set.subset_univ _⟩
+    isOpen_sUnion := by
+      refine fun S hS ↦ Or.inr fun z hz ↦ ?_
+      obtain ⟨t, tS, zt⟩ := hz
+      rcases (hS t tS) with empty | ha
       · aesop
-      obtain ⟨b, hb⟩ := ha' z zt
-      use b
-      simp [hb]
-      exact fun ⦃a⦄ a_1 ↦ Set.subset_sUnion_of_subset S t (fun ⦃a⦄ a ↦ a) tS (hb.2 a_1)
-  have : ∀ X, ¬ TopoSpace.IsOpen X → X.Infinite := by sorry
-  have : ∀ a b, TopoSpace.IsOpen (N a b)ᶜ := by sorry
-  sorry
+      obtain ⟨b, hb⟩ := ha z zt
+      refine ⟨b, hb.1, Set.subset_sUnion_of_subset S t hb.2 tS⟩
+    isOpen_inter := by
+      intro O₁ O₂ hO₁ hO₂
+      rcases hO₁ with rfl | hO₁
+      · unfold isOpen; aesop
+      rcases hO₂ with rfl | hO₂
+      · unfold isOpen; aesop
+      refine Or.inr fun a ⟨haO₁, haO₂⟩ ↦ ?_
+      obtain ⟨b₁, hb₁, hNab₁⟩ := hO₁ a haO₁
+      obtain ⟨b₂, hb₂, hNab₂⟩ := hO₂ a haO₂
+      refine ⟨b₁*b₂, mul_pos hb₁ hb₂,
+        Set.subset_inter (subset_trans ?_ hNab₁) (subset_trans ?_ hNab₂)⟩
+      <;> simp only [N, Set.setOf_subset_setOf, forall_exists_index, forall_apply_eq_imp_iff,
+        add_right_inj]
+      · refine fun k ↦ ⟨b₂*k, by ring⟩
+      · refine fun k ↦ ⟨b₁*k, by ring⟩
+  }
+  have Infinite_of_NonemptyOpen {O : Set ℤ} (hnO : Set.Nonempty O)
+      (hO : TopoSpace.IsOpen O): Set.Infinite O := by
+    have Infinite_N {a b : ℤ} (ha : 0 < b ) : Set.Infinite (N a b) := by
+      have : Function.Injective (fun k ↦ a + b*k) := by
+        apply Function.Injective.comp (add_right_injective a)
+        refine fun _ _ ↦ mul_left_cancel₀ (Int.ne_of_lt ha).symm
+      apply Set.infinite_of_injective_forall_mem this
+      unfold N; refine fun x ↦ ⟨x, by ring⟩
+    rcases hO with _ | hO
+    · aesop
+    · obtain ⟨a, ha⟩ := hnO
+      obtain ⟨b, hb, hOb⟩ := hO a ha
+      apply Set.Infinite.mono hOb (Infinite_N hb)
+
+  have IsClosed_N (a b : ℤ) (hb : 0 < b) : IsClosed (N a b):= by
+    refine isOpen_compl_iff.1 (Or.inr fun n hn ↦ ⟨b, hb, fun k hk ↦ ?_⟩)
+    simp only [N, Set.mem_compl_iff, Set.mem_setOf_eq, not_exists] at *
+    intro b₁ hb₁
+    obtain ⟨m, hm⟩ := hk
+    apply hn (b₁ - m)
+    rw [sub_mul, add_sub, hb₁, ← hm]
+    ring
+
+  have : ⋃ p ∈ { p : ℕ | Nat.Prime p }, N 0 p = {-1, 1}ᶜ := by
+    have (n : ℤ) (n_ne_one : n ≠ 1) (n_ne_negone : n ≠ -1):
+        ∃ p, Nat.Prime p ∧ ∃m, m * (p : ℤ) = n:= by
+      use n.natAbs.minFac
+      constructor
+      · refine Nat.minFac_prime ?_
+        have := @Int.natAbs_eq_iff_sq_eq n 1
+        aesop
+      use n / n.natAbs.minFac
+      rw [Int.ediv_mul_cancel]
+      rw [Int.ofNat_dvd_left]
+      exact (Nat.minFac_dvd (Int.natAbs n))
+    ext n
+    simp only [Set.mem_setOf_eq, N, zero_add, Set.mem_iUnion, exists_prop, Int.reduceNeg,
+      Set.mem_compl_iff, Set.mem_insert_iff, Set.mem_singleton_iff, not_or]
+    constructor
+    · intro ⟨p, hp, ⟨k, hk⟩⟩
+      have hp := Prime.not_dvd_one (Nat.prime_iff_prime_int.1 hp)
+      constructor <;>  (intro h; rw [h] at hk; apply hp)
+      · use -k
+        nlinarith
+      · use k
+        nlinarith
+    · refine fun hn ↦ this n hn.2 hn.1
+
+  intro primes_finite
+  have H : IsClosed (⋃ p ∈ { p : ℕ | Nat.Prime p }, N 0 p) := by
+    refine Set.Finite.isClosed_biUnion primes_finite (fun p prime_p ↦ ?_)
+    exact IsClosed_N 0 p (by exact_mod_cast Nat.Prime.pos prime_p)
+  rw [this] at H
+  rw [isClosed_compl_iff] at H
+  have contradiction : Set.Infinite {-1, 1} :=
+    Infinite_of_NonemptyOpen (show Set.Nonempty {-1, 1} by aesop) H
+  exact contradiction (show Set.Finite {-1, 1} by aesop)
+
 /-!
 ### Sixth proof
 
