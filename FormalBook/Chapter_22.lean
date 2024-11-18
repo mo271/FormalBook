@@ -23,8 +23,7 @@ Dion,
 Thijs,
 Thomas,
 Jonas van der Schaaf,
-Dhyan,
-Lenny.
+Lenny Taelman.
 -/
 import Mathlib.Tactic
 /-!
