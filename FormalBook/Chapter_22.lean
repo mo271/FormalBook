@@ -25,7 +25,6 @@ Thomas Koopman,
 Jonas van der Schaaf,
 Dhyan,
 Lenny Taelman.
->>>>>>> f17bf250928b38f551cbd8308060a6ea6aed242e
 -/
 import Mathlib.Tactic
 /-!
