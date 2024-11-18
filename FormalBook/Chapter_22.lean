@@ -17,7 +17,7 @@ Authors: Moritz Firsching,
 Jan,
 Maris,
 Casper,
-Pjotr,
+Pjotr Buys,
 Giacomo,
 Dion,
 Thijs,
@@ -25,6 +25,11 @@ Thomas Koopman,
 Jonas van der Schaaf,
 Dhyan,
 Lenny.
+
+
+Jonas van der Schaaf,
+Lenny Taelman.
+>>>>>>> f17bf250928b38f551cbd8308060a6ea6aed242e
 -/
 import Mathlib.Tactic
 /-!
