@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 Authors: Moritz Firsching,
-Jan,
 Maris Ozols,
+Jan Hendriks,
 Casper,
 Pjotr Buys,
 Giacomo,
