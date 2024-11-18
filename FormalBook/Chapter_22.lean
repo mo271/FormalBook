@@ -15,7 +15,7 @@ limitations under the License.
 
 Authors: Moritz Firsching,
 Jan,
-Maris,
+Maris Ozols,
 Casper,
 Pjotr Buys,
 Giacomo,
