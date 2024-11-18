@@ -15,16 +15,15 @@ limitations under the License.
 
 Authors: Moritz Firsching,
 Jan,
-Maris,
+Maris Ozols,
 Casper,
-Pjotr,
+Pjotr Buys,
 Giacomo,
 Dion Leijnse,
 Thijs,
 Thomas,
-Jonas,
-Dhyan,
-Lenny.
+Jonas van der Schaaf,
+Lenny Taelman.
 -/
 import Mathlib.Tactic
 /-!
