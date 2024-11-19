@@ -13,8 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Authors: Moritz Firsching, Jan, Maris, Casper, Pjotr, Giacomo, Dion, Thijs, Thomas,
-  Jonas, Dhyan, Lenny.
+Authors: Moritz Firsching,
+Maris Ozols,
+Jan Hendriks,
+Casper,
+Pjotr Buys,
+Giacomo,
+Dion Leijnse,
+Thijs Maessen,
+Thomas Koopman,
+Jonas van der Schaaf,
+Lenny Taelman,
+Dhyan Aranha.
 -/
 import Mathlib.Tactic
 /-!
