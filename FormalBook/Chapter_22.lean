@@ -50,3 +50,9 @@ import Mathlib.Tactic
     - Claim
     - Zorn's Lemma
 -/
+
+noncomputable section
+
+variable (Γ₀ : Type) [LinearOrderedCommMonoidWithZero Γ₀]
+
+theorem valuation_on_reals : ∃(v : Valuation ℝ Γ₀), (v (1/2)) > 1 := sorry
