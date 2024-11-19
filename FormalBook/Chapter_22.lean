@@ -13,17 +13,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-Authors: Moritz Firsching, 
-Jan, 
-Maris, 
-Casper, 
+Authors: Moritz Firsching,
+Jan,
+Maris,
+Casper,
 Pjotr,
-Giacomo, 
-Dion, 
-Thijs, 
+Giacomo,
+Dion,
+Thijs Maessen,
 Thomas,
-Jonas van der Schaaf, 
-Dhyan, 
+Jonas van der Schaaf,
+Dhyan,
 Lenny.
 -/
 import Mathlib.Tactic
