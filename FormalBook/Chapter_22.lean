@@ -14,17 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 Authors: Moritz Firsching,
-Jan,
-Maris,
+Maris Ozols,
+Jan Hendriks,
 Casper,
-Pjotr,
+Pjotr Buys,
 Giacomo,
-Dion,
+Dion Leijnse,
 Thijs Maessen,
-Thomas,
+Thomas Koopman,
 Jonas van der Schaaf,
 Dhyan,
-Lenny.
+Lenny Taelman.
 -/
 import Mathlib.Tactic
 /-!
