@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 Authors: Moritz Firsching,
-Jan,
-Maris,
+Maris Ozols,
+Jan Hendriks,
 Casper,
 Pjotr Buys,
 Giacomo,
-Dion,
-Thijs,
-Thomas,
+Dion Leijnse,
+Thijs Maessen,
+Thomas Koopman,
 Jonas van der Schaaf,
 Lenny Taelman,
 Dhyan Aranha.
