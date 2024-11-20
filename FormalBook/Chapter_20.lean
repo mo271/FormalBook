@@ -3,17 +3,13 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
+import FormalBook.Mathlib.EdgeFinset
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Real.StarOrdered
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Combinatorics.SimpleGraph.Finite
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import FormalBook.Mathlib.EdgeFinset
-import Mathlib
-import Aesop
+import Mathlib.Data.Real.StarOrdered
 
 open Real
 open RealInnerProductSpace
