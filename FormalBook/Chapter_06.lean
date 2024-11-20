@@ -102,12 +102,12 @@ lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
           calc
             _ < q := hq
             _ = q^1 := (Nat.pow_one q).symm
-            _ ≤ q ^ m := (pow_le_pow_iff_right hq).mpr hm
+            _ ≤ q ^ m := (pow_le_pow_iff_right₀ hq).mpr hm
         exact Nat.sub_pos_of_lt this
       have : q ^ k - 1 ≤ q ^ m - 1 := Nat.le_of_dvd this H
       have :  q ^ k ≤ q ^ m  := by
         simpa [Nat.sub_add_cancel <| one_le_pow m q hq'] using (this)
-      exact (pow_le_pow_iff_right hq).mp (this)
+      exact (pow_le_pow_iff_right₀ hq).mp (this)
 
     have : q ^ m - 1 = q^(m - k)*(q ^ k - 1) + (q^(m - k) - 1) := by
       zify
@@ -211,13 +211,13 @@ theorem wedderburn (h: Fintype R): IsField R := by
     --(Set.centralizer ({(Quotient.out' (A : ConjClasses Rˣ))} : Set Rˣ))
 
   have h_R: Fintype.card Rˣ = q ^ n - 1 := by
-    have : Fintype.card Rˣ + 1 = Fintype.card R := Fintype.card_eq_card_units_add_one.symm
+    have : Fintype.card Rˣ + 1 = Fintype.card R := (Fintype.card_eq_card_units_add_one R).symm
     rw [← h_card, ← this]
     simp only [ge_iff_le, add_le_iff_nonpos_left, nonpos_iff_eq_zero, Fintype.card_ne_zero,
     add_tsub_cancel_right]
 
   have h_Z : Fintype.card Zˣ = q - 1 := by
-    have h : Fintype.card Zˣ + 1 = Fintype.card Z := Fintype.card_eq_card_units_add_one.symm
+    have h : Fintype.card Zˣ + 1 = Fintype.card Z := (Fintype.card_eq_card_units_add_one _).symm
     have : Fintype.card Z = q := rfl
     rw [← this, ← h]
     simp only [center_toSubsemiring, Subsemiring.center_toSubmonoid, ge_iff_le,

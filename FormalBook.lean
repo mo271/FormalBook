@@ -1,5 +1,4 @@
 import FormalBook.Mathlib.EdgeFinset
-import FormalBook.Mathlib.WeightedDoubleCounting
 
 import FormalBook.Chapter_01
 import FormalBook.Chapter_02
