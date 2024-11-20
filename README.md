@@ -1,7 +1,7 @@
 # Formal BOOK
 
 > 🚀 **Pull Requests Welcome!** 🎉
-> 
+>
 > We warmly welcome contributions from everyone.
 > No experience is necessary, and partial proofs help with LaTex are appreciated!
 
@@ -63,9 +63,3 @@ which also has a nice [blog](https://thebook.zib.de/) on the proofs formalized t
 ## License
 
 Apache 2.0; see [`LICENSE`](LICENSE) for details.
-
-## Disclaimer
-
-This project is not an official Google project. It is not supported by
-Google and Google specifically disclaims all warranties as to its quality,
-merchantability, or fitness for a particular purpose.

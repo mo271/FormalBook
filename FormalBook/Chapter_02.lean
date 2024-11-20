@@ -1,28 +1,16 @@
 /-
-Copyright 2022 Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+Copyright 2022 Moritz Firsching. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
+import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 import Mathlib.Data.Nat.Choose.Factorization
 import Mathlib.Data.Real.StarOrdered
+import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Tactic.NormNum.Prime
-import Mathlib.NumberTheory.Harmonic.Defs
-import Mathlib
 /-!
 # Bertrand's postulate
 
@@ -128,7 +116,7 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
   · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
   intro x hx h2x
   rw [Finset.mem_range, Nat.lt_succ_iff] at hx h2x
-  rw [not_le, div_lt_iff_lt_mul' three_pos, mul_comm x] at h2x
+  rw [not_le, div_lt_iff_lt_mul three_pos, mul_comm x] at h2x
   replace no_prime := not_exists.mp no_prime x
   rw [← and_assoc, not_and', not_and_or, not_lt] at no_prime
   cases' no_prime hx with h h
