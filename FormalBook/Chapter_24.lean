@@ -5,6 +5,7 @@ Authors: Moritz Firsching
 -/
 import Mathlib.Data.Matrix.DoublyStochastic
 import Mathlib.Data.Real.Basic
+import Mathlib.LinearAlgebra.Matrix.Permanent
 /-!
 # Van der Waerden's permanent conjecture
 
@@ -27,13 +28,11 @@ import Mathlib.Data.Real.Basic
 -/
 
 
-
 open Equiv
 namespace Matrix
 
 variable {n : ℕ}
 
-def per (M : Matrix (Fin n) (Fin n) ℝ) := ∑ σ : Perm (Fin n), ∏ i, M (σ i) i
 
 theorem permanent_conjecture (M : Matrix (Fin n) (Fin n) ℝ) :
-    M ∈ doublyStochastic ℝ (Fin n) → per M ≥ (n.factorial)/(n ^ n) := sorry
+    M ∈ doublyStochastic ℝ (Fin n) → permanent M ≥ (n.factorial)/(n ^ n) := sorry
