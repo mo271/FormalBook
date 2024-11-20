@@ -53,5 +53,6 @@ import Mathlib.Tactic
 
 noncomputable section
 
-theorem valuation_on_reals : ∃(Γ₀ : Type) (locm : LinearOrderedCommMonoidWithZero Γ₀),
-  ∃(v : Valuation ℝ Γ₀), (v (1/2)) > 1 := sorry
+theorem valuation_on_reals : ∃(Γ₀ : Type) (locm : LinearOrderedCommMonoidWithZero Γ₀)
+  (v : Valuation ℝ Γ₀), (∀(x : ℝ) (y : ℝ), v x ≠ v y → v (x + y) = max (v x) (v y)) ∧
+  (v (1/2)) > 1 := sorry
