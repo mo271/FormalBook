@@ -86,8 +86,6 @@ lemma dist_negation_over_and (P Q : Prop): ¬(P ∧ Q) ↔ ¬P ∨ ¬Q := by
     · apply hnQ; exact hQ
 
 
--- Now we come the first main lemma of the chapter.
-
 lemma painted_blue (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
 (X : ℝ²) : painter Γ₀ locg v X = Rainbow.Blue → v (X 0) ≥ v (1) := by
 intro h
@@ -109,7 +107,7 @@ cases' h2 with m n
    contradiction
 
 
-
+-- Now we come the first main lemma of the chapter.
 
 
 lemma bounded_det (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
