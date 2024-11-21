@@ -38,26 +38,38 @@ open BigOperators
 
 local notation "ℝ²" => EuclideanSpace ℝ (Fin 2)
 
+-- First we define the inductive type Rainbow, which will be the the target type of the painter
+-- function. The painter function will take a point in ℝ² and return a color from Rainbow (eg. Red
+-- Blue or Green).
 
 inductive Rainbow
 | Red
 | Green
 | Blue
 
+--Now we define the painter function as appears in the Book.
+
 def painter (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀) :
 ℝ² → Rainbow
-| X => if v (X 0)  < v (1) ∧ v (X 1) < v 1 then Rainbow.Red
+| X => if v (X 0) < v (1) ∧ v (X 1) < v 1 then Rainbow.Red
   else if v (X 0) < v (X 1) ∧ v (X 1) ≥ v 1 then Rainbow.Green
   else Rainbow.Blue
+
+-- The next two lemmas below basically unravel the definition of the painter function which will
+-- be of use in the proof of the lemma on the boundedness of the determinant.
 
 lemma painted_green (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
  (X : ℝ²) : painter Γ₀ locg v X = Rainbow.Green → v (X 1) ≥  v (1) := by
   intro h
   simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
+  -- I want to get rid of this simp with an unfold but if I do this then split_ifs stops working.
   split_ifs at h with h1 h2
-  cases' h2 with p q
+  rcases h2 with ⟨p,  q⟩
   rw [v.map_one]
   exact q
+
+-- the next lemma should be a cousin? of push_neg but I couldn't get what was in mathlib to work so
+-- I just did it by hand.
 
 lemma dist_negation_over_and (P Q : Prop): ¬(P ∧ Q) ↔ ¬P ∨ ¬Q := by
   constructor
@@ -74,11 +86,13 @@ lemma dist_negation_over_and (P Q : Prop): ¬(P ∧ Q) ↔ ¬P ∨ ¬Q := by
     · apply hnQ; exact hQ
 
 
+-- Now we come the first main lemma of the chapter.
 
 lemma painted_blue (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
 (X : ℝ²) : painter Γ₀ locg v X = Rainbow.Blue → v (X 0) ≥ v (1) := by
 intro h
 simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
+--again here we want to get rid of the simp with an unfold but then split_ifs stops working.
 split_ifs at h with h1 h2
 rw [dist_negation_over_and] at h1
 rw [dist_negation_over_and] at h2
@@ -87,12 +101,12 @@ rw [not_lt] at p
 rw [v.map_one]
 apply p
 cases' h2 with m n
-rw [not_lt] at m
-rw [not_lt, ← v.map_one] at q
-exact le_trans q m
+·  rw [not_lt] at m
+   rw [not_lt, ← v.map_one] at q
+   exact le_trans q m
 
-rw [not_lt] at q
-contradiction
+·  rw [not_lt] at q
+   contradiction
 
 
 
@@ -102,6 +116,18 @@ lemma bounded_det (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (
 (X Y Z : ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green)
 (hr: painter Γ₀ locg v Z = Rainbow.Red) :
 v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0 - X 1 * Y 0 - X 0 * Z 1) ≥ 1 := by
+
+have h₁1 : v (X 0) ≥ v 1 := painted_blue Γ₀ locg v X hb
+have h₁2 : v (Y 1) ≥ v 1 := painted_green Γ₀ locg v Y hg
+have h₁3: v (X 0 * Y 1) = v (X 0) * v (Y 1) := by rw [v.map_mul]
+have h₁4: v (X 0 * Y 1) ≥ v 1 * v 1 := by
+  rw [h₁3]
+  apply mul_le_mul' h₁1 h₁2
+simp at h₁4
+
+sorry
+
+
 
 
 
