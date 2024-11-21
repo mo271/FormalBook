@@ -80,8 +80,8 @@ lemma vertex_mem_closed {n : ℕ} {i : Fin n} {f : Fin n → ℝ²} :
 
 
 
-noncomputable def vertex_set (T : Triangle) : Finset ℝ² :=
-    image T univ
+noncomputable def vertex_set {n : ℕ} (P : Fin n → ℝ²) : Finset ℝ² :=
+    image P univ
 
 
 
