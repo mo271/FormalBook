@@ -16,25 +16,19 @@ open Finset
 def closed_simplex (n : ℕ)  : Set (Fin n → ℝ) := {α | (∀ i, 0 ≤ α i) ∧ ∑ i, α i = 1}
 def open_simplex   (n : ℕ)  : Set (Fin n → ℝ) := {α | (∀ i, 0 < α i) ∧ ∑ i, α i = 1}
 
-def closed_triangle (T : Triangle) : Set ℝ² :=
-    (fun α ↦ ∑ i, α i • T i) '' closed_simplex 3
+def closed_hull {n : ℕ} (f : Fin n → ℝ²) : Set ℝ² :=
+    (fun α ↦ ∑ i, α i • f i) '' closed_simplex n
 
-def open_triangle (T : Triangle) : Set ℝ² :=
-    (fun α ↦ ∑ i, α i • T i) '' open_simplex 3
-
-def closed_segment (L : Segment) : Set ℝ² :=
-    (fun α ↦ ∑ i, α i • L i) '' closed_simplex 2
-
-def open_segment (L : Segment) : Set ℝ² :=
-    (fun α ↦ ∑ i, α i • L i) '' open_simplex 2
+def open_hull {n : ℕ} (f : Fin n → ℝ²) : Set ℝ² :=
+    (fun α ↦ ∑ i, α i • f i) '' open_simplex n
 
 
 noncomputable def triangle_area (T : Triangle) : ℝ :=
   abs (- (T 0 1) * (T 1 0) + (T 0 0) * (T 1 1) + (T 0 1) * (T 2 0) - (T 1 1) * (T 2 0) - (T 0 0) * (T 2 1) + (T 1 0) * (T 2 1)) / 2
 
 def is_equal_area_cover (X : Set ℝ²) (S : Set Triangle) : Prop :=
-  (X = ⋃ (T ∈ S), closed_triangle T) ∧
-  (Set.PairwiseDisjoint S open_triangle) ∧
+  (X = ⋃ (T ∈ S), closed_hull T) ∧
+  (Set.PairwiseDisjoint S open_hull) ∧
   (∃ (area : ℝ), ∀ T, (T ∈ S) → triangle_area T = area)
 
 def unit_square : Set ℝ² := {x : ℝ² | 0 ≤ x 0 ∧ x 0 ≤ 1 ∧ 0 ≤ x 1 ∧ x 1 ≤ 1}
@@ -67,11 +61,18 @@ lemma simplex_vertex_in_simplex {n : ℕ} {i : Fin n} :
   unfold simplex_vertex
   exact ⟨fun j ↦ by by_cases h : i = j <;> simp_all, by simp⟩
 
-/- Ofcourse the image of f does not have to be ℝ² in this lemma. -/
+/- Ofcourse the image of f does not have to be ℝ² in these lemmas lemma. -/
 @[simp]
 lemma simplex_vertex_image {n : ℕ} {i : Fin n} (f : Fin n → ℝ²) :
     ∑ k, (simplex_vertex i k) • f k = f i := by
   unfold simplex_vertex; simp
+
+lemma vertex_mem_closed {n : ℕ} {i : Fin n} (f : Fin n → ℝ²) :
+    f i ∈ ((fun α ↦ ∑ i, α i • f i) '' closed_simplex n) :=
+  ⟨simplex_vertex i, ⟨simplex_vertex_in_simplex, by simp⟩⟩
+
+
+
 
 
 
@@ -115,9 +116,9 @@ lemma simplex_co_leq_1 {n : ℕ} {α : Fin n → ℝ}
   sorry
 
 /- A convexity version of closed triangles. -/
-lemma closed_triangle_convex {T : Triangle} {L : Segment}
-  (h₀ : L 0 ∈ closed_triangle T) (h₁ : L 1 ∈ closed_triangle T) :
-  closed_segment L ⊆ closed_triangle T := by
+lemma closed_hull_convex {T : Triangle} {L : Segment}
+  (h₀ : L 0 ∈ closed_hull T) (h₁ : L 1 ∈ closed_hull T) :
+  closed_hull L ⊆ closed_hull T := by
 
   sorry
 
@@ -136,8 +137,8 @@ lemma sum_if_comp {α β : Type} [Fintype α] [AddCommMonoid β] (f : α → β)
   L inside the closed triangle. This statement is true even if the triangle
   is degenerate.
 -/
-lemma non_vtx_imp_seg (T : Triangle) (v : ℝ²) (h₁ : v ∉ vertex_set T) (h₂ : v ∈ closed_triangle T) :
-    ∃ (L : Segment), L 0 ≠ L 1 ∧ closed_segment L ⊆ closed_triangle T ∧ v ∈ open_segment L := by
+lemma non_vtx_imp_seg (T : Triangle) (v : ℝ²) (h₁ : v ∉ vertex_set T) (h₂ : v ∈ closed_hull T) :
+    ∃ (L : Segment), L 0 ≠ L 1 ∧ closed_hull L ⊆ closed_hull T ∧ v ∈ open_hull L := by
   have ⟨α, hα, hvα⟩ := h₂; dsimp at hvα
   have ⟨i,hi⟩ := simplex_exists_co_pos hα
   have hneq : α i ≠ 1 := by
@@ -160,22 +161,21 @@ lemma non_vtx_imp_seg (T : Triangle) (v : ℝ²) (h₁ : v ∉ vertex_set T) (h�
     have hcontra := congrArg (HSMul.hSMul (1 - α i)) hTi
     simp only [sub_smul, one_smul, ← heq, sub_eq_iff_eq_add', add_sub_cancel] at hcontra
     exact hcontra
-  · refine closed_triangle_convex ?_ ?_
-    · exact ⟨simplex_vertex i, ⟨simplex_vertex_in_simplex, by simp⟩⟩
-    · use fun j ↦ if j = i then 0 else (α j) / (1 - α i)
-      refine ⟨⟨?_,?_⟩,?_⟩
-      · intro j
-        by_cases h : j = i <;> simp_all
-        exact div_nonneg (hα.1 j) (sub_nonneg_of_le (simplex_co_leq_1 hα i))
-      · convert sum_if_comp (fun j ↦ (α j /  (1 - α i))) i
-        apply mul_left_cancel₀ (sub_ne_zero_of_ne hneq.symm)
-        simp [mul_sum, mul_div_cancel₀ _ (sub_ne_zero_of_ne hneq.symm),sub_eq_iff_eq_add']
-        convert hα.2.symm
-        rw [←(sum_add_sum_compl {i} fun k ↦ α k)]
-        convert add_right_cancel_iff.mpr (sum_singleton _ _).symm
-        exact AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd ℝ -- This feels strange
-      · simp
-        convert sum_if_comp (fun j ↦ (α j /  (1 - α i)) • T j) i
+  · refine closed_hull_convex (vertex_mem_closed T) ?_
+    use fun j ↦ if j = i then 0 else (α j) / (1 - α i)
+    refine ⟨⟨?_,?_⟩,?_⟩
+    · intro j
+      by_cases h : j = i <;> simp_all
+      exact div_nonneg (hα.1 j) (sub_nonneg_of_le (simplex_co_leq_1 hα i))
+    · convert sum_if_comp (fun j ↦ (α j /  (1 - α i))) i
+      apply mul_left_cancel₀ (sub_ne_zero_of_ne hneq.symm)
+      simp [mul_sum, mul_div_cancel₀ _ (sub_ne_zero_of_ne hneq.symm),sub_eq_iff_eq_add']
+      convert hα.2.symm
+      rw [←(sum_add_sum_compl {i} fun k ↦ α k)]
+      convert add_right_cancel_iff.mpr (sum_singleton _ _).symm
+      exact AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd ℝ -- This feels strange
+    · simp
+      convert sum_if_comp (fun j ↦ (α j /  (1 - α i)) • T j) i
   · use fun | 0 => α i | 1 => 1 - α i
     refine ⟨⟨?_, by simp⟩,?_⟩
     · intro k
@@ -184,10 +184,29 @@ lemma non_vtx_imp_seg (T : Triangle) (v : ℝ²) (h₁ : v ∉ vertex_set T) (h�
       · exact lt_of_le_of_ne (simplex_co_leq_1 hα _) hneq
     · simp [←heq]
 
+/-
+  There is no non-trivial segment going through (0,0) of the unit square.
+-/
+lemma no_segment_through_0_square {L : Segment} (h₁ : L 0 ≠ L 1)
+    (h₂ : closed_hull L ⊆ unit_square) : v 0 0 ∉ open_hull L := by
+  have hNonzero : ∃ i j, L i j ≠ 0 := by
+    by_contra hcontra; push_neg at hcontra
+    exact h₁ (PiLp.ext fun i ↦ (by rw [hcontra 0 i, hcontra 1 i]))
+  have ⟨i,j,hNonzero⟩ := hNonzero
+  intro ⟨α,hα,hαv⟩
+  have hLpos : ∀ i j, 0 ≤ L i j := by
+    intro i j
+    sorry
+  rw [←lt_self_iff_false (0 : ℝ)]
+  calc
+    0       < α i * L i j       := mul_pos (hα.1 i) (lt_of_le_of_ne (hLpos i j) (hNonzero.symm))
+    _       ≤ ∑ k, α k * L k j  := by sorry
+    _       ≤ (v 0 0) j         := by rw [←hαv]; simp
+    _       = 0                 := by fin_cases j <;> simp
 
 
 
-example {a b c : ℝ} (h₁ : a ≠ 0) (h₂ : a  = b ) : a + c = b + c ↔ a = b := by
-  exact add_right_cancel_iff
+example {a b c : ℝ} (h₁ : 0 < a) (h₂ : 0 < b ) : 0 < a * b := by
+  exact mul_pos h₁ h₂
 
   sorry
