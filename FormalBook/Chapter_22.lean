@@ -53,6 +53,29 @@ import Mathlib.Tactic
 
 noncomputable section
 
-theorem valuation_on_reals : ∃(Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀)
-  (v : Valuation ℝ Γ₀), (∀(x : ℝ) (y : ℝ), v x ≠ v y → v (x + y) = max (v x) (v y)) ∧
-  (v (1/2)) > 1 := sorry
+open ValuationSubring
+
+lemma inclusion_maximal_valuation (B : Subring ℝ) (h1 : (1/2) ∉ B)
+(h2 : ∀(C : Subring ℝ), (B ≤ C) ∧ (1/2) ∉ C → B = C) : ∃(D : ValuationSubring ℝ), D.toSubring = B := by  sorry
+
+lemma valuation_ring_no_half : ∃(B : ValuationSubring ℝ), (1/2) ∉ B := sorry
+
+lemma non_archimedean (Γ₀ : Type) [LinearOrderedCommGroupWithZero Γ₀] (K : Type) [Field K] (v : Valuation K Γ₀) :
+  (∀(x y : K), v x ≠ v y → v (x + y) = max (v x) (v y)) := sorry
+
+theorem valuation_on_reals : ∃(Γ₀ : Type) (_ : LinearOrderedCommGroupWithZero Γ₀)
+  (v : Valuation ℝ Γ₀), (v (1/2)) > 1 := by
+    have h := valuation_ring_no_half
+    cases' h with B h
+    use B.ValueGroup
+    -- We got stuck on giving the group structure. The rest of the proof is below
+    -- use B.valuation
+    -- have g := valuation_le_one_iff B (1/2)
+    -- rw[← not_iff_not] at g
+    -- rwa[gt_iff_lt, ← not_le, g]
+    sorry
+
+-- lemma valuation_lemma (K : Type) [Field K] (R : Subring K) :
+--   ∃(vsr : ValuationSubring R), R.valuation ↔ (∃(Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation K Γ₀), 1 = 1) := sorry
+--   (∀ (x : K), (x ≠ 0) → (x ∈ R) ∨ (x⁻¹ ∈ R)) ↔
+--   (∃(Γ₀ : Type)  (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation K Γ₀)) := sorry
