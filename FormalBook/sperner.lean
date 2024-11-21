@@ -23,9 +23,13 @@ def open_hull   {n : ℕ} (f : Fin n → ℝ²) : Set ℝ² := (fun α ↦ ∑ i
 noncomputable def triangle_area (T : Triangle) : ℝ :=
   abs (- (T 0 1) * (T 1 0) + (T 0 0) * (T 1 1) + (T 0 1) * (T 2 0) - (T 1 1) * (T 2 0) - (T 0 0) * (T 2 1) + (T 1 0) * (T 2 1)) / 2
 
-def is_equal_area_cover (X : Set ℝ²) (S : Set Triangle) : Prop :=
+def is_cover (X : Set ℝ²) (S : Set Triangle) : Prop :=
   (X = ⋃ (T ∈ S), closed_hull T) ∧
-  (Set.PairwiseDisjoint S open_hull) ∧
+  (Set.PairwiseDisjoint S open_hull)
+
+
+def is_equal_area_cover (X : Set ℝ²) (S : Set Triangle) : Prop :=
+  is_cover X S ∧
   (∃ (area : ℝ), ∀ T, (T ∈ S) → triangle_area T = area)
 
 def unit_square : Set ℝ² := {x : ℝ² | 0 ≤ x 0 ∧ x 0 ≤ 1 ∧ 0 ≤ x 1 ∧ x 1 ≤ 1}
@@ -226,3 +230,66 @@ lemma no_segment_through_origin_square {L : Segment} (h₁ : L 0 ≠ L 1)
     _ ≤ ∑ k, α k * L k j        := sum_le_univ_sum_of_nonneg (fun k ↦ (mul_nonneg_iff_of_pos_left (hα.1 k)).mpr (hLpos k j))
     _ ≤ (v 0 0) j               := by rw [←hαv]; simp
     _ = 0                       := by fin_cases j <;> simp
+
+
+
+
+
+
+
+/-
+  Lenny's stuff
+
+-/
+
+
+-- side i of triangle T; probably better to do this for a polygon or so
+
+def side (T : Triangle) (i : Fin 3) : Segment :=
+  fun | 0 => T ((i + 1) % 3) | 1 => T ((i - 1) % 3)
+
+
+-- let's just test if this works
+
+variable (P Q R : ℝ²)
+
+def triangle (P Q R : ℝ²) : Triangle :=
+  fun | 0 => P | 1 => Q | 2 => R
+
+def interval (P Q : ℝ²) : Segment :=
+  fun | 0 => P | 1 => Q
+
+example : side (triangle P Q R) 0 = interval Q R := rfl
+example : side (triangle P Q R) 1 = interval R P := rfl
+example : side (triangle P Q R) 2 = interval P Q := rfl
+
+-- now we can define the notion of a segment being on a trianglef
+
+
+
+
+def segment_on_triangle (L : Segment) (T : Triangle)  : Prop :=
+  ∃ i : Fin 3, closed_hull L ⊆ closed_hull (side T i)
+
+
+
+/-
+  State the theorem on colourings
+-/
+
+-- things carried over from other groups:
+
+def color : ℝ² → Fin 3 := sorry
+
+lemma no_three_colors_on_a_line (L : Segment) :
+    ∃ i : Fin 3, ∀ P ∈ closed_hull L, color P ≠ i := sorry
+
+lemma color00 : color (v 0 0) = 0 := sorry
+lemma color01 : color (v 0 1) = 1 := sorry
+lemma color10 : color (v 1 0) = 2 := sorry
+
+
+-- main goal for our group
+
+theorem Monsky_rainbow (S : Finset Triangle) (hS : is_cover unit_square S) :
+    ∃ T ∈ S, Function.Surjective (color ∘ T) := sorry
