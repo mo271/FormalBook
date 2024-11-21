@@ -16,11 +16,8 @@ open Finset
 def closed_simplex (n : ℕ)  : Set (Fin n → ℝ) := {α | (∀ i, 0 ≤ α i) ∧ ∑ i, α i = 1}
 def open_simplex   (n : ℕ)  : Set (Fin n → ℝ) := {α | (∀ i, 0 < α i) ∧ ∑ i, α i = 1}
 
-def closed_hull {n : ℕ} (f : Fin n → ℝ²) : Set ℝ² :=
-    (fun α ↦ ∑ i, α i • f i) '' closed_simplex n
-
-def open_hull {n : ℕ} (f : Fin n → ℝ²) : Set ℝ² :=
-    (fun α ↦ ∑ i, α i • f i) '' open_simplex n
+def closed_hull {n : ℕ} (f : Fin n → ℝ²) : Set ℝ² := (fun α ↦ ∑ i, α i • f i) '' closed_simplex n
+def open_hull   {n : ℕ} (f : Fin n → ℝ²) : Set ℝ² := (fun α ↦ ∑ i, α i • f i) '' open_simplex n
 
 
 noncomputable def triangle_area (T : Triangle) : ℝ :=
@@ -41,7 +38,6 @@ theorem Monsky (n : ℕ):
 
 
 
-/- Some examples. -/
 def v (x y : ℝ) : ℝ² := fun | 0 => x | 1 => y
 
 @[simp]
@@ -49,25 +45,28 @@ lemma v₀_val {x y : ℝ} : (v x y) 0 = x := rfl
 @[simp]
 lemma v₁_val {x y : ℝ} : (v x y) 1 = y := rfl
 
+
+/- These two triangles dissect the square and have equal area.-/
 def Δ₀  : Triangle  := fun | 0 => (v 0 0) | 1 => (v 1 0) | 2 => (v 0 1)
 def Δ₀' : Triangle  := fun | 0 => (v 1 0) | 1 => (v 0 1) | 2 => (v 1 1)
 
-
+/- Corner of the standard simplex.-/
 def simplex_vertex {n : ℕ} (i : Fin n) : Fin n → ℝ :=
     fun j ↦ if i = j then 1 else 0
 
+/- Such a corner is actually a member of the simplex-/
 lemma simplex_vertex_in_simplex {n : ℕ} {i : Fin n} :
     simplex_vertex i ∈ closed_simplex n := by
   unfold simplex_vertex
   exact ⟨fun j ↦ by by_cases h : i = j <;> simp_all, by simp⟩
 
-/- Ofcourse the image of f does not have to be ℝ² in these lemmas lemma. -/
+
 @[simp]
 lemma simplex_vertex_image {n : ℕ} {i : Fin n} (f : Fin n → ℝ²) :
     ∑ k, (simplex_vertex i k) • f k = f i := by
   unfold simplex_vertex; simp
 
-lemma vertex_mem_closed {n : ℕ} {i : Fin n} (f : Fin n → ℝ²) :
+lemma vertex_mem_closed {n : ℕ} {i : Fin n} {f : Fin n → ℝ²} :
     f i ∈ ((fun α ↦ ∑ i, α i • f i) '' closed_simplex n) :=
   ⟨simplex_vertex i, ⟨simplex_vertex_in_simplex, by simp⟩⟩
 
@@ -113,14 +112,33 @@ lemma simplex_exists_co_pos {n : ℕ} {α : Fin n → ℝ} (h : α ∈ closed_si
 
 lemma simplex_co_leq_1 {n : ℕ} {α : Fin n → ℝ}
     (h₁ : α ∈ closed_simplex n) : ∀ i, α i ≤ 1 := by
-  sorry
+  by_contra hcontra; push_neg at hcontra
+  have ⟨i,hi⟩ := hcontra
+  rw [←lt_self_iff_false (1 : ℝ)]
+  calc
+    1   < α i             := hi
+    _   = ∑ k ∈ {i}, α k  := (sum_singleton _ _).symm
+    _   ≤ ∑ k, α k        := sum_le_univ_sum_of_nonneg h₁.1
+    _   = 1               := h₁.2
 
-/- A convexity version of closed triangles. -/
-lemma closed_hull_convex {T : Triangle} {L : Segment}
-  (h₀ : L 0 ∈ closed_hull T) (h₁ : L 1 ∈ closed_hull T) :
-  closed_hull L ⊆ closed_hull T := by
 
-  sorry
+
+/- Vertex set of polygon P₁ lies inside the closed hull of polygon P₂ implies
+    the closed hull of P₁ lies inside the closed hull of P₂. -/
+lemma closed_hull_convex {n₁ n₂ : ℕ} {P₁ : Fin n₁ → ℝ²} {P₂ : Fin n₂ → ℝ²}
+  (h : ∀ i, P₁ i ∈ closed_hull P₂) :
+  closed_hull P₁ ⊆ closed_hull P₂ := by
+  intro p ⟨β, hβ, hβp⟩
+  use fun i ↦ ∑ k, (β k) * (choose (h k) i)
+  refine ⟨⟨?_,?_⟩,?_⟩
+  · exact fun _ ↦ Fintype.sum_nonneg fun _ ↦ mul_nonneg (hβ.1 _) ((choose_spec (h _)).1.1 _)
+  · simp_rw [sum_comm (γ := Fin n₂), ←mul_sum, (choose_spec (h _)).1.2, mul_one]
+    exact hβ.2
+  · simp_rw [sum_smul, mul_smul, sum_comm (γ := Fin n₂), ←smul_sum, (choose_spec (h _)).2]
+    exact hβp
+
+
+
 
 /- A basic lemma about sums that I want to use but that I cannot find.-/
 lemma sum_if_comp {α β : Type} [Fintype α] [AddCommMonoid β] (f : α → β) (i : α) :
@@ -161,7 +179,9 @@ lemma non_vtx_imp_seg (T : Triangle) (v : ℝ²) (h₁ : v ∉ vertex_set T) (h�
     have hcontra := congrArg (HSMul.hSMul (1 - α i)) hTi
     simp only [sub_smul, one_smul, ← heq, sub_eq_iff_eq_add', add_sub_cancel] at hcontra
     exact hcontra
-  · refine closed_hull_convex (vertex_mem_closed T) ?_
+  · apply closed_hull_convex
+    intro k; fin_cases k
+    exact vertex_mem_closed
     use fun j ↦ if j = i then 0 else (α j) / (1 - α i)
     refine ⟨⟨?_,?_⟩,?_⟩
     · intro j
@@ -186,27 +206,23 @@ lemma non_vtx_imp_seg (T : Triangle) (v : ℝ²) (h₁ : v ∉ vertex_set T) (h�
 
 /-
   There is no non-trivial segment going through (0,0) of the unit square.
+  This should imply the same statement for the other corners of the square without too much work.
 -/
-lemma no_segment_through_0_square {L : Segment} (h₁ : L 0 ≠ L 1)
+lemma no_segment_through_origin_square {L : Segment} (h₁ : L 0 ≠ L 1)
     (h₂ : closed_hull L ⊆ unit_square) : v 0 0 ∉ open_hull L := by
   have hNonzero : ∃ i j, L i j ≠ 0 := by
     by_contra hcontra; push_neg at hcontra
     exact h₁ (PiLp.ext fun i ↦ (by rw [hcontra 0 i, hcontra 1 i]))
   have ⟨i,j,hNonzero⟩ := hNonzero
   intro ⟨α,hα,hαv⟩
-  have hLpos : ∀ i j, 0 ≤ L i j := by
-    intro i j
-    sorry
+  have hLpos : ∀ l k, 0 ≤ L l k := by
+    intro l k
+    have ⟨_,_,_,_⟩ := h₂ (vertex_mem_closed (i := l))
+    fin_cases k <;> assumption
   rw [←lt_self_iff_false (0 : ℝ)]
   calc
-    0       < α i * L i j       := mul_pos (hα.1 i) (lt_of_le_of_ne (hLpos i j) (hNonzero.symm))
-    _       ≤ ∑ k, α k * L k j  := by sorry
-    _       ≤ (v 0 0) j         := by rw [←hαv]; simp
-    _       = 0                 := by fin_cases j <;> simp
-
-
-
-example {a b c : ℝ} (h₁ : 0 < a) (h₂ : 0 < b ) : 0 < a * b := by
-  exact mul_pos h₁ h₂
-
-  sorry
+    0 < α i * L i j             := mul_pos (hα.1 i) (lt_of_le_of_ne (hLpos i j) (hNonzero.symm))
+    _ = ∑ k ∈ {i}, α k * L k j  := by simp
+    _ ≤ ∑ k, α k * L k j        := sum_le_univ_sum_of_nonneg (fun k ↦ (mul_nonneg_iff_of_pos_left (hα.1 k)).mpr (hLpos k j))
+    _ ≤ (v 0 0) j               := by rw [←hαv]; simp
+    _ = 0                       := by fin_cases j <;> simp
