@@ -1,6 +1,7 @@
 import Mathlib.Tactic
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Data.Finset.Basic
+import Mathlib.Order.Defs
 
 
 
@@ -86,3 +87,60 @@ lemma simplex_exists_co_pos {n : ℕ} {α : Fin n → ℝ} (h : α ∈ closed_si
       _ ≤ ∑ (i: Fin n), 0 := Finset.sum_le_sum fun i _ ↦ hcontra i
       _ = 0               := Fintype.sum_eq_zero (fun _ ↦ 0) (fun _ ↦ rfl)
   linarith
+
+
+
+/-
+  Dions stuff
+-/
+
+/-
+  For a collection of segments, we define the collection of basis segments.
+  Next, we define what it means for a collection of segments to be complete,
+  and we show that any segment in a complete collection is a union of basis segments.
+-/
+
+local notation "SegmentSet" => Finset Segment
+
+instance partialorder (X : SegmentSet) : Preorder X where
+  le := fun S ↦ (fun T ↦ closed_segment S ⊆ closed_segment T)
+  le_refl := fun a ⦃a_1⦄ a ↦ a
+  le_trans := by exact fun a b c a_1 a_2 ⦃a_3⦄ a ↦ a_2 (a_1 a)
+
+-- A basis segment is a segment that does not properly contain another segment
+def basis_segment (X : SegmentSet) (S : X) : Prop :=
+  ∀ T : X, closed_segment T ⊆ closed_segment S → closed_segment T = closed_segment S
+
+-- A SegmentSet is complete if for any inclusions of segements, the closure of the complement
+-- of a segment is also in the SegmentSet
+def complete_segment_set (X : SegmentSet) : Prop :=
+  ∀ S T : X, closed_segment S ⊂ closed_segment T → ∃ S' : X,
+  (closed_segment T = closed_segment S ∪ closed_segment S' ∧
+  ∃ p : ℝ², closed_segment S ∩ closed_segment S' = {p})
+
+-- A decomposition of a segment is a collection of segments covering it
+def segment_covering {X : SegmentSet} (S : X) {n : ℕ} (f : Fin n → X) : Prop :=
+  closed_segment S = ⋃ (i : Fin n), closed_segment (f i).val
+
+-- A SegmentSet is splitting if every segment is the union of the basic segments it contains.
+def splitting_segment_set : SegmentSet → Prop :=
+  fun X ↦ ∀ S : X, ∃ n : ℕ, ∃ f : Fin n → X,
+  (segment_covering S f ∧ ∀ i : Fin n, basis_segment X (f i))
+
+
+theorem complete_is_splitting (X : SegmentSet) (h : complete_segment_set X) :
+  splitting_segment_set X := by
+    sorry
+
+-- Example: if X : Segment_Set is a singleton, its only member is a basis segment
+example (S : Segment) : basis_segment (singleton S) ⟨S, by tauto⟩  := by
+  intro T _
+  have hTeqS : T = S := by
+    rw [← Set.mem_singleton_iff]
+    exact Set.mem_toFinset.mp T.2
+  exact congrArg closed_segment hTeqS
+
+
+theorem basis_segments_exist (X : SegmentSet) :
+  ∃ S : X, basis_segment X S := by
+  sorry
