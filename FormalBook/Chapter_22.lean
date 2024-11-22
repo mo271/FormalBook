@@ -67,9 +67,7 @@ theorem valuation_on_reals : ∃(Γ₀ : Type) (_ : LinearOrderedCommGroupWithZe
   (v : Valuation ℝ Γ₀), (v (1/2)) > 1 := by
     have h := valuation_ring_no_half
     cases' h with B h
-    use B.ValueGroup
-    use inferInstance
-    use B.valuation
+    use B.ValueGroup, inferInstance, B.valuation
     have g := valuation_le_one_iff B (1/2)
     rw[← not_iff_not] at g
     rwa[gt_iff_lt, ← not_le, g]
