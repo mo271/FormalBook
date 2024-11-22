@@ -1,0 +1,91 @@
+\chapter{Three applications of Euler's formula}
+
+\begin{theorem}[Euler's formula]
+  \label{euler_formula}
+  If \(G\) is a connected plane graph with \(n\) vertices, \(e\) edges and \(f\) faces, then
+  \[
+  n - e + f = 2.
+  \]
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+
+\begin{proposition}
+  \label{euler_consequence_a}
+  Let \(G\) be any simple plane graph with \(n>2\) vertices.
+  Then \(G\) has at most \(3*n - 6\) edges.
+\end{proposition}
+\begin{proof}
+  TODO
+  \uses{euler_formula}
+\end{proof}
+
+\begin{proposition}
+  \label{euler_consequence_b}
+  Let \(G\) be any simple plane graph with \(n>2\) vertices.
+  Then \(G\) has a vertex of degree at most \(5\).
+\end{proposition}
+\begin{proof}
+  TODO
+  \uses{euler_consequence_a}
+\end{proof}
+
+\begin{proposition}
+  \label{euler_consequence_c}
+  Let \(G\) be any simple plane graph with \(n>2\) vertices.
+  If the edges of \(G\) are two-colored, then there is a vertex of \(G\) with at most two
+  color-changes in the cyclic order of the edges around the vertex.
+\end{proposition}
+\begin{proof}
+  TODO
+  \uses{euler_formula}
+\end{proof}
+
+\begin{theorem}[Sylvester-Gallai]
+  \label{sylvester_gallai2}
+  Given any set of \(n \ge 3\) points in the
+  plane, not all on one line, there is always a line that contains exactly two
+  of the points.
+\end{theorem}
+\begin{proof}
+  TODO
+  \uses{euler_consequence_b}
+\end{proof}
+
+\begin{theorem}[Monochromatic lines]
+  \label{monochromatic_lines}
+  Given any finite configuration of ``black'' and ``white'' points
+  in the plane, not all on one line, there is always a ``monochromatic'' line:
+  a line that contains at least two points of one color and none of the other.
+\end{theorem}
+\begin{proof}
+  TODO
+  \uses{euler_consequence_c}
+\end{proof}
+
+\begin{lemma}
+  \label{pick_lemma}
+  Every elementary triangle \(\Delta = \conv\{p_0, p_1, p_2\}\subset \mathbb{R}^2\) has area
+  \(A(\Delta)=12\)
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+
+\begin{theorem}[Pick's theorem]
+  \label{pick_theorem}
+  The area of any (not necessarily convex) polygon \(Q\subset\mathbb{R}^2\) with
+  integral vertices is given by
+  \[
+  A(Q) = n_{int} + \frac{1}{2}n_{bd} - 1
+  \]
+  where \(n_{int}\) and \(n_{bd}\) are the numbers of integral points in the interior
+  respectively on the boundary of \(Q\).
+\end{theorem}
+\begin{proof}
+  \uses{pick_lemma, euler_formula}
+  TODO
+\end{proof}

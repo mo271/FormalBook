@@ -1,0 +1,140 @@
+\chapter{In praise of inequalities}
+\label{chapter20}
+\begin{theorem}
+  \label{ch20theoremI}
+  \lean{cauchy_schwarz_inequality}
+  \leanok
+Let $\langle a, b \rangle$ be an inner product on a real vector space $V$ (with the norm $|a|^2 := \langle a, a \rangle$). Then
+\[
+\langle a, b \rangle^2 \leq |a|^2 |b|^2
+\]
+holds for all vectors $a, b \in V$, with equality if and only if $a$ and $b$ are linearly dependent.
+\end{theorem}
+\begin{proof}
+  \leanok
+The following (folklore) proof is probably the shortest. Consider the quadratic function
+\[
+|x a + b|^2 = x^2 |a|^2 + 2x \langle a, b \rangle + |b|^2
+\]
+in the variable $x$. We may assume $a \neq 0$. If $b = \lambda a$, then clearly
+\[
+\langle a, b \rangle^2 = |a|^2 |b|^2.
+\]
+If, on the other hand, $a$ and $b$ are linearly independent, then $|x a + b|^2 > 0$ for all $x$,
+and thus the discriminant $\langle a, b \rangle^2 - |a|^2 |b|^2$ is less than 0.
+\end{proof}
+
+\begin{theorem}[First proof]
+  \label{ch20theoremIIproof1}
+  \lean{harmonic_geometric_arithmetic₁}
+  Let $a_1, \dots a_n$ be positive real numbers, then
+  \[
+  \frac{n}{\frac{1}{a_1}+\dots+\frac{1}{n_n}} \le
+    \sqrt[n]{a_1a_2\dots a_n} \le
+    \frac{a_1\dots a_n}{n}
+  \]
+ with equality in both cases if and only if all $a_i$'s are equal.
+\end{theorem}
+ \begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}[Another Proof]
+  \label{ch20theoremIIproof2}
+  \lean{harmonic_geometric_arithmetic₂ }
+  Let $a_1, \dots a_n$ be positive real numbers, then
+  \[
+  \frac{n}{\frac{1}{a_1}+\dots+\frac{1}{n_n}} \le
+    \sqrt[n]{a_1a_2\dots a_n} \le
+    \frac{a_1\dots a_n}{n}
+  \]
+ with equality in both cases if and only if all $a_i$'s are equal.
+\end{theorem}
+ \begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}[Still another Proof]
+  \label{ch20theoremIIproof3}
+  \lean{harmonic_geometric_arithmetic₃}
+  Let $a_1, \dots a_n$ be positive real numbers, then
+  \[
+  \frac{n}{\frac{1}{a_1}+\dots+\frac{1}{n_n}} \le
+    \sqrt[n]{a_1a_2\dots a_n} \le
+    \frac{a_1\dots a_n}{n}
+  \]
+ with equality in both cases if and only if all $a_i$'s are equal.
+\end{theorem}
+ \begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{ch20theorem1}
+  Suppose all roots fo the polynomial
+  $x^n + a_{n - 1}x^{n - 1} + \dots +a_0$ are real.
+  Then the roots of are contained in the interval with the endpoints
+  \[
+  -\frac{n_{n-1}}{n}\pm\frac{n - 1}{n}\sqrt{a^n_{n - 1} - \frac{2n}{n - 1}a_{n - 2}}.
+  \]
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+
+
+\begin{theorem}
+  \label{ch20theorem2} Let $f(x)$ be a real polynomial of degree $n \ge 2$ with only real
+  roots, such that $f(x)> 0$ for $ -1 < x < 1$ amd $f(-1) = f(1) = 0$. Then
+  \[
+  \frac{2}{3}T \le A \le \frac{2}{3}R,
+  \]
+  and equality holds in both cases only for $n=2$.
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{ch20theorem3proof1}
+  \lean{mantel}
+  Suppose $G$ is a graph on $n$ vertices without triangles. Then $G$
+  has at most $\frac{n^2}{4}$ edges, and equality holds only when $n$ is even and $G$ is the
+  complete bipartite graph $K_{n/2, n/2}$.
+\end{theorem}
+\begin{proof}
+  This proof, using Cauchy's inequality, is due to Mantel.
+  Let $V = \{1, \dots, n\}$ be the vertex set and $E$ the edge set of $G$.
+  By $d_i$ we denote the degree of $i$, hence $\sum_{i \in V} d_i = 2|E|$
+  (see chapter \ref{chapter28}). Suppose $ij$ is an edge.
+  Since $G$ has no triangles, we find $d_i + d_j \leq n$ since no vertex is a
+  neighbor of both $i$ and $j$.
+
+  It follows that
+  \[
+  \sum_{ij \in E} (d_i + d_j) \leq n|E|.
+  \]
+  Note that $d_i$ appears exactly $d_i$ times in the sum, so we get
+  \[
+  n|E| \geq \sum_{ij \in E} (d_i + d_j) = \sum_{i \in V} d_i^2,
+  \]
+  and hence with Cauchy's inequality applied to the vectors $(d_1, \dots, d_n)$ and $(1, \dots, 1)$,
+  \[
+  n|E| \geq \sum_{i \in V} d_i^2 \geq \frac{\left( \sum d_i \right)^2}{n} = \frac{4|E|^2}{n},
+  \]
+  and the result follows. In the case of equality we find $d_i = d_j$ for all $i, j$, and further
+  $d_i = \frac{n}{2}$ (since $d_i + d_j = n$). Since $G$ is triangle-free, $G = K_{n/2, n/2}$ is
+  immediately seen from this.
+
+\end{proof}
+
+\begin{theorem}
+  \label{ch20theorem3proof2}
+  Suppose $G$ is a graph on $n$ vertices without triangles. Then $G$
+  has at most $\frac{n^2}{4}$ edges, and equality holds only when $n$ is even and $G$ is the
+  complete bipartite graph $K_{n/2, n/2}$.
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}

@@ -1,18 +1,6 @@
 /-
-Copyright 2022 Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+Copyright 2022 Moritz Firsching. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Tactic
@@ -114,7 +102,7 @@ theorem friendship_theorem [Nonempty V]
 
 
   -- Consider the adjacency matrix
-  let A := G.adjMatrix R
-  have : (A ^ 2) = (k - 1) • (1 : Matrix V V R) + of (fun _ _ => 1) := by sorry
+  let A := G.adjMatrix ℝ
+  have : (A ^ 2) = (k - 1) • (1 : Matrix V V ℝ) + of (fun _ _ => 1) := by sorry
 
   sorry

@@ -1,0 +1,35 @@
+\chapter{The spectral theorem and Hadamard's determinant problem}
+
+\begin{lemma}
+  \label{ch7.lemma}
+  If $A$ is a real symmetric \(n \times n\) matrix that is not diagonal, that is
+  \(\Od(A) > 0\), then there exists \(U \in O(n)\) such that \(\Od(U^TAU)<\Od(A)\).
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{diagonalize_real_symmetric}
+  \lean{chapter7.Theorem₁}
+  \leanok
+  For every real symmetric matrix \(A\) there is a real
+  orthogonal matrix \(Q\) such that \(Q^{T}AQ\) is diagonal.
+\end{theorem}
+\begin{proof}
+  \uses{ch7.lemma}
+  TODO
+\end{proof}
+
+
+\begin{theorem}
+  \label{exists_matrix}
+  \lean{chapter7.Theorem₂}
+  \leanok
+  There exists an \(n \times n\) matrix with entries \(\pm 1\) whose
+  determinant is greater than \(\sqrt{n!}\).
+\end{theorem}
+\begin{proof}
+  \uses{diagonalize_real_symmetric}
+  TODO
+\end{proof}

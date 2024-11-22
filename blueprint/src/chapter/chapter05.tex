@@ -1,0 +1,109 @@
+\chapter{The law of quadratic reciprocity}
+
+
+\begin{theorem}[Fermat's little theorem]
+  \label{fermats_little}
+  \lean{book.quadratic_reciprocity.fermat_little}
+  \leanok
+  For \(a \not\equiv 0 \mod p\),
+  \[
+  a^{p - 1} \equiv 1 \mod p
+  \]
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+
+\begin{theorem}[Euler's criterion]
+  \label{euler_criterion}
+  \lean{book.quadratic_reciprocity.euler_criterion}
+  \leanok
+  For \(a \not\equiv 0 (\mod p)\),
+  \[
+  (\frac{a}{p}) \equiv a ^{\frac{p-1}{2}} \mod p
+  \]
+\end{theorem}
+\begin{proof}
+  \uses{fermats_little}
+  TODO
+\end{proof}
+
+\begin{theorem}[Product Rule]
+  \label{product_rule}
+  \leanok
+  \lean{book.quadratic_reciprocity.product_rule}
+  \[
+    (\frac{ab}{p}) =   (\frac{a}{p}) \cdot   (\frac{b}{p})
+  \]
+\end{theorem}
+\begin{proof}
+  \uses{euler_criterion}
+  TODO
+\end{proof}
+
+\begin{theorem}[Lemma of Gauss]
+  \label{gauss_lemma}
+  \lean{book.quadratic_reciprocity.lemma_of_Gauss}
+  \leanok
+  TODO
+\end{theorem}
+\begin{proof}
+  \uses{euler_criterion}
+  TODO
+\end{proof}
+
+\begin{theorem}[Quadratic reciprocity I]
+  \label{quadratic_reciprocity1}
+  \lean{book.quadratic_reciprocity.quadratic_reciprocity_1}
+  \leanok
+  TODO
+\end{theorem}
+\begin{proof}
+  \uses{gauss_lemma}
+  TODO
+\end{proof}
+
+
+\begin{theorem}
+  \label{mult_cyclic}
+  \lean{book.quadratic_reciprocity.mult_cyclic}
+  \leanok
+  The multiplicative group of a finite field is cyclic
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}[A]
+  \label{fact_A}
+  \lean{book.quadratic_reciprocity.fact_A}
+  \leanok
+  TODO
+\end{theorem}
+\begin{proof}
+  \uses{euler_criterion}
+  TODO
+\end{proof}
+
+\begin{theorem}[B]
+  \label{fact_B}
+  \lean{book.quadratic_reciprocity.fact_B}
+  \leanok
+  TODO
+\end{theorem}
+\begin{proof}
+  \uses{fermats_little}
+  TODO
+\end{proof}
+
+\begin{theorem}[Quadratic reciprocity II]
+  \label{quadratic_reciprocity2}
+  \lean{book.quadratic_reciprocity.quadratic_reciprocity_2}
+  \leanok
+  TODO
+\end{theorem}
+\begin{proof}
+  \uses{fact_A, fact_B}
+  TODO
+\end{proof}

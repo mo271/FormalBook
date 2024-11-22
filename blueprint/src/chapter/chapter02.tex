@@ -1,0 +1,52 @@
+\chapter{Bertrand's postulate}
+
+\begin{theorem}
+    \label{thm:bertrands_postulate}
+    \lean{chapter2.exists_prime_lt_and_le_two_mul}
+    \leanok
+    For any positive natural number, there is a prime which is greater than
+    it, but no more than twice as large.
+\end{theorem}
+\begin{proof}
+    \leanok
+    TODO: make this follow the book proof more closely!
+\end{proof}
+
+\section{Appendix: Some estimates}
+
+\begin{theorem}
+    \label{thm:estimate_integral}
+    \lean{chapter2.harmonic_number_bounds}
+    \leanok
+    For all \(n \in \mathbb{N}\)
+    \[
+    \log n + \frac 1 n < H_n < \log n + 1.
+    \]
+\end{theorem}
+\begin{proof}
+    TODO
+\end{proof}
+
+
+\begin{theorem}
+    \label{thm:estimate_factorials}
+    \lean{chapter2.bound_factorial}
+    \leanok
+    For all \(n \in \mathbb{N}\)
+    \[
+    n! = n(n -1)! < ne^{n \log n - n + 1}= e\left(\frac n e\right)^n.
+    \]
+\end{theorem}
+\begin{proof}
+    TODO
+\end{proof}
+
+\begin{theorem}
+    \label{thm:estimate_binomial_coefficient}
+    \lean{chapter2.bound_binomial_coeff}
+    \leanok
+    \[\binom{n}{k} \le \frac{n^k}{k!} \le \frac{n^k}{2^{k - 1}}\]
+\end{theorem}
+\begin{proof}
+    TODO
+\end{proof}

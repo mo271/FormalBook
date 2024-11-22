@@ -1,26 +1,16 @@
 /-
-Copyright 2022 Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+Copyright 2022 Moritz Firsching. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Tactic
-import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Data.Nat.PrimeNormNum
-import Mathlib.NumberTheory.Primorial
+import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Data.Nat.Choose.Factorization
+import Mathlib.Data.Real.StarOrdered
+import Mathlib.NumberTheory.Harmonic.Defs
+import Mathlib.NumberTheory.Primorial
+import Mathlib.Tactic.NormNum.Prime
 /-!
 # Bertrand's postulate
 
@@ -37,7 +27,7 @@ formalized by Patrick Stevens and Bolton Bailey.
 -/
 open scoped BigOperators
 
-namespace chapter02
+namespace chapter2
 
 open Real
 
@@ -116,7 +106,7 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
   · exact cast_div_le.trans (by norm_cast)
 
 /-- A lemma that tells us that, in the case where Bertrand's postulate does not hold, the prime
-factorization of the central binomial coefficent only has factors at most `2 * n / 3 + 1`.
+factorization of the central binomial coefficient only has factors at most `2 * n / 3 + 1`.
 -/
 theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     (no_prime : ¬∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) :
@@ -126,7 +116,7 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
   · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
   intro x hx h2x
   rw [Finset.mem_range, Nat.lt_succ_iff] at hx h2x
-  rw [not_le, div_lt_iff_lt_mul' three_pos, mul_comm x] at h2x
+  rw [not_le, div_lt_iff_lt_mul three_pos, mul_comm x] at h2x
   replace no_prime := not_exists.mp no_prime x
   rw [← and_assoc, not_and', not_and_or, not_lt] at no_prime
   cases' no_prime hx with h h
@@ -160,13 +150,13 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
     have : (Finset.Icc 1 (Nat.sqrt (2 * n))).card = Nat.sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
     rw [Finset.prod_const]
-    refine' pow_le_pow_right n2_pos ((Finset.card_le_card fun x hx => _).trans this.le)
+    refine' pow_le_pow_right₀ n2_pos ((Finset.card_le_card fun x hx => _).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
   · refine' le_trans _ (primorial_le_4_pow (2 * n / 3))
     refine' (Finset.prod_le_prod' fun p hp => (_ : f p ≤ p)).trans _
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
-      refine' (pow_le_pow_right (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
+      refine' (pow_le_pow_right₀ (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
     refine' Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) _
     exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le
@@ -223,6 +213,18 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
   -- coefficient.
   · exact exists_prime_lt_and_le_two_mul_eventually n h
 
+theorem harmonic_number_bounds {n : ℕ} :
+    Real.log n + 1 / n < harmonic n ∧
+    harmonic n <  Real.log n + 1 := by sorry
+
+noncomputable def e := exp 1
+
+theorem bound_factorial {n : ℕ} :
+  n.factorial < e*(n / e)^n := by sorry
+
+theorem bound_binomial_coeff {k n : ℕ} :
+  Nat.choose n k ≤ n ^ k / n.factorial ∧
+  n ^ k / n.factorial ≤ n ^ k / 2 ^ (k - 1) := by sorry
 
 
-end chapter02
+end chapter2

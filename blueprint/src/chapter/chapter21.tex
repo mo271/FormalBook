@@ -1,0 +1,30 @@
+\chapter{The fundamental theorem of algebra}
+
+\begin{lemma}
+  \label{argand_inequality}
+  Let $p(z) = \sum_{k=0}^n c_k z^k$ be a complex polynomial of degree $n\ge 1$.
+  If $p(a)\ne0$, then every disk $D$ around $a$ contains an interior point $b$ with $|p(b)| < |p(a)|$
+\end{lemma}
+\begin{proof}
+  % note: the proof here is slightly different in the sixth edition compared to the fifth! Let's
+  % follow the sixth edition.
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{fundamental_theorem_of_algbra}
+  \lean{fundamental_theorem_of_algebra}
+  Every nonconstant polynomial with complex coefficients has at least one root in the field of complex numbers.
+\end{theorem}
+\begin{proof}
+  \uses{argand_inequality}
+  The rest is easy. Clearly, $p(z)z^{-n}$ approaches the leading coefficient $c_n$
+  of $p(z)$ as $|z|$ goes to infinity. Hence $|p(z)|$ goes to infinity as well with
+  $|z| \to \infty$. Consequently, there exists $R_1 > 0$ such that $|p(z)| > |p(0)|$ for
+  all points $z$ on the circle $\{ z : |z| = R_1 \}$. Furthermore, our third fact (C)
+  tells us that in the compact set $D_1 = \{ z : |z| \leq R_1 \}$ the continuous real-valued
+  function $|p(z)|$ attains the minimum value at some point $z_0$. Because
+  of $|p(z)| > |p(0)|$ for $z$ on the boundary of $D_1$, $z_0$ must lie in the interior.
+  But by d'Alembert's lemma \ref{argand_inequality} this minimum value $|p(z_0)|$ must
+  be $0$ — and this is the whole proof.
+\end{proof}

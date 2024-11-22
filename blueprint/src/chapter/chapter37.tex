@@ -1,0 +1,50 @@
+\chapter{Permanents and the power of entropy}
+
+\begin{theorem}
+  \label{ch37theorem1}
+  Let $M = (m_{ij})$ be an $n \times n$ matrix with entries in $\{0, 1\}$, and let $d_1, \dots, d_n$ be the row sums of $M$, that is, $d_i = \sum_{j=1}^{n} m_{ij}$. Then
+\[
+\operatorname{per} M \leq \prod_{i=1}^{n} (d_i!)^{1/d_i}.
+\]
+\end{theorem}
+\begin{proof}
+  \uses{ch37fact_a, ch37fact_b, ch37fact_c}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{ch37theorem2}
+  The number $L(n)$ of Latin squares of order $n$ is bounded by
+  \[
+  \frac{n!^{2n}}{n^{n^2}} \le L(n) \le \prod_{k=1}^{n}k!^{n/k}
+  \]
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+\section{Appendix: More about entropy}
+
+\begin{theorem}[Fact A]
+  \label{ch37fact_a}
+  \[H(X)\le \log_2(|\supp{X}).\]
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}[Fact B]
+  \label{ch37fact_b}
+  \[H(X, Y) = H(X) + H(Y|X).\]
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}[Fact B]
+  \label{ch37fact_c}
+  \[H(Y|X)\le \sum_{j=1}^d \Prop(X\in E_j)\log_2 j.\]
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}

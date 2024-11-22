@@ -20,12 +20,17 @@
 \usepackage[unicode,colorlinks=true,linkcolor=blue,urlcolor=magenta, citecolor=blue]{hyperref}
 
 \usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+% does not seem to work with the web version
+% \usepackage{colonequals}
 
 \input{macros/common}
 \input{macros/print}
 
-\title{Formal Book}
-\author{Moritz Firsching \and Nikolas Kuhn}
+\title{Formal Book\\
+\large formalizing ``Proofs from THE BOOK'' by Martin Aigner and Günter M. Ziegler}
+
+\author{\input{../../AUTHORS.md}}
+
 
 \begin{document}
 \maketitle

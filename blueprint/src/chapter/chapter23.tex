@@ -1,0 +1,73 @@
+\chapter{A theorem of Pólya on polynomials}
+
+\begin{theorem}
+  \label{ch23theorem1}
+  Let $f(z)$ be a complex polynomial of degree at least 1 and leading coefficient 1. Set $C = \{ z \in \mathbb{C} : |f(z)| \leq 2 \}$ and let $\mathcal{R}$ be the orthogonal projection of $C$ onto the real axis. Then there are intervals $I_1, \dots, I_t$ on the real line which together cover $\mathcal{R}$ and satisfy
+  \[
+  \ell(I_1) + \cdots + \ell(I_t) \leq 4.
+  \]
+\end{theorem}
+\begin{proof}
+  \uses{ch23theorem2}
+\end{proof}
+
+\begin{theorem}
+  \label{ch23theorem2}
+  Let $p(x)$ be a real polynomial of degree $n \geq 1$ with leading coefficient 1, and all roots real.
+  Then the set $\mathcal{P} = \{x \in \mathbb{R} : |p(x)| \leq 2\}$ can be covered by intervals of
+  total length at most 4.
+\end{theorem}
+\begin{proof}
+  \uses{chebyshev, ch23corollary}
+\end{proof}
+
+\begin{corollary}
+  \label{ch23corollary}
+  Let $p(x)$ be a real polynomial of degree $n \geq 1$ with leading coefficient 1, and suppose that $|p(x)| \leq 2$ for all $x$ in the interval $[a, b]$. Then $b - a \leq 4$.
+\end{corollary}
+\begin{proof}
+  TODO
+\end{proof}
+
+
+\section{Appendix: Chebyshev's theorem}
+\begin{theorem}[Chebyshev's theorem]
+  \label{chebyshev}
+  Let $p(x)$ be a real polynomial of degree $n \geq 1$ with leading coefficient 1. Then
+\[
+\max_{-1 \leq x \leq 1} |p(x)| \geq \frac{1}{2^{n-1}}.
+\]
+\end{theorem}
+\begin{proof}
+  \uses{ch23fact1, ch23fact2}
+  TODO
+\end{proof}
+
+\begin{theorem}[Fact 1]
+  \label{ch23fact1}
+  If $b$ is a multiple root of $p'(x)$, then $b$ is also a root of $p(x)$.
+\end{theorem}
+\begin{proof}
+  Let $b_1 < \cdots < b_r$ be the roots of $p(x)$ with multiplicities $s_1, \ldots, s_r$, $\sum_{j=1}^{r} s_j = n$.
+  From $p(x) = (x - b_j)^{s_j} h(x)$ we infer that $b_j$ is a root of $p'(x)$ if $s_j \geq 2$,
+  and the multiplicity of $b_j$ in $p'(x)$ is $s_j - 1$. Furthermore,
+  there is a root of $p'(x)$ between $b_1$ and $b_2$, another root between $b_2$ and $b_3, \ldots$,
+  and one between $b_{r-1}$ and $b_r$, and all these roots must be single roots,
+  since $\sum_{j=1}^{r} (s_j - 1) + (r - 1)$ counts already up to the degree $n - 1$ of $p'(x)$.
+  Consequently, the multiple roots of $p'(x)$ can only occur among the roots of $p(x)$.
+\end{proof}
+
+\begin{theorem}[Fact 2]
+  \label{ch23fact2}
+  We have $p'(x)^2 \geq p(x)p''(x)$ for all $x \in \mathbb{R}$.
+\end{theorem}
+\begin{proof}
+  If $x = a_i$ is a root of $p(x)$, then there is nothing to show. Assume then $x$ is not a root. The product rule of differentiation yields
+  \[
+  p'(x) = \sum_{k=1}^{n} \frac{p(x)}{x - a_k}, \quad \text{that is,} \quad \frac{p'(x)}{p(x)} = \sum_{k=1}^{n} \frac{1}{x - a_k}.
+  \]
+  Differentiating this again we have
+  \[
+  \frac{p''(x)p(x) - p'(x)^2}{p(x)^2} = - \sum_{k=1}^{n} \frac{1}{(x - a_k)^2} < 0.
+  \]
+\end{proof}

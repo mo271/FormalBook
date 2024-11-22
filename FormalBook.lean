@@ -1,3 +1,5 @@
+import FormalBook.Mathlib.EdgeFinset
+
 import FormalBook.Chapter_01
 import FormalBook.Chapter_02
 import FormalBook.Chapter_03

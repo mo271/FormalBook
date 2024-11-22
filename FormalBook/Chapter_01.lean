@@ -1,22 +1,11 @@
 /-
-Copyright 2022 Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+Copyright 2022 Moritz Firsching. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ralf Stephan
 -/
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.PrimeCounting
+import Mathlib.NumberTheory.Fermat
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 open Finset Nat
@@ -25,7 +14,7 @@ open BigOperators
 # Six proofs of the infinity of primes
 
 ## TODO
- - Seccond Proof : golf/formatting
+ - Second Proof : golf/formatting
  - Third Proof : golf/formatting/comments
  - Fourth Proof
  - Fifth Proof
@@ -36,22 +25,18 @@ open BigOperators
 ### Euclid's Proof
 
 -/
-theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ {q : ℕ} (_ : q ∈ S), Nat.Prime q):
+theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ q ∈ S, Nat.Prime q):
   ∃ (p : ℕ), Nat.Prime p ∧ p ∉ S := by
   let n := 1 + ∏ q in S, q
-  /- This `n` has a prime divisor;
+  /- "This `n` has a prime divisor":
   we pick the minimal one, the argument works with any prime divisor -/
   let p := n.minFac
   use p
-  have hp : Nat.Prime p := by
-    have hn : 0 < ∏ q in S, q := by
-      refine' Finset.prod_pos _
-      intros q hq
-      refine' Prime.pos <| h hq
-    exact Nat.minFac_prime <| Nat.ne_of_gt <| lt_add_of_pos_right 1 hn
-  refine' ⟨hp, _⟩
+  have hp : Nat.Prime p := Nat.minFac_prime <| Nat.ne_of_gt <| lt_add_of_pos_right 1
+    (Finset.prod_pos fun q hq ↦ Prime.pos <| h q hq)
+  refine ⟨hp, ?_⟩
   by_contra a
-  have h_p_div_prod : p ∣ ∏ q in S, q := dvd_prod_of_mem (fun (i : ℕ) => i) a
+  have h_p_div_prod : p ∣ ∏ q in S, q := dvd_prod_of_mem (fun (i : ℕ) ↦ i) a
   have h_p_div_diff : p ∣ n - ∏ q in S, q := dvd_sub' (minFac_dvd n) h_p_div_prod
   have h_p_div_one : p ∣ 1 := by aesop
   exact Nat.Prime.not_dvd_one hp h_p_div_one
@@ -60,45 +45,24 @@ theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ {q : ℕ} (_ : q ∈ S),
 /-!
 ### Second proof
 
-using Fermat numbers
 -/
-def F : ℕ → ℕ := fun n => 2^2^n + 1
 
-lemma F₀: F 0 = 3 := by
-  rw [F]
-  simp only [Nat.pow_zero, pow_one]
-
-lemma fermat_stricly_monotone {n : ℕ} : F n < F n.succ := by
-  have : NeZero 1 := by infer_instance
-  rw [F, F]
-  simp only [add_lt_add_iff_right, Nat.pow_succ]
-  refine' (pow_lt_pow_iff_right one_lt_two).mpr _
-  norm_num
-
-lemma fermat_bounded (n : ℕ) : 2 < F n := by
-  induction' n with n h
-  · rw [F₀]
-    norm_num
-  · exact lt_trans h fermat_stricly_monotone
-
-lemma fermat_odd {n : ℕ} : Odd (F n) := by
-  rw [F, odd_iff_not_even, even_add_one, not_not, even_pow]
-  refine' ⟨even_two, Nat.ne_of_gt (pow_pos _ _)⟩
-  exact zero_lt_two
+local notation "F" => fermatNumber
 
 -- We actually prove something slighly stronger that what is in the book:
 -- also for n = 0, the statement is true.
-lemma fermat_product (n : ℕ) : ∏ k in range n, F k = F n - 2 := by
+-- This is in mathlib as `fermatNumber_product`
+lemma fermatProduct (n : ℕ) : ∏ k in range n, F k = F n - 2 := by
   induction' n with n hn
   · trivial
-  rw [prod_range_succ, hn]
-  unfold F
-  norm_num
-  rw [mul_comm, (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by aesop),  ← Nat.sq_sub_sq]
-  ring_nf
-  omega
+  · rw [prod_range_succ, hn]
+    unfold fermatNumber
+    rw [mul_comm, (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by aesop),  ← Nat.sq_sub_sq]
+    ring_nf
+    omega
 
-theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): Coprime (F n) (F k) := by
+-- This is in mathlib as coprime_fermatNumber_fermatNumber
+theorem infinity_of_primes₂  (k n : ℕ) (h : k < n) : Coprime (F n) (F k) := by
   let m := (F n).gcd (F k)
   have h_n : m ∣ F n := (F n).gcd_dvd_left (F k)
   have h_k : m ∣ F k := (F n).gcd_dvd_right (F k)
@@ -106,19 +70,16 @@ theorem infinity_of_primes₂  (k n : ℕ) (h : k < n): Coprime (F n) (F k) := b
     have h_m_prod : m ∣ (∏ k in range n, F k) :=
       dvd_trans h_k (dvd_prod_of_mem F (mem_range.mpr h))
     have h_prod : (∏ k in range n, F k) + 2 = F n := by
-      rw [fermat_product, Nat.sub_add_cancel]
+      rw [fermatProduct, Nat.sub_add_cancel]
       refine' le_of_lt _
-      simp [fermat_bounded]
-    refine' (Nat.dvd_add_right h_m_prod).mp _
-    rw [h_prod]
-    exact h_n
+      simp [two_lt_fermatNumber]
+    exact (Nat.dvd_add_right h_m_prod).mp (h_prod ▸ h_n)
   cases' (dvd_prime prime_two).mp h_m with h_one h_two
   · exact h_one
   · by_contra
     rw [h_two] at h_n
-    have h_even : Even (F n) := even_iff_two_dvd.mpr h_n
-    have h_odd : Odd (F n) := fermat_odd
-    exact (odd_iff_not_even.mp h_odd) h_even
+    exact (not_even_iff_odd.mpr <| odd_fermatNumber n) (even_iff_two_dvd.mpr h_n)
+
 /-!
 ### Third proof
 
@@ -131,11 +92,11 @@ lemma ZMod.one_ne_zero (q : ℕ) [Fact (1 < q)] : (1 : ZMod q) ≠ 0 := by
 
 lemma ZMod.two_ne_one (q : ℕ)  [Fact (1 < q)] : (2 : ZMod q) ≠ 1 := by
   intro h1
-  have h : (2 - 1 : ZMod q) = 0 := by exact Iff.mpr sub_eq_zero h1
+  have h : (2 - 1 : ZMod q) = 0 := Iff.mpr sub_eq_zero h1
   norm_num at h
 
-lemma sub_one_le_sub_one {n m : ℕ} : n ≤ m → n - 1 ≤ m - 1 := by
-  exact fun h => pred_le_pred h
+lemma sub_one_le_sub_one {n m : ℕ} : n ≤ m → n - 1 ≤ m - 1 :=
+  fun h ↦ pred_le_pred h
 
 
 theorem infinity_of_primes₃:
@@ -178,9 +139,7 @@ theorem infinity_of_primes₃:
     exact h_mod_q'
   have two_ne_one : two ≠ 1 := by
     by_contra h
-    rw [Units.ext_iff] at h
-    push_cast at h
-    rw [two_desc] at h
+    rw [Units.ext_iff, two_desc] at h
     exact (ZMod.two_ne_one q) h
   have h_piv_div_q_sub_one : p ∣ q - 1 := by
     -- The following shorter proof would work, but we want to use Lagrange's theorem
@@ -189,20 +148,17 @@ theorem infinity_of_primes₃:
 
     -- Using Lagrange's theorem here!
     convert Subgroup.card_subgroup_dvd_card (Subgroup.zpowers (two))
-    · rw [← orderOf_eq_prime h_two two_ne_one]
+    · rw [← orderOf_eq_prime h_two two_ne_one, card_eq_fintype_card]
       exact Fintype.card_zpowers.symm
-    · exact ((prime_iff_card_units q).mp hq).symm
-  use q
-  constructor
-  · refine' minFac_prime <| Nat.ne_of_gt _
-    dsimp [mersenne]
-    calc 1 < 2^2 - 1 := by norm_num
+    · rw [card_eq_fintype_card, ZMod.card_units_eq_totient]
+      exact (totient_prime hq).symm
+  refine ⟨q, minFac_prime <| Nat.ne_of_gt ?_, ?_⟩
+  · calc 1 < 2^2 - 1 := one_lt_succ_succ 1
         _  ≤ 2^p - 1 := sub_one_le_sub_one <| pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp)
-  · have h2q : 2 ≤ q := by
-      exact Prime.two_le <| minFac_prime <| Nat.ne_of_gt <| lt_of_succ_lt <|
-          Nat.sub_le_sub_right ((pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp))) 1
+  · have h2q : 2 ≤ q := Prime.two_le <| minFac_prime <| Nat.ne_of_gt <| lt_of_succ_lt <|
+      Nat.sub_le_sub_right ((pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp))) 1
     exact lt_of_le_of_lt (Nat.le_of_dvd  (Nat.sub_pos_of_lt <| h2q) h_piv_div_q_sub_one)
-        <| pred_lt <| Nat.ne_of_gt <| Nat.le_of_lt h2q
+      <| pred_lt <| Nat.ne_of_gt <| Nat.le_of_lt h2q
 
 /-!
 ### Fourth proof
@@ -210,6 +166,7 @@ theorem infinity_of_primes₃:
 using elementary calculus
 -/
 open Filter
+open Nat.Prime
 
 noncomputable def primeCountingReal (x : ℝ) : ℕ :=
   if (x ≤ 0) then 0 else primeCounting ⌊x⌋₊
@@ -242,7 +199,7 @@ theorem monotone_primeCountingReal : Monotone primeCountingReal := by
     · simp [ha, hb]
   · by_cases hb : b ≤ 0
     · linarith
-    · simp [ha, hb]
+    · simp only [ha, hb]
       exact monotone_primeCounting <| Nat.floor_mono hab
 
 lemma H_P4_1 {k p: ℝ} (hk: k > 0) (hp: p ≥ k + 1): p / (p - 1) ≤ (k + 1) / k := by
@@ -251,8 +208,8 @@ lemma H_P4_1 {k p: ℝ} (hk: k > 0) (hp: p ≥ k + 1): p / (p - 1) ≤ (k + 1) /
   have h_p_pred_nonzero: p - 1 ≠ 0 := ne_iff_lt_or_gt.mpr (Or.inr h_p_pred_pos)
   have h₁: p / (p - 1) = 1 + 1 / (p - 1) := by
     rw [one_add_div h_p_pred_nonzero, sub_add_cancel]
-  rw [← one_add_div h_k_nonzero, h₁, add_le_add_iff_left,
-    one_div_le_one_div h_p_pred_pos hk, @le_sub_iff_add_le]
+  rw [← one_add_div h_k_nonzero, h₁, add_le_add_iff_left, one_div_le_one_div h_p_pred_pos hk,
+    @le_sub_iff_add_le]
   exact hp
 
 lemma prod_Icc_succ_div (n : ℕ) (hn : 2 ≤ n) : (∏ x in Icc 1 n, ((x + 1) : ℝ) / x) = n + 1 := by
@@ -265,16 +222,15 @@ lemma prod_Icc_succ_div (n : ℕ) (hn : 2 ≤ n) : (∏ x in Icc 1 n, ((x + 1) :
     · interval_cases n
       · tauto
       · norm_num
-    specialize h h2
     field_simp [Finset.prod_eq_zero_iff] at h ⊢
-    rw [h]
+    rw [h h2]
     ring
 
-lemma H_P4_2 (hx : x ≥ 3) (hpi3 : (π 3) = 2) : (∏ x in Icc 1 (π x), ((x + 1) : ℝ) / x) = (π x) + 1 := by
+-- Removed unnecessary assumption `(hpi3 : (π 3) = 2)`
+lemma H_P4_2 (x : ℕ) (hx : x ≥ 3) :
+    (∏ x in Icc 1 (π x), ((x + 1) : ℝ) / x) = (π x) + 1 := by
   rw [prod_Icc_succ_div]
-  rw [← hpi3]
-  refine Monotone.imp monotone_primeCounting ?h
-  linarith
+  exact Monotone.imp monotone_primeCounting hx
 
 /-!
 ### Fifth proof
@@ -282,11 +238,94 @@ lemma H_P4_2 (hx : x ≥ 3) (hpi3 : (π 3) = 2) : (∏ x in Icc 1 (π x), ((x + 
 using topology
 -/
 
+def N : ℤ → ℤ → Set ℤ := fun a b ↦ {a + n * b | n : ℤ}
 
-def N : ℕ → ℕ → Set ℤ := fun a b => {a + n * b | n : ℤ}
+def isOpen : Set ℤ → Prop := fun O ↦ O = ∅ ∨ ∀ a ∈ O, ∃ b > 0, N a b ⊆ O
 
-theorem infinity_of_primes₅ : Fintype { p : ℕ // p.Prime } → False   := by
-  sorry
+theorem infinity_of_primes₅ : { p : ℕ | p.Prime }.Infinite := by
+  let TopoSpace : TopologicalSpace ℤ := {
+    IsOpen := isOpen
+    isOpen_univ := Or.inr fun a _ ↦ ⟨1, Int.zero_lt_one, Set.subset_univ _⟩
+    isOpen_sUnion := by
+      refine fun S hS ↦ Or.inr fun z hz ↦ ?_
+      obtain ⟨t, tS, zt⟩ := hz
+      rcases (hS t tS) with empty | ha
+      · aesop
+      obtain ⟨b, hb⟩ := ha z zt
+      refine ⟨b, hb.1, Set.subset_sUnion_of_subset S t hb.2 tS⟩
+    isOpen_inter := by
+      intro O₁ O₂ hO₁ hO₂
+      rcases hO₁ with rfl | hO₁
+      · unfold isOpen; aesop
+      rcases hO₂ with rfl | hO₂
+      · unfold isOpen; aesop
+      refine Or.inr fun a ⟨haO₁, haO₂⟩ ↦ ?_
+      obtain ⟨b₁, hb₁, hNab₁⟩ := hO₁ a haO₁
+      obtain ⟨b₂, hb₂, hNab₂⟩ := hO₂ a haO₂
+      refine ⟨b₁*b₂, mul_pos hb₁ hb₂,
+        Set.subset_inter (subset_trans ?_ hNab₁) (subset_trans ?_ hNab₂)⟩
+      <;> simp only [N, Set.setOf_subset_setOf, forall_exists_index, forall_apply_eq_imp_iff,
+        add_right_inj]
+      · refine fun k ↦ ⟨b₂*k, by ring⟩
+      · refine fun k ↦ ⟨b₁*k, by ring⟩
+  }
+  have Infinite_of_NonemptyOpen {O : Set ℤ} (hnO : Set.Nonempty O)
+      (hO : TopoSpace.IsOpen O): Set.Infinite O := by
+    have Infinite_N {a b : ℤ} (ha : 0 < b ) : Set.Infinite (N a b) := by
+      have : Function.Injective (fun k ↦ a + b*k) := by
+        apply Function.Injective.comp (add_right_injective a)
+        refine fun _ _ ↦ mul_left_cancel₀ (Int.ne_of_lt ha).symm
+      apply Set.infinite_of_injective_forall_mem this
+      unfold N; refine fun x ↦ ⟨x, by ring⟩
+    rcases hO with _ | hO
+    · aesop
+    · obtain ⟨a, ha⟩ := hnO
+      obtain ⟨b, hb, hOb⟩ := hO a ha
+      apply Set.Infinite.mono hOb (Infinite_N hb)
+
+  have IsClosed_N (a b : ℤ) (hb : 0 < b) : IsClosed (N a b):= by
+    refine isOpen_compl_iff.1 (Or.inr fun n hn ↦ ⟨b, hb, fun k hk ↦ ?_⟩)
+    simp only [N, Set.mem_compl_iff, Set.mem_setOf_eq, not_exists] at *
+    intro b₁ hb₁
+    obtain ⟨m, hm⟩ := hk
+    apply hn (b₁ - m)
+    rw [sub_mul, add_sub, hb₁, ← hm]
+    ring
+
+  have : ⋃ p ∈ { p : ℕ | Nat.Prime p }, N 0 p = {-1, 1}ᶜ := by
+    have (n : ℤ) (n_ne_one : n ≠ 1) (n_ne_negone : n ≠ -1):
+        ∃ p, Nat.Prime p ∧ ∃m, m * (p : ℤ) = n:= by
+      use n.natAbs.minFac
+      constructor
+      · refine Nat.minFac_prime ?_
+        have := @Int.natAbs_eq_iff_sq_eq n 1
+        aesop
+      use n / n.natAbs.minFac
+      rw [Int.ediv_mul_cancel]
+      rw [Int.ofNat_dvd_left]
+      exact (Nat.minFac_dvd (Int.natAbs n))
+    ext n
+    simp only [Set.mem_setOf_eq, N, zero_add, Set.mem_iUnion, exists_prop, Int.reduceNeg,
+      Set.mem_compl_iff, Set.mem_insert_iff, Set.mem_singleton_iff, not_or]
+    constructor
+    · intro ⟨p, hp, ⟨k, hk⟩⟩
+      have hp := Prime.not_dvd_one (Nat.prime_iff_prime_int.1 hp)
+      constructor <;>  (intro h; rw [h] at hk; apply hp)
+      · use -k
+        nlinarith
+      · use k
+        nlinarith
+    · refine fun hn ↦ this n hn.2 hn.1
+
+  intro primes_finite
+  have H : IsClosed (⋃ p ∈ { p : ℕ | Nat.Prime p }, N 0 p) := by
+    refine Set.Finite.isClosed_biUnion primes_finite (fun p prime_p ↦ ?_)
+    exact IsClosed_N 0 p (by exact_mod_cast Nat.Prime.pos prime_p)
+  rw [this] at H
+  rw [isClosed_compl_iff] at H
+  have contradiction : Set.Infinite {-1, 1} :=
+    Infinite_of_NonemptyOpen (show Set.Nonempty {-1, 1} by aesop) H
+  exact contradiction (show Set.Finite {-1, 1} by aesop)
 
 /-!
 ### Sixth proof
@@ -295,7 +334,7 @@ using the sum of inverses of primes
 -/
 -- see Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
 theorem infinity_of_primes₆ :
-  Tendsto (fun n => ∑ p in Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
+  Tendsto (fun n ↦ ∑ p in Finset.filter (fun p ↦ Nat.Prime p) (range n), 1 / (p : ℝ))
       atTop atTop := by
   sorry
 
@@ -313,9 +352,9 @@ open Real NNReal Topology
 namespace Asymptotics
 
 def ofSubexponentialGrowth (S : ℕ → ℤ) : Prop := ∃ f : ℕ → ℝ≥0, ∀ n,
-  |S n| ≤ (2 : ℝ) ^ ((2 : ℝ) ^ (f n : ℝ)) ∧ Tendsto (fun n => (f n) / (log 2 n)) atTop (𝓝 0)
+  |S n| ≤ (2 : ℝ) ^ ((2 : ℝ) ^ (f n : ℝ)) ∧ Tendsto (fun n ↦ (f n) / (log 2 n)) atTop (𝓝 0)
 
 theorem infinitely_many_more_proofs (S : ℕ → ℤ)
   (h₁ : AlmostInjective S) (h₂ : ofSubexponentialGrowth S) :
-  Fintype {p : Nat.Primes // ∃ n : ℕ, (p : ℤ) ∣ S n} → False := by
+  {p : Nat.Primes | ∃ n : ℕ, (p : ℤ) ∣ S n}.Finite := by
   sorry

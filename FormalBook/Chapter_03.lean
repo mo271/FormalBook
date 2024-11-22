@@ -1,23 +1,12 @@
 /-
-Copyright 2022 Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+Copyright 2022 Moritz Firsching. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Christopher Schmidt
 -/
-import Mathlib.Tactic
-import Mathlib.RingTheory.Prime
-import Mathlib.Data.Nat.Prime
+import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Data.Int.Star
+import Mathlib.Data.Rat.Star
+import Mathlib.Tactic.Qify
 --import data.nat.sqrt
 --set_option trace.simp_lemmas true
 
@@ -37,12 +26,12 @@ open BigOperators
   - (3)
   - (4)
   There is a somewhat more detailed, but quite messy version of the lean3 version here:
-  https://github.com/mo271/formal_book/blob/92f57b44cbbc1cd02ca77994efe8d8e6de050a19/src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean
+  https://github.com/mo271/FormalBook/blob/92f57b44cbbc1cd02ca77994efe8d8e6de050a19/src/chapters/03_Binomial_coefficients_are_(almost)_never_powers.lean
   Let's not follow that, but keep the proof cleaner.
 ### Sylvester's Theorem
 There is no proof given in the book, perhaps check out Erdős' for a proof to formalize.
 -/
-namespace chapter03
+namespace chapter3
 
 theorem sylvester (k n : ℕ) (h : n ≥ 2*k): ∃ p, p > k ∧ p.Prime ∧ p ∣ choose n k :=
   sorry
@@ -69,42 +58,32 @@ theorem prime_div_descFactorial (n k m l p : ℕ) (h_klen : k ≤ n)
     exact h_pl_div_binom
 
   -- here we start using qify to handle division
-  have h_fac_div : ((↑k ! * ↑(n - k)!) : ℤ)  ∣ (n ! : ℤ) := by
-    norm_cast
-    exact factorial_mul_factorial_dvd_factorial h_klen
+  have h_fac_div : ((↑k ! * ↑(n - k)!) : ℤ)  ∣ (n ! : ℤ) :=
+    mod_cast factorial_mul_factorial_dvd_factorial h_klen
   have h_fac_div' : ↑(n - k)! ∣ (n ! : ℤ) := dvd_of_mul_left_dvd h_fac_div
   have h_fac_div'' : (k ! : ℤ) ∣ (↑n ! / ↑(n - k)!) := by
-    norm_cast
-    refine' (dvd_div_iff ((Int.coe_nat_dvd).mp h_fac_div')).mpr _
-    norm_cast at h_fac_div
+    refine' mod_cast (dvd_div_iff_mul_dvd ((Int.natCast_dvd_natCast).mp h_fac_div')).mpr _
     rw [mul_comm]
-    exact h_fac_div
+    exact mod_cast h_fac_div
   have h_kfac_ne_zero : (k ! : ℚ) ≠ 0 := cast_ne_zero.mpr (factorial_ne_zero k)
   have h_nkfac_ne_zero : ((n - k)! : ℚ) ≠ 0 := cast_ne_zero.mpr (n - k).factorial_ne_zero
   have : (k ! * (n - k)! : ℚ) ≠ 0 := mul_ne_zero h_kfac_ne_zero h_nkfac_ne_zero
   have h_fraction: (n.factorial / (k.factorial * (n - k).factorial)) =
     (n.factorial / (n - k).factorial) / k.factorial := by
-    zify
     qify
     field_simp
     rw [mul_comm]
-    left
-    rfl
+    exact Or.inl rfl
   rw [h_fraction] at h_pl_div_fac
   have h_pl_div_fac_part: p^l ∣ (n.factorial / (n - k).factorial) := by
     have h_eq_pl_with_k := exists_eq_mul_right_of_dvd h_pl_div_fac
     have h_eq_pl : ∃ (r : ℕ), r * p^l = n.factorial / (n - k).factorial := by
       cases' h_eq_pl_with_k with j h_eq
       use (j * k.factorial)
-      have h_rew : j * k.factorial * p^l = p^l * j * k.factorial := by
-        rw [mul_comm, mul_assoc]
-      rw [h_rew]
-      rw [← h_eq]
-      zify
+      rw [(mul_rotate _ _ _).symm, ← h_eq]
       qify
       field_simp
-      rw [mul_comm ((n - k)! : ℚ) _]
-      rw [mul_assoc]
+      rw [mul_comm ((n - k)! : ℚ) _, mul_assoc]
     cases' h_eq_pl with j h_eq
     refine' Dvd.intro j _
     rw [mul_comm]
@@ -112,6 +91,7 @@ theorem prime_div_descFactorial (n k m l p : ℕ) (h_klen : k ≤ n)
   rw [descFactorial_eq_div h_klen]
   convert h_pl_div_fac_part
 
+/- now in mathlib? -/
 lemma factor_in_descFactorial (n k p l : ℕ) (h_klen : k ≤ n) (h_klp : k < p) (hp: p.Prime)
 (h_pow_div: p^l ∣ n.descFactorial k) (h_1lel : 1 ≤ l):
 ∃ (i : ℕ), (i ≤ k - 1) ∧ p^l ∣ (n - i) := by sorry
@@ -148,12 +128,7 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
         have : p^l ≤ n - i := by
           refine' Nat.le_of_dvd _ hi_right
           simp only [tsub_pos_iff_lt]
-          have h_ilk : i < k := by
-            have hk : 0 < k := lt_of_lt_of_le four_pos h_4lek
-            zify at hi_left
-            zify
-            norm_cast at hi_left ⊢
-            exact Iff.mpr (lt_iff_le_pred hk) hi_left
+          have h_ilk : i < k := Iff.mpr (lt_iff_le_pred (lt_of_lt_of_le four_pos h_4lek)) hi_left
           exact lt_of_lt_of_le h_ilk h_klen
         have h_klen4i : n - i ≤ n := Nat.sub_le n i
         exact le_trans this h_klen4i
@@ -171,9 +146,9 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
     --have h₃ : a_values l n k = s_1tok k := by
     -- divide in two cases
     cases em (l = 2)
-    -- Special Case l = 2 by Contradicition
+    -- Special Case l = 2 by Contradiction
     ·  sorry
-    -- STEP (4) : l ≥ 3 by Contradiciton
+    -- STEP (4) : l ≥ 3 by Contradiction
     -- case l ≥ 3
     · have h_3lel : 3 ≤ l := by
         sorry
@@ -199,16 +174,15 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
       sorry
     -- second requirement: k ≤ n - 4
     have h_k'len4 : k' ≤ n - 4 := by
-      simp [h_k'_def]
+      simp only [h_k'_def, tsub_le_iff_right]
       have help : k + k ≤ n - 4 + k := add_le_add_right h_klen4 k
       rw [← (two_mul k)] at help
       exact le_trans (le_of_lt h) help
     -- first requirement: 4 ≤ k
-    have h_4lek' : 4 ≤ k' := by
-      have h_4len : 4 ≤ n := le_trans (le_trans h_4lek h_klen4) (Nat.sub_le n 4)
-      exact Iff.mp (le_tsub_iff_le_tsub h_klen h_4len) h_klen4
+    have h_4lek' : 4 ≤ k' := Iff.mp (le_tsub_iff_le_tsub h_klen (le_trans (le_trans h_4lek h_klen4)
+      (Nat.sub_le n 4))) h_klen4
     -- now we can use h_wlog
     exact h_wlog k' h_4lek' h_k'len4 h_2k'len
 
 
-end chapter03
+end chapter3

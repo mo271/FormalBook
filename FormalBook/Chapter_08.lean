@@ -1,18 +1,6 @@
 /-
-Copyright 2022 Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+Copyright 2022 Moritz Firsching. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Tactic
@@ -54,10 +42,10 @@ namespace book
 namespace irrational
 
 /-- A real number is irrational if it is not rational. This is the same definition as in mathlib -/
-def irrational (x : ℝ) := x ∉ Set.range (fun (q : ℚ) => (q : ℝ))
+def Irrational (x : ℝ) := x ∉ Set.range (fun (q : ℚ) => (q : ℝ))
 
 /-- This is `irrational_iff_ne_rational` in mathlib. -/
-lemma irrational_iff_not_fraction (x : ℝ) : irrational x ↔ ∀ a b : ℤ, x ≠ (a : ℝ) / b := by
+lemma irrational_iff_not_fraction (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, x ≠ (a : ℝ) / b := by
   sorry
 
 
@@ -74,10 +62,10 @@ theorem exponential_series (x : ℝ) : HasSum (fun n : ℕ => x ^ n / (n.factori
 -/
 
 
-theorem e_irrational : irrational e := by
+theorem e_irrational : Irrational e := by
   sorry
 
-theorem e_pow_2_irrational : irrational (e ^ 2) := by
+theorem e_pow_2_irrational : Irrational (e ^ 2) := by
   sorry
 
 /--
@@ -88,7 +76,7 @@ lemma little_lemma (n : ℕ) (h_n : n ≠ 0) :
   ¬ (2 ^ n ∣ n.factorial) ∧ (2 ^ (n - 1) ∣ n.factorial ↔ ∃ m : ℕ, n = 2 ^ m) := by
   sorry
 
-theorem e_pow_4_irrational : irrational (e ^ 4) := by
+theorem e_pow_4_irrational : Irrational (e ^ 4) := by
   sorry
 
 /-!  ### Proofs of the main theorems-/
@@ -116,32 +104,28 @@ lemma lem_aux_ii (n : ℕ) (x : ℝ) (h_1 : 0 < x) (h_2 : x < 0) :
 /-!
 WARNING: There might be a better way to state this, not sure what the best API for derivatives of
 smooth (polynomial) functions is
-
- porting note: wait for
- https://leanprover-community.github.io/mathlib-port-status/file/analysis/calculus/iterated_deriv
-
-lemma lem_aux_iii (n : ℕ) (k : ℕ): iterated_deriv k (f_aux n) 0 ∈  set.range (coe : ℚ → ℝ) ∧
-  iterated_deriv k (f_aux n) 1 ∈ set.range (coe : ℚ → ℝ) := by
-  sorry
 -/
+lemma lem_aux_iii (n : ℕ) (k : ℕ): iteratedDeriv k (f_aux n) 0 ∈  Set.range (fun (q : ℚ) ↦ (q : ℝ)) ∧
+  iteratedDeriv k (f_aux n) 1 ∈ Set.range (fun (q : ℚ) ↦ (q : ℝ))  := by
+  sorry
+
 
 /-!### Theorems 1 to 3-/
 
 /--For any non-zero rational number `r`, the exponential `e ^ r` is irrational.-/
-theorem Theorem_1 (r : ℚ) (h_r : r ≠ 0) : irrational (exp r) := by
-  have : ∀ k : ℤ, k > 0 → irrational (exp k) := by
+theorem Theorem_1 (r : ℚ) (h_r : r ≠ 0) : Irrational (exp r) := by
+  have : ∀ k : ℤ, k > 0 → Irrational (exp k) := by
     sorry
   sorry
 
-theorem Theorem_2 (r : ℚ) (h_r : r ≠ 0) : irrational (π ^ 2) := by
+open Real
+
+theorem Theorem_2 (r : ℚ) (h_r : r ≠ 0) : Irrational (π ^ 2) := by
   sorry
 
--- porting note: wait for
--- https://leanprover-community.github.io/mathlib-port-status/file/analysis/special_functions/trigonometric/inverse
-/-!
-theorem Theorem_3 (n : ℕ) (h_n : n ≥ 3) : irrational ( arccos (1 / (n : ℝ).sqrt) / π) := by
+theorem Theorem_3 (n : ℕ) (h_n : n ≥ 3) : Irrational ( arccos (1 / (n : ℝ).sqrt) / π) := by
   sorry
--/
+
 
 end irrational
 end book

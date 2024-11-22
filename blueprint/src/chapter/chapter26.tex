@@ -1,0 +1,59 @@
+\chapter{Cotangent and the Herglotz trick}
+
+\begin{lemma}[A]
+  \label{ch26lemma_a}
+  The functions $f$ and $g$ are defined for all non-integral values and are continuous there.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{lemma}[B]
+  \label{ch26lemma_b}
+  Both $f$ and $g$ are \emph{periodic} of period $1$, that is $f(x + 1) = f(x)$ and
+  $g(x + 1) = g(x)$ hold for all $x\in \mathbb{R}\setminus\mathbb{Z}$.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{lemma}[C]
+  \label{ch26lemma_c}
+  Both $f$ and $g$ are \emph{odd} functions, that is we have $f(-x) = -f(x)$ and
+  $g(-x) = -g(x)$ for all $x\in \mathbb{R}\setminus\mathbb{Z}$.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+
+\begin{lemma}[D]
+  \label{ch26lemma_d}
+  The two functions $f$ and $g$ satisfy the same functional equation:
+  $f(\frac{x}{2}) + f(\frac{x + 1}{2}) = 2f(x)$ and
+  $g(\frac{x}{2}) + g(\frac{x + 1}{2}) = gf(x)$.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{lemma}[E]
+  \label{ch26lemma_e}
+  By setting $h(x) := 0$ for $x \in \mathbb{Z}$, $h$ becomes a continuous function
+  on all of $\mathbb{R}$ that shares the properties given in
+  \ref{ch26lemma_b}, \ref{ch26lemma_c}, \ref{ch26lemma_d}.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+\begin{theorem}
+  \label{ch26}
+  \[
+  \pi\cot{\pi x} = \frac{1}{x} + \sum_{n = 1}^\infty \left(\frac{1}{x + n} + \frac{1}{x - n}\right)
+  \]
+  for $x\in \mathbb{R}\setminus\mathbb{Z}$.
+\end{theorem}
+\begin{proof}
+  \uses{ch26lemma_a, ch26lemma_b, ch26lemma_c, ch26lemma_d, ch26lemma_e}
+\end{proof}

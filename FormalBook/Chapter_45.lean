@@ -1,28 +1,9 @@
 /-
-Copyright 2022 Google LLC
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
+Copyright 2022 Moritz Firsching. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Tactic
-import Mathlib.Data.Finset.Basic
-import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
-import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
-import Mathlib.Order.WellFoundedSet
-import Mathlib.Data.Set.Basic
+import Mathlib.Combinatorics.SimpleGraph.Maps
 --import Mathlib.Analysis.SpecialFunctions.Exp
 --import Mathlib.Analysis.SpecialFunctions.Log.Base
 
@@ -45,7 +26,7 @@ open SimpleGraph
 
 
 section
-
+namespace chapter45
 
 variable {α : Type _} {X : Finset α}
 variable {d : ℕ} {h_d : d ≥ 2}
@@ -56,7 +37,7 @@ def two_colorable (𝓕 : Finset (Finset X)) :=
   A ∈ 𝓕 → ∃ x y : A, (c (x : X) = (0 : Fin 2)) ∧ (c y = (1 : Fin 2))
 
 --include H_𝓕 (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
-theorem theorem_1 : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 :=
+theorem theorem_1 (𝓕 : Finset (Finset X)) : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 :=
   sorry
 
 /-! Ramsey Numbers and Theorem 2-/

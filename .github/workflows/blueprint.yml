@@ -1,13 +1,34 @@
+name: Compile blueprint
+
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+      - 'scripts/**'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+      - 'scripts/**'
+  workflow_dispatch: # Allow manual triggering of the workflow from the GitHub Actions interface
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# Cancel previous runs if a new commit is pushed to the same PR or branch
+concurrency:
+  group: ${{ github.ref }}  # Group runs by the ref (branch or PR)
+  cancel-in-progress: true  # Cancel any ongoing runs in the same group
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages and modify PR labels
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: read          # Read access to repository contents
+  pages: write            # Write access to GitHub Pages
+  id-token: write         # Write access to ID tokens
 
 jobs:
   build_project:
@@ -15,24 +36,21 @@ jobs:
     name: Build project
     steps:
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Fetch all history for all branches and tags
 
       - name: Install elan
-        run: curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain leanprover/lean4:4.5.0
+        run: curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
 
-      - name: Update checkdecls
-        run: ~/.elan/bin/lake update checkdecls
-
-      - name: Get cache
-        run: ~/.elan/bin/lake -Kenv=dev exe cache get || true
+      - name: Get Mathlib cache
+        run: ~/.elan/bin/lake exe cache get || true
 
       - name: Build project
-        run: ~/.elan/bin/lake -Kenv=dev build FormalBook
+        run: ~/.elan/bin/lake build FormalBook
 
-      - name: Cache mathlib docs
-        uses: actions/cache@v3
+      - name: Cache mathlib API docs
+        uses: actions/cache@v4
         with:
           path: |
             .lake/build/doc/Init
@@ -41,19 +59,32 @@ jobs:
             .lake/build/doc/Std
             .lake/build/doc/Mathlib
             .lake/build/doc/declarations
+            .lake/build/doc/find
+            .lake/build/doc/*.*
             !.lake/build/doc/declarations/declaration-data-FormalBook*
           key: MathlibDoc-${{ hashFiles('lake-manifest.json') }}
-          restore-keys: |
-            MathlibDoc-
+          restore-keys: MathlibDoc-
 
-      - name: Build documentation
-        run: ~/.elan/bin/lake -Kenv=dev build FormalBook:docs
+      - name: Build project API documentation
+        run: ~/.elan/bin/lake -R -Kenv=dev build FormalBook:docs
 
-      - name: Build blueprint and copy to `docs/blueprint`
+      - name: Check for `home_page` folder # this is meant to detect a Jekyll-based website
+        id: check_home_page
+        run: |
+          if [ -d home_page ]; then
+            echo "The 'home_page' folder exists in the repository."
+            echo "HOME_PAGE_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "The 'home_page' folder does not exist in the repository."
+            echo "HOME_PAGE_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Build blueprint and copy to `home_page/blueprint`
         uses: xu-cheng/texlive-action@v2
         with:
           docker_image: ghcr.io/xu-cheng/texlive-full:20231201
           run: |
+            # Install necessary dependencies and build the blueprint
             apk update
             apk add --update make py3-pip git pkgconfig graphviz graphviz-dev gcc musl-dev
             git config --global --add safe.directory $GITHUB_WORKSPACE
@@ -62,31 +93,46 @@ jobs:
             source env/bin/activate
             pip install --upgrade pip requests wheel
             pip install pygraphviz --global-option=build_ext --global-option="-L/usr/lib/graphviz/" --global-option="-R/usr/lib/graphviz/"
-            pip install git+https://github.com/PatrickMassot/leanblueprint.git@client
+            pip install leanblueprint
             leanblueprint pdf
-            mkdir docs
-            cp blueprint/print/print.pdf docs/blueprint.pdf
+            mkdir -p home_page
+            cp blueprint/print/print.pdf home_page/blueprint.pdf
             leanblueprint web
-            cp -r blueprint/web docs/blueprint
+            cp -r blueprint/web home_page/blueprint
 
-      - name: Check declarations
+      - name: Check declarations mentioned in the blueprint exist in Lean code
         run: |
             ~/.elan/bin/lake exe checkdecls blueprint/lean_decls
 
-      - name: Move documentation to `docs/docs`
-        run: |
-          sudo chown -R runner docs
-          cp -r .lake/build/doc docs/docs
+      - name: Copy API documentation to `home_page/docs`
+        run: cp -r .lake/build/doc home_page/docs
 
-      - name: Upload docs & blueprint artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Remove unnecessary lake files from documentation in `home_page/docs`
+        run: |
+          find home_page/docs -name "*.trace" -delete
+          find home_page/docs -name "*.hash" -delete
+
+      - name: Bundle dependencies
+        uses: ruby/setup-ruby@v1
         with:
-          path: docs/
+          working-directory: home_page
+          ruby-version: "3.3.5"  # Specify Ruby version
+          bundler-cache: true  # Enable caching for bundler
+
+      - name: Build website using Jekyll
+        if: env.HOME_PAGE_EXISTS == 'true'
+        working-directory: home_page
+        run: JEKYLL_ENV=production bundle exec jekyll build  # Note this will also copy the blueprint and API doc into home_page/_site
+
+      - name: "Upload website (API documentation, blueprint and any home page)"
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.HOME_PAGE_EXISTS == 'true' && 'home_page/_site' || 'home_page/' }}
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
 
-      - name: Make sure the cache works
-        run: |
-          mv docs/docs .lake/build/doc
+      - name: Make sure the API documentation cache works
+        run: mv home_page/docs .lake/build/doc

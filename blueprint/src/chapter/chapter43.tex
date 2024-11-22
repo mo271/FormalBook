@@ -1,0 +1,90 @@
+\chapter{The chromatic number of Kneser graphs}
+
+\begin{theorem}[Lyusternik–Shnirel'man]
+  \label{lyusternik_shnirelman}
+  If the $d$-sphere $S^d$ is covered by $d + 1$ sets,
+\[
+S^d = U_1 \cup \dots \cup U_d \cup U_{d+1},
+\]
+such that each of the first $d$ sets $U_1, \dots, U_d$ is either open or closed, then one of the $d + 1$ sets contains a pair of antipodal points $x^*, -x^*$.
+\end{theorem}
+\begin{proof}
+  \uses{borsuk_ulam}
+Let a covering $S^d = U_1 \cup \dots \cup U_d \cup U_{d+1}$ be given as specified, and assume that there are no antipodal points in any of the sets $U_i$. We define a map $f : S^d \to \mathbb{R}^d$ by
+\[
+f(x) := \big(\delta(x, U_1), \delta(x, U_2), \dots, \delta(x, U_d)\big).
+\]
+Here $\delta(x, U_i)$ denotes the distance of $x$ from $U_i$. Since this is a continuous
+ function in $x$, the map $f$ is continuous. Thus the Borsuk–Ulam theorem tells us that there are
+  antipodal points $x^*, -x^*$ with $f(x^*) = f(-x^*)$. Since $U_{d+1}$ does not contain antipodes,
+  we get that at least one of $x^*$ and $-x^*$ must be
+contained in one of the sets $U_i$, say in $U_k$ ($k \leq d$).
+ After exchanging $x^*$ with $-x^*$ if necessary, we may assume that $x^* \in U_k$.
+ In particular this yields $\delta(x^*, U_k) = 0$, and from $f(x^*) = f(-x^*)$ we get
+ that $\delta(-x^*, U_k) = 0$ as well.
+
+If $U_k$ is closed, then $\delta(-x^*, U_k) = 0$ implies that $-x^* \in U_k$, and we arrive at the
+ contradiction that $U_k$ contains a pair of antipodal points.
+
+If $U_k$ is open, then $\delta(-x^*, U_k) = 0$ implies that $-x^*$ lies in $\overline{U_k}$,
+the closure of $U_k$. The set $U_k$, in turn, is contained in $S^d \setminus (\overline{U_k})$,
+since this is a closed subset of $S^d$ that contains $U_k$. But this means that $-x^*$ lies
+in $S^d \setminus (\overline{U_k})$, so it cannot lie in $-U_k$, and $x^*$ cannot lie in $U_k$,
+a contradiction.
+\end{proof}
+
+
+\begin{theorem}[Gale's theorem]
+  \label{gale_theorem}
+  There is an arrangement of $2k + d$ points on $S^d$ such that every open hemisphere contains
+  at least $k$ of these points.
+\end{theorem}
+\begin{proof}
+
+\end{proof}
+
+\begin{theorem}[Kneser's conjecture]
+  \label{kneser_conjecture}
+  We have
+\[
+\chi(K(2k + d, k)) = d + 2.
+\]
+\end{theorem}
+\begin{proof}
+  \uses{lyusternik_shnirelman}
+  \uses{gale_theorem}
+For our ground set let us take $2k + d$ points in general position on the sphere $S^{d+1}$.
+Suppose the set $V(n, k)$ of all $k$-subsets of this set is partitioned into $d + 1$ classes,
+$V(n, k) = V_1 \,\dot{\cup} \, \dots \, \dot{\cup} \, V_{d+1}$. We have to find a pair of
+disjoint $k$-sets $A$ and $B$ that belong to the same class $V_i$.
+
+For $i = 1, \dots, d + 1$ we set
+\[
+O_i = \{x \in S^{d+1} : \text{the open hemisphere } H_x \text{ with pole } x \text{ contains a } k\text{-set from } V_i\}.
+\]
+Clearly, each $O_i$ is an open set. Together, the open sets $O_i$ and the
+closed set $C = S^{d+1} \setminus (O_1 \cup \dots \cup O_{d+1})$ cover $S^{d+1}$.
+Invoking Lyusternik–Shnirel'man (\ref{lyusternik_shnirelman}) we know that one of
+these sets contains antipodal
+ points $x^*$ and $-x^*$. This set cannot be $C$! Indeed, if $x^*, -x^* \in C$,
+ then by the definition of the $O_i$'s, the hemispheres $H_{x^*}$ and $H_{-x^*}$
+ would contain fewer than $k$ points. This means that at least $d + 2$ points would be
+ on the equator $H_{x^*} \cap H_{-x^*}$ with respect to the north pole $x^*$, that is,
+ on a hyperplane through the origin. But this cannot be since the points are in general
+  position. Hence some $O_i$ contains a pair $x^*, -x^*$, so there exist $k$-sets $A$ and $B$
+  both in class $V_i$, with $A \subset H_{x^*}$ and $B \subset H_{-x^*}$.
+
+But since we are talking about open hemispheres, $H_{x^*}$ and $H_{-x^*}$ are disjoint,
+hence $A$ and $B$ are disjoint, and this is the whole proof.
+\end{proof}
+
+
+\section{Appendix: A proof sketch for the Borsuk--Ulam theorem}
+\begin{theorem}
+  \label{borsuk_ulam}
+  For every continuous map $f : S^d \to \mathbb{R}^d$ from $d$-sphere to $d$-space,
+  there are antipodal points $x^*$, $-x^*$ that are mapped to the same point $f(x^*) = f(-x^*)$.
+\end{theorem}
+\begin{proof}
+  TODO
+\end{proof}
