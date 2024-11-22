@@ -71,6 +71,7 @@ lemma valuation_ring_no_half : ∃(B : ValuationSubring ℝ), (1/2) ∉ B := by
   have h3 : ∀(C : Subring ℝ), (B ≤ C) ∧ (1/2) ∉ C → B = C := by
     -- Idea: This is exactly hr, so maybe change statement of
     -- inclusion_maximal_valuation to have hr as hypothesis.
+
     sorry
   have h4 := inclusion_maximal_valuation B hl h3
   cases' h4 with D hd
@@ -78,9 +79,9 @@ lemma valuation_ring_no_half : ∃(B : ValuationSubring ℝ), (1/2) ∉ B := by
   -- Idea: B ∈ S so (1/2) ∉ B. D=B implies (1/2) ∉ D.
   -- Maybe again try to change statement of inclusion_maximal_valuation to:
   -- B is a valuation ring.
+
   sorry
 
-variable (R : Type) [Ring R] (B C : Subring R)
 
 
 
