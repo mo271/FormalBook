@@ -99,7 +99,7 @@ lemma lem_aux_i (n : ℕ) (x : ℝ) : ∃ c : ℕ → ℤ, f_aux n x = ∑ i in 
 
 lemma lem_aux_ii (n : ℕ) (x : ℝ) (h_1 : 0 < x) (h_2 : x < 0) :
   (0 < f_aux n x) ∧ (f_aux n x < (1 : ℝ) / n.factorial) := by
-  sorry
+  constructor <;> linarith
 
 /-!
 WARNING: There might be a better way to state this, not sure what the best API for derivatives of
