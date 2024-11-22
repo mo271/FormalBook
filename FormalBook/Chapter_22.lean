@@ -38,6 +38,7 @@ open BigOperators
 
 local notation "ℝ²" => EuclideanSpace ℝ (Fin 2)
 
+
 -- First we define the inductive type Rainbow, which will be the the target type of the painter
 -- function. The painter function will take a point in ℝ² and return a color from Rainbow (eg. Red
 -- Blue or Green).
@@ -51,14 +52,16 @@ inductive Rainbow
 
 def painter (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀) :
 ℝ² → Rainbow
-| X => if v (X 0) < v (1) ∧ v (X 1) < v 1 then Rainbow.Red
+| X => if v (X 0) < v 1 ∧ v (X 1) < v 1 then Rainbow.Red
   else if v (X 0) < v (X 1) ∧ v (X 1) ≥ v 1 then Rainbow.Green
   else Rainbow.Blue
+
+
 
 -- The next two lemmas below basically unravel the definition of the painter function which will
 -- be of use in the proof of the lemma on the boundedness of the determinant.
 
-lemma painted_green (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+lemma painted_green1 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
  (X : ℝ²) : painter Γ₀ locg v X = Rainbow.Green → v (X 1) ≥  v (1) := by
   intro h
   simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
@@ -67,6 +70,16 @@ lemma painted_green (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀)
   rcases h2 with ⟨p,  q⟩
   rw [v.map_one]
   exact q
+
+lemma painted_green2  (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+ (X : ℝ²) : painter Γ₀ locg v X = Rainbow.Green → v (X 0) < v (X 1) := by
+  intro h
+  simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
+  split_ifs at h with h1 h2
+  rcases h2 with ⟨p,  q⟩
+  exact p
+
+
 
 -- the next lemma should be a cousin? of push_neg but I couldn't get what was in mathlib to work so
 -- I just did it by hand.
@@ -86,7 +99,7 @@ lemma dist_negation_over_and (P Q : Prop): ¬(P ∧ Q) ↔ ¬P ∨ ¬Q := by
     · apply hnQ; exact hQ
 
 
-lemma painted_blue (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+lemma painted_blue1 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
 (X : ℝ²) : painter Γ₀ locg v X = Rainbow.Blue → v (X 0) ≥ v (1) := by
 intro h
 simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
@@ -106,24 +119,171 @@ cases' h2 with m n
 ·  rw [not_lt] at q
    contradiction
 
+lemma painted_blue2 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+(X : ℝ²) : painter Γ₀ locg v X = Rainbow.Blue → v (X 0) ≥ v (X 1) := by
+intro h
+simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
+split_ifs at h with h1 h2
+rw [dist_negation_over_and] at h1
+rw [dist_negation_over_and] at h2
+cases' h2 with p q
+rw [not_lt] at p
+apply p
+
+cases' h1 with m n
+rw [not_lt] at m
+rw [not_le] at q
+have q' : v (X 1) ≤ 1 := by
+  exact le_of_lt q
+exact le_trans q' m
+
+rw [not_lt] at n
+contradiction
+
+lemma painted_red1 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+(X : ℝ²) : painter Γ₀ locg v X = Rainbow.Red → v (X 0) < v 1 := by
+intro h
+simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
+split_ifs at h with h1
+rcases h1 with ⟨p,  q⟩
+rw [v.map_one]
+exact p
+
+
+
+lemma painted_red2 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+(X : ℝ²) : painter Γ₀ locg v X = Rainbow.Red → v (X 1) < v 1 := by
+intro h
+simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
+split_ifs at h with h1
+rcases h1 with ⟨p,  q⟩
+rw [v.map_one]
+exact q
+
+-- We now record our definition of a rainbow triangle
+
+def rainbow_triangle  (T : Fin 3 → ℝ²) (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀)
+(v : Valuation ℝ Γ₀) : Prop :=
+Function.Surjective (painter Γ₀ locg v ∘ T)
+
+
+-- Before the first main lemma we need a few lemmas that will be used in its proof.
+-- Essentially we are just establishing bounds on valuations of the terms that appear in the
+-- definition of the area of a triangle.
+
+lemma val_bound1 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+(X Y: ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green) :
+v (X 0 * Y 1) ≥ 1 := by
+
+have h1 : v (X 0) ≥ v 1 := painted_blue1 Γ₀ locg v X hb
+have h2 : v (Y 1) ≥ v 1 := painted_green1 Γ₀ locg v Y hg
+have h3: v (X 0 * Y 1) ≥ v 1 * v 1 := by
+  rw [v.map_mul]
+  apply mul_le_mul' h1 h2
+rw [v.map_mul]
+rw [v.map_one, one_mul, v.map_mul] at h3
+exact h3
+
+
+lemma val_bound2 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+(X Y Z : ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green)
+(hr: painter Γ₀ locg v Z = Rainbow.Red) :
+v (X 1 * Z 0) < v (X 0 * Y 1) := by
+
+have h1 : v (X 1) ≤  v (X 0) := painted_blue2 Γ₀ locg v X hb
+have h2 : v (Z 0) < v 1 := painted_red1 Γ₀ locg v Z hr
+have h3 : v (X 1 * Z 0) < v (X 0) * v 1 := by
+  rw [v.map_mul]
+  apply mul_lt_mul' h1 h2
+  apply zero_le'
+  have h4: v (X 0) ≥  v 1 := painted_blue1 Γ₀ locg v X hb
+  have h5: v 1 > 0 := by
+    rw [v.map_one]
+    apply zero_lt_one
+  exact lt_of_lt_of_le h5 h4
+have h4 : v (Y 1) ≥ v 1 := painted_green1 Γ₀ locg v Y hg
+have h5 : v (X 0) * v 1 ≤ v (X 0) * v (Y 1) :=
+  mul_le_mul' (le_refl (v (X 0))) h4
+rw [← map_mul, ← map_mul] at h5
+rw [← map_mul] at h3
+exact lt_of_lt_of_le h3 h5
+
+lemma val_bound3 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+(X Y Z : ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green)
+(hr: painter Γ₀ locg v Z = Rainbow.Red):
+v (Y 0 * Z 1) < v (X 0 * Y 1) := by sorry
+
+
+lemma val_bound4 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+(X Y Z : ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green)
+(hr: painter Γ₀ locg v Z = Rainbow.Red):
+v (Y 1 * Z 0) < v (X 0 * Y 1) := by sorry
+
+lemma val_bound5 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+(X Y Z : ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green)
+(hr: painter Γ₀ locg v Z = Rainbow.Red):
+v (X 1 * Y 0) < v (X 0 * Y 1) := by sorry
+
+lemma val_bound6 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
+(X Y Z : ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green)
+(hr: painter Γ₀ locg v Z = Rainbow.Red):
+v (X 0 * Z 1) < v (X 0 * Y 1) := by sorry
+
+
+
+
 
 -- Now we come the first main lemma of the chapter.
 
 
 lemma bounded_det (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
 (X Y Z : ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green)
-(hr: painter Γ₀ locg v Z = Rainbow.Red) :
+(hr: painter Γ₀ locg v Z = Rainbow.Red) (h: ∀ x y : ℝ, v x ≠ v y → v (x + y) = max (v x) (v y)):
 v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0 - X 1 * Y 0 - X 0 * Z 1) ≥ 1 := by
 
-have h₁1 : v (X 0) ≥ v 1 := painted_blue Γ₀ locg v X hb
-have h₁2 : v (Y 1) ≥ v 1 := painted_green Γ₀ locg v Y hg
-have h₁3: v (X 0 * Y 1) = v (X 0) * v (Y 1) := by rw [v.map_mul]
-have h₁4: v (X 0 * Y 1) ≥ v 1 * v 1 := by
-  rw [h₁3]
-  apply mul_le_mul' h₁1 h₁2
-simp at h₁4
+have h1 : v (X 0 * Y 1 + X 1 * Z 0) = v (X 0 * Y 1) := by
+  have h2: v (X 0 * Y 1) ≠ v (X 1 * Z 0) := by
+    intro h
+    have h3 := val_bound2 Γ₀ locg v X Y Z hb hg hr
+    rw [h] at h3
+    exact lt_irrefl _ h3
+  have h4: v (X 0 * Y 1 + X 1 * Z 0) = max (v (X 0 * Y 1)) (v (X 1 * Z 0)) := by exact h _ _ h2
+  have h5: max (v (X 0 * Y 1)) (v (X 1 * Z 0)) = v (X 0 * Y 1) := by
+    rw [max_eq_left]
+    exact le_of_lt (val_bound2 Γ₀ locg v X Y Z hb hg hr)
+  rw [h5] at h4
+  exact h4
 
-sorry
+have w1 : v (X 0 * Y 1 + X 1 * Z 0 + Y 0 *Z 1) = v (X 0 * Y 1) := by
+  have w2: v (X 0 * Y 1) ≠ v (Y 0 * Z 1) := by
+    intro h
+    have w3 := val_bound3 Γ₀ locg v X Y Z hb hg hr
+    rw [h] at w3
+    exact lt_irrefl _ w3
+  have w3: v (X 0 * Y 1 + X 1 * Z 0) ≠ v (Y 0 * Z 1) := by
+    rw [h1]
+    apply w2
+  have w4: v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1) = max (v (X 0 * Y 1 + X 1 * Z 0)) (v (Y 0 * Z 1)) := by
+    exact h _ _ w3
+  have w5: max (v (X 0 * Y 1 + X 1 * Z 0)) (v (Y 0 * Z 1)) = v (X 0 * Y 1) := by
+    rw [h1]
+    rw [max_eq_left]
+    exact le_of_lt (val_bound3 Γ₀ locg v X Y Z hb hg hr)
+  rw [w5] at w4
+  exact w4
+
+have q1 : v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0) = v (X 0 * Y 1) := by sorry
+have r1 : v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0 - X 1 * Y 0) = v (X 0 * Y 1) := by sorry
+have s1 : v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0 - X 1 * Y 0 - X 0 * Z 1) = v (X 0 * Y 1) := by sorry
+
+
+have e: v (X 0 * Y 1) ≥ 1 := val_bound1 Γ₀ locg v X Y hb hg
+
+rw [← s1] at e
+apply e
+
+
+done
 
 
 
