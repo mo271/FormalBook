@@ -24,9 +24,12 @@ def open_hull   {n : ℕ} (f : Fin n → ℝ²) : Set ℝ² := (fun α ↦ ∑ i
 noncomputable def triangle_area (T : Triangle) : ℝ :=
   abs (- (T 0 1) * (T 1 0) + (T 0 0) * (T 1 1) + (T 0 1) * (T 2 0) - (T 1 1) * (T 2 0) - (T 0 0) * (T 2 1) + (T 1 0) * (T 2 1)) / 2
 
-def is_equal_area_cover (X : Set ℝ²) (S : Set Triangle) : Prop :=
+def is_cover (X : Set ℝ²) (S : Set Triangle) : Prop :=
   (X = ⋃ (T ∈ S), closed_hull T) ∧
-  (Set.PairwiseDisjoint S open_hull) ∧
+  (Set.PairwiseDisjoint S open_hull)
+
+def is_equal_area_cover (X : Set ℝ²) (S : Set Triangle) : Prop :=
+  is_cover X S ∧
   (∃ (area : ℝ), ∀ T, (T ∈ S) → triangle_area T = area)
 
 def unit_square : Set ℝ² := {x : ℝ² | 0 ≤ x 0 ∧ x 0 ≤ 1 ∧ 0 ≤ x 1 ∧ x 1 ≤ 1}
