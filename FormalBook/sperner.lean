@@ -1,6 +1,7 @@
 import Mathlib.Tactic
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Data.Finset.Basic
+import Mathlib.Order.Defs
 import Mathlib.Data.Real.Sign
 
 
@@ -113,6 +114,8 @@ lemma simplex_exists_co_pos {n : ℕ} {α : Fin n → ℝ} (h : α ∈ closed_si
       _ ≤ ∑ (i: Fin n), 0 := sum_le_sum fun i _ ↦ hcontra i
       _ = 0               := Fintype.sum_eq_zero _ (fun _ ↦ rfl)
   linarith
+
+
 
 lemma simplex_co_leq_1 {n : ℕ} {α : Fin n → ℝ}
     (h₁ : α ∈ closed_simplex n) : ∀ i, α i ≤ 1 := by
@@ -525,3 +528,119 @@ lemma open_triangle_iff (T : Triangle) (hdet : det T ≠ 0) (v : ℝ²) :
       apply PiLp.ext
       intro i
       fin_cases i <;> (simp; ring)
+
+
+/-
+  Dions stuff
+
+  For a collection of segments, we define the collection of basis segments.
+  Next, we define what it means for a collection of segments to be complete,
+  and we show that any segment in a complete collection is a union of basis segments.
+-/
+
+local notation "SegmentSet" => Finset Segment
+
+
+instance partialorder (X : SegmentSet) : Preorder X where
+  le := fun S ↦ (fun T ↦ closed_hull S.val ⊆ closed_hull T.val)
+  le_refl := by exact fun a ⦃a_1⦄ a ↦ a
+  le_trans := by exact fun a b c a_1 a_2 ⦃a_3⦄ a ↦ a_2 (a_1 a)
+
+
+-- A basis segment is a segment that does not properly contain another segment
+def basis_segment (X : SegmentSet) (S : X) : Prop :=
+  ∀ T : X, closed_hull T.val ⊆ closed_hull S.val → closed_hull T.val = closed_hull S.val
+
+-- A SegmentSet is complete if for any inclusions of segements, the closure of the complement
+-- of a segment is also in the SegmentSet
+def complete_segment_set (X : SegmentSet) : Prop :=
+  ∀ S T : X, closed_hull S.val ⊂ closed_hull T.val → ∃ S' : X,
+  (closed_hull T.val = closed_hull S.val ∪ closed_hull S'.val ∧
+  ∃ p : ℝ², closed_hull S.val ∩ closed_hull S'.val = {p})
+
+-- A decomposition of a segment is a collection of segments covering it
+def segment_covering {X : SegmentSet} (S : X) {n : ℕ} (f : Fin n → X) : Prop :=
+  closed_hull S.val = ⋃ (i : Fin n), closed_hull (f i).val
+
+-- A SegmentSet is splitting if every segment is the union of the basic segments it contains.
+def splitting_segment_set : SegmentSet → Prop :=
+  fun X ↦ ∀ S : X, ∃ n : ℕ, ∃ f : Fin n → X,
+  (segment_covering S f ∧ ∀ i : Fin n, basis_segment X (f i))
+
+
+theorem complete_is_splitting (X : SegmentSet) (h : complete_segment_set X) :
+  splitting_segment_set X := by
+    sorry
+
+-- Example: if X : Segment_Set is a singleton, its only member is a basis segment
+example (S : Segment) : basis_segment (singleton S) ⟨S, by tauto⟩  := by
+  intro T _
+  have hTeqS : T = S := by
+    rw [← Set.mem_singleton_iff]
+    exact Set.mem_toFinset.mp T.2
+  exact congrArg closed_hull hTeqS
+
+
+theorem basis_segments_exist (X : SegmentSet) :
+  ∃ S : X, basis_segment X S := by
+  sorry
+
+
+
+
+/-
+  Lenny's stuff
+
+-/
+
+
+-- side i of triangle T; probably better to do this for a polygon or so
+
+def side (T : Triangle) (i : Fin 3) : Segment :=
+  fun | 0 => T ((i + 1) % 3) | 1 => T ((i - 1) % 3)
+
+
+-- let's just test if this works
+
+variable (P Q R : ℝ²)
+
+def triangle (P Q R : ℝ²) : Triangle :=
+  fun | 0 => P | 1 => Q | 2 => R
+
+def interval (P Q : ℝ²) : Segment :=
+  fun | 0 => P | 1 => Q
+
+example : side (triangle P Q R) 0 = interval Q R := rfl
+example : side (triangle P Q R) 1 = interval R P := rfl
+example : side (triangle P Q R) 2 = interval P Q := rfl
+
+-- now we can define the notion of a segment being on a trianglef
+
+
+
+
+def segment_on_triangle (L : Segment) (T : Triangle)  : Prop :=
+  ∃ i : Fin 3, closed_hull L ⊆ closed_hull (side T i)
+
+
+
+/-
+  State the theorem on colourings
+-/
+
+-- things carried over from other groups:
+
+def color : ℝ² → Fin 3 := sorry
+
+lemma no_three_colors_on_a_line (L : Segment) :
+    ∃ i : Fin 3, ∀ P ∈ closed_hull L, color P ≠ i := sorry
+
+lemma color00 : color (v 0 0) = 0 := sorry
+lemma color01 : color (v 0 1) = 1 := sorry
+lemma color10 : color (v 1 0) = 2 := sorry
+
+
+-- main goal for our group
+
+theorem Monsky_rainbow (S : Finset Triangle) (hS : is_cover unit_square S) :
+    ∃ T ∈ S, Function.Surjective (color ∘ T) := sorry
