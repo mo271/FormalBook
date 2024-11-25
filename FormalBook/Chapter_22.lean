@@ -54,10 +54,29 @@ import Mathlib.Tactic
 noncomputable section
 
 open ValuationSubring
+open Algebra
 
 -- Any maximal subring of ℝ not containing 1/2 is a valuation ring.
 lemma inclusion_maximal_valuation (B : Subring ℝ) (h1 : (1/2) ∉ B)
-(h2 : ∀(C : Subring ℝ), (B ≤ C) ∧ (1/2) ∉ C → B = C) : ∃(D : ValuationSubring ℝ), D.toSubring = B := by  sorry
+(h2 : ∀(C : Subring ℝ), (B ≤ C) ∧ (1/2) ∉ C → B = C) : ∃(D : ValuationSubring ℝ), D.toSubring = B := by
+  by_contra no_vr
+  have alpha_existence : ∃(α : ℝ), (α ∉ B ∧ α⁻¹ ∉ B) := by
+    by_contra H
+    rw[← not_forall_not, not_not] at H
+    simp_rw[← or_iff_not_and_not] at H
+    -- def D : ValuationSubring ℝ :=
+    --   { B with
+    --     mem_or_inv_mem' := H}
+    sorry
+  cases' alpha_existence with α H
+  let Balpha := adjoin B {a : ℝ | a = α}
+  let Balpha' := adjoin B {a : ℝ | a = α⁻¹}
+  let twoBalpha := {b : ℝ | ∃c ∈ Balpha, b = 2*c}
+  let twoBalpha' := {b : ℝ | ∃c ∈ Balpha', b = 2*c}
+  have rings_equal : twoBalpha = Balpha ∧ twoBalpha' = Balpha' := by
+
+    sorry
+  sorry
 
 
 -- There exists a valuation subring of ℝ not containing 1/2.
