@@ -26,27 +26,3 @@ Jonas van der Schaaf,
 Lenny Taelman,
 Dhyan Aranha.
 -/
-import Mathlib.Tactic
-/-!
-# One square and an odd number of triangles
-
-## TODO
-  - Monsky's Theorem
-    - proof
-      - Lemma 1
-        - proof
-      - Corollary
-        - proof
-      - Lemma 2
-        - proof
-          - (A)
-          - (B)
-  - Appendix: Extending valuations
-    - definition
-    - Theorem
-      - proof
-    - Lemma
-      - proof
-    - Claim
-    - Zorn's Lemma
--/
