@@ -1,12 +1,6 @@
 import Mathlib.Tactic
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Data.Finset.Basic
-import Mathlib.Order.Defs
-import Mathlib.Data.Real.Sign
---import FormalBook.Chapter_22.lean
+import FormalBook.Appendix
+import FormalBook.sperner
 
 
 
@@ -55,7 +49,7 @@ lemma painted_green1 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀
   simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
   -- I want to get rid of this simp with an unfold but if I do this then split_ifs stops working.
   split_ifs at h with h1 h2
-  rcases h2 with ⟨p,  q⟩
+  rcases h2 with ⟨_,  q⟩
   rw [v.map_one]
   exact q
 
@@ -64,7 +58,7 @@ lemma painted_green2  (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ�
   intro h
   simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
   split_ifs at h with h1 h2
-  rcases h2 with ⟨p,  q⟩
+  rcases h2 with ⟨p,  _⟩
   exact p
 
 
@@ -133,7 +127,7 @@ lemma painted_red1 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) 
 intro h
 simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
 split_ifs at h with h1
-rcases h1 with ⟨p,  q⟩
+rcases h1 with ⟨p, _⟩
 rw [v.map_one]
 exact p
 
@@ -144,7 +138,7 @@ lemma painted_red2 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) 
 intro h
 simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
 split_ifs at h with h1
-rcases h1 with ⟨p,  q⟩
+rcases h1 with ⟨_,  q⟩
 rw [v.map_one]
 exact q
 
@@ -256,8 +250,7 @@ exact lt_of_lt_of_le h2 h6
 
 
 lemma val_bound5 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
-(X Y Z : ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green)
-(hr: painter Γ₀ locg v Z = Rainbow.Red):
+(X Y : ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green):
 v (X 1 * Y 0) < v (X 0 * Y 1) := by
 
 have h1 : v (X 1) ≤ v (X 0) := painted_blue2 Γ₀ locg v X hb
@@ -266,7 +259,6 @@ have h3: v (X 1 * Y 0) < v (X 0) * v (Y 1) := by
   rw [v.map_mul]
   apply mul_lt_mul' h1 h2
   apply zero_le'
-  have h4: v (Y 1) ≥ v 1 := painted_green1 Γ₀ locg v Y hg
   have h5: v (X 0) ≥ v 1 := painted_blue1 Γ₀ locg v X hb
   rw [v.map_one] at h5
   have h6: v 1 > 0 := by
@@ -322,7 +314,7 @@ ring_nf
 
 lemma bounded_det (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
 (X Y Z : ℝ²) (hb: painter Γ₀ locg v X = Rainbow.Blue )(hg: painter Γ₀ locg v Y = Rainbow.Green)
-(hr: painter Γ₀ locg v Z = Rainbow.Red) (h: ∀ x y : ℝ, v x ≠ v y → v (x + y) = max (v x) (v y)):
+(hr: painter Γ₀ locg v Z = Rainbow.Red):
 v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0 - X 1 * Y 0 - X 0 * Z 1) ≥ 1 := by
 
 have h1 : v (X 0 * Y 1 + X 1 * Z 0) = v (X 0 * Y 1) := by
@@ -331,7 +323,7 @@ have h1 : v (X 0 * Y 1 + X 1 * Z 0) = v (X 0 * Y 1) := by
     have h3 := val_bound2 Γ₀ locg v X Y Z hb hg hr
     rw [h] at h3
     exact lt_irrefl _ h3
-  have h4: v (X 0 * Y 1 + X 1 * Z 0) = max (v (X 0 * Y 1)) (v (X 1 * Z 0)) := by exact h _ _ h2
+  have h4: v (X 0 * Y 1 + X 1 * Z 0) = max (v (X 0 * Y 1)) (v (X 1 * Z 0)) := by exact non_archimedean Γ₀ ℝ v _ _ h2
   have h5: max (v (X 0 * Y 1)) (v (X 1 * Z 0)) = v (X 0 * Y 1) := by
     rw [max_eq_left]
     exact le_of_lt (val_bound2 Γ₀ locg v X Y Z hb hg hr)
@@ -348,7 +340,7 @@ have w1 : v (X 0 * Y 1 + X 1 * Z 0 + Y 0 *Z 1) = v (X 0 * Y 1) := by
     rw [h1]
     apply w2
   have w4: v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1) = max (v (X 0 * Y 1 + X 1 * Z 0)) (v (Y 0 * Z 1)) := by
-    exact h _ _ w3
+    exact non_archimedean Γ₀ ℝ v _ _  w3
   have w5: max (v (X 0 * Y 1 + X 1 * Z 0)) (v (Y 0 * Z 1)) = v (X 0 * Y 1) := by
     rw [h1]
     rw [max_eq_left]
@@ -364,16 +356,13 @@ have q1 : v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0) = v (X 0 * Y 1) := b
     exact lt_irrefl _ q3
   have q4: v (Y 1 * Z 0) = v (- Y 1 * Z 0) := by
     rw [← v.map_neg, neg_mul_eq_neg_mul]
-  have q5: v (X 0 * Y 1 + X 1 * Z 0 ) ≠ v (Y 1 * Z 0) := by
-    rw [h1]
-    apply q2
   have q6: v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1) ≠ v (Y 1 * Z 0) := by
     rw [w1]
     apply q2
   rw [q4] at q6
   have q7: v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0) = max (v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1)) (v (-Y 1 * Z 0)) := by
     rw [sub_eq_neg_add, add_comm, ← neg_mul]
-    exact h _ _ q6
+    exact non_archimedean Γ₀ ℝ v _ _  q6
   have q8: max (v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1)) (v (-Y 1 * Z 0)) = v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1) := by
     rw [w1]
     rw [max_eq_left]
@@ -389,7 +378,7 @@ have q1 : v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0) = v (X 0 * Y 1) := b
 have r1 : v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0 - X 1 * Y 0) = v (X 0 * Y 1) := by
   have r2: v (X 0 * Y 1) ≠ v (X 1 * Y 0) := by
     intro h
-    have r3 := val_bound5 Γ₀ locg v X Y Z hb hg hr
+    have r3 := val_bound5 Γ₀ locg v X Y  hb hg
     rw [h] at r3
     exact lt_irrefl _ r3
   have r6: v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0) ≠ v (X 1 * Y 0) := by
@@ -400,12 +389,12 @@ have r1 : v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0 - X 1 * Y 0) = v (X 0
     have neg: v (X 1 * Y 0) = v (- X 1 * Y 0) := by
      rw [← v.map_neg, neg_mul_eq_neg_mul]
     rw [neg] at r6
-    exact h _ _ r6
+    exact non_archimedean Γ₀ ℝ v _ _  r6
   have r8: max (v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0)) (v (-X 1 * Y 0)) = v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0) := by
     rw [q1]
     rw [max_eq_left]
     rw [← v.map_neg, neg_mul_eq_neg_mul, neg_neg]
-    exact le_of_lt (val_bound5 Γ₀ locg v X Y Z hb hg hr)
+    exact le_of_lt (val_bound5 Γ₀ locg v X Y  hb hg )
   rw [r8] at r7
   rw [q1] at r7
   exact r7
@@ -425,7 +414,7 @@ have s1 : v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0 - X 1 * Y 0 - X 0 * Z
     have neg: v (X 0 * Z 1) = v (- X 0 * Z 1) := by
      rw [← v.map_neg, neg_mul_eq_neg_mul]
     rw [neg] at s7
-    exact h _ _ s7
+    exact non_archimedean Γ₀ ℝ v _ _  s7
   have s9: max (v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0 - X 1 * Y 0)) (v (-X 0 * Z 1)) = v (X 0 * Y 1 + X 1 * Z 0 + Y 0 * Z 1 - Y 1 * Z 0 - X 1 * Y 0) := by
     rw [r1]
     rw [max_eq_left]
@@ -466,30 +455,8 @@ simp [← hαx, Fin.sum_univ_three, add_smul]
 
 
 
-lemma Lhull_equals_Thull' (L:Segment) (T: Triangle) (Tseg : T =  fun| 0 => L 0 | 1 => L 0 | 2 => L 1) :
-closed_hull L = closed_hull T := by
-
-ext x
-constructor
-unfold closed_hull
-rintro ⟨α, hα, hx⟩
-have h1: ∃ α : Fin 2 → ℝ, (∑ (i : Fin 2), α i = 1) ∧ x = ∑ (i : Fin 2), α i • L i := by
-  use α
-  exact ⟨hα.2, hx.symm⟩
-cases' h1 with α hα
-cases' hα with hα1 hα2
-let α' : Fin 3 → ℝ := fun | 0 => α (0) | 1 => 0 | 2 => α (1)
-have h2: ∃ α : Fin 3 → ℝ, (∑ (i : Fin 3), α i = 1) ∧ x = ∑ (i : Fin 3), α i • T i := by
-  use α'
-  constructor
-  rw [Fin.sum_univ_three]
-
-
-
-
-lemma no_three_colors_on_a_line (L : Segment) (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀)
-(v : Valuation ℝ Γ₀) (max: ∀ x y : ℝ, v x ≠ v y → v (x + y) = max (v x) (v y)) :
- ∃ c : Rainbow, ∀ P ∈ closed_hull L, painter Γ₀ locg v P ≠ c := by
+theorem no_rainbow_lines (L : Segment) (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀)
+(v : Valuation ℝ Γ₀) : ∃ c : Rainbow, ∀ P ∈ closed_hull L, painter Γ₀ locg v P ≠ c := by
 
 by_contra h
 push_neg at h
@@ -502,7 +469,6 @@ have hg : ∃ y ∈ closed_hull L , painter Γ₀ locg v y = Rainbow.Green := by
 rcases hr with ⟨z, hz, hzr⟩
 rcases hb with ⟨x, hx, hxb⟩
 rcases hg with ⟨y, hy, hyg⟩
-
 let Tseg : Fin 3 → ℝ² := fun | 0 => L 0 | 1 => L 0 | 2 => L 1
 have hTseg : det Tseg = 0 := det_triv_triangle (L 0) (L 1)
 have rain1: det (fun | 0 => x | 1 => y | 2 => z) = 0 := by
@@ -521,7 +487,6 @@ have rain2: v (det (fun | 0 => x | 1 => y | 2 => z)) ≥ 1 := by
   exact hxb
   exact hyg
   exact hzr
-  apply max
 have contra: v (det (fun | 0 => x | 1 => y | 2 => z)) = 0 ∧
 v (det (fun | 0 => x | 1 => y | 2 => z)) ≥ 1 := by
   exact ⟨vrain1, rain2⟩
@@ -530,3 +495,20 @@ have h3 : (0 : Γ₀) ≥ 1 := by
   rw [h1] at h2
   exact h2
 exact not_le_of_gt (zero_lt_one) h3
+
+-- We show next that the coloring of (0,0) is red, (0,1) is green and (1,0) is blue.
+
+lemma red00 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀) :
+painter Γ₀ locg v ![0,0] = Rainbow.Red := by
+  simp [painter, Fin.isValue, map_one, ge_iff_le]
+
+lemma green01(Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀) :
+painter Γ₀ locg v  ![0, 1] = Rainbow.Green := by
+  simp [painter, Fin.isValue, map_one, ge_iff_le]
+
+lemma Blue10 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀) :
+painter Γ₀ locg v ![1,0] = Rainbow.Blue := by
+  simp [painter, Fin.isValue, map_one, ge_iff_le]
+
+--TODO: Show that the area of a rainbow triangle cannot be zero or 1/n for n odd (here we will
+-- need the fact that v(1/2) > 1).
