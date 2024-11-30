@@ -61,34 +61,14 @@ lemma painted_green2  (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ�
   rcases h2 with ⟨p,  _⟩
   exact p
 
-
-
--- the next lemma should be a cousin? of push_neg but I couldn't get what was in mathlib to work so
--- I just did it by hand.
-
-lemma dist_negation_over_and (P Q : Prop): ¬(P ∧ Q) ↔ ¬P ∨ ¬Q := by
-  constructor
-  · intro h
-    by_cases hP : P
-    · right
-      intro hQ
-      apply h
-      exact ⟨hP, hQ⟩
-    · left
-      exact hP
-  · rintro (hnP | hnQ) ⟨hP, hQ⟩
-    · contradiction
-    · apply hnQ; exact hQ
-
-
 lemma painted_blue1 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀) (v : Valuation ℝ Γ₀)
 (X : ℝ²) : painter Γ₀ locg v X = Rainbow.Blue → v (X 0) ≥ v (1) := by
 intro h
 simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
 --again here we want to get rid of the simp with an unfold but then split_ifs stops working.
 split_ifs at h with h1 h2
-rw [dist_negation_over_and] at h1
-rw [dist_negation_over_and] at h2
+rw [Decidable.not_and_iff_or_not] at h1
+rw [Decidable.not_and_iff_or_not] at h2
 cases' h1 with p q
 rw [not_lt] at p
 rw [v.map_one]
@@ -106,8 +86,8 @@ lemma painted_blue2 (Γ₀ : Type) (locg : LinearOrderedCommGroupWithZero Γ₀)
 intro h
 simp only [painter, Fin.isValue, map_one, ge_iff_le] at h
 split_ifs at h with h1 h2
-rw [dist_negation_over_and] at h1
-rw [dist_negation_over_and] at h2
+rw [Decidable.not_and_iff_or_not] at h1
+rw [Decidable.not_and_iff_or_not] at h2
 cases' h2 with p q
 rw [not_lt] at p
 apply p
