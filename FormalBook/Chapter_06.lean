@@ -189,8 +189,8 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have finclassa: ∀ (A : ConjClasses Rˣ), Fintype ↑(ConjClasses.carrier A) :=
     fun _ ↦ ConjClasses.instFintypeElemCarrier
 
-  have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out' A}) :=
-    fun _ ↦ setFintype (Set.centralizer {Quotient.out' _})
+  have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out A}) :=
+    fun _ ↦ setFintype (Set.centralizer {Quotient.out _})
 
   letI fintypea : ∀ (A :  ConjClasses Rˣ), Fintype ↑{A |
       have := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1} :=
