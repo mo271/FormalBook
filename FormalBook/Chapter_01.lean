@@ -3,10 +3,11 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ralf Stephan
 -/
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Data.Int.Lemmas
+import Mathlib.Data.Int.Star
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.PrimeCounting
-import Mathlib.NumberTheory.Fermat
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 open Finset Nat
 open BigOperators
@@ -27,7 +28,7 @@ open BigOperators
 -/
 theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ q ∈ S, Nat.Prime q):
   ∃ (p : ℕ), Nat.Prime p ∧ p ∉ S := by
-  let n := 1 + ∏ q in S, q
+  let n := 1 + ∏ q ∈ S, q
   /- "This `n` has a prime divisor":
   we pick the minimal one, the argument works with any prime divisor -/
   let p := n.minFac
@@ -36,8 +37,8 @@ theorem infinity_of_primes₁ (S : Finset ℕ) (h : ∀ q ∈ S, Nat.Prime q):
     (Finset.prod_pos fun q hq ↦ Prime.pos <| h q hq)
   refine ⟨hp, ?_⟩
   by_contra a
-  have h_p_div_prod : p ∣ ∏ q in S, q := dvd_prod_of_mem (fun (i : ℕ) ↦ i) a
-  have h_p_div_diff : p ∣ n - ∏ q in S, q := dvd_sub' (minFac_dvd n) h_p_div_prod
+  have h_p_div_prod : p ∣ ∏ q ∈  S, q := dvd_prod_of_mem (fun (i : ℕ) ↦ i) a
+  have h_p_div_diff : p ∣ n - ∏ q ∈ S, q := dvd_sub (minFac_dvd n) h_p_div_prod
   have h_p_div_one : p ∣ 1 := by aesop
   exact Nat.Prime.not_dvd_one hp h_p_div_one
 
@@ -52,7 +53,7 @@ local notation "F" => fermatNumber
 -- We actually prove something slighly stronger that what is in the book:
 -- also for n = 0, the statement is true.
 -- This is in mathlib as `fermatNumber_product`
-lemma fermatProduct (n : ℕ) : ∏ k in range n, F k = F n - 2 := by
+lemma fermatProduct (n : ℕ) : ∏ k ∈ range n, F k = F n - 2 := by
   induction' n with n hn
   · trivial
   · rw [prod_range_succ, hn]
@@ -67,9 +68,9 @@ theorem infinity_of_primes₂  (k n : ℕ) (h : k < n) : Coprime (F n) (F k) := 
   have h_n : m ∣ F n := (F n).gcd_dvd_left (F k)
   have h_k : m ∣ F k := (F n).gcd_dvd_right (F k)
   have h_m : m ∣ 2 :=  by
-    have h_m_prod : m ∣ (∏ k in range n, F k) :=
+    have h_m_prod : m ∣ (∏ k ∈ range n, F k) :=
       dvd_trans h_k (dvd_prod_of_mem F (mem_range.mpr h))
-    have h_prod : (∏ k in range n, F k) + 2 = F n := by
+    have h_prod : (∏ k ∈ range n, F k) + 2 = F n := by
       rw [fermatProduct, Nat.sub_add_cancel]
       refine' le_of_lt _
       simp [two_lt_fermatNumber]
@@ -116,8 +117,7 @@ theorem infinity_of_primes₃:
     rw [modEq_iff_dvd, dvd_iff_exists_eq_mul_left] at *
     obtain ⟨c, hc⟩ := this
     use c
-    simp only [CharP.cast_eq_zero, ge_iff_le, gt_iff_lt, pow_pos, cast_pred, cast_pow, cast_ofNat,
-        zero_sub, neg_sub] at hc
+    simp only [CharP.cast_eq_zero, zero_sub] at hc
     simp [cast_one, cast_pow, cast_ofNat, hc.symm]
   have h_mod_q' : (2 : (ZMod q)) ^ p = 1 := by
     have := (ZMod.natCast_eq_natCast_iff _ _ _).mpr h_mod_q
@@ -154,9 +154,9 @@ theorem infinity_of_primes₃:
       exact (totient_prime hq).symm
   refine ⟨q, minFac_prime <| Nat.ne_of_gt ?_, ?_⟩
   · calc 1 < 2^2 - 1 := one_lt_succ_succ 1
-        _  ≤ 2^p - 1 := sub_one_le_sub_one <| pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp)
+        _  ≤ 2^p - 1 := sub_one_le_sub_one <| Nat.pow_le_pow_right (succ_pos 1) (Prime.two_le hp)
   · have h2q : 2 ≤ q := Prime.two_le <| minFac_prime <| Nat.ne_of_gt <| lt_of_succ_lt <|
-      Nat.sub_le_sub_right ((pow_le_pow_of_le_right (succ_pos 1) (Prime.two_le hp))) 1
+      Nat.sub_le_sub_right ((Nat.pow_le_pow_right (succ_pos 1) (Prime.two_le hp))) 1
     exact lt_of_le_of_lt (Nat.le_of_dvd  (Nat.sub_pos_of_lt <| h2q) h_piv_div_q_sub_one)
       <| pred_lt <| Nat.ne_of_gt <| Nat.le_of_lt h2q
 
@@ -181,11 +181,11 @@ theorem infinity_of_primes₄ : Tendsto π atTop atTop := by
   have H_log_le_primeCountingReal_add_one (n : ℕ) (x : ℝ) (hxge : x ≥ n) (hxlt : x < n + 1) :
       Real.log x ≤ primeCountingReal x + 1 :=
     calc
-      Real.log x ≤ ∑ k in Icc 1 n, (k : ℝ)⁻¹ := by sorry
+      Real.log x ≤ ∑ k ∈ Icc 1 n, (k : ℝ)⁻¹ := by sorry
       _ ≤ (∑' m : (S₁ x), (m : ℝ)⁻¹) := by sorry
-      _ ≤ (∏ p in primesBelow ⌊x⌋.natAbs, (∑' k : ℕ, (p ^ k : ℝ)⁻¹)) := by sorry
-      _ ≤ (∏ k in Icc 1 (primeCountingReal x), (nth Nat.Prime k) / ((nth Nat.Prime k) - 1)) := by sorry
-      _ ≤ (∏ k in Icc 1 (primeCountingReal x), (k + 1) / k) := by sorry
+      _ ≤ (∏ p ∈ primesBelow ⌊x⌋.natAbs, (∑' k : ℕ, (p ^ k : ℝ)⁻¹)) := by sorry
+      _ ≤ (∏ k ∈ Icc 1 (primeCountingReal x), (nth Nat.Prime k) / ((nth Nat.Prime k) - 1)) := by sorry
+      _ ≤ (∏ k ∈ Icc 1 (primeCountingReal x), (k + 1) / k) := by sorry
       _ ≤ primeCountingReal x + 1 := by sorry
   sorry
 
@@ -212,23 +212,23 @@ lemma H_P4_1 {k p: ℝ} (hk: k > 0) (hp: p ≥ k + 1): p / (p - 1) ≤ (k + 1) /
     @le_sub_iff_add_le]
   exact hp
 
-lemma prod_Icc_succ_div (n : ℕ) (hn : 2 ≤ n) : (∏ x in Icc 1 n, ((x + 1) : ℝ) / x) = n + 1 := by
-  rw [← Nat.Ico_succ_right]
+lemma prod_Icc_succ_div (n : ℕ) (hn : 2 ≤ n) : (∏ x ∈ Icc 1 n, ((x + 1) : ℝ) / x) = n + 1 := by
+  rw [← Finset.Ico_succ_right_eq_Icc]
   induction' n with n h
   · simp
-  · rw [Finset.prod_Ico_succ_top <| Nat.le_add_left 1 n]
-    norm_num
+  · simp only [succ_eq_succ, succ_eq_add_one] at h ⊢
+    rw [Finset.prod_Ico_succ_top <| Nat.le_add_left 1 n]
     cases' lt_or_ge n 2 with _ h2
     · interval_cases n
       · tauto
       · norm_num
     field_simp [Finset.prod_eq_zero_iff] at h ⊢
     rw [h h2]
-    ring
+    norm_num
 
 -- Removed unnecessary assumption `(hpi3 : (π 3) = 2)`
 lemma H_P4_2 (x : ℕ) (hx : x ≥ 3) :
-    (∏ x in Icc 1 (π x), ((x + 1) : ℝ) / x) = (π x) + 1 := by
+    (∏ x ∈  Icc 1 (π x), ((x + 1) : ℝ) / x) = (π x) + 1 := by
   rw [prod_Icc_succ_div]
   exact Monotone.imp monotone_primeCounting hx
 
@@ -334,7 +334,7 @@ using the sum of inverses of primes
 -/
 -- see Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
 theorem infinity_of_primes₆ :
-  Tendsto (fun n ↦ ∑ p in Finset.filter (fun p ↦ Nat.Prime p) (range n), 1 / (p : ℝ))
+  Tendsto (fun n ↦ ∑ p ∈ Finset.filter (fun p ↦ Nat.Prime p) (range n), 1 / (p : ℝ))
       atTop atTop := by
   sorry
 

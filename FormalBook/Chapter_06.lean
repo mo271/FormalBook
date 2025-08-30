@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Nick Kuhn
 -/
 import Mathlib.RingTheory.Henselian
-import Mathlib.RingTheory.HopfAlgebra
+import Mathlib.RingTheory.HopfAlgebra.Basic
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.Algebra.Lie.OfAssociative
 
