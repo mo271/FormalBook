@@ -9,7 +9,6 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Data.Real.StarOrdered
 
 open Real
 open RealInnerProductSpace
@@ -82,7 +81,7 @@ theorem cauchy_schwarz_inequality (a b : V) : ⟪ a, b ⟫ ^ 2 ≤ ‖a‖ ^ 2 *
       have ha_sq : ‖a‖ ^ 2 ≠ 0 := by aesop
       have := discrim_lt_zero ha_sq this
       unfold discrim at this
-      have  : (2 * inner a b) ^ 2 < 4 * ‖a‖ ^ 2 * ‖b‖ ^ 2 := by linarith
+      have  : (2 * inner _ a b) ^ 2 < 4 * ‖a‖ ^ 2 * ‖b‖ ^ 2 := by linarith
       linarith
 
 

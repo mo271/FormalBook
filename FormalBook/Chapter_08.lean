@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Tactic
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Complex.Exponential
--- import Mathlib.Analysis.Calculus.IteratedDeriv
--- import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
--- import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+
 
 open Real (exp )--pi crccos)
 
@@ -94,7 +93,7 @@ Let `n : ℕ`, `n ≥ 1` be fixed, and consider `f_aux n x = x ^ n * (1 - x) ^ n
 
 noncomputable def f_aux (n : ℕ) (x : ℝ) :=  x ^ n * (1 - x) ^ n / n.factorial
 
-lemma lem_aux_i (n : ℕ) (x : ℝ) : ∃ c : ℕ → ℤ, f_aux n x = ∑ i in Icc n (2 * n), (c i) * x ^ i := by
+lemma lem_aux_i (n : ℕ) (x : ℝ) : ∃ c : ℕ → ℤ, f_aux n x = ∑ i ∈ Icc n (2 * n), (c i) * x ^ i := by
   sorry
 
 lemma lem_aux_ii (n : ℕ) (x : ℝ) (h_1 : 0 < x) (h_2 : x < 0) :
