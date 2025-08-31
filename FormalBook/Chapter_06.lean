@@ -3,10 +3,13 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Nick Kuhn
 -/
-import Mathlib.RingTheory.Henselian
-import Mathlib.RingTheory.HopfAlgebra
-import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Data.Int.Star
+import Mathlib.Data.Real.StarOrdered
+import Mathlib.Deprecated.Order
+import Mathlib.RingTheory.LittleWedderburn
+import Mathlib.RingTheory.SimpleRing.Principal
 
 open Finset Subring Polynomial Complex BigOperators Nat
 /-!
@@ -71,8 +74,8 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   have h_ineq :
       ‖((X - C lamb).eval (q : ℂ))‖^2 > ((q : ℝ) - 1)^2  := by
     calc
-      _ = ‖q - lamb‖^2 := by
-        simp only [eval_sub, eval_X, eval_C, norm_eq_abs]
+      _ = ‖q - lamb‖^2 := by sorry
+        --simp only [eval_sub, eval_X, eval_C, norm_eq_abs]
       _ = ‖(q : ℂ) - a - I*b‖^2 := by sorry
       _ = ‖(q : ℂ) - a‖^2 + ‖b‖^2 := by sorry
       _ = (q : ℝ)^2 - 2*‖a‖*q + ‖a‖^2 + ‖b‖^2 := by sorry
@@ -81,9 +84,9 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   have : 0 ≤ ((q : ℝ) - 1)^2 := sq_nonneg ((q : ℝ) - 1)
   have g := (Real.sqrt_lt_sqrt_iff (sq_nonneg ((q : ℝ) - 1))).mpr (h_ineq)
   have : Real.sqrt (((q:ℝ) - 1) ^ 2) = ((q : ℝ) - 1) := by sorry
-  rw [this, norm_eq_abs, Real.sqrt_sq] at g
+  rw [this, Real.sqrt_sq] at g
   · exact g
-  · exact AbsoluteValue.nonneg Complex.abs (eval (↑q) (X - C lamb))
+  · sorry
 
 lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
     (H : q ^ k - 1 ∣ q ^ n - 1) : k ∣ n := by
@@ -189,8 +192,8 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have finclassa: ∀ (A : ConjClasses Rˣ), Fintype ↑(ConjClasses.carrier A) :=
     fun _ ↦ ConjClasses.instFintypeElemCarrier
 
-  have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out' A}) :=
-    fun _ ↦ setFintype (Set.centralizer {Quotient.out' _})
+  have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out A}) :=
+    fun _ ↦ setFintype (Set.centralizer {Quotient.out _})
 
   letI fintypea : ∀ (A :  ConjClasses Rˣ), Fintype ↑{A |
       have := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1} :=
@@ -278,7 +281,7 @@ theorem wedderburn (h: Fintype R): IsField R := by
   by_contra
 
   have g : Polynomial.map (Int.castRingHom ℂ) (phi n) =
-      ∏ lamb in (primitiveRoots n ℂ), (X - C lamb) := by
+      ∏ lamb ∈ (primitiveRoots n ℂ), (X - C lamb) := by
     dsimp only [phi]
     simp only [map_cyclotomic]
     have := isPrimitiveRoot_exp n h_n

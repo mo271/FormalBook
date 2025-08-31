@@ -1,5 +1,4 @@
 
-import Lean.Util.Paths
 import LeanSearchClient.Syntax
 import ProofWidgets.Component.Basic
 

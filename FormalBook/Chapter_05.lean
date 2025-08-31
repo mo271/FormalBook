@@ -3,8 +3,8 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Nikolas Kuhn
 -/
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.RingTheory.LittleWedderburn
 
 open ZMod Finset
 open Polynomial (X)
@@ -108,7 +108,7 @@ decomposition`X^p - 1 = (X - ζ) * (X - ζ ^ 2) * ... * (X - ζ ^ p)`.
 -/
 lemma fact_B (p : ℕ) [Fact (Prime p)] (K : Type _) [Field K] (ζ : Kˣ) (h_1 : ζ ^ p = 1)
   (h_2 : ζ ≠ 1) :
-  X  ^ (p - 1) - 1  = ∏ i in Icc 1 p, (X - (Polynomial.C (ζ : K)) ^ i) := by
+  X  ^ (p - 1) - 1  = ∏ i ∈ Icc 1 p, (X - (Polynomial.C (ζ : K)) ^ i) := by
   sorry
 
 theorem quadratic_reciprocity_2 (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2)

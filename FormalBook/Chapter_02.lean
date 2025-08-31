@@ -50,7 +50,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
   have h5 : 0 < x := lt_of_lt_of_le (by norm_num1) n_large
   rw [← div_le_one (rpow_pos_of_pos four_pos x), ← div_div_eq_mul_div, ← rpow_sub four_pos, ←
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
-    mul_one_div, ← log_nonpos_iff (hf' x h5), ← hf x h5]
+    mul_one_div, ← log_nonpos_iff (hf' x h5).le, ← hf x h5]
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
     apply ConcaveOn.add
@@ -76,7 +76,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     norm_num1
   · have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
-    rw [hf _ (by norm_num1), log_nonpos_iff (hf' _ (by norm_num1)), this,
+    rw [hf _ (by norm_num1), log_nonpos_iff (hf' _ (by norm_num1)).le, this,
         div_le_one (by positivity)]
     conv in 512 => equals 2 ^ 9 => norm_num1
     conv in 2 * 512 => equals 2 ^ 10 => norm_num1
@@ -96,7 +96,7 @@ open Nat
 theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ Nat.sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
-  simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_natCast]
+  simp only [cast_mul, cast_pow, cast_ofNat, ← rpow_natCast]
   refine' _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
   gcongr
   · have n2_pos : 0 < 2 * n := by positivity
@@ -110,7 +110,7 @@ factorization of the central binomial coefficient only has factors at most `2 * 
 -/
 theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     (no_prime : ¬∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) :
-    centralBinom n = ∏ p in Finset.range (2 * n / 3 + 1), p ^ (centralBinom n).factorization p := by
+    centralBinom n = ∏ p ∈ Finset.range (2 * n / 3 + 1), p ^ (centralBinom n).factorization p := by
   refine' (Eq.trans _ n.prod_pow_factorization_centralBinom).symm
   apply Finset.prod_subset
   · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
@@ -138,7 +138,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
   have n2_pos : 1 ≤ 2 * n := mul_pos (zero_lt_two' ℕ) n_pos
   let S := (Finset.range (2 * n / 3 + 1)).filter Nat.Prime
   let f x := x ^ n.centralBinom.factorization x
-  have : ∏ x : ℕ in S, f x = ∏ x : ℕ in Finset.range (2 * n / 3 + 1), f x := by
+  have : ∏ x ∈  S, f x = ∏ x ∈ Finset.range (2 * n / 3 + 1), f x := by
     refine' Finset.prod_filter_of_ne fun p _ h => _
     contrapose! h
     dsimp [f]

@@ -3,11 +3,10 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Christopher Schmidt
 -/
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Data.Int.Star
-import Mathlib.Data.Rat.Star
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Tactic.Qify
---import data.nat.sqrt
 --set_option trace.simp_lemmas true
 
 
@@ -71,9 +70,10 @@ theorem prime_div_descFactorial (n k m l p : ℕ) (h_klen : k ≤ n)
   have h_fraction: (n.factorial / (k.factorial * (n - k).factorial)) =
     (n.factorial / (n - k).factorial) / k.factorial := by
     qify
-    field_simp
+    simp
     rw [mul_comm]
-    exact Or.inl rfl
+    norm_cast
+    exact (Nat.div_div_eq_div_mul n ! (n - k)! k !).symm
   rw [h_fraction] at h_pl_div_fac
   have h_pl_div_fac_part: p^l ∣ (n.factorial / (n - k).factorial) := by
     have h_eq_pl_with_k := exists_eq_mul_right_of_dvd h_pl_div_fac
@@ -82,8 +82,7 @@ theorem prime_div_descFactorial (n k m l p : ℕ) (h_klen : k ≤ n)
       use (j * k.factorial)
       rw [(mul_rotate _ _ _).symm, ← h_eq]
       qify
-      field_simp
-      rw [mul_comm ((n - k)! : ℚ) _, mul_assoc]
+      aesop
     cases' h_eq_pl with j h_eq
     refine' Dvd.intro j _
     rw [mul_comm]
