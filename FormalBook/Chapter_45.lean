@@ -38,6 +38,7 @@ def two_colorable (𝓕 : Finset (Finset X)) :=
 
 --include H_𝓕 (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
 theorem theorem_1 (𝓕 : Finset (Finset X)) : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 :=
+  -- Hello World !
   sorry
 
 /-! Ramsey Numbers and Theorem 2-/
