@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.Finset.Powerset
 --import Mathlib.Analysis.SpecialFunctions.Exp
 --import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 
-open SimpleGraph
+open SimpleGraph Finset
 /-!
 # Probability makes counting (sometimes) easy
 
@@ -35,6 +36,18 @@ variable {d : ℕ} {h_d : d ≥ 2}
 def two_colorable (𝓕 : Finset (Finset X)) :=
   ∃ c : X → Fin 2, ∀ A : Finset X,
   A ∈ 𝓕 → ∃ x y : A, (c (x : X) = (0 : Fin 2)) ∧ (c y = (1 : Fin 2))
+
+theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset (Finset X), ¬ two_colorable 𝓕 := by
+  use ℕ
+  use range (2*d - 1)
+  use Finset.powersetCard d univ
+  unfold two_colorable
+  push_neg
+  intro c
+  wlog majority : (univ.filter (fun x => c x = 0)).card ≥ d
+  · sorry
+  · sorry
+
 
 --include H_𝓕 (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
 theorem theorem_1 (𝓕 : Finset (Finset X)) : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 :=
