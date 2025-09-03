@@ -73,7 +73,11 @@ theorem remark_1 {d : ℕ} {h_d : d ≥ 2} : ∃ α : Type, ∃ X : Finset α, �
         grind --🔥
       have size : #{x | c x = 0} + #{x | c x ≠ 0} = 2*d - 1 := by
         convert (card_range _)
-        sorry
+        rw [← @card_attach _ (range (2 * d - 1))]
+        rw [← card_union_of_disjoint]
+        · congr
+          grind --🔥
+        · apply disjoint_filter_filter_neg
       rw [size] at issue
       rw [Nat.sub_add_cancel (by grind)] at issue
       exact Nat.not_add_one_le_self _ issue
@@ -93,11 +97,8 @@ theorem remark_1 {d : ℕ} {h_d : d ≥ 2} : ∃ α : Type, ∃ X : Finset α, �
 
 
 
-#exit
-
 --include H_𝓕 (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
 theorem theorem_1 (𝓕 : Finset (Finset X)) : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 :=
-  -- Hello World !
   sorry
 
 /-! Ramsey Numbers and Theorem 2-/
