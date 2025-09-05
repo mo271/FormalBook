@@ -55,45 +55,28 @@ private theorem Fin_two_rev_eq_one (x : Fin 2) : x.rev = 1 ↔ x = 0 := by
   rw [← Fin_two_neq_one, ← Fin_two_neq_zero, not_iff_not]
   apply Fin_two_rev_eq_zero
 
-theorem remark_1 {d : ℕ} {h_d : d ≥ 2} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset (Finset X), ¬ two_colorable 𝓕 := by
-  use ℕ
-  use range (2*d - 1)
-  use Finset.powersetCard d univ
+theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset (Finset X),
+  (∀ A ∈ 𝓕, A.card = d) ∧  ¬ two_colorable 𝓕 := by
+  use Fin (2 * d + 1)
+  use univ
+  use (Finset.powerset univ).filter (Finset.card · = d)
+  simp only [univ_eq_attach, mem_filter, mem_powerset, and_imp, imp_self, implies_true, true_and]
   unfold two_colorable
   push_neg
-  intro c
-  wlog majority : d ≤ (univ.filter (fun x => c x = 0)).card  with M
-  · specialize @M d h_d (fun x => (c x).rev) _
-    · clear M
-      by_contra con
-      push_neg at *
-      simp_rw [Fin_two_rev_eq_zero, ← Fin_two_neq_zero] at con
-      rw [Nat.lt_iff_add_one_le] at *
-      have issue : #{x | c x = 0} + #{x | c x ≠ 0} + 1 + 1 ≤ 2*d := by
-        grind --🔥
-      have size : #{x | c x = 0} + #{x | c x ≠ 0} = 2*d - 1 := by
-        convert (card_range _)
-        rw [← @card_attach _ (range (2 * d - 1))]
-        rw [← card_union_of_disjoint]
-        · congr
-          grind --🔥
-        · apply disjoint_filter_filter_neg
-      rw [size] at issue
-      rw [Nat.sub_add_cancel (by grind)] at issue
-      exact Nat.not_add_one_le_self _ issue
-    · obtain ⟨A,hA₁,hA₂⟩ := M
-      use A
-      refine' ⟨hA₁, _⟩
-      intro x y
-      contrapose!
-      intro hx hy
-      apply hA₂ y x
-      · rwa [Fin_two_rev_eq_zero]
-      · rwa [Fin_two_rev_eq_one]
-  · rw [← powersetCard_nonempty] at majority
-    obtain ⟨A,hA⟩ := majority
-    use A
-    grind --🔥
+  intro coloring
+  by_cases h : d ≤ (Finset.univ.filter (coloring · = 1)).card
+  · refine (Finset.exists_subset_card_eq h).imp ?_
+    simp +contextual [Finset.subset_iff]
+  · simp_all only [Fin.isValue, univ_eq_attach, not_le, mem_filter, mem_powerset, ne_eq,
+    Subtype.forall, mem_univ, forall_true_left]
+    have : d ≤ (Finset.univ.filter (coloring · = 0)).card := by
+      rw [← not_lt]
+      intro h_2
+      have : ∀ a, coloring a = 1 ↔ coloring a ≠ 0 := by omega
+      simp_all [Finset.filter_not, Finset.card_sdiff]
+      omega
+    refine (Finset.exists_subset_card_eq this).imp ?_
+    simp +contextual [Finset.subset_iff]
 
 
 
