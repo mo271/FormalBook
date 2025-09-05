@@ -38,22 +38,6 @@ def two_colorable (𝓕 : Finset (Finset X)) :=
   A ∈ 𝓕 → ∃ x y : A, (c (x : X) = (0 : Fin 2)) ∧ (c y = (1 : Fin 2))
 
 
-private theorem Fin_two_neq_one (x : Fin 2) : x ≠ 1 ↔ x = 0 := by grind
-
-private theorem Fin_two_neq_zero (x : Fin 2) : x ≠ 0 ↔ x = 1 := by grind
-
-private theorem Fin_two_rev_eq_zero (x : Fin 2) : x.rev = 0 ↔ x = 1 := by
-  constructor
-  · intro hx
-    rw [← Fin.rev_rev x, hx]
-    decide
-  · intro hx
-    rw [hx]
-    decide
-
-private theorem Fin_two_rev_eq_one (x : Fin 2) : x.rev = 1 ↔ x = 0 := by
-  rw [← Fin_two_neq_one, ← Fin_two_neq_zero, not_iff_not]
-  apply Fin_two_rev_eq_zero
 
 theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset (Finset X),
   (∀ A ∈ 𝓕, A.card = d) ∧  ¬ two_colorable 𝓕 := by
