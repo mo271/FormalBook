@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.Finset.Powerset
 --import Mathlib.Analysis.SpecialFunctions.Exp
 --import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 
-open SimpleGraph
+open SimpleGraph Finset
 /-!
 # Probability makes counting (sometimes) easy
 
@@ -35,6 +36,33 @@ variable {d : ℕ} {h_d : d ≥ 2}
 def two_colorable (𝓕 : Finset (Finset X)) :=
   ∃ c : X → Fin 2, ∀ A : Finset X,
   A ∈ 𝓕 → ∃ x y : A, (c (x : X) = (0 : Fin 2)) ∧ (c y = (1 : Fin 2))
+
+
+
+theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset (Finset X),
+  (∀ A ∈ 𝓕, A.card = d) ∧  ¬ two_colorable 𝓕 := by
+  use Fin (2 * d + 1)
+  use univ
+  use (Finset.powerset univ).filter (Finset.card · = d)
+  simp only [univ_eq_attach, mem_filter, mem_powerset, and_imp, imp_self, implies_true, true_and]
+  unfold two_colorable
+  push_neg
+  intro coloring
+  by_cases h : d ≤ (Finset.univ.filter (coloring · = 1)).card
+  · refine (Finset.exists_subset_card_eq h).imp ?_
+    simp +contextual [Finset.subset_iff]
+  · simp_all only [Fin.isValue, univ_eq_attach, not_le, mem_filter, mem_powerset, ne_eq,
+    Subtype.forall, mem_univ, forall_true_left]
+    have : d ≤ (Finset.univ.filter (coloring · = 0)).card := by
+      rw [← not_lt]
+      intro h_2
+      have : ∀ a, coloring a = 1 ↔ coloring a ≠ 0 := by omega
+      simp_all [Finset.filter_not, Finset.card_sdiff]
+      omega
+    refine (Finset.exists_subset_card_eq this).imp ?_
+    simp +contextual [Finset.subset_iff]
+
+
 
 --include H_𝓕 (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
 theorem theorem_1 (𝓕 : Finset (Finset X)) : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 :=
