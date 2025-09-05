@@ -63,6 +63,21 @@ theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset
     simp +contextual [Finset.subset_iff]
 
 
+/--
+In Book:
+"On the other hand, it is equally clear that every subfamily of a 2-colorable family of
+d-sets is itself 2-colorable."
+-/
+theorem remark_2 {𝓕 𝓢 : Finset (Finset X)}
+  (h₁ : two_colorable 𝓕)  (h₂ : 𝓢 ⊆ 𝓕) : two_colorable 𝓢 := by
+  refine h₁.imp ?_
+  intro coloring h₃ A Amem
+  exact h₃ A (h₂ Amem)
+
+
+
+
+#exit
 
 --include H_𝓕 (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
 theorem theorem_1 (𝓕 : Finset (Finset X)) : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 :=
