@@ -8,6 +8,10 @@ import Mathlib.Data.Finset.Powerset
 --import Mathlib.Analysis.SpecialFunctions.Exp
 --import Mathlib.Analysis.SpecialFunctions.Log.Base
 
+import Mathlib.Probability.Distributions.Uniform
+import Mathlib.Probability.Notation
+
+
 
 open SimpleGraph Finset
 /-!
@@ -70,18 +74,57 @@ d-sets is itself 2-colorable."
 -/
 theorem remark_2 {𝓕 𝓢 : Finset (Finset X)}
   (h₁ : two_colorable 𝓕)  (h₂ : 𝓢 ⊆ 𝓕) : two_colorable 𝓢 := by
-  refine h₁.imp ?_
+  apply h₁.imp ?_
   intro coloring h₃ A Amem
   exact h₃ A (h₂ Amem)
 
 
 
+#check PMF.uniformOfFinset
+#check PMF.uniformOfFintype
+#check PMF.toMeasure_apply
+#check MeasureTheory.measure_biUnion_le
+
+open MeasureTheory
+
+theorem theorem_1 (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
+  : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 := by
+  have I : Fintype ({ x // x ∈ X } → Fin 2) := (by apply Fintype.ofFinite)
+  set P : Measure (X → Fin 2) := (PMF.uniformOfFintype (X → Fin 2)).toMeasure with Pdef
+  set E : (Finset X) → Finset (X → Fin 2) := (fun A => {c | ∀ x ∈ A, ∀ y ∈ A, c x = c y}) with Edef
+  have probaEA (A : Finset X) (hA : A ∈ 𝓕) : P (E A) = (1 / 2)^(d-1) := by
+    rw [Pdef, PMF.toMeasure_uniformOfFintype_apply]
+    · nth_rw 2 [← Nat.card_eq_fintype_card]
+      rw [Nat.card_fun]
+      have sizeEA : #(E A) = 2 ^ (#X - #A + 1) := by
+        sorry
+      simp only [coe_sort_coe, Fintype.card_coe, Nat.card_eq_fintype_card, Fintype.card_fin,
+        Nat.cast_pow, Nat.cast_ofNat, one_div]
+      rw [sizeEA]
+      simp only [Nat.cast_pow, Nat.cast_ofNat]
+      sorry
+    · sorry
+  sorry
+
+#check card_pos
+
+#check card_pi
+#check Nat.card_fun
+#check Nat.card
+#check card
+#check Nat.card_eq_fintype_card
+#check Nat.card_eq_finsetCard
+#check Fintype.ofFinite
+#check PMF.uniformOfFintype_apply
+#check PMF.toMeasure_apply_fintype
+#check PMF.toMeasure
+#check MeasurableSet.of_discrete
+#check DiscreteMeasurableSpace
+
+#check MeasurableSet.singleton
+
 
 #exit
-
---include H_𝓕 (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
-theorem theorem_1 (𝓕 : Finset (Finset X)) : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 :=
-  sorry
 
 /-! Ramsey Numbers and Theorem 2-/
 
