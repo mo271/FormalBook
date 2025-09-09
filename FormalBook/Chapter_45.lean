@@ -79,6 +79,17 @@ theorem remark_2 {𝓕 𝓢 : Finset (Finset X)}
   exact h₃ A (h₂ Amem)
 
 
+open ENNReal NNReal
+
+-- based on ENNReal.mul_inv_cancel
+protected lemma ENNReal.mul_inv_eq_iff_eq_mul {a b c: ENNReal}
+  (h0 : b ≠ 0) (ha : a ≠ ∞) (hb : b ≠ ∞) (hc : c ≠ ∞) :
+  a * b⁻¹ = c ↔ a = c * b := by
+    lift a to ℝ≥0 using ha
+    lift b to ℝ≥0 using hb
+    lift c to ℝ≥0 using hc
+    norm_cast at h0; norm_cast
+    apply mul_inv_eq_iff_eq_mul₀ h0
 
 #check PMF.uniformOfFinset
 #check PMF.uniformOfFintype
@@ -89,10 +100,11 @@ open MeasureTheory
 
 theorem theorem_1 (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
   : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 := by
+  intro bnd
   have I : Fintype ({ x // x ∈ X } → Fin 2) := (by apply Fintype.ofFinite)
   set P : Measure (X → Fin 2) := (PMF.uniformOfFintype (X → Fin 2)).toMeasure with Pdef
   set E : (Finset X) → Finset (X → Fin 2) := (fun A => {c | ∀ x ∈ A, ∀ y ∈ A, c x = c y}) with Edef
-  have probaEA (A : Finset X) (hA : A ∈ 𝓕) : P (E A) = (1 / 2)^(d-1) := by
+  have probaEA (A : Finset X) (hA : A ∈ 𝓕) : P (E A) = (1 / 2)^(d-1 : ℤ) := by
     rw [Pdef, PMF.toMeasure_uniformOfFintype_apply]
     · nth_rw 2 [← Nat.card_eq_fintype_card]
       rw [Nat.card_fun]
@@ -102,9 +114,21 @@ theorem theorem_1 (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : Finset X), A ∈
         Nat.cast_pow, Nat.cast_ofNat, one_div]
       rw [sizeEA]
       simp only [Nat.cast_pow, Nat.cast_ofNat]
-      sorry
-    · sorry
+      rw [div_eq_mul_inv, ENNReal.mul_inv_eq_iff_eq_mul (by simp) (by simp) (by simp) (by sorry)]
+      rw [ENNReal.inv_zpow' 2 (d-1), ]
+      rw [show (2 : ENNReal) ^ #X = 2 ^ (#X : ℤ) from by rw [zpow_natCast]]
+      rw [show (2 : ENNReal) ^ (#X - #A + 1) = 2 ^ ((#X - #A + 1) : ℤ) from by sorry ]
+      rw [← ENNReal.zpow_add (by simp) (by simp)]
+      rw [neg_sub, H_𝓕 A hA]
+      congr 1
+      ring
+    · --measurability -- @Moritz ; solves it, but is slow
+      exact Set.Finite.measurableSet <| finite_toSet (E A)
   sorry
+
+
+#check pow_eq_top_iff
+#check WithTop.pow_eq_top_iff
 
 #check card_pos
 
@@ -122,6 +146,22 @@ theorem theorem_1 (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : Finset X), A ∈
 #check DiscreteMeasurableSpace
 
 #check MeasurableSet.singleton
+
+#check div_pow
+#check div_eq_mul_inv
+#check mul_inv_eq_iff_eq_mul₀
+#check ENNReal.zpow_add
+
+#check measure_ne_top
+#check measure_lt_top
+
+#check zpow_eq_neg_zpow_iff₀
+
+#check zpow_add₀
+
+
+
+#check
 
 
 #exit
