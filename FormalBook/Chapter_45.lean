@@ -159,7 +159,7 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : 
 
 
 
-#exit
+
 
 /-! Ramsey Numbers and Theorem 2-/
 
