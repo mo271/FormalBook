@@ -67,11 +67,6 @@ theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset
     simp +contextual [Finset.subset_iff]
 
 
-/--
-In Book:
-"On the other hand, it is equally clear that every subfamily of a 2-colorable family of
-d-sets is itself 2-colorable."
--/
 theorem remark_2 {𝓕 𝓢 : Finset (Finset X)}
   (h₁ : two_colorable 𝓕)  (h₂ : 𝓢 ⊆ 𝓕) : two_colorable 𝓢 := by
   apply h₁.imp ?_
@@ -81,7 +76,6 @@ theorem remark_2 {𝓕 𝓢 : Finset (Finset X)}
 
 open ENNReal NNReal
 
--- based on ENNReal.mul_inv_cancel
 protected lemma ENNReal.mul_inv_eq_iff_eq_mul {a b c: ENNReal}
   (h0 : b ≠ 0) (ha : a ≠ ∞) (hb : b ≠ ∞) (hc : c ≠ ∞) :
   a * b⁻¹ = c ↔ a = c * b := by
@@ -121,42 +115,8 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : 
       congr 1
       simp only [Nat.cast_add, Nat.cast_one, @Nat.cast_sub _ _ d #X forComp]
       ring
-    · --measurability -- @Moritz ; solves it, but is slow
-      exact Set.Finite.measurableSet <| finite_toSet (E A)
+    · exact Set.Finite.measurableSet <| finite_toSet (E A)
   sorry
-
-
-#check pow_eq_top_iff
-#check WithTop.pow_eq_top_iff
-#check card_pos
-#check card_pi
-#check Nat.card_fun
-#check Nat.card
-#check card
-#check Nat.card_eq_fintype_card
-#check Nat.card_eq_finsetCard
-#check Fintype.ofFinite
-#check PMF.uniformOfFintype_apply
-#check PMF.toMeasure_apply_fintype
-#check PMF.toMeasure
-#check MeasurableSet.of_discrete
-#check DiscreteMeasurableSpace
-#check MeasurableSet.singleton
-#check div_pow
-#check div_eq_mul_inv
-#check mul_inv_eq_iff_eq_mul₀
-#check ENNReal.zpow_add
-#check ENNReal.inv_pow
-#check measure_ne_top
-#check measure_lt_top
-#check zpow_eq_neg_zpow_iff₀
-#check zpow_add₀
-#check card_le_univ
-#check PMF.uniformOfFinset
-#check PMF.uniformOfFintype
-#check PMF.toMeasure_apply
-#check MeasureTheory.measure_biUnion_le
-
 
 
 
