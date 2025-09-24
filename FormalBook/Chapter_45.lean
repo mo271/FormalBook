@@ -100,25 +100,42 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : 
     · nth_rw 2 [← Nat.card_eq_fintype_card]
       rw [Nat.card_fun]
       have sizeEA : #(E A) = 2 ^ (#X - #A + 1) := by
+        have : A.Nonempty := by
+          rw [← card_pos, (H_𝓕 A hA)] ; omega
+        have charaEA : E A = disjUnion {c | ∀ x ∈ A, c x = 0} {c | ∀ x ∈ A, c x = 1}
+          (fun C c₀ c₁ c ohno => by
+              obtain ⟨a,ah⟩ := this
+              replace c₀ := ((Finset.mem_filter_univ c).mp (c₀ ohno)) a ah
+              replace c₁ := ((Finset.mem_filter_univ c).mp (c₁ ohno)) a ah
+              rw [c₀] at c₁
+              contradiction
+              )
+          := by
+            sorry
+        rw [pow_add,pow_one,mul_two]
         sorry
-      simp only [coe_sort_coe, Fintype.card_coe, Nat.card_eq_fintype_card, Fintype.card_fin,
-        Nat.cast_pow, Nat.cast_ofNat, one_div]
-      rw [sizeEA]
-      simp only [Nat.cast_pow, Nat.cast_ofNat]
-      rw [div_eq_mul_inv, ENNReal.mul_inv_eq_iff_eq_mul (by simp) (by simp) (by simp)
-            (by rw [← show (2 : ENNReal)⁻¹ ^ (d-1) = 2⁻¹ ^ (@Nat.cast ℤ _ (d-1)) from by simp] ; simp)]
-      rw [@Nat.cast_sub _ _ 1 d (by omega), Nat.cast_one, ENNReal.inv_zpow' 2 (d-1)]
-      rw [show (2 : ENNReal) ^ #X = 2 ^ (#X : ℤ) from by rw [zpow_natCast]]
-      rw [show (2 : ENNReal) ^ (#X - #A + 1) = 2 ^ (@Nat.cast ℤ _ (#X - #A + 1)) from by rw [zpow_natCast]]
-      rw [← ENNReal.zpow_add (by simp) (by simp)]
-      rw [neg_sub, H_𝓕 A hA]
-      congr 1
-      simp only [Nat.cast_add, Nat.cast_one, @Nat.cast_sub _ _ d #X forComp]
-      ring
+      sorry
+      -- simp only [coe_sort_coe, Fintype.card_coe, Nat.card_eq_fintype_card, Fintype.card_fin,
+      --   Nat.cast_pow, Nat.cast_ofNat, one_div]
+      -- rw [sizeEA]
+      -- simp only [Nat.cast_pow, Nat.cast_ofNat]
+      -- rw [div_eq_mul_inv, ENNReal.mul_inv_eq_iff_eq_mul (by simp) (by simp) (by simp)
+      --       (by rw [← show (2 : ENNReal)⁻¹ ^ (d-1) = 2⁻¹ ^ (@Nat.cast ℤ _ (d-1)) from by simp] ; simp)]
+      -- rw [@Nat.cast_sub _ _ 1 d (by omega), Nat.cast_one, ENNReal.inv_zpow' 2 (d-1)]
+      -- rw [show (2 : ENNReal) ^ #X = 2 ^ (#X : ℤ) from by rw [zpow_natCast]]
+      -- rw [show (2 : ENNReal) ^ (#X - #A + 1) = 2 ^ (@Nat.cast ℤ _ (#X - #A + 1)) from by rw [zpow_natCast]]
+      -- rw [← ENNReal.zpow_add (by simp) (by simp)]
+      -- rw [neg_sub, H_𝓕 A hA]
+      -- congr 1
+      -- simp only [Nat.cast_add, Nat.cast_one, @Nat.cast_sub _ _ d #X forComp]
+      -- ring
     · exact Set.Finite.measurableSet <| finite_toSet (E A)
   sorry
 
+#check card_pos
+#check Finset.mem_filter_univ
 
+#exit
 
 
 /-! Ramsey Numbers and Theorem 2-/
