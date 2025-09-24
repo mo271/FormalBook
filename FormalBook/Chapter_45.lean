@@ -8,6 +8,10 @@ import Mathlib.Data.Finset.Powerset
 --import Mathlib.Analysis.SpecialFunctions.Exp
 --import Mathlib.Analysis.SpecialFunctions.Log.Base
 
+import Mathlib.Probability.Distributions.Uniform
+import Mathlib.Probability.Notation
+
+
 
 open SimpleGraph Finset
 /-!
@@ -63,10 +67,59 @@ theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset
     simp +contextual [Finset.subset_iff]
 
 
+theorem remark_2 {𝓕 𝓢 : Finset (Finset X)}
+  (h₁ : two_colorable 𝓕)  (h₂ : 𝓢 ⊆ 𝓕) : two_colorable 𝓢 := by
+  apply h₁.imp ?_
+  intro coloring h₃ A Amem
+  exact h₃ A (h₂ Amem)
 
---include H_𝓕 (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
-theorem theorem_1 (𝓕 : Finset (Finset X)) : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 :=
+
+open ENNReal NNReal
+
+protected lemma ENNReal.mul_inv_eq_iff_eq_mul {a b c: ENNReal}
+  (h0 : b ≠ 0) (ha : a ≠ ∞) (hb : b ≠ ∞) (hc : c ≠ ∞) :
+  a * b⁻¹ = c ↔ a = c * b := by
+    lift a to ℝ≥0 using ha
+    lift b to ℝ≥0 using hb
+    lift c to ℝ≥0 using hc
+    norm_cast at h0; norm_cast
+    apply mul_inv_eq_iff_eq_mul₀ h0
+
+open MeasureTheory
+
+theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
+  : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 := by
+  intro bnd
+  have I : Fintype ({ x // x ∈ X } → Fin 2) := (by apply Fintype.ofFinite)
+  set P : Measure (X → Fin 2) := (PMF.uniformOfFintype (X → Fin 2)).toMeasure with Pdef
+  set E : (Finset X) → Finset (X → Fin 2) := (fun A => {c | ∀ x ∈ A, ∀ y ∈ A, c x = c y}) with Edef
+  have probaEA (A : Finset X) (hA : A ∈ 𝓕) : P (E A) = (1 / 2)^(@Nat.cast ℤ _ (d-1)) := by
+    have forComp : d ≤ #X := by
+      rw [← H_𝓕 A hA] ; convert (card_le_univ A) ; simp only [Fintype.card_coe]
+    rw [Pdef, PMF.toMeasure_uniformOfFintype_apply]
+    · nth_rw 2 [← Nat.card_eq_fintype_card]
+      rw [Nat.card_fun]
+      have sizeEA : #(E A) = 2 ^ (#X - #A + 1) := by
+        sorry
+      simp only [coe_sort_coe, Fintype.card_coe, Nat.card_eq_fintype_card, Fintype.card_fin,
+        Nat.cast_pow, Nat.cast_ofNat, one_div]
+      rw [sizeEA]
+      simp only [Nat.cast_pow, Nat.cast_ofNat]
+      rw [div_eq_mul_inv, ENNReal.mul_inv_eq_iff_eq_mul (by simp) (by simp) (by simp)
+            (by rw [← show (2 : ENNReal)⁻¹ ^ (d-1) = 2⁻¹ ^ (@Nat.cast ℤ _ (d-1)) from by simp] ; simp)]
+      rw [@Nat.cast_sub _ _ 1 d (by omega), Nat.cast_one, ENNReal.inv_zpow' 2 (d-1)]
+      rw [show (2 : ENNReal) ^ #X = 2 ^ (#X : ℤ) from by rw [zpow_natCast]]
+      rw [show (2 : ENNReal) ^ (#X - #A + 1) = 2 ^ (@Nat.cast ℤ _ (#X - #A + 1)) from by rw [zpow_natCast]]
+      rw [← ENNReal.zpow_add (by simp) (by simp)]
+      rw [neg_sub, H_𝓕 A hA]
+      congr 1
+      simp only [Nat.cast_add, Nat.cast_one, @Nat.cast_sub _ _ d #X forComp]
+      ring
+    · exact Set.Finite.measurableSet <| finite_toSet (E A)
   sorry
+
+
+
 
 /-! Ramsey Numbers and Theorem 2-/
 
