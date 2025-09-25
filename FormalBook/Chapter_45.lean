@@ -33,7 +33,7 @@ open SimpleGraph Finset
 section
 namespace chapter45
 
-variable {α : Type _} {X : Finset α}
+variable {α : Type _} [DecidableEq α] {X : Finset α}
 variable {d : ℕ} {h_d : d ≥ 2}
 
 /-- `𝓕` is a collection of `d`-sets of `X`-/
@@ -87,7 +87,9 @@ protected lemma ENNReal.mul_inv_eq_iff_eq_mul {a b c: ENNReal}
 
 open MeasureTheory
 
-theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
+
+theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
+  (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
   : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 := by
   intro bnd
   have I : Fintype ({ x // x ∈ X } → Fin 2) := (by apply Fintype.ofFinite)
@@ -98,7 +100,8 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : 
       rw [← H_𝓕 A hA] ; convert (card_le_univ A) ; simp only [Fintype.card_coe]
     rw [Pdef, PMF.toMeasure_uniformOfFintype_apply]
     · nth_rw 2 [← Nat.card_eq_fintype_card]
-      rw [Nat.card_fun]
+      rw [Nat.card_fun, Nat.card_fin, Nat.card_eq_fintype_card,Fintype.card_coe]
+      simp only [coe_sort_coe, Fintype.card_coe]
       have sizeEA : #(E A) = 2 ^ (#X - #A + 1) := by
         have : A.Nonempty := by
           rw [← card_pos, (H_𝓕 A hA)] ; omega
@@ -110,32 +113,49 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : 
               rw [c₀] at c₁
               contradiction
               )
-          := by
-            sorry
-        rw [pow_add,pow_one,mul_two]
-        sorry
-      sorry
-      -- simp only [coe_sort_coe, Fintype.card_coe, Nat.card_eq_fintype_card, Fintype.card_fin,
-      --   Nat.cast_pow, Nat.cast_ofNat, one_div]
-      -- rw [sizeEA]
-      -- simp only [Nat.cast_pow, Nat.cast_ofNat]
-      -- rw [div_eq_mul_inv, ENNReal.mul_inv_eq_iff_eq_mul (by simp) (by simp) (by simp)
-      --       (by rw [← show (2 : ENNReal)⁻¹ ^ (d-1) = 2⁻¹ ^ (@Nat.cast ℤ _ (d-1)) from by simp] ; simp)]
-      -- rw [@Nat.cast_sub _ _ 1 d (by omega), Nat.cast_one, ENNReal.inv_zpow' 2 (d-1)]
-      -- rw [show (2 : ENNReal) ^ #X = 2 ^ (#X : ℤ) from by rw [zpow_natCast]]
-      -- rw [show (2 : ENNReal) ^ (#X - #A + 1) = 2 ^ (@Nat.cast ℤ _ (#X - #A + 1)) from by rw [zpow_natCast]]
-      -- rw [← ENNReal.zpow_add (by simp) (by simp)]
-      -- rw [neg_sub, H_𝓕 A hA]
-      -- congr 1
-      -- simp only [Nat.cast_add, Nat.cast_one, @Nat.cast_sub _ _ d #X forComp]
-      -- ring
+          := by grind only [= mem_filter, = mem_disjUnion, mem_univ, cases eager Subtype, cases Or]
+        have cardComp {i} : #{c : { x // x ∈ X } → Fin 2 | ∀ x ∈ A, c x = i} = 2 ^ (#X - #A) := by
+          rw [show #X = Fintype.card X from by simp only [Fintype.card_coe]]
+          rw [← card_compl]
+          have main : #{c : { x // x ∈ X } → Fin 2 | ∀ x ∈ A, c x = i}
+            = Nat.card ({x // x ∈ Aᶜ} → Fin 2) := by
+              rw [Nat.card_eq_fintype_card,← card_univ,eq_comm]
+              apply card_bij (fun k _ => (fun x => if hx : x ∈ Aᶜ then k ⟨x,hx⟩ else i ))
+              · intro k _
+                simp only [Subtype.forall, mem_compl, dite_not, mem_filter, mem_univ,
+                  dite_eq_left_iff, true_and]
+                grind
+              · intro k _ q _ H
+                rw [funext_iff] at H
+                simp only [mem_compl, dite_not, Subtype.forall] at H
+                funext x
+                specialize H x.val (by simp only [coe_mem])
+                rw [dif_neg (by simp only [Subtype.coe_eta] ; exact (mem_compl.mp x.property)),
+                  dif_neg (by simp only [Subtype.coe_eta] ; exact (mem_compl.mp x.property))] at H
+                convert H
+              · intro k kdef
+                use (fun x => k x.val)
+                simp only [mem_compl, dite_eq_ite, ite_not, mem_univ, exists_const]
+                funext x
+                grind only [= mem_filter, mem_univ, cases eager Subtype, cases Or]
+          rwa [Nat.card_fun, Nat.card_fin, Nat.card_eq_fintype_card, Fintype.card_coe] at main
+        rw [pow_add,pow_one,mul_two,charaEA,card_disjUnion, cardComp, cardComp]
+      simp only [Nat.cast_pow, Nat.cast_ofNat, one_div]
+      rw [sizeEA]
+      simp only [Nat.cast_pow, Nat.cast_ofNat]
+      rw [div_eq_mul_inv, ENNReal.mul_inv_eq_iff_eq_mul (by simp) (by simp) (by simp)
+            (by rw [← show (2 : ENNReal)⁻¹ ^ (d-1) = 2⁻¹ ^ (@Nat.cast ℤ _ (d-1)) from by simp] ; simp)]
+      rw [@Nat.cast_sub _ _ 1 d (by omega), Nat.cast_one, ENNReal.inv_zpow' 2 (d-1)]
+      rw [show (2 : ENNReal) ^ #X = 2 ^ (#X : ℤ) from by rw [zpow_natCast]]
+      rw [show (2 : ENNReal) ^ (#X - #A + 1) = 2 ^ (@Nat.cast ℤ _ (#X - #A + 1)) from by rw [zpow_natCast]]
+      rw [← ENNReal.zpow_add (by simp) (by simp)]
+      rw [neg_sub, H_𝓕 A hA]
+      congr 1
+      simp only [Nat.cast_add, Nat.cast_one, @Nat.cast_sub _ _ d #X forComp]
+      ring
     · exact Set.Finite.measurableSet <| finite_toSet (E A)
   sorry
 
-#check card_pos
-#check Finset.mem_filter_univ
-
-#exit
 
 
 /-! Ramsey Numbers and Theorem 2-/
