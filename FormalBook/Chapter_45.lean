@@ -191,7 +191,6 @@ theorem lemma_1 {β : Type _} [DecidableEq β] (s : Finset α) (t : α → Finse
       exact (Classical.choose_spec pf)
 
 
-#exit
 
 /-! Ramsey Numbers and Theorem 2-/
 
