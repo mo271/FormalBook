@@ -157,35 +157,6 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
     · exact Set.Finite.measurableSet <| finite_toSet (E A)
   sorry
 
-#check Measure.m_iUnion
-#check MeasureTheory.measure_le_measure_union_left
-#check MeasureTheory.measure_iUnion_le
-#check MeasureTheory.measure_iUnion
-#check MeasureTheory.measure_iUnion_fintype_le
-#check MeasureTheory.measure_iUnion_null_iff
-
-#check MeasureTheory.measure_biUnion_le
-#check MeasureTheory.measure_biUnion_lt_top
-#check MeasureTheory.measure_biUnion
-
-#check MeasureTheory.measure_biUnion_finset
-#check MeasureTheory.measure_biUnion_finset_le
-#check MeasureTheory.measure_biUnion
-
-#check Finset.biUnion
-#check Finset.sigma
-#check Finset.sigma_eq_biUnion
-#check Function.Embedding.sigmaMk
-#check Finset.sigma_preimage_mk
-#check Finset.card_sigma
-#check disjiUnion_map_sigma_mk
-#check Finset.sigma
-#check Finset.card_biUnion_le_card_mul
-
-#check Finset.card_image_iff.mpr
-#check Classical.choose_spec
-#print Finset.image
-#check mem_inter.mp
 
 theorem lemma_1 {β : Type _} [DecidableEq β] (s : Finset α) (t : α → Finset β)
   (h : ∃ i j : s, i ≠ j ∧  (t i ∩ t j).Nonempty)
