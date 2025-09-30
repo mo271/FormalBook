@@ -67,6 +67,7 @@ theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset
     simp +contextual [Finset.subset_iff]
 
 
+set_option linter.unusedSectionVars false in
 theorem remark_2 {𝓕 𝓢 : Finset (Finset X)}
   (h₁ : two_colorable 𝓕)  (h₂ : 𝓢 ⊆ 𝓕) : two_colorable 𝓢 := by
   apply h₁.imp ?_
@@ -156,7 +157,70 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
     · exact Set.Finite.measurableSet <| finite_toSet (E A)
   sorry
 
+#check Measure.m_iUnion
+#check MeasureTheory.measure_le_measure_union_left
+#check MeasureTheory.measure_iUnion_le
+#check MeasureTheory.measure_iUnion
+#check MeasureTheory.measure_iUnion_fintype_le
+#check MeasureTheory.measure_iUnion_null_iff
 
+#check MeasureTheory.measure_biUnion_le
+#check MeasureTheory.measure_biUnion_lt_top
+#check MeasureTheory.measure_biUnion
+
+#check MeasureTheory.measure_biUnion_finset
+#check MeasureTheory.measure_biUnion_finset_le
+#check MeasureTheory.measure_biUnion
+
+#check Finset.biUnion
+#check Finset.sigma
+#check Finset.sigma_eq_biUnion
+#check Function.Embedding.sigmaMk
+#check Finset.sigma_preimage_mk
+#check Finset.card_sigma
+#check disjiUnion_map_sigma_mk
+#check Finset.sigma
+#check Finset.card_biUnion_le_card_mul
+
+#check Finset.card_image_iff.mpr
+#check Classical.choose_spec
+#print Finset.image
+#check mem_inter.mp
+
+theorem lemma_1 {β : Type _} [DecidableEq β] (s : Finset α) (t : α → Finset β)
+  (h : ∃ i j : s, i ≠ j ∧  (t i ∩ t j).Nonempty)
+  : #(s.biUnion t) < #(s.sigma t) := by
+    rw [← card_attach]
+    classical
+    set lift : { x // x ∈ s.biUnion t } → ((_ : α) × β) :=
+      (fun x => ⟨Classical.choose (mem_biUnion.mp x.prop), x.val⟩) with lift_def
+    have Inj : Set.InjOn lift (s.biUnion t).attach := by
+      intro a ha b hb eq ; grind only [cases eager Subtype]
+    rw [← (Finset.card_image_iff.mpr Inj)]
+    apply card_lt_card
+    rw [ssubset_iff_of_subset]
+    · obtain ⟨i,j,inej,x,hx⟩ := h
+      by_contra! con
+      have con1 : ⟨↑i, x⟩ ∈ image lift (s.biUnion t).attach :=
+        con ⟨i,x⟩ (by rw [mem_sigma] ; refine' ⟨i.prop,_⟩ ; exact (mem_inter.mp hx).1)
+      have con2 : ⟨↑j, x⟩ ∈ image lift (s.biUnion t).attach :=
+        con ⟨j,x⟩ (by rw [mem_sigma] ; refine' ⟨j.prop,_⟩ ; exact (mem_inter.mp hx).2)
+      simp only [mem_image, mem_attach, true_and, Subtype.exists, mem_biUnion] at con1 con2
+      obtain ⟨b1,⟨k1,k1s,k1def⟩,eq1⟩ := con1
+      obtain ⟨b2,⟨k2,k2s,k2def⟩,eq2⟩ := con2
+      simp_rw [lift_def, Sigma.ext_iff] at eq1 eq2
+      grind only [= mem_inter, cases eager Subtype, cases Or]
+    · intro x
+      simp only [mem_image, mem_attach, true_and, Subtype.exists, mem_biUnion, mem_sigma,
+        forall_exists_index, forall_and_index]
+      intro y z hz hy L
+      rw [← L, lift_def]
+      dsimp
+      generalize_proofs pf
+      exact (Classical.choose_spec pf)
+
+
+#exit
 
 /-! Ramsey Numbers and Theorem 2-/
 
