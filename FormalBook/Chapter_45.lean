@@ -196,7 +196,36 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
         Decidable.not_not]
       use (fun _ => 0)
       grind only [= subset_iff, = mem_filter, mem_univ, cases eager Subtype, cases Or]
-    sorry
+    rw [sum_congr rfl probaEA,sum_const] at unionBound
+    replace unionBound := lt_of_lt_of_le unionBound
+      (smul_le_smul_of_nonneg_right bnd (by simp only [one_div, zpow_natCast, zero_le]))
+    simp only [one_div, zpow_natCast, nsmul_eq_mul, Nat.cast_pow,
+      Nat.cast_ofNat] at unionBound
+    rw [← ENNReal.inv_pow, ENNReal.mul_inv_cancel (Ne.symm (NeZero.ne' (2 ^ (d - 1))))
+      (Ne.symm (not_eq_of_beq_eq_false rfl))] at unionBound
+    rw [← @prob_add_prob_compl _ _ P (𝓕.biUnion E) _ (by exact Finset.measurableSet (𝓕.biUnion E)),
+      add_comm, ← coe_compl] at unionBound
+    replace unionBound := ENNReal.sub_lt_of_lt_add (le_refl _) unionBound
+    rw [tsub_self,Pdef,PMF.toMeasure_apply_finset,
+      sum_congr rfl (fun x _ => PMF.uniformOfFintype_apply x), sum_const] at unionBound
+    simp only [nsmul_eq_mul, CanonicallyOrderedAdd.mul_pos, Nat.cast_pos, card_pos, ENNReal.inv_pos,
+      ne_eq, natCast_ne_top, not_false_eq_true, and_true] at unionBound
+    obtain ⟨c,cdef⟩ := unionBound
+    use c
+    intro A Adef
+    simp only [mem_compl, mem_biUnion, not_exists, not_and] at cdef
+    specialize cdef A Adef
+    simp only [Edef, mem_filter, mem_univ, true_and, not_forall] at cdef
+    obtain ⟨a,adef,b,bdef,neq⟩ := cdef
+    set Q := (c a) with Qdef
+    -- fin_cases Q --fails ...
+    cases' (show Q = 0 ∨ Q = 1 from by grind) with K K
+    · use ⟨a,adef⟩
+      use ⟨b,bdef⟩
+      grind only [cases eager Subtype]
+    · use ⟨b,bdef⟩
+      use ⟨a,adef⟩
+      grind only [cases eager Subtype]
   · simp only [not_le] at base
     interval_cases q : 𝓕.card
     · use (fun _ => 0)
