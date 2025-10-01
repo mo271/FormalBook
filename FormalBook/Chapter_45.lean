@@ -67,6 +67,7 @@ theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset
     simp +contextual [Finset.subset_iff]
 
 
+set_option linter.unusedSectionVars false in
 theorem remark_2 {𝓕 𝓢 : Finset (Finset X)}
   (h₁ : two_colorable 𝓕)  (h₂ : 𝓢 ⊆ 𝓕) : two_colorable 𝓢 := by
   apply h₁.imp ?_
@@ -110,7 +111,6 @@ theorem MeasureTheory.measure_biUnion_lt_sum_of_inter {β : Type _}
       simp only [↓reduceIte, coe_sdiff]
       rw [← @MeasureTheory.measure_diff_add_inter _ _ P (t j) (t i) (Set.Finite.measurableSet <| finite_toSet (t j))]
       apply ENNReal.lt_add_right (by apply measure_ne_top) h
-
 
 
 
