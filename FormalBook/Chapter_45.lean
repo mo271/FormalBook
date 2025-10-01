@@ -33,7 +33,7 @@ open SimpleGraph Finset
 section
 namespace chapter45
 
-variable {α : Type _} {X : Finset α}
+variable {α : Type _} [DecidableEq α] {X : Finset α}
 variable {d : ℕ} {h_d : d ≥ 2}
 
 /-- `𝓕` is a collection of `d`-sets of `X`-/
@@ -87,38 +87,136 @@ protected lemma ENNReal.mul_inv_eq_iff_eq_mul {a b c: ENNReal}
 
 open MeasureTheory
 
-theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X)) (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
+theorem MeasureTheory.measure_biUnion_lt_sum_of_inter {β : Type _}
+  [MeasurableSpace β] [MeasurableSingletonClass β] [DecidableEq β]
+  {P : Measure β} [IsFiniteMeasure P] (s : Finset α) (t : α → Finset β)
+  (h : ∃ i j : s, i ≠ j ∧  P (t i ∩ t j) ≠ 0)
+  : P (s.biUnion t) < ∑ x ∈ s, P (t x) := by
+    obtain ⟨i,j,inej,h⟩ := h
+    set t' : α → Finset β := (fun x => if x = i then t i \ t j else t x) with tdef
+    have eq : s.biUnion t = s.biUnion t' := by
+      grind only [= mem_biUnion, = mem_sdiff, cases eager Subtype, cases Or]
+    simp only [eq,coe_biUnion, mem_coe, gt_iff_lt]
+    apply lt_of_le_of_lt (@MeasureTheory.measure_biUnion_finset_le _ _ _ _ _ P s (fun x => t' x))
+    rw [← sum_erase_add s _ i.prop, ← sum_erase_add s _ i.prop]
+    apply ENNReal.add_lt_add_of_le_of_lt
+    · simp only [ne_eq, sum_eq_top, mem_erase, measure_ne_top, and_false, exists_false,
+      not_false_eq_true]
+    · apply sum_le_sum
+      intro _i idef
+      apply MeasureTheory.measure_mono
+      grind only [= Set.subset_def, = mem_erase, cases eager Subtype]
+    · dsimp [t']
+      simp only [↓reduceIte, coe_sdiff]
+      rw [← @MeasureTheory.measure_diff_add_inter _ _ P (t j) (t i) (Set.Finite.measurableSet <| finite_toSet (t j))]
+      apply ENNReal.lt_add_right (by apply measure_ne_top) h
+
+
+
+
+theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
+  (H_𝓕 : ∀ (A : Finset X), A ∈ 𝓕 → A.card = d)
   : 𝓕.card ≤ 2 ^ (d-1) → two_colorable 𝓕 := by
   intro bnd
-  have I : Fintype ({ x // x ∈ X } → Fin 2) := (by apply Fintype.ofFinite)
-  set P : Measure (X → Fin 2) := (PMF.uniformOfFintype (X → Fin 2)).toMeasure with Pdef
-  set E : (Finset X) → Finset (X → Fin 2) := (fun A => {c | ∀ x ∈ A, ∀ y ∈ A, c x = c y}) with Edef
-  have probaEA (A : Finset X) (hA : A ∈ 𝓕) : P (E A) = (1 / 2)^(@Nat.cast ℤ _ (d-1)) := by
-    have forComp : d ≤ #X := by
-      rw [← H_𝓕 A hA] ; convert (card_le_univ A) ; simp only [Fintype.card_coe]
-    rw [Pdef, PMF.toMeasure_uniformOfFintype_apply]
-    · nth_rw 2 [← Nat.card_eq_fintype_card]
-      rw [Nat.card_fun]
-      have sizeEA : #(E A) = 2 ^ (#X - #A + 1) := by
-        sorry
-      simp only [coe_sort_coe, Fintype.card_coe, Nat.card_eq_fintype_card, Fintype.card_fin,
-        Nat.cast_pow, Nat.cast_ofNat, one_div]
-      rw [sizeEA]
-      simp only [Nat.cast_pow, Nat.cast_ofNat]
-      rw [div_eq_mul_inv, ENNReal.mul_inv_eq_iff_eq_mul (by simp) (by simp) (by simp)
-            (by rw [← show (2 : ENNReal)⁻¹ ^ (d-1) = 2⁻¹ ^ (@Nat.cast ℤ _ (d-1)) from by simp] ; simp)]
-      rw [@Nat.cast_sub _ _ 1 d (by omega), Nat.cast_one, ENNReal.inv_zpow' 2 (d-1)]
-      rw [show (2 : ENNReal) ^ #X = 2 ^ (#X : ℤ) from by rw [zpow_natCast]]
-      rw [show (2 : ENNReal) ^ (#X - #A + 1) = 2 ^ (@Nat.cast ℤ _ (#X - #A + 1)) from by rw [zpow_natCast]]
-      rw [← ENNReal.zpow_add (by simp) (by simp)]
-      rw [neg_sub, H_𝓕 A hA]
-      congr 1
-      simp only [Nat.cast_add, Nat.cast_one, @Nat.cast_sub _ _ d #X forComp]
-      ring
-    · exact Set.Finite.measurableSet <| finite_toSet (E A)
-  sorry
-
-
+  by_cases base :  2 ≤ 𝓕.card
+  · have I : Fintype ({ x // x ∈ X } → Fin 2) := (by apply Fintype.ofFinite)
+    set P : Measure (X → Fin 2) := (PMF.uniformOfFintype (X → Fin 2)).toMeasure with Pdef
+    set E : (Finset X) → Finset (X → Fin 2) := (fun A => {c | ∀ x ∈ A, ∀ y ∈ A, c x = c y}) with Edef
+    have probaEA (A : Finset X) (hA : A ∈ 𝓕) : P (E A) = (1 / 2)^(@Nat.cast ℤ _ (d-1)) := by
+      have forComp : d ≤ #X := by
+        rw [← H_𝓕 A hA] ; convert (card_le_univ A) ; simp only [Fintype.card_coe]
+      rw [Pdef, PMF.toMeasure_uniformOfFintype_apply]
+      · nth_rw 2 [← Nat.card_eq_fintype_card]
+        rw [Nat.card_fun, Nat.card_fin, Nat.card_eq_fintype_card,Fintype.card_coe]
+        simp only [coe_sort_coe, Fintype.card_coe]
+        have sizeEA : #(E A) = 2 ^ (#X - #A + 1) := by
+          have : A.Nonempty := by
+            rw [← card_pos, (H_𝓕 A hA)] ; omega
+          have charaEA : E A = disjUnion {c | ∀ x ∈ A, c x = 0} {c | ∀ x ∈ A, c x = 1}
+            (fun C c₀ c₁ c ohno => by
+                obtain ⟨a,ah⟩ := this
+                replace c₀ := ((Finset.mem_filter_univ c).mp (c₀ ohno)) a ah
+                replace c₁ := ((Finset.mem_filter_univ c).mp (c₁ ohno)) a ah
+                rw [c₀] at c₁
+                contradiction
+                )
+            := by grind only [= mem_filter, = mem_disjUnion, mem_univ, cases eager Subtype, cases Or]
+          have cardComp {i} : #{c : { x // x ∈ X } → Fin 2 | ∀ x ∈ A, c x = i} = 2 ^ (#X - #A) := by
+            rw [show #X = Fintype.card X from by simp only [Fintype.card_coe]]
+            rw [← card_compl]
+            have main : #{c : { x // x ∈ X } → Fin 2 | ∀ x ∈ A, c x = i}
+              = Nat.card ({x // x ∈ Aᶜ} → Fin 2) := by
+                rw [Nat.card_eq_fintype_card,← card_univ,eq_comm]
+                apply card_bij (fun k _ => (fun x => if hx : x ∈ Aᶜ then k ⟨x,hx⟩ else i ))
+                · intro k _
+                  simp only [Subtype.forall, mem_compl, dite_not, mem_filter, mem_univ,
+                    dite_eq_left_iff, true_and]
+                  grind
+                · intro k _ q _ H
+                  rw [funext_iff] at H
+                  simp only [mem_compl, dite_not, Subtype.forall] at H
+                  funext x
+                  specialize H x.val (by simp only [coe_mem])
+                  rw [dif_neg (by simp only [Subtype.coe_eta] ; exact (mem_compl.mp x.property)),
+                    dif_neg (by simp only [Subtype.coe_eta] ; exact (mem_compl.mp x.property))] at H
+                  convert H
+                · intro k kdef
+                  use (fun x => k x.val)
+                  simp only [mem_compl, dite_eq_ite, ite_not, mem_univ, exists_const]
+                  funext x
+                  grind only [= mem_filter, mem_univ, cases eager Subtype, cases Or]
+            rwa [Nat.card_fun, Nat.card_fin, Nat.card_eq_fintype_card, Fintype.card_coe] at main
+          rw [pow_add,pow_one,mul_two,charaEA,card_disjUnion, cardComp, cardComp]
+        simp only [Nat.cast_pow, Nat.cast_ofNat, one_div]
+        rw [sizeEA]
+        simp only [Nat.cast_pow, Nat.cast_ofNat]
+        rw [div_eq_mul_inv, ENNReal.mul_inv_eq_iff_eq_mul (by simp) (by simp) (by simp)
+              (by rw [← show (2 : ENNReal)⁻¹ ^ (d-1) = 2⁻¹ ^ (@Nat.cast ℤ _ (d-1)) from by simp] ; simp)]
+        rw [@Nat.cast_sub _ _ 1 d (by omega), Nat.cast_one, ENNReal.inv_zpow' 2 (d-1)]
+        rw [show (2 : ENNReal) ^ #X = 2 ^ (#X : ℤ) from by rw [zpow_natCast]]
+        rw [show (2 : ENNReal) ^ (#X - #A + 1) = 2 ^ (@Nat.cast ℤ _ (#X - #A + 1)) from by rw [zpow_natCast]]
+        rw [← ENNReal.zpow_add (by simp) (by simp)]
+        rw [neg_sub, H_𝓕 A hA]
+        congr 1
+        simp only [Nat.cast_add, Nat.cast_one, @Nat.cast_sub _ _ d #X forComp]
+        ring
+      · exact Set.Finite.measurableSet <| finite_toSet (E A)
+    have unionBound : P (𝓕.biUnion E) < ∑ A ∈ 𝓕, P (E A) := by
+      apply MeasureTheory.measure_biUnion_lt_sum_of_inter
+      obtain ⟨Ah,Ahdef,Ahprop⟩ := exists_subset_card_eq base
+      obtain ⟨x,y,xney,Aha⟩ := card_eq_two.mp Ahprop
+      rw [Aha] at Ahdef
+      use ⟨x, Ahdef (by simp only [mem_insert, mem_singleton, true_or])⟩
+      use ⟨y, Ahdef (by simp only [mem_insert, mem_singleton, or_true])⟩
+      simp only [ne_eq, Subtype.mk.injEq]
+      refine' ⟨xney,_⟩
+      simp only [Pdef, PMF.toMeasure_apply_fintype, sum_eq_zero_iff, mem_univ,
+        Set.indicator_apply_eq_zero, Set.mem_inter_iff, mem_coe, PMF.uniformOfFintype_apply,
+        ENNReal.inv_eq_zero, natCast_ne_top, imp_false, not_and, forall_const, not_forall,
+        Decidable.not_not]
+      use (fun _ => 0)
+      grind only [= subset_iff, = mem_filter, mem_univ, cases eager Subtype, cases Or]
+    sorry
+  · simp only [not_le] at base
+    interval_cases q : 𝓕.card
+    · use (fun _ => 0)
+      intro A ohno
+      exact False.elim ((card_ne_zero_of_mem ohno) q)
+    · obtain ⟨A,Adef⟩ := card_eq_one.mp q
+      rw [Adef]
+      specialize H_𝓕 A (by rw [Adef] ; exact mem_singleton_self _)
+      rw [← H_𝓕] at h_d
+      obtain ⟨Ah,Ahdef,Ahprop⟩ := exists_subset_card_eq h_d
+      obtain ⟨x,y,xney,Aha⟩ := card_eq_two.mp Ahprop
+      rw [Aha] at Ahdef
+      use (fun z => if z = x then 0 else 1)
+      intro B Bdef
+      rw [mem_singleton] at Bdef
+      rw [← Bdef] at Ahdef
+      use ⟨x, Ahdef (by simp only [mem_insert, mem_singleton, true_or])⟩
+      use ⟨y, Ahdef (by simp only [mem_insert, mem_singleton, or_true])⟩
+      simp only [↓reduceIte, Fin.isValue, ite_eq_right_iff, zero_ne_one, imp_false, true_and]
+      exact ne_comm.mp xney
 
 
 /-! Ramsey Numbers and Theorem 2-/
