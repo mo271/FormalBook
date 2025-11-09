@@ -32,7 +32,7 @@ There is no proof given in the book, perhaps check out Erdős' for a proof to fo
 -/
 namespace chapter3
 
-theorem sylvester (k n : ℕ) (h : n ≥ 2*k): ∃ p, p > k ∧ p.Prime ∧ p ∣ choose n k :=
+theorem sylvester (k n : ℕ) (h : n ≥ 2*k) (h_k : k > 0): ∃ p, p > k ∧ p.Prime ∧ p ∣ choose n k :=
   sorry
 
 /-!
@@ -113,7 +113,7 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
     -- main proof here proceeding in four steps
     -- Step (1)
     have h₁: ∃ p, p.Prime ∧ p^l ≤ n ∧ k^l < p^l ∧ k^2 ≤ k^l := by
-      obtain ⟨p, ⟨h_klp, ⟨h_p, h_p_div_binom⟩⟩⟩ := sylvester k n h
+      obtain ⟨p, ⟨h_klp, ⟨h_p, h_p_div_binom⟩⟩⟩ := sylvester k n h (lt_of_lt_of_le (Nat.zero_lt_succ 3) h_4lek)
       use p
       refine' ⟨h_p,  ⟨_, _⟩⟩
       -- prove p^l ≤ n
