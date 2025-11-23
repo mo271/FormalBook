@@ -1,11 +1,167 @@
 \chapter{Every finite division ring is a field}
 
+\begin{theorem}[Roots of unity]
+  \label{root_of_unity}
+  The $n$-th roots of unity are
+  \[
+  \lambda_k = e^{\frac{2k\pi i}{n}} = \cos(2k\pi/n) + i \sin(2k\pi/n), \quad 0 \le k \le n - 1.
+  \]
+\end{theorem}
+\begin{proof}
+  Any complex number $z = x + iy$ may be written in the ``polar'' form
+  \[
+  z = r e^{i\varphi} = r(\cos \varphi + i \sin \varphi),
+  \]
+  where $r = |z| = \sqrt{x^2 + y^2}$ is the distance of $z$ to the origin,
+  and $\varphi$ is the angle measured from the positive $x$-axis.
+  The $n$-th roots of unity are therefore of the form
+  \[
+  \lambda_k = e^{\frac{2k\pi i}{n}} = \cos(2k\pi/n) + i \sin(2k\pi/n), \quad 0 \le k \le n - 1,
+  \]
+  since for all $k$
+  \[
+  \lambda_k^n = e^{2k\pi i} = \cos(2k\pi) + i \sin(2k\pi) = 1.
+  \]
+  We obtain these roots geometrically by inscribing a regular $n$-gon into the unit circle.
+  Note that $\lambda_k = \zeta^k$ for all $k$, where $\zeta = e^{\frac{2\pi i}{n}}$.
+  Thus the $n$-th roots of unity form a cyclic group $\{\zeta, \zeta^2, \dots, \zeta^{n-1}, \zeta^n = 1\}$ of order $n$.
+\end{proof}
+
 \begin{theorem}[Wedderburn's theorem]
   \label{wedderburn}
   \lean{wedderburn}
   \leanok
-  Every finite division ring is commutative
+  Every finite division ring is commutative.
 \end{theorem}
 \begin{proof}
-  TODO
+  Our first ingredient comes from a blend of linear algebra and basic group theory.
+  For an arbitrary element $s \in R$, let $C_s$ be the set $\{x \in R : xs = sx\}$ of elements which commute with $s$;
+  $C_s$ is called the \emph{centralizer} of $s$.
+  Clearly, $C_s$ contains $0$ and $1$ and is a sub-division ring of $R$.
+  The \emph{center} $Z$ is the set of elements which commute with all elements of $R$, thus $Z = \bigcap_{s \in R} C_s$.
+  In particular, all elements of $Z$ commute, $0$ and $1$ are in $Z$, and so $Z$ is a \emph{finite field}.
+  Let us set $|Z| = q$.
+  
+  We can regard $R$ and $C_s$ as vector spaces over the field $Z$ and deduce that $|R| = q^n$, where $n$ is the dimension of the vector space $R$ over $Z$,
+  and similarly $|C_s| = q^{n_s}$ for suitable integers $n_s \ge 1$.
+  
+  Now let us assume that $R$ is not a field.
+  This means that for \emph{some} $s \in R$ the centralizer $C_s$ is not all of $R$, or, what is the same, $n_s < n$.
+  
+  On the set $R^* := R \setminus \{0\}$ we consider the relation
+  \[
+  r' \sim r :\iff r' = x^{-1}rx \quad \text{for some } x \in R^*.
+  \]
+  It is easy to check that $\sim$ is an equivalence relation. Let
+  \[
+  A_s := \{x^{-1}sx : x \in R^*\}
+  \]
+  be the equivalence class containing $s$.
+  We note that $|A_s| = 1$ precisely when $s$ is in the center $Z$.
+  So by our assumption, there are classes $A_s$ with $|A_s| \ge 2$.
+  Consider now for $s \in R^*$ the map $f_s : x \mapsto x^{-1}sx$ from $R^*$ onto $A_s$.
+  For $x, y \in R^*$ we find
+  \[
+  x^{-1}sx = y^{-1}sy \iff (yx^{-1})s = s(yx^{-1}) \iff yx^{-1} \in C_s^* \iff y \in C_s^* x,
+  \]
+  for $C_s^* := C_s \setminus \{0\}$, where $C_s^* x = \{zx : z \in C_s^*\}$ has size $|C_s^*|$.
+  Hence any element $x^{-1}sx$ is the image of precisely $|C_s^*| = q^{n_s} - 1$ elements in $R^*$ under the map $f_s$,
+  and we deduce $|R^*| = |A_s| |C_s^*|$. In particular, we note that
+  \[
+  \frac{|R^*|}{|C_s^*|} = \frac{q^n - 1}{q^{n_s} - 1} = |A_s| \quad \text{is an \emph{integer} for all } s.
+  \]
+  We know that the equivalence classes partition $R^*$.
+  We now group the central elements $Z^*$ together and denote by $A_1, \dots, A_t$ the equivalence classes containing more than one element.
+  By our assumption we know $t \ge 1$.
+  Since $|R^*| = |Z^*| + \sum_{k=1}^t |A_k|$, we have proved the so-called \emph{class formula}
+  \begin{equation} \label{eq:class_formula}
+  q^n - 1 = q - 1 + \sum_{k=1}^t \frac{q^n - 1}{q^{n_k} - 1},
+  \end{equation}
+  where we have $1 < \frac{q^n - 1}{q^{n_k} - 1} \in \mathbb{N}$ for all $k$.
+  
+  With \eqref{eq:class_formula} we have left abstract algebra and are back to the natural numbers.
+  Next we claim that $q^{n_k} - 1 \mid q^n - 1$ implies $n_k \mid n$.
+  Indeed, write $n = a n_k + r$ with $0 \le r < n_k$, then $q^{n_k} - 1 \mid q^{a n_k + r} - 1$ implies
+  \[
+  q^{n_k} - 1 \mid (q^{a n_k + r} - 1) - (q^{n_k} - 1) = q^{n_k} (q^{(a-1)n_k + r} - 1),
+  \]
+  and thus $q^{n_k} - 1 \mid q^{(a-1)n_k + r} - 1$, since $q^{n_k}$ and $q^{n_k} - 1$ are relatively prime.
+  Continuing in this way we find $q^{n_k} - 1 \mid q^r - 1$ with $0 \le r < n_k$, which is only possible for $r = 0$, that is, $n_k \mid n$.
+  In summary, we note
+  \begin{equation} \label{eq:nk_divides_n}
+  n_k \mid n \quad \text{for all } k.
+  \end{equation}
+  Now comes the second ingredient: the complex numbers $\mathbb{C}$.
+  Consider the polynomial $x^n - 1$.
+  Its roots in $\mathbb{C}$ are called the $n$-th roots of unity.
+  Since $\lambda^n = 1$, all these roots $\lambda$ have $|\lambda| = 1$ and lie therefore on the unit circle of the complex plane.
+  In fact, they are precisely the numbers $\lambda_k = e^{\frac{2k\pi i}{n}} = \cos(2k\pi/n) + i \sin(2k\pi/n)$, $0 \le k \le n - 1$.
+  Some of the roots $\lambda$ satisfy $\lambda^d = 1$ for $d < n$;
+  for example, the root $\lambda = -1$ satisfies $\lambda^2 = 1$.
+  For a root $\lambda$, let $d$ be the smallest positive exponent with $\lambda^d = 1$,
+  that is, $d$ is the order of $\lambda$ in the group of the roots of unity.
+  Then $d \mid n$, by Lagrange's theorem (``the order of every element of a group divides the order of the group'').
+  Note that there are roots of order $n$, such as $\lambda_1 = e^{\frac{2\pi i}{n}}$.
+  
+  Now we group all roots of order $d$ together and set
+  \[
+  \phi_d(x) := \prod_{\lambda \text{ of order } d} (x - \lambda).
+  \]
+  Note that the definition of $\phi_d(x)$ is independent of $n$.
+  Since every root has some order $d$, we conclude that
+  \begin{equation} \label{eq:prod_phi}
+  x^n - 1 = \prod_{d \mid n} \phi_d(x).
+  \end{equation}
+  Here is the crucial observation:
+  The coefficients of the polynomials $\phi_n(x)$ are integers (that is, $\phi_n(x) \in \mathbb{Z}[x]$ for all $n$),
+  where in addition the constant coefficient is either $1$ or $-1$.
+  Let us carefully verify this claim.
+  For $n = 1$ we have $1$ as the only root, and so $\phi_1(x) = x - 1$.
+  Now we proceed by induction, where we assume $\phi_d(x) \in \mathbb{Z}[x]$ for all $d < n$,
+  and that the constant coefficient of $\phi_d(x)$ is $1$ or $-1$.
+  By \eqref{eq:prod_phi},
+  \begin{equation} \label{eq:poly_div}
+  x^n - 1 = p(x) \phi_n(x)
+  \end{equation}
+  where $p(x) = \prod_{d \mid n, d < n} \phi_d(x) = \sum_{j=0}^{n-\ell} p_j x^j$, $\phi_n(x) = \sum_{k=0}^{\ell} a_k x^k$, with $p_0 = 1$ or $p_0 = -1$.
+  Since $-1 = p_0 a_0$, we see $a_0 \in \{1, -1\}$.
+  Suppose we already know that $a_0, a_1, \dots, a_{k-1} \in \mathbb{Z}$.
+  Computing the coefficient of $x^k$ on both sides of \eqref{eq:poly_div} we find
+  \[
+  \sum_{j=0}^k p_j a_{k-j} = \sum_{j=1}^k p_j a_{k-j} + p_0 a_k \in \mathbb{Z}.
+  \]
+  By assumption, all $a_0, \dots, a_{k-1}$ (and all $p_j$) are in $\mathbb{Z}$.
+  Thus $p_0 a_k$ and hence $a_k$ must also be integers, since $p_0$ is $1$ or $-1$.
+  
+  We are ready for the \emph{coup de gr\^ace}.
+  Let $n_k \mid n$ be one of the numbers appearing in \eqref{eq:class_formula}.
+  Then
+  \[
+  x^n - 1 = \prod_{d \mid n} \phi_d(x) = (x^{n_k} - 1) \phi_n(x) \prod_{d \mid n, d \nmid n_k, d \ne n} \phi_d(x).
+  \]
+  We conclude that in $\mathbb{Z}$ we have the divisibility relations
+  \begin{equation} \label{eq:div_relations}
+  \phi_n(q) \mid q^n - 1 \quad \text{and} \quad \phi_n(q) \mid \frac{q^n - 1}{q^{n_k} - 1}.
+  \end{equation}
+  Since \eqref{eq:div_relations} holds for all $k$, we deduce from the class formula \eqref{eq:class_formula}
+  \[
+  \phi_n(q) \mid q - 1,
+  \]
+  but this cannot be.
+  Why? We know $\phi_n(x) = \prod (x - \lambda)$ where $\lambda$ runs through all roots of $x^n - 1$ of order $n$.
+  Let $\lambda = a + ib$ be one of those roots.
+  By $n > 1$ (because of $R \ne Z$) we have $\lambda \ne 1$, which implies that the real part $a$ is smaller than $1$.
+  Now $|\lambda|^2 = a^2 + b^2 = 1$, and hence
+  \begin{align*}
+  |q - \lambda|^2 &= |q - a - ib|^2 = (q - a)^2 + b^2 \\
+  &= q^2 - 2aq + a^2 + b^2 = q^2 - 2aq + 1 \\
+  &> q^2 - 2q + 1 \quad (\text{because of } a < 1) \\
+  &= (q - 1)^2,
+  \end{align*}
+  and so $|q - \lambda| > q - 1$ holds for all roots of order $n$.
+  This implies
+  \[
+  |\phi_n(q)| = \prod_{\lambda} |q - \lambda| > q - 1,
+  \]
+  which means that $\phi_n(q)$ cannot be a divisor of $q - 1$, contradiction and end of proof.
 \end{proof}

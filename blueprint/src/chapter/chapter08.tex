@@ -5,21 +5,90 @@
   \label{e_irrational}
   \lean{book.irrational.e_irrational}
   \leanok
-  \(e\) is irrational
-\end{theorem}
+  $e$ is irrational.
+\end{theorem}	
 \begin{proof}
-  TODO
+  \leanok
+  To start with, it is rather easy to see (as did Fourier in 1815) that $e = \sum_{k \ge 0} \frac{1}{k!}$ is irrational.
+  Indeed, if we had $e = \frac{a}{b}$ for integers $a$ and $b > 0$, then we would get
+  \[
+  n! b e = n! a
+  \]
+  for \emph{every} $n \ge 0$.
+  But this cannot be true, because on the right-hand side we have an integer, while the left-hand side with
+  \[
+  e = 1 + \frac{1}{1!} + \frac{1}{2!} + \dots + \frac{1}{n!} + \frac{1}{(n+1)!} + \frac{1}{(n+2)!} + \frac{1}{(n+3)!} + \dots
+  \]
+  decomposes into an integral part
+  \[
+  b n! \left( 1 + \frac{1}{1!} + \frac{1}{2!} + \dots + \frac{1}{n!} \right)
+  \]
+  and a second part
+  \[
+  b \left( \frac{1}{n+1} + \frac{1}{(n+1)(n+2)} + \frac{1}{(n+1)(n+2)(n+3)} + \dots \right)
+  \]
+  which is \emph{approximately} $\frac{b}{n}$, so that for large $n$ it certainly cannot be integral:
+  It is larger than $\frac{b}{n+1}$ and smaller than $\frac{b}{n}$, as one can see from a comparison with a geometric series:
+  \begin{align*}
+  \frac{1}{n+1} &< \frac{1}{n+1} + \frac{1}{(n+1)(n+2)} + \frac{1}{(n+1)(n+2)(n+3)} + \dots \\
+  &< \frac{1}{n+1} + \frac{1}{(n+1)^2} + \frac{1}{(n+1)^3} + \dots = \frac{1}{n}.
+  \end{align*}
 \end{proof}
 
 \begin{theorem}
   \label{e_pow_2_irrational}
   \lean{book.irrational.e_pow_2_irrational}
   \leanok
-  \(e ^ 2\) is irrational
+  $e^2$ is irrational.
 \end{theorem}
 \begin{proof}
   \uses{e_irrational}
-  TODO
+  Now one might be led to think that this simple multiply-by-$n!$ trick is not sufficient to show that $e^2$ is irrational.
+  This is a stronger statement:
+  $\sqrt{2}$ is an example of a number which is irrational, but whose square is not.
+  From John Cosgrave we have learned that with two nice ideas/observations (let's call them ``tricks'') one can get two steps further nevertheless:
+  Each of the tricks is sufficient to show that $e^2$ is irrational, the combination of both of them even yields the same for $e^4$.
+  The first trick may be found in a one page paper by J. Liouville from 1840 --- and the second one in a two page ``addendum''
+  which Liouville published on the next two journal pages.
+
+  Why is $e^2$ irrational?
+  What can we derive from $e^2 = \frac{a}{b}$?
+  According to Liouville we should write this as
+  \[
+  b e = a e^{-1},
+  \]
+  substitute the series
+  \[
+  e = 1 + \frac{1}{1} + \frac{1}{2} + \frac{1}{6} + \frac{1}{24} + \frac{1}{120} + \cdots
+  \]
+  and
+  \[
+  e^{-1} = 1 - \frac{1}{1} + \frac{1}{2} - \frac{1}{6} + \frac{1}{24} - \frac{1}{120} \pm \cdots,
+  \]
+  and then multiply by $n!$, for a sufficiently large even $n$.
+  Then we see that $n! b e$ is nearly integral:
+  \[
+  n! b \left( 1 + \frac{1}{1} + \frac{1}{2} + \frac{1}{6} + \dots + \frac{1}{n!} \right)
+  \]
+  is an integer, and the rest
+  \[
+  n! b \left( \frac{1}{(n+1)!} + \frac{1}{(n+2)!} + \dots \right)
+  \]
+  is approximately $\frac{b}{n}$:
+  It is larger than $\frac{b}{n+1}$ but smaller than $\frac{b}{n}$, as we have seen above.
+  
+  At the same time $n! a e^{-1}$ is nearly integral as well:
+  Again we get a large integral part, and then a rest
+  \[
+  (-1)^{n+1} n! a \left( \frac{1}{(n+1)!} - \frac{1}{(n+2)!} + \frac{1}{(n+3)!} \mp \cdots \right),
+  \]
+  and this is approximately $(-1)^{n+1} \frac{a}{n}$.
+  More precisely:
+  for even $n$ the rest is larger than $-\frac{a}{n}$, but smaller than
+  \[
+  -a \left( \frac{1}{n+1} - \frac{1}{(n+1)^2} - \frac{1}{(n+1)^3} - \cdots \right) = - \frac{a}{n+1} \left( 1 - \frac{1}{n} \right) < 0.
+  \]
+  But this cannot be true, since for large even $n$ it would imply that $n! a e^{-1}$ is just a bit smaller than an integer, while $n! b e$ is a bit larger than an integer, so $n! a e^{-1} = n! b e$ cannot hold.
 \end{proof}
 
 
@@ -27,41 +96,98 @@
   \label{little_lemma}
   \lean{book.irrational.little_lemma}
   \leanok
-  TODO
+  For any $n \ge 1$ the integer $n!$ contains the prime factor $2$ at most $n-1$ times --- with equality if (and only if) $n$ is a power of two, $n = 2^m$.
 \end{theorem}
 \begin{proof}
-  TODO
+  This lemma is not hard to show:
+  $\lfloor \frac{n}{2} \rfloor$ of the factors of $n!$ are even, $\lfloor \frac{n}{4} \rfloor$ of them are divisible by $4$, and so on.
+  So if $2^k$ is the largest power of two which satisfies $2^k \le n$, then $n!$ contains the prime factor $2$ exactly
+  \[
+  \left\lfloor \frac{n}{2} \right\rfloor + \left\lfloor \frac{n}{4} \right\rfloor + \dots + \left\lfloor \frac{n}{2^k} \right\rfloor \le \frac{n}{2} + \frac{n}{4} + \dots + \frac{n}{2^k} = n \left( 1 - \frac{1}{2^k} \right) \le n-1
+  \]
+  times, with equality in both inequalities exactly if $n = 2^k$.
 \end{proof}
 
 \begin{theorem}
   \label{e_pow_4_irrational}
   \lean{book.irrational.e_pow_4_irrational}
   \leanok
-  \(e ^ 4\) is irrational
+  $e^4$ is irrational.
 \end{theorem}
 \begin{proof}
   \uses{little_lemma, e_pow_2_irrational}
-  TODO
+  In order to show that $e^4$ is irrational, we now courageously assume that $e^4 = \frac{a}{b}$ were rational, and write this as
+  \[
+  b e^2 = a e^{-2}.
+  \]
+  We could now try to multiply this by $n!$ for some large $n$, and collect the non-integral summands, but this leads to nothing useful:
+  The sum of the remaining terms on the left-hand side will be approximately $b \frac{2^{n+1}}{n}$,
+  on the right side $(-1)^{n+1} a \frac{2^{n+1}}{n}$, and both will be very large if $n$ gets large.
+  
+  So one has to examine the situation a bit more carefully, and make two little adjustments to the strategy:
+  First we will not take an \emph{arbitrary} large $n$, but a large power of two, $n = 2^m$;
+  and secondly we will not multiply by $n!$, but by $\frac{n!}{2^{n-1}}$.
+  Then we need the little lemma \ref{little_lemma}, a special case of Legendre's theorem (see page 10).
+
+  Let's get back to $b e^2 = a e^{-2}$.
+  We are looking at
+  \begin{equation} \label{eq:e4_irrational}
+  b \frac{n!}{2^{n-1}} e^2 = a \frac{n!}{2^{n-1}} e^{-2}
+  \end{equation}
+  and substitute the series
+  \[
+  e^2 = 1 + \frac{2}{1} + \frac{4}{2} + \frac{8}{6} + \dots + \frac{2^r}{r!} + \dots
+  \]
+  and
+  \[
+  e^{-2} = 1 - \frac{2}{1} + \frac{4}{2} - \frac{8}{6} \pm \dots + (-1)^r \frac{2^r}{r!} + \dots
+  \]
+  For $r \le n$ we get integral summands on both sides, namely
+  \[
+  b \frac{n!}{2^{n-1}} \frac{2^r}{r!} \quad \text{resp.} \quad (-1)^r a \frac{n!}{2^{n-1}} \frac{2^r}{r!},
+  \]
+  where for $r > 0$ the denominator $r!$ contains the prime factor $2$ at most $r-1$ times, while $n!$ contains it \emph{exactly} $n-1$ times.
+  (So for $r > 0$ the summands are even.)
+  
+  And since $n$ is even (we assume that $n = 2^m$), the series that we get for $r \ge n+1$ are
+  \[
+  2b \left( \frac{2}{n+1} + \frac{4}{(n+1)(n+2)} + \frac{8}{(n+1)(n+2)(n+3)} + \dots \right)
+  \]
+  resp.
+  \[
+  2a \left( - \frac{2}{n+1} + \frac{4}{(n+1)(n+2)} - \frac{8}{(n+1)(n+2)(n+3)} \pm \dots \right).
+  \]
+  These series will for large $n$ be roughly $\frac{4b}{n}$ resp. $-\frac{4a}{n}$, as one sees again by comparison with geometric series.
+  For large $n = 2^m$ this means that the left-hand side of \eqref{eq:e4_irrational} is a bit larger than an integer,
+  while the right-hand side is a bit smaller --- contradiction!
 \end{proof}
 
 \begin{lemma}
   \label{lem_aux_i}
   \lean{book.irrational.lem_aux_i}
   \leanok
-  TODO
+  \upshape For some fixed $n \ge 1$, let
+  \[
+  f(x) = \frac{x^n (1-x)^n}{n!}.
+  \]
+  \begin{enumerate}
+    \item[(i)] \itshape The function $f(x)$ is a polynomial of the form $f(x) = \frac{1}{n!} \sum_{i=n}^{2n} c_i x^i$, where the coefficients $c_i$ are integers.
+  \end{enumerate}
 \end{lemma}
 \begin{proof}
-  TODO
+  Part (i) is clear.
 \end{proof}
 
 \begin{lemma}
   \label{lem_aux_ii}
   \lean{book.irrational.lem_aux_ii}
   \leanok
-  TODO
+  \begin{enumerate}
+  	\item[(ii)] For $0 < x < 1$ we have $0 < f(x) < \frac{1}{n!}$.
+  \end{enumerate}
 \end{lemma}
 \begin{proof}
-  TODO
+  Part (ii) is also clear.
 \end{proof}
 
 
@@ -69,21 +195,55 @@
   \label{lem_aux_iii}
   \lean{book.irrational.lem_aux_iii}
   \leanok
-  TODO
+  \begin{enumerate}
+  	\item[(iii)] The derivatives $f^{(k)}(0)$ and $f^{(k)}(1)$ are integers for all $k \ge 0$.
+  \end{enumerate}
 \end{lemma}
 \begin{proof}
-  TODO
+  For (iii) note that by (i) the $k$-th derivative $f^{(k)}$ vanishes at $x=0$ unless $n \le k \le 2n$,
+  and in this range $f^{(k)}(0) = \frac{k!}{n!} c_k$ is an integer.
+  From $f(x) = f(1-x)$ we get $f'(x) = (-1) f'(1-x)$ for all $x$,
+  and hence $f^{(k)}(1) = (-1)^k f^{(k)}(0)$, which is an integer.
 \end{proof}
 
 \begin{theorem}
   \label{e_pow_irrational}
   \label{book.irrational.Theorem_1}
   \leanok
-  \(e^r\) is irrational for every \(r\in\mathbb{Q}\setminus\{0\}\).
+  $e^r$ is irrational for every $r \in \mathbb{Q} \setminus \{0\}$.
 \end{theorem}
 \begin{proof}
   \uses{lem_aux_i, lem_aux_ii, lem_aux_iii}
-  TODO
+  It suffices to show that $e^s$ cannot be rational for a positive integer $s$ (if $e^{\frac{s}{t}}$ were rational, then $\left(e^{\frac{s}{t}}\right)^t = e^s$ would be rational, too).
+  Assume that $e^s = \frac{a}{b}$ for integers $a, b > 0$, and let $n$ be so large that $n! > a s^{2n+1}$.
+  Put
+  \[
+  F(x) := s^{2n} f(x) - s^{2n-1} f'(x) + s^{2n-2} f''(x) \mp \dots + f^{(2n)}(x),
+  \]
+  where $f(x)$ is the function of the lemma.
+  $F(x)$ may also be written as an infinite sum
+  \[
+  F(x) = s^{2n} f(x) - s^{2n-1} f'(x) + s^{2n-2} f''(x) \mp \cdots,
+  \]
+  since the higher derivatives $f^{(k)}(x)$, for $k > 2n$, vanish.
+  From this we see that the polynomial $F(x)$ satisfies the identity
+  \[
+  F'(x) = -s F(x) + s^{2n+1} f(x).
+  \]
+  Thus differentiation yields
+  \[
+  \frac{d}{dx} [e^{sx} F(x)] = s e^{sx} F(x) + e^{sx} F'(x) = s^{2n+1} e^{sx} f(x)
+  \]
+  and hence
+  \[
+  N := b \int_0^1 s^{2n+1} e^{sx} f(x) dx = b [e^{sx} F(x)]_0^1 = a F(1) - b F(0).
+  \]
+  This is an integer, since part (iii) of the lemma implies that $F(0)$ and $F(1)$ are integers.
+  However, part (ii) of the lemma yields estimates for the size of $N$ from below and from above,
+  \[
+  0 < N = b \int_0^1 s^{2n+1} e^{sx} f(x) dx < b s^{2n+1} e^s \frac{1}{n!} = \frac{a s^{2n+1}}{n!} < 1,
+  \]
+  which shows that $N$ cannot be an integer: contradiction.
 \end{proof}
 
 
@@ -91,11 +251,36 @@
   \label{pi_pow_2_irrational}
   \label{book.irrational.Theorem_2}
   \leanok
-  \(\pi^2\) is irrational.
+  $\pi^2$ is irrational.
 \end{theorem}
 \begin{proof}
   \uses{lem_aux_ii, lem_aux_iii}
-  TODO
+  Assume that $\pi^2 = \frac{a}{b}$ for integers $a, b > 0$.
+  We now use the polynomial
+  \[
+  F(x) := b^n \left( \pi^{2n} f(x) - \pi^{2n-2} f^{(2)}(x) + \pi^{2n-4} f^{(4)}(x) \mp \cdots \right),
+  \]
+  which satisfies $F''(x) = -\pi^2 F(x) + b^n \pi^{2n+2} f(x)$.
+  
+  From part (iii) of the lemma we get that $F(0)$ and $F(1)$ are integers.
+  Elementary differentiation rules yield
+  \begin{align*}
+  \frac{d}{dx} [F'(x) \sin \pi x - \pi F(x) \cos \pi x] &= \left(F''(x) + \pi^2 F(x)\right) \sin \pi x \\
+  &= b^n \pi^{2n+2} f(x) \sin \pi x \\
+  &= \pi^2 a^n f(x) \sin \pi x,
+  \end{align*}
+  and thus we obtain
+  \begin{align*}
+  N := \pi \int_0^1 a^n f(x) \sin \pi x \, dx &= \left[ \frac{1}{\pi} F'(x) \sin \pi x - F(x) \cos \pi x \right]_0^1 \\
+  &= F(0) + F(1),
+  \end{align*}
+  which is an integer.
+  Furthermore $N$ is positive since it is defined as the integral of a function that is positive (except on the boundary).
+  However, if we choose $n$ so large that $\frac{\pi a^n}{n!} < 1$, then from part (ii) of the lemma we obtain
+  \[
+  0 < N = \pi \int_0^1 a^n f(x) \sin \pi x dx < \frac{\pi a^n}{n!} < 1,
+  \]
+  a contradiction.
 \end{proof}
 
 \begin{theorem}
@@ -104,11 +289,42 @@
   \leanok
   For every odd integer \(n \ge 3\), the number
   \[
-  A(n) := \frac{1}{\pi}\arccos\left(\frac{1}{\sqrt{n}}\right)
+  A(n) := \frac{1}{\pi} \arccos \left(\frac{1}{\sqrt{n}}\right)
   \]
   is irrational.
 \end{theorem}
 \begin{proof}
   \uses{pi_pow_2_irrational}
-  TODO
+  We use the addition theorem
+  \[
+  \cos \alpha + \cos \beta = 2 \cos \frac{\alpha+\beta}{2} \cos \frac{\alpha-\beta}{2}
+  \]
+  from elementary trigonometry, which for $\alpha = (k+1)\varphi$ and $\beta = (k-1)\varphi$ yields
+  \begin{equation} \label{eq:cos_add}
+  \cos (k+1)\varphi = 2 \cos \varphi \cos k\varphi - \cos (k-1)\varphi.
+  \end{equation}
+  For the angle $\varphi_n = \arccos \left(\frac{1}{\sqrt{n}}\right)$, which is defined by $\cos \varphi_n = \frac{1}{\sqrt{n}}$
+  and $0 \le \varphi_n \le \pi$, this yields representations of the form
+  \[
+  \cos k\varphi_n = \frac{A_k}{\sqrt{n}^k},
+  \]
+  where $A_k$ is an integer that is not divisible by $n$, for all $k \ge 0$.
+  In fact, we have such a representation for $k=0, 1$ with $A_0 = A_1 = 1$, and by induction on $k$ using \eqref{eq:cos_add} we get for $k \ge 1$
+  \[
+  \cos (k+1)\varphi_n = 2 \frac{1}{\sqrt{n}} \frac{A_k}{\sqrt{n}^k} - \frac{A_{k-1}}{\sqrt{n}^{k-1}} = \frac{2A_k - n A_{k-1}}{\sqrt{n}^{k+1}}.
+  \]
+  Thus we obtain $A_{k+1} = 2A_k - n A_{k-1}$.
+  If $n \ge 3$ is odd, and $A_k$ is not divisible by $n$, then we find that $A_{k+1}$ cannot be divisible by $n$, either.
+
+  Now assume that
+  \[
+  A(n) = \frac{1}{\pi} \varphi_n = \frac{k}{\ell}
+  \]
+  is rational (with integers $k, \ell > 0$).
+  Then $\ell \varphi_n = k \pi$ yields
+  \[
+  \pm 1 = \cos k \pi = \frac{A_\ell}{\sqrt{n}^\ell}.
+  \]
+  Thus $\sqrt{n}^\ell = \pm A_\ell$ is an integer, with $\ell \ge 2$, and hence $n | \sqrt{n}^\ell$.
+  With $\sqrt{n}^\ell | A_\ell$ we find that $n$ divides $A_\ell$, a contradiction.
 \end{proof}

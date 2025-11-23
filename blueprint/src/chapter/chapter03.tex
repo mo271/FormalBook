@@ -7,7 +7,7 @@
     \leanok
     For all natural \(n, k\) such that \(n \ge 2k\), at least one of the numbers
     \(n, n - 1, \dots, n - k - 1\) has a prime divisor $p$ greater than $k$,
-    or, equivalently the binomial coefficient
+    or equivalently, the binomial coefficient
     \(\binom{n}{k}\) always has a prime factor \(p > k\).
 \end{theorem}
 \begin{proof}
@@ -24,7 +24,7 @@
 \end{theorem}
 \begin{proof}
     \uses{sylvester}
-    Note first that we may assume \(n \geq 2k\) because of \(\binom{n}{k} = \binom{n}{n-k}\).
+    Note first that we may assume \(n \ge 2k\) because of \(\binom{n}{k} = \binom{n}{n-k}\).
     Suppose the theorem is false, and that \(\binom{n}{k} = m^\ell\).
     The proof, by contradiction, proceeds in the following four steps.
     \begin{enumerate}
@@ -32,45 +32,45 @@
           hence \(p^\ell\) divides \(n(n - 1) \dots (n - k + 1)\). Clearly, only one of the factors \(n - i\)
           can be a multiple of \(p\) (because \(p > k\)), and we conclude \(p^\ell \mid n - i\), and therefore
           \[
-          n \geq p^\ell > k^\ell \geq k^2.
+          n \ge p^\ell > k^\ell \ge k^2.
           \]
     \item Consider any factor \(n - j\) of the numerator and write it in the form \(n - j = a_j m_j^\ell\),
           where \(a_j\) is not divisible by any nontrivial \(\ell\)-th power.
           We note by (1) that \(a_j\) has only prime divisors less than or equal to \(k\).
-          We want to show next that \(a_i \neq a_j\) for \(i \neq j\).
-          Assume to the contrary that \(a_i = a_j\) for some \(i < j\). Then \(m_i > m_j + 1\) and
-        \begin{align}
-        k & > (n - i) - (n - j) = a_j(m_i^\ell - m_j^\ell) \geq a_j((m_j + 1)^\ell - m_j^\ell)\\
-          & > a_j \ell m_j^{\ell-1} \geq \ell (a_j m_j^\ell)^{1/2} \geq \ell (n - k + 1)^{1/2}\\
-          & \geq \ell \left(\frac{n}{2}\right)^{1/2} > n^{1/2},
-        \end{align}
+          We want to show next that \(a_i \ne a_j\) for \(i \ne j\).
+          Assume to the contrary that \(a_i = a_j\) for some \(i < j\). Then \(m_i \ge m_j + 1\) and
+        \begin{align*}
+        k &> (n - i) - (n - j) = a_j(m_i^\ell - m_j^\ell) \ge a_j((m_j + 1)^\ell - m_j^\ell)\\
+          &> a_j \ell m_j^{\ell-1} \ge \ell (a_j m_j^\ell)^{1/2} \ge \ell (n - k + 1)^{1/2}\\
+          &\ge \ell \left(\frac{n}{2} + 1\right)^{1/2} > n^{1/2},
+        \end{align*}
         which contradicts \(n > k^2\) from above.
     \item Next we prove that the \(a_i\)'s are the integers \(1, 2, \dots, k\) in some order.
     (According to Erdős, this is the crux of the proof.)
     Since we already know that they are all distinct, it suffices to prove that
    \[
-   a_0 a_1 \dots a_{k-1} \text{ divides } k!.
+   a_0 a_1 \cdots a_{k-1} \text{ divides } k!.
    \]
    Substituting \(n - j = a_j m_j^\ell\) into the equation \(\binom{n}{k} = m^\ell\), we obtain
    \[
-   a_0 a_1 \dots a_{k-1} (m_0 m_1 \dots m_{k-1})^\ell = k! m^\ell.
+   a_0 a_1 \cdots a_{k-1} (m_0 m_1 \cdots m_{k-1})^\ell = k! m^\ell.
    \]
-   Canceling the common factors of \(m_0 \dots m_{k-1}\) and \(m\) yields
+   Canceling the common factors of \(m_0 \cdots m_{k-1}\) and \(m\) yields
    \[
    a_0 a_1 \dots a_{k-1} u^\ell = k! v^\ell
    \]
    with \(\gcd(u, v) = 1\). It remains to show that \(v = 1\). If not, then \(v\) contains a prime divisor \(p\).
    Since \(\gcd(u, v) = 1\), \(p\) must be a prime divisor of \(a_0 a_1 \dots a_{k-1}\) and hence is less than or equal to \(k\).
-   By the theorem of Legendre (see page 8), we know that \(k!\) contains \(p\) to the power \(\sum_{i \geq 1} \left\lfloor \frac{k}{p^i} \right\rfloor\).
+   By the theorem of Legendre, we know that \(k!\) contains \(p\) to the power \(\sum_{i \ge 1} \left\lfloor \frac{k}{p^i} \right\rfloor\).
    We now estimate the exponent of \(p\) in \(n(n - 1) \dots (n - k + 1)\).
     Let \(i\) be a positive integer, and let \(b_1 < b_2 < \dots < b_s\)
     be the multiples of \(p^i\) among \(n, n - 1, \dots, n - k + 1\). Then \(b_s = b_1 + (s - 1)p^i\) and hence
    \[
-   (s - 1)p^i = b_s - b_1 \leq n - (n - k + 1) = k - 1,
+   (s - 1)p^i = b_s - b_1 \le n - (n - k + 1) = k - 1,
    \]
    which implies
    \[
-   s \leq \left\lfloor \frac{k - 1}{p^i} \right\rfloor + 1 \leq \left\lfloor \frac{k}{p^i} \right\rfloor + 1.
+   s \le \left\lfloor \frac{k - 1}{p^i} \right\rfloor + 1 \le \left\lfloor \frac{k}{p^i} \right\rfloor + 1.
    \]
     So for each \(i\), the number of multiples of \(p^i\) among \(n, \dots, n-k+1\), and hence among the \(a_j\)'s,
     is bounded by \(\left\lfloor \frac{k}{p^i} \right\rfloor + 1\). This implies that the exponent of \(p\) in \(a_0 a_1 \dots a_{k-1}\) is at most
@@ -85,51 +85,49 @@
     Taking both counts together, we find that the exponent of \(p\) in \(v^\ell\) is at most
 
     \[
-    \sum_{i=1}^{\ell-1} \left( \left\lfloor \frac{k}{p^i} \right\rfloor + 1 \right) - \sum_{i \geq 1} \left\lfloor \frac{k}{p^i} \right\rfloor \leq \ell - 1,
+    \sum_{i=1}^{\ell-1} \left( \left\lfloor \frac{k}{p^i} \right\rfloor + 1 \right) - \sum_{i \ge 1} \left\lfloor \frac{k}{p^i} \right\rfloor \le \ell - 1,
     \]
 
     and we have our desired contradiction, since \(v^\ell\) is an \(\ell\)-th power.
 
     This suffices already to settle the case \(\ell = 2\).
-    Indeed, since \(k \geq 4\), one of the \(a_i\)'s must be equal to 4,
-    but the \(a_i\)'s contain no squares. So let us now assume that \(\ell \geq 3\).
+    Indeed, since \(k \ge 4\), one of the \(a_i\)'s must be equal to 4,
+    but the \(a_i\)'s contain no squares. So let us now assume that \(\ell \ge 3\).
 
-    \item Since \(k \geq 4\), we must have \(a_{i_1} = 1\), \(a_{i_2} = 2\), \(a_{i_3} = 4\) for some \(i_1, i_2, i_3\), that is,
+    \item Since \(k \ge 4\), we must have \(a_{i_1} = 1\), \(a_{i_2} = 2\), \(a_{i_3} = 4\) for some \(i_1, i_2, i_3\), that is,
     \[
     n - i_1 = m_1^\ell, \quad n - i_2 = 2m_2^\ell, \quad n - i_3 = 4m_3^\ell.
     \]
 
-    We claim that \((n - i_2)^2 \neq (n - i_1)(n - i_3)\). If not, put \(b = n - i_2\)
+    We claim that \((n - i_2)^2 \ne (n - i_1)(n - i_3)\). If not, put \(b = n - i_2\)
     and \(n - i_1 = b - x, n - i_3 = b + y\), where \(0 < |x|, |y| < k\). Hence
     \[
     b^2 = (b - x)(b + y) \quad \text{or} \quad (y - x)b = xy,
     \]
     where \(x = y\) is plainly impossible. Now we have by part (1)
     \[
-    |xy| = b |y - x| \geq b > n - k > (k - 1)^2 \geq |xy|,
+    |xy| = b |y - x| \ge b > n - k > (k - 1)^2 \ge |xy|,
     \]
     which is absurd.
 
-    So we have \(m_2^2 \neq m_1 m_3\), where we assume \(m_2 > m_1 m_3\) (the other case being analogous),
+    So we have \(m_2^2 \ne m_1 m_3\), where we assume \(m_2^2 > m_1 m_3\) (the other case being analogous),
     and proceed to our last chain of inequalities. We obtain
 
-    \begin{align}
+    \begin{align*}
     2(k - 1)n & > n^2 - (n - k + 1)^2 > (n - i_2)^2 - (n - i_1)(n - i_3)\\
-     & = 4[m_2^\ell - (m_1 m_3)^\ell] \geq 4[(m_1 m_3 + 1)^\ell - (m_1 m_3)^\ell] \\
-     & \geq 4 \ell m_1^{\ell-1} m_3^{\ell-1}.
-    \end{align}
+     & = 4[m_2^{2\ell} - (m_1 m_3)^\ell] \ge 4[(m_1 m_3 + 1)^\ell - (m_1 m_3)^\ell] \\
+     & \ge 4 \ell m_1^{\ell-1} m_3^{\ell-1}.
+    \end{align*}
 
-    Since \(\ell \geq 3\) and \(n \geq k^\ell \geq k^3 > 6k\), this yields
-
-    \begin{align}
+    Since \(\ell \ge 3\) and \(n > k^\ell \ge k^3 > 6k\), this yields
+    \begin{align*}
     2(k - 1)n m_1 m_3 & > 4 \ell m_1^\ell m_3^\ell = \ell (n - i_1)(n - i_3) \\
-                      & > \ell (n - k + 1)^2 > 3(n - \frac{n}{6})^2 > 2n^2.
-    \end{align}
+                      & > \ell (n - k + 1)^2 > 3 \left(n - \frac{n}{6}\right)^2 > 2n^2.
+    \end{align*}
     Now since \(m_i \le n^{1/\ell} \le n ^{1/3}\) we finally obtain
     \[
     kn^{2/3} \ge km_1m_3 > (k - 1)m_1m_3 > n,
     \]
-    or \(k^3>n\). With this contradiction, the proof is complete.
-
+    or \(k^3 > n\). With this contradiction, the proof is complete. \qedhere
     \end{enumerate}
 \end{proof}
