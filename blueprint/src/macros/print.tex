@@ -27,3 +27,41 @@
  {\clist_map_inline:nn{#1}{\vphantom{\ref{##1}}}%
   \ignorespaces}
 \ExplSyntaxOff
+
+% Redefine \mathbb command as in amsfonts
+\AtBeginDocument{%
+  \let\mathbb\relax
+  \DeclareMathAlphabet{\mathbb}{U}{msb}{m}{n}%
+}
+
+% Read authors.md file, puts \and between author names.
+\newread\authorsin
+\newtoks\authortoks
+\newif\iffirstauthor
+
+\def\readauthors#1{%
+  \authortoks={}%
+  \firstauthortrue
+  \openin\authorsin=#1\relax
+  \loop
+    \ifeof\authorsin
+      \let\next=\relax
+    \else
+      \read\authorsin to \thisauthor
+      \ifeof\authorsin
+        \let\next=\relax
+      \else
+        \iffirstauthor
+          \edef\temp{\thisauthor}%
+          \firstauthorfalse
+        \else
+          \edef\temp{\the\authortoks\space\noexpand\and\space\thisauthor}%
+        \fi
+        \authortoks=\expandafter{\temp}%
+        \let\next=\repeat
+      \fi
+    \fi
+  \next
+  \closein\authorsin
+  \the\authortoks
+}
