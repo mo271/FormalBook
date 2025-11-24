@@ -84,7 +84,6 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
 \end{theorem}
 \begin{proof}
   \uses{ch7.lemma}
-  \leanok
   The theorem follows in three quick steps. Let $A$ be a real symmetric $n \times n$ matrix.
   \begin{enumerate}
     \item[(A)] Consider the map $f_A : O(n) \to \mathbb{R}^{n \times n}$ with $f_A(P) := P^T A P$. The map $f_A$ is continuous on the compact set $O(n)$, and so the image $f_A(O(n))$ is compact.
@@ -100,8 +99,7 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
 
 \begin{theorem}[Hadamard's inequality]
   \label{thm:hadamard_inequality}
-  \lean{hadamard_inequality}
-  \leanok
+  \lean{chapter7.hadamard_inequality}
   For any real $n \times n$ matrix $A = (a_{ij})$ with $|a_{ij}| \le 1$,
   \[
   |\det A| \le n^{n/2}.
@@ -109,7 +107,6 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
 \end{theorem}
 
 \begin{proof}
-  \leanok
   The problem to find the maximum value of $\det A$ on the set of all real $n \times n$ matrices $A = (a_{ij})$ with $|a_{ij}| \le 1$ is unsolved.
   Since the determinant is a continuous function in the $a_{ij}$ (considered as variables)
   and the matrices form a compact set in $\mathbb{R}^{n^2}$, this maximum must exist.
@@ -184,13 +181,11 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
 
 \begin{theorem}
   \label{thm:hadamard_order}
-  \lean{hadamard_order}
-  \leanok
+  \lean{chapter07.hadamard_order}
   If a Hadamard matrix of size $n \times n$ exists for $n > 2$, then $n$ must be a multiple of $4$.
 \end{theorem}
 
 \begin{proof}
-  \leanok
   A short argument shows that if $n$ is greater than $2$, then it must be a multiple of $4$.
   Indeed, suppose that $A$ is an $n \times n$ Hadamard matrix, $n \ge 2$, whose rows are the vectors $r_1, \dots, r_n$.
   Clearly, multiplication of any row or column by $-1$ gives another Hadamard matrix.
@@ -213,7 +208,7 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
 
 \begin{theorem}
   \label{thm:hadamard_existence}
-  \lean{hadamard_existence}
+  \lean{chapter07.hadamard_existence}
   \leanok
   Hadamard matrices exist for all $n = 2^m$.
 \end{theorem}
@@ -239,13 +234,11 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
 
 \begin{theorem}
   \label{thm:det_greater_n_fact}
-  \lean{det_greater_n_fact}
-  \leanok
+  \lean{chapter07.Theorem₂}
   There exists an $n \times n$ matrix with entries $\pm 1$ whose determinant is greater than $\sqrt{n!}$.
 \end{theorem}
 
 \begin{proof}
-  \leanok
   Let us look at all $2^{n^2}$ matrices with $\pm 1$-entries and consider some averages of the determinant.
   The arithmetic mean $\frac{1}{2^{n^2}} \sum_A \det A$ is $0$ (clear?), so this is no big help.
   But if we consider the \emph{mean square average} instead,
