@@ -91,6 +91,7 @@ Let `n : ℕ`, `n ≥ 1` be fixed, and consider `f_aux n x = x ^ n * (1 - x) ^ n
    for all `k ≥ 0`.
 -/
 
+/-- The auxiliary function `xⁿ * (1 - x)ⁿ / n!` used in the irrationality proofs. -/
 noncomputable def f_aux (n : ℕ) (x : ℝ) :=  x ^ n * (1 - x) ^ n / n.factorial
 
 lemma lem_aux_i (n : ℕ) (x : ℝ) : ∃ c : ℕ → ℤ, f_aux n x = ∑ i ∈ Icc n (2 * n), (c i) * x ^ i := by

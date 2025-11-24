@@ -4,28 +4,46 @@ import ProofWidgets.Component.Basic
 
 
 /-! ## Example use of string diagram widgets -/
+
+/-- Represents the dimensions of the windmill components.
+`z` is the side length of the central square.
+`x` and `y` are the dimensions of the rectangular sails. -/
 structure WindmillTriple where
+  /-- Height of the North/South sails, width of the East/West sails. -/
   x : Nat
+  /-- Width of the North/South sails, height of the East/West sails. -/
   y : Nat
+  /-- Side length of the central square. -/
   z : Nat
 deriving DecidableEq, Repr, Inhabited,  Lean.ToJson, Lean.FromJson
 
+/-- Defines the colors for the different parts of the windmill. -/
 structure WindmillColors where
+  /-- Color of the central square. -/
   square? : Option String := some "grey"
+  /-- Color of the North sail. -/
   north?: Option String := "'#a1c4fd'"
+  /-- Color of the East sail. -/
   east? : Option String := "'#fda1c4'"
+  /-- Color of the South sail. -/
   south?: Option String := "'#fddca1'"
+  /-- Color of the West sail. -/
   west? : Option String := "'#c4fda1'"
 deriving DecidableEq, Repr, Inhabited,  Lean.ToJson, Lean.FromJson
 
+/-- Properties for the Windmill widget. -/
 structure WindmillWidgetProps where
+  /-- The dimensions of the windmill. -/
   triple? : Option WindmillTriple := none
+  /-- The color scheme for the windmill. -/
   colors? : Option WindmillColors := some default
+  /-- Whether to mirror the image horizontally. -/
   mirror : Bool := false
   deriving Lean.Server.RpcEncodable
 
 open ProofWidgets
 
+/-- A ProofWidgets component to display a windmill shape based on a `WindmillTriple`. -/
 @[widget_module]
 def WindmillWidget : Component WindmillWidgetProps where
   javascript := "
@@ -127,6 +145,7 @@ def WindmillWidget : Component WindmillWidgetProps where
       }, React.createElement(WindmillPattern));
     }"
 
+/-- A greyscale color scheme for the windmill. -/
 def greyColors := ( some <| {
     square? := some "lightgrey",
     north? := some "lightgrey",

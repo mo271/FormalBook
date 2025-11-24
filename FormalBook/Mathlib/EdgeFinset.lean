@@ -15,7 +15,7 @@ theorem exists_eq (z : Sym2 α) : ∃ x y, z = s(x, y) :=
 
 @[simp] theorem setOf_mem_eq {z : Sym2 α} : {v | v ∈ z} = z := rfl
 
-@[simp] theorem coe_mk_eq {x y : α} : (s(x, y) : Set α) = {x, y} := by
+theorem coe_mk_eq {x y : α} : (s(x, y) : Set α) = {x, y} := by
   ext; simp
 
 theorem isDiag_iff_exists {z : Sym2 α} : z.IsDiag ↔ ∃ x, z = s(x, x) := by

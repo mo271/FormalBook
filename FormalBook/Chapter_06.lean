@@ -48,6 +48,7 @@ lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| := by
         _ = |i*c| := (abs_mul i c).symm
         _ = |j| := by rw [h₀.symm]
 
+/-- The `n`-th cyclotomic polynomial over the integers. -/
 noncomputable
 def phi (n : ℕ) : ℤ[X] := cyclotomic n ℤ
 
@@ -55,7 +56,7 @@ lemma phi_dvd (n : ℕ) : phi n ∣ X ^ n - 1 := by
   rw [phi]
   exact cyclotomic.dvd_X_pow_sub_one n ℤ
 
-lemma phi_div_2 (n : ℕ) (k : ℕ) (_ : 1 ≠ k) (h₂ : k ∣ n) (h₃ : k < n) :
+lemma phi_div_2 (n : ℕ) (k : ℕ) (h₂ : k ∣ n) (h₃ : k < n) :
     (X ^ k - 1) * (phi n)∣ (X ^ n - 1) :=
   X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ (Nat.mem_properDivisors.mpr ⟨h₂, h₃⟩)
 
@@ -133,6 +134,7 @@ lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
     exact Nat.eq_add_of_sub_eq hkm rfl
   exact Nat.strongRecOn n this
 
+/-- The centralizer of an element `x` is isomorphic to the stabilizer of `x` under the conjugation action. -/
 def ConjAct_stabilizer_centralizer_eq :
     ∀ x : Rˣ,  Set.centralizer {x} ≃ MulAction.stabilizer (ConjAct Rˣ) x := by
   intro x
@@ -257,7 +259,7 @@ theorem wedderburn (h: Fintype R): IsField R := by
       refine Finset.dvd_sum fun A hs ↦ (Int.dvd_div_of_mul_dvd ?_)
       have h_one_neq: 1 ≠ n_k A := by sorry
       have h_k_n_lt_n: n_k A < n := by sorry
-      have h_noneval := phi_div_2 n (n_k A) h_one_neq (h_n_k_A_dvd A) h_k_n_lt_n
+      have h_noneval := phi_div_2 n (n_k A) (h_n_k_A_dvd A) h_k_n_lt_n
       have := @eval_dvd ℤ _ _ _ q h_noneval
       simp only [eval_mul, eval_sub, eval_pow, eval_X, eval_one, IsUnit.mul_iff] at this
       rw [← hq] at *
