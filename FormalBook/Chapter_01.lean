@@ -168,9 +168,11 @@ using elementary calculus
 open Filter
 open Nat.Prime
 
+/-- The prime counting function `π(x)` for real `x`. -/
 noncomputable def primeCountingReal (x : ℝ) : ℕ :=
   if (x ≤ 0) then 0 else primeCounting ⌊x⌋₊
 
+/-- The set of natural numbers whose prime factors are all less than or equal to `x`. -/
 def S₁ (x : ℝ) : Set ℕ :=
  { n | ∀ p, Nat.Prime p → p ∣ n → p ≤ x }
 
@@ -238,8 +240,10 @@ lemma H_P4_2 (x : ℕ) (hx : x ≥ 3) :
 using topology
 -/
 
+/-- The set of integers of the form `a + n * b` for `n ∈ ℤ`. -/
 def N : ℤ → ℤ → Set ℤ := fun a b ↦ {a + n * b | n : ℤ}
 
+/-- A set `O` is open if it is empty or if for any `a ∈ O`, it contains an arithmetic progression centered at `a`. -/
 def isOpen : Set ℤ → Prop := fun O ↦ O = ∅ ∨ ∀ a ∈ O, ∃ b > 0, N a b ⊆ O
 
 theorem infinity_of_primes₅ : { p : ℕ | p.Prime }.Infinite := by
@@ -342,6 +346,7 @@ theorem infinity_of_primes₆ :
 ### Appendix: Infinitely many more proofs
 -/
 
+/-- A sequence `S` is almost injective if the preimages of singletons are uniformly bounded. -/
 def AlmostInjective (S : ℕ → ℤ) : Prop :=
   ∃ c : ℕ, ∀ k : ℕ, ∃ h : Set.Finite {n : ℕ | S n = k }, (Set.Finite.toFinset h).card ≤ c
 
@@ -351,6 +356,7 @@ open Real NNReal Topology
 
 namespace Asymptotics
 
+/-- A sequence `S` has subexponential growth if `|S n|` is bounded by a double exponential whose exponent grows slower than `log n`. -/
 def ofSubexponentialGrowth (S : ℕ → ℤ) : Prop := ∃ f : ℕ → ℝ≥0, ∀ n,
   |S n| ≤ (2 : ℝ) ^ ((2 : ℝ) ^ (f n : ℝ)) ∧ Tendsto (fun n ↦ (f n) / (log 2 n)) atTop (𝓝 0)
 

@@ -217,6 +217,7 @@ theorem harmonic_number_bounds {n : ℕ} :
     Real.log n + 1 / n < harmonic n ∧
     harmonic n <  Real.log n + 1 := by sorry
 
+/-- The base of the natural logarithm. -/
 noncomputable def e := exp 1
 
 theorem bound_factorial {n : ℕ} :

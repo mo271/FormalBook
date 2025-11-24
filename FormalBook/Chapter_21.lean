@@ -22,6 +22,7 @@ open Complex Polynomial
       - proof
 -/
 
+/-- A polynomial is non-constant if its degree is greater than 0. -/
 def Polynomial.constant (f : Polynomial ℂ) : Prop := (0 < degree f)
 
 theorem fundamental_theorem_of_algebra (f : Polynomial ℂ) (h : ¬ Polynomial.constant f) :
