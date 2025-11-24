@@ -30,109 +30,41 @@ permissions:
   pages: write            # Write access to GitHub Pages
   id-token: write         # Write access to ID tokens
 
+
 jobs:
   build_project:
     runs-on: ubuntu-latest
     name: Build project
     steps:
       - name: Checkout project
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags
 
-      - name: Install elan
-        run: curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
-
-      - name: Get Mathlib cache
-        run: ~/.elan/bin/lake exe cache get || true
-
-      - name: Build project
-        run: ~/.elan/bin/lake build FormalBook
-
-      - name: Cache mathlib API docs
-        uses: actions/cache@v4
+      - name: Build the project
+        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
         with:
-          path: |
-            .lake/build/doc/Init
-            .lake/build/doc/Lake
-            .lake/build/doc/Lean
-            .lake/build/doc/Std
-            .lake/build/doc/Mathlib
-            .lake/build/doc/declarations
-            .lake/build/doc/find
-            .lake/build/doc/*.*
-            !.lake/build/doc/declarations/declaration-data-FormalBook*
-          key: MathlibDoc-${{ hashFiles('lake-manifest.json') }}
-          restore-keys: MathlibDoc-
+          use-github-cache: false
 
-      - name: Build project API documentation
-        run: ~/.elan/bin/lake -R -Kenv=dev build FormalBook:docs
+      - name: check that FormalBook.lean is up to date
+        run: ~/.elan/bin/lake exe mk_all --check
 
-      - name: Check for `home_page` folder # this is meant to detect a Jekyll-based website
-        id: check_home_page
-        run: |
-          if [ -d home_page ]; then
-            echo "The 'home_page' folder exists in the repository."
-            echo "HOME_PAGE_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "The 'home_page' folder does not exist in the repository."
-            echo "HOME_PAGE_EXISTS=false" >> $GITHUB_ENV
-          fi
+      # TODO(firsching): fix lint and re-enable
 
-      - name: Build blueprint and copy to `home_page/blueprint`
-        uses: xu-cheng/texlive-action@v3
+      #- name: Lint project
+      #  run: env LEAN_ABORT_ON_PANIC=1 ~/.elan/bin/lake exe runLinter FormalBook
+
+      # or better yet use
+      # - name: Build and lint project
+      #   uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # 2025-07-02
+      #   with:
+      #     build: true
+      #     lint: true
+      #     mk_all-check: true
+
+
+      - name: Compile blueprint and documentation
+        uses: leanprover-community/docgen-action@1417dc7f90338c875da5e5870c03a287d8348896 # docgen-action#11
         with:
-          docker_image: ghcr.io/xu-cheng/texlive-full:20231201
-          run: |
-            # Install necessary dependencies and build the blueprint
-            apk update
-            apk add --update make py3-pip git pkgconfig graphviz graphviz-dev gcc musl-dev
-            git config --global --add safe.directory $GITHUB_WORKSPACE
-            git config --global --add safe.directory `pwd`
-            python3 -m venv env
-            source env/bin/activate
-            pip install --upgrade pip requests wheel
-            pip install pygraphviz --global-option=build_ext --global-option="-L/usr/lib/graphviz/" --global-option="-R/usr/lib/graphviz/"
-            pip install leanblueprint
-            leanblueprint pdf
-            mkdir -p home_page
-            cp blueprint/print/print.pdf home_page/blueprint.pdf
-            leanblueprint web
-            cp -r blueprint/web home_page/blueprint
-
-      - name: Check declarations mentioned in the blueprint exist in Lean code
-        run: |
-            ~/.elan/bin/lake exe checkdecls blueprint/lean_decls
-
-      - name: Copy API documentation to `home_page/docs`
-        run: cp -r .lake/build/doc home_page/docs
-
-      - name: Remove unnecessary lake files from documentation in `home_page/docs`
-        run: |
-          find home_page/docs -name "*.trace" -delete
-          find home_page/docs -name "*.hash" -delete
-
-      - name: Bundle dependencies
-        uses: ruby/setup-ruby@v1
-        with:
-          working-directory: home_page
-          ruby-version: "3.3.5"  # Specify Ruby version
-          bundler-cache: true  # Enable caching for bundler
-
-      - name: Build website using Jekyll
-        if: env.HOME_PAGE_EXISTS == 'true'
-        working-directory: home_page
-        run: JEKYLL_ENV=production bundle exec jekyll build  # Note this will also copy the blueprint and API doc into home_page/_site
-
-      - name: "Upload website (API documentation, blueprint and any home page)"
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: ${{ env.HOME_PAGE_EXISTS == 'true' && 'home_page/_site' || 'home_page/' }}
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
-
-      - name: Make sure the API documentation cache works
-        run: mv home_page/docs .lake/build/doc
+          blueprint: true
+          homepage: home_page

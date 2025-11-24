@@ -66,8 +66,7 @@ theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset
     refine (Finset.exists_subset_card_eq this).imp ?_
     simp +contextual [Finset.subset_iff]
 
-
-set_option linter.unusedSectionVars false in
+omit [DecidableEq α] in
 theorem remark_2 {𝓕 𝓢 : Finset (Finset X)}
   (h₁ : two_colorable 𝓕)  (h₂ : 𝓢 ⊆ 𝓕) : two_colorable 𝓢 := by
   apply h₁.imp ?_
