@@ -55,7 +55,7 @@ lemma phi_dvd (n : ℕ) : phi n ∣ X ^ n - 1 := by
   rw [phi]
   exact cyclotomic.dvd_X_pow_sub_one n ℤ
 
-lemma phi_div_2 (n : ℕ) (k : ℕ) (_ : 1 ≠ k) (h₂ : k ∣ n) (h₃ : k < n) :
+lemma phi_div_2 (n : ℕ) (k : ℕ) (h₂ : k ∣ n) (h₃ : k < n) :
     (X ^ k - 1) * (phi n)∣ (X ^ n - 1) :=
   X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ (Nat.mem_properDivisors.mpr ⟨h₂, h₃⟩)
 
@@ -257,7 +257,7 @@ theorem wedderburn (h: Fintype R): IsField R := by
       refine Finset.dvd_sum fun A hs ↦ (Int.dvd_div_of_mul_dvd ?_)
       have h_one_neq: 1 ≠ n_k A := by sorry
       have h_k_n_lt_n: n_k A < n := by sorry
-      have h_noneval := phi_div_2 n (n_k A) h_one_neq (h_n_k_A_dvd A) h_k_n_lt_n
+      have h_noneval := phi_div_2 n (n_k A) (h_n_k_A_dvd A) h_k_n_lt_n
       have := @eval_dvd ℤ _ _ _ q h_noneval
       simp only [eval_mul, eval_sub, eval_pow, eval_X, eval_one, IsUnit.mul_iff] at this
       rw [← hq] at *
