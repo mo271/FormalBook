@@ -105,6 +105,7 @@ lemma S_upper_bound {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) :
   all_goals try nlinarith
 
 -- todo use Fin 2 instead of ({(0 : ℤ), 1})
+/-- Embedding of the set `S k` into a finite product of finite sets for `Fintype` instance. -/
 def embed_S : S k → Ioc (0 : ℤ) k ×ˢ Ioc (0 : ℤ) k ×ˢ ({(0 : ℤ), 1}) :=
   fun  (⟨⟨x, y, z⟩, h⟩ : S k) ↦ by
   have lb := S_lower_bound k h
@@ -169,11 +170,13 @@ theorem linearInvo_no_fixedPoints : IsEmpty (fixedPoints (linearInvo k)) := by
   apply_fun (· % 4) at h
   simp [mul_assoc, Int.add_emod] at h
 
+/-- The subset of `S k` where `z` is positive. -/
 def T : Set (S k) := {⟨(_, _, z), _⟩ : S k |  z > 0}
 
 noncomputable instance : Fintype <| T k := by
   exact Fintype.ofFinite ↑(T k)
 
+/-- The subset of `S k` where `x - y + z > 0`. -/
 def U : Set (S k) := {⟨(x, y, z), _⟩ | (x - y) + z > 0}
 
 noncomputable instance : Fintype <| U k := Fintype.ofFinite ↑(U k)
@@ -183,6 +186,7 @@ theorem sameCard : Fintype.card (U k) = Fintype.card (T k) := by
 
 /- 2. -/
 
+/-- The function underlying the second involution. -/
 def secondInvo_fun := fun ((x,y,z) : ℤ × ℤ × ℤ) ↦ (x - y + z, y, 2 * y - z)
 
 /-- The second involution that we study is an involution on the set U. -/
@@ -244,7 +248,7 @@ theorem card_T_odd : Odd <| Fintype.card <| T k := by
   sorry
 
 /- 3. -/
-/- The third, trivial, involution `(x, y, z) ↦ (y, x, z)`. -/
+/-- The third, trivial, involution `(x, y, z) ↦ (y, x, z)`. -/
 def trivialInvo : Function.End (T k) := fun ⟨⟨⟨x, y, z⟩, ⟨h, hx, hy⟩⟩, hz⟩ => ⟨⟨⟨y, x, z⟩, by
   exact ⟨by rw [← h,Int.mul_assoc, Int.mul_comm y x, Int.mul_assoc], hy, hx⟩⟩, hz⟩
 
@@ -296,8 +300,10 @@ theorem theorem₂ {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
 
 -- The windged square of area 4xy + z^2 = 73 that corresponds to (x,y,z) = (3,4,5)
 
+/-- An example triple in `S k` for `k = 18` (so `4 * k + 1 = 73`). -/
 def xyz := ((3, 5, 4) : ℤ × ℤ × ℤ)
 
+/-- Convert a triple of integers to a `WindmillTriple` for visualization. -/
 def toTriple := fun (xyz : ℤ × ℤ × ℤ) ↦
     (some <|  {x := xyz.1.natAbs, y := xyz.2.1.natAbs, z := xyz.2.2.natAbs} : Option WindmillTriple)
 

@@ -1,5 +1,3 @@
-import FormalBook.Mathlib.EdgeFinset
-
 import FormalBook.Chapter_01
 import FormalBook.Chapter_02
 import FormalBook.Chapter_03
@@ -31,8 +29,8 @@ import FormalBook.Chapter_28
 import FormalBook.Chapter_29
 import FormalBook.Chapter_30
 import FormalBook.Chapter_31
-import FormalBook.Chapter_33
 import FormalBook.Chapter_32
+import FormalBook.Chapter_33
 import FormalBook.Chapter_34
 import FormalBook.Chapter_35
 import FormalBook.Chapter_36
@@ -45,3 +43,5 @@ import FormalBook.Chapter_42
 import FormalBook.Chapter_43
 import FormalBook.Chapter_44
 import FormalBook.Chapter_45
+import FormalBook.Mathlib.EdgeFinset
+import FormalBook.Widgets.Windmill
