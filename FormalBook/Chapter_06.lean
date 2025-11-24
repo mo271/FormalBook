@@ -48,6 +48,7 @@ lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| := by
         _ = |i*c| := (abs_mul i c).symm
         _ = |j| := by rw [h₀.symm]
 
+/-- The `n`-th cyclotomic polynomial over the integers. -/
 noncomputable
 def phi (n : ℕ) : ℤ[X] := cyclotomic n ℤ
 
@@ -133,6 +134,7 @@ lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
     exact Nat.eq_add_of_sub_eq hkm rfl
   exact Nat.strongRecOn n this
 
+/-- The centralizer of an element `x` is isomorphic to the stabilizer of `x` under the conjugation action. -/
 def ConjAct_stabilizer_centralizer_eq :
     ∀ x : Rˣ,  Set.centralizer {x} ≃ MulAction.stabilizer (ConjAct Rˣ) x := by
   intro x
