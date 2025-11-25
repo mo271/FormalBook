@@ -5,11 +5,54 @@
   \lean{euler_series}
   \leanok
   \[
-  \sum_{n\ge 1}\frac{1}{n^2} = \frac{\pi^2}{6}
+  \sum_{n \ge 1} \frac{1}{n^2} = \frac{\pi^2}{6}
   \]
 \end{theorem}
 \begin{proof}
-  TODO
+  The proof consists in two different evaluations of the double integral
+  \[
+  I := \int_0^1 \int_0^1 \frac{1}{1-xy} dx dy.
+  \]
+  For the first one, we expand $\frac{1}{1-xy}$ as a geometric series, decompose the summands as products, and integrate effortlessly:
+  \begin{align*}
+  I &= \int_0^1 \int_0^1 \sum_{n \ge 0} (xy)^n \, dx \, dy = \sum_{n \ge 0} \int_0^1 \int_0^1 x^n y^n \, dx \, dy \\
+  &= \sum_{n \ge 0} \left(\int_0^1 x^n \, dx\right) \left(\int_0^1 y^n \, dy\right) = \sum_{n \ge 0} \frac{1}{n+1} \frac{1}{n+1} \\
+  &= \sum_{n \ge 0} \frac{1}{(n+1)^2} = \sum_{n \ge 1} \frac{1}{n^2} = \zeta(2).
+  \end{align*}
+  This evaluation also shows that the double integral (over a positive function with a pole at $x=y=1$) is finite.
+  Note that the computation is also easy and straightforward if we read it backwards
+  --- thus the evaluation of $\zeta(2)$ leads one to the double integral $I$.
+  
+  The second way to evaluate $I$ comes from a change of coordinates:
+  in the new coordinates given by $u := \frac{y+x}{2}$ and $v := \frac{y-x}{2}$ the domain of integration is a square of side length $\frac{1}{2}\sqrt{2}$,
+  which we get from the old domain by first rotating it by $45^\circ$ and then shrinking it by a factor of $\sqrt{2}$.
+  Substitution of $x = u-v$ and $y = u+v$ yields
+  \[
+  \frac{1}{1-xy} = \frac{1}{1-u^2+v^2}.
+  \]
+  To transform the integral, we have to replace $dx \, dy$ by $2 \, du \, dv$, to compensate for the fact that our coordinate transformation
+  reduces areas by a constant factor of $2$ (which is the Jacobi determinant of the transformation).
+  The new domain of integration, and the function to be integrated, are symmetric with respect to the $u$-axis,
+  so we just need to compute two times (another factor of $2$ arises here!) the integral over the upper half domain,
+  which we split into two parts in the most natural way:
+  \[
+  I = 4 \int_0^{1/2} \left(\int_0^u \frac{dv}{1-u^2+v^2}\right) du + 4 \int_{1/2}^1 \left(\int_0^{1-u} \frac{dv}{1-u^2+v^2}\right) du.
+  \]
+  Using $\int \frac{dx}{a^2+x^2} = \frac{1}{a} \arctan \frac{x}{a} + C$, this becomes
+  \begin{align*}
+  I &= 4 \int_0^{1/2} \frac{1}{\sqrt{1-u^2}} \arctan \left(\frac{u}{\sqrt{1-u^2}}\right) du \\
+  &\quad + 4 \int_{1/2}^1 \frac{1}{\sqrt{1-u^2}} \arctan \left(\frac{1-u}{\sqrt{1-u^2}}\right) du.
+  \end{align*}
+  These integrals can be simplified and finally evaluated by substituting $u = \sin \theta$ resp. $u = \cos \theta$.
+  But we proceed more directly, by computing that the derivative of $g(u) := \arctan \left(\frac{u}{\sqrt{1-u^2}}\right)$ is $g'(u) = \frac{1}{\sqrt{1-u^2}}$,
+  while the derivative of $h(u) := \arctan \left(\frac{1-u}{\sqrt{1-u^2}}\right) = \arctan \left(\sqrt{\frac{1-u}{1+u}}\right)$ is $h'(u) = -\frac{1}{2} \frac{1}{\sqrt{1-u^2}}$.
+  So we may use $\int_a^b f'(x) f(x) dx = \left[ \frac{1}{2} f(x)^2 \right]_a^b = \frac{1}{2} f(b)^2 - \frac{1}{2} f(a)^2$ and get
+  \begin{align*}
+  I &= 4 \int_0^{1/2} g'(u) g(u) du + 4 \int_{1/2}^1 -2 h'(u) h(u) du \\
+  &= 2 \left[ g(u)^2 \right]_0^{1/2} - 4 \left[ h(u)^2 \right]_{1/2}^1 \\
+  &= 2 g\left(\frac{1}{2}\right)^2 - 2 g(0)^2 - 4 h(1)^2 + 4 h\left(\frac{1}{2}\right)^2 \\
+  &= 2 \left(\frac{\pi}{6}\right)^2 - 0 - 0 + 4 \left(\frac{\pi}{6}\right)^2 = \frac{\pi^2}{6}. \qedhere
+  \end{align*}
 \end{proof}
 
 
@@ -18,13 +61,36 @@
   \lean{euler_series'}
   \leanok
   \[
-  \sum_{k\ge 0}\frac{1}{(2 * k + 1)^2} = \frac{\pi^2}{8}
+  \sum_{k \ge 0}\frac{1}{(2k+1)^2} = \frac{\pi^2}{8}
   \]
 \end{theorem}
 \begin{proof}
-  TODO
+  As above, we may express this as a double integral, namely
+  \[
+  J = \int_0^1 \int_0^1 \frac{1}{1-x^2 y^2} dx \, dy = \sum_{k \ge 0} \frac{1}{(2k+1)^2}.
+  \]
+  So we have to compute this integral $J$.
+  And for this Beukers, Calabi and Kolk proposed the new coordinates
+  \[
+  u := \arccos \sqrt{\frac{1-x^2}{1-x^2 y^2}} \quad v := \arccos \sqrt{\frac{1-y^2}{1-x^2 y^2}}.
+  \]
+  To compute the double integral, we may ignore the boundary of the domain, and consider $x, y$ in the range $0 < x < 1$ and $0 < y < 1$.
+  Then $u, v$ will lie in the triangle $u > 0, v > 0, u+v < \pi/2$.
+  The coordinate transformation can be inverted explicitly, which leads one to the substitution
+  \[
+  x = \frac{\sin u}{\cos v} \quad \text{and} \quad y = \frac{\sin v}{\cos u}.
+  \]
+  It is easy to check that these formulas define a bijective coordinate transformation between the interior of the unit square $S = \{(x, y) : 0 \le x, y \le 1\}$ and the interior of the triangle $T = \{(u, v) : u, v \ge 0, u+v \le \pi/2\}$.
+  Now we have to compute the Jacobi determinant of the coordinate transformation, and magically it turns out to be
+  \[
+  \det \begin{pmatrix} \frac{\cos u}{\cos v} & \frac{\sin u \sin v}{\cos^2 v} \\ \frac{\sin u \sin v}{\cos^2 u} & \frac{\cos v}{\cos u} \end{pmatrix} = 1 - \frac{\sin^2 u \sin^2 v}{\cos^2 u \cos^2 v} = 1 - x^2 y^2.
+  \]
+  But this means that the integral that we want to compute is transformed into
+  \[
+  J = \int_0^{\pi/2} \int_0^{\pi/2-u} 1 dv du,
+  \]
+  which is just the area $\frac{1}{2} (\frac{\pi}{2})^2 = \frac{\pi^2}{8}$ of the triangle $T$.
 \end{proof}
-
 
 
 \begin{theorem}[Euler's series: Proof 3]
@@ -36,7 +102,87 @@
   \]
 \end{theorem}
 \begin{proof}
-  TODO
+  The first step is to establish a remarkable relation between values of the (squared) cotangent function.
+  Namely, for all $m \ge 1$ one has
+  \begin{equation} \label{eq:cot_sum}
+  \cot^2 \left(\frac{\pi}{2m+1}\right) + \cot^2 \left(\frac{2\pi}{2m+1}\right) + \dots + \cot^2 \left(\frac{m\pi}{2m+1}\right) = \frac{2m(2m-1)}{6}.
+  \end{equation}
+  To establish this, we start with the relation $e^{ix} = \cos x + i \sin x$.
+  Taking the $n$-th power $e^{inx} = (e^{ix})^n$, we get
+  \[
+  \cos nx + i \sin nx = (\cos x + i \sin x)^n.
+  \]
+  The imaginary part of this is
+  \begin{equation} \label{eq:sin_nx}
+  \sin nx = \binom{n}{1} \sin x \cos^{n-1} x - \binom{n}{3} \sin^3 x \cos^{n-3} x \pm \cdots
+  \end{equation}
+  Now we let $n = 2m+1$, while for $x$ we will consider the $m$ different values $x = \frac{r\pi}{2m+1}$, for $r = 1, 2, \dots, m$.
+  For each of these values we have $nx = r\pi$, and thus $\sin nx = 0$, while $0 < x < \frac{\pi}{2}$ implies that for $\sin x$ we get $m$ distinct positive values.
+  
+  In particular, we can divide \eqref{eq:sin_nx} by $\sin^n x$, which yields
+  \[
+  0 = \binom{n}{1} \cot^{n-1} x - \binom{n}{3} \cot^{n-3} x \pm \cdots,
+  \]
+  that is,
+  \[
+  0 = \binom{2m+1}{1} \cot^{2m} x - \binom{2m+1}{3} \cot^{2m-2} x \pm \cdots
+  \]
+  for each of the $m$ distinct values of $x$.
+  Thus for the polynomial of degree $m$
+  \[
+  p(t) := \binom{2m+1}{1} t^m - \binom{2m+1}{3} t^{m-1} \pm \dots + (-1)^m \binom{2m+1}{2m+1}
+  \]
+  we know $m$ \emph{distinct} roots
+  \[
+  a_r = \cot^2 \left(\frac{r\pi}{2m+1}\right) \quad \text{for } r = 1, 2, \dots, m.
+  \]
+  The roots are distinct because $\cot^2 x = \cot^2 y$ implies $\sin^2 x = \sin^2 y$
+  and thus $x = y$ for $x, y \in \{ \frac{r\pi}{2m+1} : 1 \le r \le m \}$.
+  
+  Hence the polynomial coincides with
+  \[
+  p(t) = \binom{2m+1}{1} \left(t - \cot^2 \left(\frac{\pi}{2m+1}\right) \right) \dots \left(t - \cot^2 \left(\frac{m\pi}{2m+1}\right) \right).
+  \]
+  Comparison of the coefficients of $t^{m-1}$ in $p(t)$ now yields that the sum of the roots is
+  \[
+  a_1 + \dots + a_m = \frac{\binom{2m+1}{3}}{\binom{2m+1}{1}} = \frac{2m(2m-1)}{6},
+  \]
+  which proves \eqref{eq:cot_sum}.
+  
+  We also need a second identity, of the same type,
+  \begin{equation} \label{eq:csc_sum}
+  \csc^2 \left(\frac{\pi}{2m+1}\right) + \csc^2 \left(\frac{2\pi}{2m+1}\right) + \dots + \csc^2 \left(\frac{m\pi}{2m+1}\right) = \frac{2m(2m+2)}{6},
+  \end{equation}
+  for the cosecant function $\csc x = \frac{1}{\sin x}$.
+  But
+  \[
+  \csc^2 x = \frac{1}{\sin^2 x} = \frac{\cos^2 x + \sin^2 x}{\sin^2 x} = \cot^2 x + 1,
+  \]
+  so we can derive \eqref{eq:csc_sum} from \eqref{eq:cot_sum} by adding $m$ to both sides of the equation.
+  
+  Now the stage is set, and everything falls into place.
+  We use that in the range $0 < y < \frac{\pi}{2}$ we have
+  \[
+  0 < \sin y < y < \tan y,
+  \]
+  and thus
+  \[
+  0 < \cot y < \frac{1}{y} < \csc y,
+  \]
+  which implies
+  \[
+  \cot^2 y < \frac{1}{y^2} < \csc^2 y.
+  \]
+  Now we take this double inequality, apply it to each of the $m$ distinct values of $x$, and add the results.
+  Using \eqref{eq:cot_sum} for the left-hand side, and \eqref{eq:csc_sum} for the right-hand side, we obtain
+  \[
+  \frac{2m(2m-1)}{6} < \left(\frac{2m+1}{\pi}\right)^2 + \left(\frac{2m+1}{2\pi}\right)^2 + \dots + \left(\frac{2m+1}{m\pi}\right)^2 < \frac{2m(2m+2)}{6},
+  \]
+  that is,
+  \[
+  \frac{\pi^2}{6} \frac{2m}{2m+1} \frac{2m-1}{2m+1} < \frac{1}{1^2} + \frac{1}{2^2} + \dots + \frac{1}{m^2} < \frac{\pi^2}{6} \frac{2m}{2m+1} \frac{2m+2}{2m+1}.
+  \]
+  Both the left-hand and the right-hand side converge to $\frac{\pi^2}{6}$ for $m \to \infty$: end of proof.
 \end{proof}
 
 
@@ -49,15 +195,61 @@
   \]
 \end{theorem}
 \begin{proof}
-  TODO
+  The first trick in this proof is to consider the Gregory–Leibniz series in doubly-infinite form $\sum_{n=-\infty}^\infty \frac{(-1)^n}{2n+1}$.
+  As for negative $n = -k < 0$ we get the same terms as for $n = k-1 \ge 0$, since $\frac{(-1)^{-k}}{2(-k)+1} = \frac{(-1)^k}{-(2k-1)} = \frac{(-1)^{k-1}}{2(k-1)+1}$, we infer that $\sum_{n=-N}^N \frac{(-1)^n}{2n+1}$ converges to $\pi/2$ with $N \to \infty$, and thus the square of this sum converges to $\pi^2/4$.
+  You may write this as
+  \[
+  \lim_{N \to \infty} \sum_{m,n=-N}^N \frac{(-1)^m}{2m+1} \frac{(-1)^n}{2n+1} = \frac{\pi^2}{4}.
+  \]
+  The double sum may be interpreted as the sum of all entries of a square matrix of size $(2N+1) \times (2N+1)$, and we know that for $N \to \infty$ this sum of all entries tends to $\pi^2/4$.
+  We want to know, however, that the sum of only the \emph{diagonal} entries, for $m=n$, also tends to $\pi^2/4$,
+  \[
+  \lim_{N \to \infty} \sum_{n=-N}^N \frac{1}{(2n+1)^2} = \frac{\pi^2}{4},
+  \]
+  because then $\sum_{n=0}^\infty \frac{1}{(2n+1)^2} = \pi^2/8$ will follow, and this, as we know, is equivalent to Euler's theorem.
+  So let's show that the sum of all off-diagonal terms tends to $0$!
+  We write $\delta_N$ for this sum, and use a prime to denote that the diagonal terms with $m=n$ are deleted, so
+  \begin{align*}
+  \delta_N &= \sideset{}{'}\sum_{m,n=-N}^N \frac{(-1)^{m+n}}{(2m+1)(2n+1)} \\
+  &= \sideset{}{'}\sum_{m,n=-N}^N (-1)^{m+n} \left(\frac{1}{2m-2n}\frac{1}{2m+1} - \frac{1}{2m-2n}\frac{1}{2n+1}\right) \\
+  &= \sideset{}{'}\sum_{m,n=-N}^N (-1)^{m+n} \left(\frac{1}{2m-2n}\frac{1}{2m+1} - \frac{1}{2n-2m}\frac{1}{2m+1}\right) \\
+  &= \sideset{}{'}\sum_{m,n=-N}^N (-1)^{m+n} \frac{1}{m-n} \frac{1}{2m+1} \\
+  &= \sum_{m=-N}^N \frac{1}{2m+1} \left(\sideset{}{'}\sum_{n=-N}^N \frac{(-1)^{m-n}}{m-n}\right).
+  \end{align*}
+  We only need to show that the terms
+  \[
+  c_{m,N} := \sideset{}{'}\sum_{n=-N}^N \frac{(-1)^{m-n}}{m-n}
+  \]
+  are small enough in absolute value.
+  What do we know about them?
+  It is easy to see that $c_{-m,N} = -c_{m,N}$, so in particular $c_{0,N} = 0$.
+  Thus we may assume that $m > 0$, and note that the summands for $n = m+k$ and $n = m-k$ cancel as long as they are in the range between $-N$ and $N$, that is, for $1 \le k \le N-m$.
+  Thus $c_{m,N}$ equals the alternating sum of fractions of decreasing size given by the remaining terms, where the largest one occurs for $n = m-(N-m)-1 = 2m-N-1$, that is $m-n = N-m+1$.
+  Hence
+  \[
+  c_{m,N} = (-1)^{N-m+1} \left( \frac{1}{N-m+1} - \frac{1}{N-m+2} \pm \dots \pm \frac{1}{m+N} \right),
+  \]
+  which implies that
+  \[
+  |c_{m,N}| \le \frac{1}{N-m+1}.
+  \]
+  This finally yields
+  \begin{align*}
+  |\delta_N| &\le \sum_{m=-N}^N \left|\frac{1}{2m+1}\right| |c_{m,N}| \le \sum_{m=-N}^N \frac{1}{2|m|-1} |c_{m,N}| \\
+  &\le 2 \sum_{m=1}^N \frac{1}{m} |c_{m,N}| \le 2 \sum_{m=1}^N \frac{1}{m} \frac{1}{N-m+1} \\
+  &= 2 \sum_{m=1}^N \frac{1}{N+1} \left( \frac{1}{m} + \frac{1}{N-m+1} \right) \\
+  &= 2 \frac{1}{N+1} (H_N + H_N) < 4 \frac{\log N + 1}{N+1},
+  \end{align*}
+  and this goes to $0$ as $N$ goes to infinity.
 \end{proof}
 
 
 \begin{theorem}[Four proofs of Euler's series]
   \label{four_proofs_euler_series}
-  Collecting the proofs from the chapter
+  Collecting the proofs from the chapter.
 \end{theorem}
 \begin{proof}
   \uses{euler_series, euler_series_2, euler_series_3, euler_series_4}
+  See theorems in this chapter.
 \end{proof}
 % Appendix does not contain proofs..
