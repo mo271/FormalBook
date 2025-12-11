@@ -5,13 +5,17 @@
   \label{fermats_little}
   \lean{book.quadratic_reciprocity.fermat_little}
   \leanok
-  For \(a \not\equiv 0 \mod p\),
+  For \(a \not\equiv 0 \pmod{p}\),
   \[
-  a^{p - 1} \equiv 1 \mod p
+  a^{p - 1} \equiv 1 \pmod{p}
   \]
 \end{theorem}
 \begin{proof}
-  TODO
+  Since $\mathbb{Z}_p^* = \mathbb{Z}_p \setminus \{0\}$ is a group with multiplication, the set $\{1a, 2a, 3a, \dots, (p-1)a\}$ runs again through all nonzero residues,
+  \[
+  (1a)(2a)\dots((p-1)a) \equiv 1\cdot 2 \cdots (p-1) \pmod{p}
+  \]
+  and hence by dividing by $(p - 1)!$, we get $a^{p - 1} \equiv 1 \pmod{p}$.
 \end{proof}
 
 
@@ -19,49 +23,99 @@
   \label{euler_criterion}
   \lean{book.quadratic_reciprocity.euler_criterion}
   \leanok
-  For \(a \not\equiv 0 (\mod p)\),
+  For \(a \not\equiv 0 \pmod{p}\),
   \[
-  (\frac{a}{p}) \equiv a ^{\frac{p-1}{2}} \mod p
+  (\frac{a}{p}) \equiv a ^{\frac{p-1}{2}} \pmod{p}
   \]
 \end{theorem}
 \begin{proof}
   \uses{fermats_little}
-  TODO
+  From Fermat's little theorem, the polynomial $x^{p-1} - 1 \in \mathbb{Z}_p[x]$ has as roots all nonzero residues. Next we note that
+  \[
+  x^{p-1} - 1 = \left(x^{\frac{p-1}{2}} - 1\right)\left(x^{\frac{p-1}{2}} + 1\right).
+  \]
+  
+  Suppose $a \equiv b^2 \pmod{p}$ is a quadratic residue. Then by Fermat's little theorem $a^{\frac{p-1}{2}} \equiv b^{p-1} \equiv 1 \pmod{p}$. Hence the quadratic residues are precisely the roots of the first factor $x^{\frac{p-1}{2}} - 1$, and the $\frac{p-1}{2}$ nonresidues must thus be the roots of the second factor $x^{\frac{p-1}{2}} + 1$. Comparing this to the definition of the Legendre symbol, we obtain
+  \[
+  (\frac{a}{p}) \equiv a^{\frac{p-1}{2}} \pmod{p}. \qedhere
+  \]
 \end{proof}
 
 \begin{theorem}[Product Rule]
   \label{product_rule}
   \leanok
   \lean{book.quadratic_reciprocity.product_rule}
-  \[
+  \begin{equation} \label{eq:product_rule}
     (\frac{ab}{p}) =   (\frac{a}{p}) \cdot   (\frac{b}{p})
-  \]
+  \end{equation}
 \end{theorem}
 \begin{proof}
   \uses{euler_criterion}
-  TODO
+  This obviously holds for the right-hand side of Euler's criterion.
 \end{proof}
 
 \begin{theorem}[Lemma of Gauss]
   \label{gauss_lemma}
   \lean{book.quadratic_reciprocity.lemma_of_Gauss}
-  \leanok
-  TODO
+  Suppose $a \not\equiv 0 \pmod{p}$. Take the numbers $1a, 2a, \dots, \frac{p-1}{2}a$ and reduce them modulo $p$ to the residue system smallest in absolute value, $ia \equiv r_i \pmod{p}$ with $-\frac{p-1}{2} \le r_i \le \frac{p-1}{2}$ for all $i$. Then
+  \[
+  (\frac{a}{p}) = (-1)^s, \quad \text{where } s = \#\{i : r_i < 0\}.
+  \]
 \end{theorem}
 \begin{proof}
   \uses{euler_criterion}
-  TODO
+  Suppose $u_1, \dots, u_s$ are the residues smaller than $0$, and that $v_1, \dots, v_{\frac{p-1}{2} - s}$ are those greater than $0$. If $-u_i = v_j$, then $u_i + v_j \equiv 0 \pmod{p}$. Now $u_i \equiv ka, v_j \equiv \ell a \pmod{p}$ implies $p \mid (k + \ell) a$. As $p$ and $a$ are relatively prime, $p$ must divide $k + \ell$ which is impossible, since $k + \ell \le p-1$. Thus the numbers $-u_1, \dots, -u_s$ are between $1$ and $\frac{p-1}{2}$, and are all different from the $v_j$'s; hence $\{-u_1, \dots, -u_s, v_1, \dots, v_{\frac{p-1}{2} - s}\} = \{1, 2, \dots, \frac{p-1}{2}\}$. Therefore
+  \[
+  \prod_{i} (-u_i) \prod_{j} v_j = \left(\frac{p-1}{2}\right)!,
+  \]
+  which implies
+  \[
+  (-1)^s \prod_{i} u_i \prod_{j} v_j \equiv \left(\frac{p-1}{2}\right)! \pmod{p}.
+  \]
+  
+  Now remember how we obtained the numbers $u_i$ and $v_j$; they are the residues of $1a, \dots, \frac{p-1}{2}a$. Hence
+  \[
+  \left(\frac{p-1}{2}\right)! \equiv (-1)^s \prod_{i} u_i \prod_{j} v_j \equiv (-1)^s \left(\frac{p-1}{2}\right)! a^{\frac{p-1}{2}} \pmod{p}.
+  \]
+  Cancelling $\left(\frac{p-1}{2}\right)!$ together with Euler's criterion gives
+  \[
+  (\frac{a}{p}) \equiv a^{\frac{p-1}{2}} \equiv (-1)^s \pmod{p},
+  \]
+  and therefore $(\frac{a}{p}) = (-1)^s$, since $p$ is odd.
 \end{proof}
 
 \begin{theorem}[Quadratic reciprocity I]
   \label{quadratic_reciprocity1}
   \lean{book.quadratic_reciprocity.quadratic_reciprocity_1}
   \leanok
-  TODO
+  Let $p$ and $q$ be different odd primes. Then
+  \[
+  (\frac{q}{p})(\frac{p}{q}) = (-1)^{\frac{p-1}{2} \frac{q-1}{2}}.
+  \]
 \end{theorem}
 \begin{proof}
   \uses{gauss_lemma}
-  TODO
+  The key to our first proof is a counting formula given by Lemma of Gauss. Let $p$ and $q$ be odd primes, and consider $(\frac{q}{p})$. Suppose $iq$ is a multiple of $q$ that reduces to negative residue $r_i < 0$ in the Lemma of Gauss. This means that there is a unique integer $j$ such that $-\frac{p}{2} < iq-jp < 0$. Note that $0 < j < \frac{q}{2}$ since $0 < i < \frac{p}{2}$. In other words, $(\frac{q}{p}) = (-1)^s$, where $s$ is the number of lattice points $(x, y)$, that is, pairs of integers $x$, $y$ satisfying
+  \begin{equation} \label{eq:s}
+  0 < py - qx < \frac{p}{2}, \quad 0 < x < \frac{p}{2}, \quad 0 < y < \frac{q}{2}.
+  \end{equation}
+  Similarly, $(\frac{p}{q}) = (-1)^t$ where $t$ is the number of lattice points $(x, y)$ with
+  \begin{equation} \label{eq:t}
+  0 < qx - py < \frac{q}{2}, \quad 0 < x < \frac{p}{2}, \quad 0 < y < \frac{q}{2}.
+  \end{equation}
+  Now look at the rectangle with side lengths $\frac{p}{2}$, $\frac{q}{2}$, and draw the two lines parallel to the diagonal $py = qx$, $y = \frac{q}{p}x + \frac{1}{2}$ or $py - qx = \frac{p}{2}$, respectively, $y = \frac{q}{p} \left(x - \frac{1}{2}\right)$ or $qx - py = \frac{q}{2}$.
+  
+  The proof is now quickly completed by the following three observations:
+  \begin{enumerate}
+  	\item There are no lattice points on the diagonal and the two parallels. This is so because $py = qx$ would imply $p \mid x$, which cannot be. For the parallels observe that $py - qx$ is an integer while $\frac{p}{2}$ and $\frac{q}{2}$ are not.
+  	\item The lattice points observing \eqref{eq:s} are precisely the points in the upper strip $0 < py - qx < \frac{p}{2}$, and those of \eqref{eq:t} the points in the lower strip $0 < qx - py < \frac{q}{2}$. Hence the number of lattice points in the two strips is $s + t$.
+  	\item The outer regions $R : py - qx > \frac{p}{2}$ and $S: qx - py > \frac{q}{2}$ contain the \textit{same} number of points. To see this consider the map $\varphi: R \to S$ which maps $(x, y)$ to $\left(\frac{p+1}{2} - x, \frac{q+1}{2} - y\right)$ and check that $\varphi$ is an involution.
+  \end{enumerate}
+  
+  Since the total number of lattice points in the rectangle is $\frac{p-1}{2} \cdot \frac{q-1}{2}$, we infer that $s + t$ and $\frac{p-1}{2} \cdot \frac{q-1}{2}$ have the same parity, and so
+  \[
+  (\frac{q}{p}) (\frac{p}{q}) = (-1)^{s+t} = (-1)^{\frac{p-1}{2} \frac{q-1}{2}}. \qedhere
+  \]
 \end{proof}
 
 
@@ -69,41 +123,112 @@
   \label{mult_cyclic}
   \lean{book.quadratic_reciprocity.mult_cyclic}
   \leanok
-  The multiplicative group of a finite field is cyclic
+  The multiplicative group of a finite field is cyclic.
 \end{theorem}
 \begin{proof}
-  TODO
+  Let $F^*$ be the multiplicative group of the field $F$, with $|F^*| = n$. Writing $\ord(a)$ for the order of an element, that is, the smallest positive integer $k$ such that $a^k = 1$, we want to find an element $a \in F^*$ with $\ord(a) = n$. If $\ord(b) = d$, then by Lagrange's theorem, $d$ divides $n$. Classifying the elements according to their order, we have
+  \begin{equation} \label{eq:sum_psi}
+  n = \sum_{d \mid n} \psi(d), \quad \text{where } \psi(d) = \#\{b\in F^*: \ord(b) = d\}.
+  \end{equation}
+  If $\ord(b) = d$, then every element $b^i$ ($i = 1, \dots, d$) satisfies $(b^i)^d = 1$ and is therefore a root of the polynomial $x^d - 1$. But, since $F$ is a field, $x^d - 1$ has at most $d$ roots, and so the elements $b, b^2, \dots, b^d = 1$ are precisely these roots. In particular, every element of order $d$ is of the form $b^i$.
+  
+  On the other hand, it is easily checked that $\ord(b^i) = \frac{d}{(i, d)}$, where $(i, d)$ denotes the greatest common divisor of $i$ and $d$. Hence $\ord(b^i) = d$ if and only if $(i, d) = 1$, that is, if $i$ and $d$ are relatively prime. Denoting \textit{Euler's function} by $\varphi(d) = \#\{i : 1 \le i \le d, (i, d) = 1\}$, we thus have $\psi(d) = \varphi(d)$ whenever $\psi(d) > 0$. Looking at \eqref{eq:sum_psi} we find
+  \[
+  n = \sum_{d \mid n} \psi(d) \le \sum_{d \mid n} \varphi(d).
+  \]
+  But as we are going to show that
+  \begin{equation} \label{eq:sum_phi}
+  \sum_{d \mid n} \varphi(d) = n,
+  \end{equation}
+  we must have $\psi(d) = \varphi(d)$ for all $d$. In particular, $\psi(n) = \varphi(n) \ge 1$, and so there is an element of order $n$.
+  
+  The following (folklore) proof of \eqref{eq:sum_phi} belongs in the Book as well. Consider the $n$ fractions
+  \[
+  \frac{1}{n}, \frac{2}{n}, \dots, \frac{k}{n}, \dots, \frac{n}{n},
+  \]
+  reduce them to the lowest term $\frac{k}{n} = \frac{i}{d}$ with $1 \le i \le d$, $(i, d) = 1$, $d \mid n$, and check that the denominator $d$ appears precisely $\varphi(d)$ times.
 \end{proof}
 
 \begin{theorem}[A]
   \label{fact_A}
   \lean{book.quadratic_reciprocity.fact_A}
   \leanok
-  TODO
+  Let $p$ and $q$ be distinct odd primes, and consider the finite field $F$ with $q^{p-1}$ elements. Then for any $a, b \in F$, $(a + b)^q = a^q + b^q$.
 \end{theorem}
 \begin{proof}
-  \uses{euler_criterion}
-  TODO
+  The prime field of $F$ is $\mathbb{Z}_q$, whence $qa = 0$ for any $a \in F$. This implies that $(a + b)^q = a^q + b^q$, since any binomial coefficient $\binom{q}{i}$ is a multiple of $q$ for $0 < i < q$, and thus 0 in $F$.
 \end{proof}
 
 \begin{theorem}[B]
   \label{fact_B}
   \lean{book.quadratic_reciprocity.fact_B}
   \leanok
-  TODO
+  For the field $F$ defined in (A), there exists an element $\zeta \in F$ of multiplicative order $p$, that is, $\zeta^p = 1$. Moreover, we have a polynomial decomposition
+  \[
+  x^p - 1 = (x - \zeta) (x - \zeta^2) \cdots (x - \zeta^p).
+  \]
 \end{theorem}
 \begin{proof}
-  \uses{fermats_little}
-  TODO
+  \uses{fermats_little,mult_cyclic}
+  The multiplicative group $F^* = F \setminus \{0\}$ is cyclic of size $q^{p-1} - 1$. Since by Fermat's little theorem $p$ is a divisor of $q^{p-1} - 1$, there exists an element $\zeta \in F$ of order $p$, that is, $\zeta^p = 1$, and $\zeta$ generates the subgroup $\{\zeta, \zeta^2, \dots, \zeta^p = 1\}$ of $F^*$. Note that any $\zeta^i$ ($i \ne p$) is again a generator. Hence we obtain the polynomial decomposition $x^p - 1 = (x - \zeta) (x - \zeta^2) \cdots (x - \zeta^p)$.
 \end{proof}
 
 \begin{theorem}[Quadratic reciprocity II]
   \label{quadratic_reciprocity2}
   \lean{book.quadratic_reciprocity.quadratic_reciprocity_2}
   \leanok
-  TODO
+  Let $p$ and $q$ be different odd primes. Then
+  \[
+  (\frac{q}{p})(\frac{p}{q}) = (-1)^{\frac{p-1}{2} \frac{q-1}{2}}.
+  \]
 \end{theorem}
 \begin{proof}
   \uses{fact_A, fact_B}
-  TODO
+  The second proof does not use Gauss' lemma, instead it employs so-called ``Gauss sums'' in finite fields. Gauss invented them in his study of the equation $x^p - 1 = 0$ and the arithmetical properties of the field $\mathbb{Q}(\zeta)$ (called cyclotomic field), where $\zeta$ is a $p$-th root of unity. They have been the starting point for the search for higher reciprocity laws in general number fields.
+  
+  Consider the \textit{Gauss sum}
+  \[
+  G := \sum_{i=1}^{p-1} (\frac{i}{p}) \zeta^i \in F,
+  \]
+  where $(\frac{i}{p})$ is the Legendre symbol. For the proof we derive two different expressions for $G^q$ and then set them equal.
+  
+  \textbf{First expression.} We have
+  \begin{equation} \label{eq:first-expression}
+  G^q = \sum_{i=1}^{p-1} (\frac{i}{p})^q \zeta^{iq} = \sum_{i=1}^{p-1} (\frac{i}{p}) \zeta^{iq} = (\frac{q}{p}) \sum_{i=1}^{p-1} (\frac{iq}{p}) \zeta^{iq} = (\frac{q}{p}) G,
+  \end{equation}
+  where the first equality follows from $(a + b)^q = a^q + b^q$, the second uses that $(\frac{i}{p})^q = (\frac{i}{p})$ since $q$ is odd, the third one is derived from \eqref{eq:product_rule}, which yields $(\frac{i}{p}) = (\frac{q}{p}) (\frac{iq}{p})$, and the last one holds since $iq$ runs with $i$ through all nonzero residues modulo $p$.
+  
+  \textbf{Second expression.} Suppose we can prove
+  \begin{equation} \label{eq:G^2}
+  G^2 = (-1)^{\frac{p-1}{2}} p,
+  \end{equation}
+  then we are quickly done. Indeed,
+  \begin{equation} \label{eq:second-expression}
+  G^q = G (G^2)^{\frac{q-1}{2}} = G (-1)^{\frac{p-1}{2} \frac{q-1}{2}} p^{\frac{q-1}{2}} = G (\frac{p}{q}) (-1)^{\frac{p-1}{2} \frac{q-1}{2}}.
+  \end{equation}
+  Equating the expressions in \eqref{eq:first-expression} and \eqref{eq:second-expression} and cancelling $G$, which is nonzero by \eqref{eq:G^2}, we find $(\frac{q}{p}) = (\frac{p}{q}) (-1)^{\frac{p-1}{2} \frac{q-1}{2}}$, and thus
+  \[
+  (\frac{q}{p}) (\frac{p}{q}) = (-1)^{\frac{p-1}{2} \frac{q-1}{2}}.
+  \]
+  
+  It remains to verify \eqref{eq:G^2}, and for this we first make two simple observations:
+  \begin{itemize}
+  	\item $\sum_{i=1}^{p} \zeta^i = 0$ and thus $\sum_{i=1}^{p-1} \zeta^i = -1$. Just note that $-\sum_{i=1}^{p} \zeta^i$ is the coefficient of $x^{p-1}$ in $x^p - 1 = \prod_{i=1}^{p} (x - \zeta^i)$, and thus 0.
+  	\item $\sum_{k=1}^{p-1} (\frac{k}{p}) = 0$ and thus $\sum_{k=1}^{p-2} (\frac{k}{p}) = - (\frac{-1}{p})$, since there are equally many quadratic residues and nonresidues.
+  \end{itemize}
+  
+  We have
+  \[
+  G^2 = \left(\sum_{i=1}^{p-1} (\frac{i}{p}) \zeta^i\right) \left(\sum_{j=1}^{p-1} (\frac{j}{p}) \zeta^j\right) = \sum_{i,j} (\frac{ij}{p}) \zeta^{i+j}.
+  \]
+  Setting $j \equiv ik \pmod{p}$ we find
+  \[
+  G^2 = \sum_{i,k} (\frac{k}{p}) \zeta^{i(1+k)} = \sum_{k=1}^{p-1} (\frac{k}{p}) \sum_{i=1}^{p-1} \zeta^{(1+k)i}.
+  \]
+  
+  For $k = p - 1 \equiv -1 \pmod{p}$ this gives $(\frac{-1}{p}) (p - 1)$, since $\zeta^{1+k} = 1$. Move $k = p - 1$ in front and write
+  \[
+  G^2 = (\frac{-1}{p}) (p - 1) + \sum_{k=1}^{p-2} (\frac{k}{p}) \sum_{i=1}^{p-1} \zeta^{(1+k)i}.
+  \]
+  Since $\zeta^{1+k}$ is a generator of the group for $k \ne p - 1$, the inner sum equals $\sum_{i=1}^{p-1} \zeta^i = -1$ for all $k \ne p - 1$ by our first observation. Hence the second summand is $-\sum_{k=1}^{p-2} (\frac{k}{p}) = (\frac{-1}{p})$ by our second observation. It follows that $G^2 = (\frac{-1}{p}) p$ and thus with Euler's criterion $G^2 = (-1)^{\frac{p-1}{2}} p$, which completes the proof.
 \end{proof}
