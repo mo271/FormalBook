@@ -1,6 +1,7 @@
 
 import LeanSearchClient.Syntax
 import ProofWidgets.Component.Basic
+import Lean.Widget.Commands
 
 
 /-! ## Example use of string diagram widgets -/
