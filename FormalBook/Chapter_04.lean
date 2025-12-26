@@ -277,7 +277,7 @@ theorem sq_add_sq_of_nonempty_fixedPoints (hn : (fixedPoints (trivialInvo k)).No
     rw [show 2 * y * (2 * y) = 4 * y * y by linarith, ← hS.1]
     congr
     · exact this.1
-    · simp
+    · ring
   --TODO: avoid repeating from the definition of trivialInvo here!
   · exact ⟨by rw [← hS.1,Int.mul_assoc, Int.mul_comm y x, Int.mul_assoc], hS.2.2, hS.2.1⟩
   · exact hT

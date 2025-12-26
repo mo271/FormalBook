@@ -54,9 +54,10 @@ local notation "F" => fermatNumber
 -- also for n = 0, the statement is true.
 -- This is in mathlib as `fermatNumber_product`
 lemma fermatProduct (n : ℕ) : ∏ k ∈ range n, F k = F n - 2 := by
-  induction' n with n hn
-  · trivial
-  · rw [prod_range_succ, hn]
+  induction n with
+  | zero => trivial
+  | succ n hn =>
+    rw [prod_range_succ, hn]
     unfold fermatNumber
     rw [mul_comm, (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by aesop),  ← Nat.sq_sub_sq]
     ring_nf
@@ -75,7 +76,7 @@ theorem infinity_of_primes₂  (k n : ℕ) (h : k < n) : Coprime (F n) (F k) := 
       refine' le_of_lt _
       simp [two_lt_fermatNumber]
     exact (Nat.dvd_add_right h_m_prod).mp (h_prod ▸ h_n)
-  cases' (dvd_prime prime_two).mp h_m with h_one h_two
+  rcases (dvd_prime prime_two).mp h_m with h_one | h_two
   · exact h_one
   · by_contra
     rw [h_two] at h_n
@@ -216,11 +217,12 @@ lemma H_P4_1 {k p: ℝ} (hk: k > 0) (hp: p ≥ k + 1): p / (p - 1) ≤ (k + 1) /
 
 lemma prod_Icc_succ_div (n : ℕ) (hn : 2 ≤ n) : (∏ x ∈ Icc 1 n, ((x + 1) : ℝ) / x) = n + 1 := by
   rw [← Finset.Ico_succ_right_eq_Icc]
-  induction' n with n h
-  · simp
-  · simp only [succ_eq_succ, succ_eq_add_one] at h ⊢
+  induction n with
+  | zero => simp
+  | succ n h =>
+    simp only [succ_eq_succ, succ_eq_add_one] at h ⊢
     rw [Finset.prod_Ico_succ_top <| Nat.le_add_left 1 n]
-    cases' lt_or_ge n 2 with _ h2
+    rcases lt_or_ge n 2 with _ | h2
     · interval_cases n
       · tauto
       · norm_num
