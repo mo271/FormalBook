@@ -1,6 +1,7 @@
 
 import LeanSearchClient.Syntax
 import ProofWidgets.Component.Basic
+import Lean.Widget.Commands
 
 
 /-! ## Example use of string diagram widgets -/
@@ -15,7 +16,7 @@ structure WindmillTriple where
   y : Nat
   /-- Side length of the central square. -/
   z : Nat
-deriving DecidableEq, Repr, Inhabited,  Lean.ToJson, Lean.FromJson
+deriving DecidableEq, Inhabited,  Lean.ToJson, Lean.FromJson
 
 /-- Defines the colors for the different parts of the windmill. -/
 structure WindmillColors where
@@ -29,7 +30,7 @@ structure WindmillColors where
   south?: Option String := "'#fddca1'"
   /-- Color of the West sail. -/
   west? : Option String := "'#c4fda1'"
-deriving DecidableEq, Repr, Inhabited,  Lean.ToJson, Lean.FromJson
+deriving DecidableEq, Inhabited,  Lean.ToJson, Lean.FromJson
 
 /-- Properties for the Windmill widget. -/
 structure WindmillWidgetProps where

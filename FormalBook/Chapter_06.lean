@@ -7,7 +7,6 @@ import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Data.Int.Star
 import Mathlib.Data.Real.StarOrdered
-import Mathlib.Deprecated.Order
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.SimpleRing.Principal
 
@@ -28,8 +27,8 @@ This is a TODO in `RingTheory.IntegralDomain`.
 
 -- TODO: find the appropriate lemmas for use in the end of the proof...
 example (i j : ℕ) (gj: 0 ≠ j) (h: i ∣ j): i ≤ j:= by
-  cases' h with c h₀
-  cases' em (c = 0) with hc h
+  rcases h with ⟨c, h₀⟩
+  rcases em (c = 0) with hc | h
   · by_contra
     rw [hc] at h₀
     exact gj h₀.symm
@@ -38,15 +37,16 @@ example (i j : ℕ) (gj: 0 ≠ j) (h: i ∣ j): i ≤ j:= by
       _ = j := h₀.symm
 
 lemma le_abs_of_dvd {i j : ℤ} (gj: 0 ≠ j) (h: i ∣ j) : |i| ≤ |j| := by
-  cases' h with c h₀
-  cases' em (c = 0) with hc h
+  rcases h with ⟨c, h₀⟩
+  rcases em (c = 0) with hc | h
   · by_contra
     rw [hc, mul_zero] at h₀
     exact gj h₀.symm
   · calc
-      |i| ≤ (|i|)*|c| := by exact le_mul_of_le_of_one_le' rfl.ge (Int.one_le_abs h) (abs_nonneg c) (abs_nonneg i)
-        _ = |i*c| := (abs_mul i c).symm
-        _ = |j| := by rw [h₀.symm]
+      |i| = |i| * 1 := by simp
+      _ ≤ |i| * |c| := by gcongr 1; exact Int.one_le_abs h
+      _ = |i * c| := (abs_mul i c).symm
+      _ = |j| := by rw [h₀.symm]
 
 /-- The `n`-th cyclotomic polynomial over the integers. -/
 noncomputable

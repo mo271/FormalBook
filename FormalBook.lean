@@ -44,4 +44,8 @@ import FormalBook.Chapter_43
 import FormalBook.Chapter_44
 import FormalBook.Chapter_45
 import FormalBook.Mathlib.EdgeFinset
+import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import FormalBook.Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+import FormalBook.Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import FormalBook.Widgets.Windmill

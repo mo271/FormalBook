@@ -59,11 +59,9 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     convert ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
       ((2 : ℝ) • LinearMap.id))) using 1
     · ext x
-      simp only [Set.mem_Ioi, Set.mem_preimage, LinearMap.smul_apply,
-        LinearMap.id_coe, id_eq, smul_eq_mul]
-      rw [← mul_lt_mul_left (two_pos)]
       norm_num1
-      rfl
+      simp
+      field_simp
     apply ConvexOn.smul
     refine div_nonneg (log_nonneg (by norm_num1)) (by norm_num1)
     exact convexOn_id (convex_Ioi (0.5 : ℝ))
@@ -87,7 +85,6 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     apply rpow_le_rpow_of_exponent_le
     all_goals norm_num1
 end Bertrand
-
 
 open Nat
 
@@ -113,14 +110,14 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     centralBinom n = ∏ p ∈ Finset.range (2 * n / 3 + 1), p ^ (centralBinom n).factorization p := by
   refine' (Eq.trans _ n.prod_pow_factorization_centralBinom).symm
   apply Finset.prod_subset
-  · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
+  · exact Finset.range_subset.2 (by simp; omega)
   intro x hx h2x
   rw [Finset.mem_range, Nat.lt_succ_iff] at hx h2x
   rw [not_le, div_lt_iff_lt_mul three_pos, mul_comm x] at h2x
   replace no_prime := not_exists.mp no_prime x
   rw [← and_assoc, not_and', not_and_or, not_lt] at no_prime
-  cases' no_prime hx with h h
-  · rw [factorization_eq_zero_of_non_prime n.centralBinom h, Nat.pow_zero]
+  rcases no_prime hx with h | h
+  · rw [factorization_eq_zero_of_not_prime n.centralBinom h, Nat.pow_zero]
   · rw [factorization_centralBinom_of_two_mul_self_lt_three_mul n_large h h2x, Nat.pow_zero]
 
 /-- An upper bound on the central binomial coefficient used in the proof of Bertrand's postulate.
@@ -196,7 +193,7 @@ it, but no more than twice as large.
 theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
     ∃ p, Nat.Prime p ∧ n < p ∧ p ≤ 2 * n := by
   -- Split into cases whether `n` is large or small
-  cases' lt_or_le 511 n with h h
+  rcases lt_or_ge 511 n with h | h
   swap
   · -- (1) First Betrand's postulate for n ≤ 511, actually even for n < 521.
     replace h : n < 521 := h.trans_lt (by norm_num1)

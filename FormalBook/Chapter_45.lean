@@ -61,7 +61,8 @@ theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset
       rw [← not_lt]
       intro h_2
       have : ∀ a, coloring a = 1 ↔ coloring a ≠ 0 := by omega
-      simp_all [Finset.filter_not, Finset.card_sdiff]
+      simp only [this, filter_not, card_sdiff, card_attach, card_univ, Fintype.card_fin] at h
+      simp only [attach_eq_univ, Finset.inter_univ] at h
       omega
     refine (Finset.exists_subset_card_eq this).imp ?_
     simp +contextual [Finset.subset_iff]
@@ -218,7 +219,7 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
     obtain ⟨a,adef,b,bdef,neq⟩ := cdef
     set Q := (c a) with Qdef
     -- fin_cases Q --fails ...
-    cases' (show Q = 0 ∨ Q = 1 from by grind) with K K
+    rcases (show Q = 0 ∨ Q = 1 from by grind) with K | K
     · use ⟨a,adef⟩
       use ⟨b,bdef⟩
       grind only [cases eager Subtype]
