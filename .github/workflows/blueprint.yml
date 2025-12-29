@@ -45,6 +45,15 @@ jobs:
         id: build-lean
         uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # v1.2.0
 
+
+      - name: Free up disk space
+        run: |
+          echo "Freeing disk space: prune docker, clean apt and caches"
+          docker system prune -af || true
+          sudo apt-get clean || true
+          sudo rm -rf /tmp/* /var/tmp/* || true
+          rm -rf ~/.cache/* || true
+
       - name: Build project documentation.
         id: build-docgen
         uses: leanprover-community/docgen-action@79a77321c7c11d45cb1815ad45309c71ef4397ec # 2025-11-17
