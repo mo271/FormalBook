@@ -34,23 +34,19 @@ permissions:
 jobs:
   build_project:
     runs-on: ubuntu-latest
-    name: Build project
     steps:
       - name: Checkout project
-        uses: actions/checkout@v6 # v6.0.0
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0 # Fetch all history for all branches and tags
 
-      - name: Build and lint project
-        uses: leanprover/lean-action@v1
-        with:
-          build: true
-          lint: true
-          mk_all-check: true
+      - name: Build and lint the project.
+        id: build-lean
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # v1.2.0
 
-
-      - name: Compile blueprint and documentation
-        uses: leanprover-community/docgen-action@79a77321c7c11d45cb1815ad45309c71ef4397ec # 2025-11-17
+      - name: Build project documentation.
+        id: build-docgen
+        uses: leanprover-community/docgen-action@@79a77321c7c11d45cb1815ad45309c71ef4397ec # 2025-11-17
         with:
           blueprint: true
           homepage: home_page
