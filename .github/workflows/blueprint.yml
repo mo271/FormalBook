@@ -45,14 +45,16 @@ jobs:
         id: build-lean
         uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # v1.2.0
 
-
-      - name: Free up disk space
-        run: |
-          echo "Freeing disk space: prune docker, clean apt and caches"
-          docker system prune -af || true
-          sudo apt-get clean || true
-          sudo rm -rf /tmp/* /var/tmp/* || true
-          rm -rf ~/.cache/* || true
+      - name: Cleanup to free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true # saves approximately 12 GB
+          dotnet: false
+          haskell: false
+          large-packages: false
+          docker-images: false
+          swap-storage: false
 
       - name: Build project documentation.
         id: build-docgen
