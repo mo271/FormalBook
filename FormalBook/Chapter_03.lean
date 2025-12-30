@@ -78,12 +78,12 @@ theorem prime_div_descFactorial (n k m l p : ℕ) (h_klen : k ≤ n)
   have h_pl_div_fac_part: p^l ∣ (n.factorial / (n - k).factorial) := by
     have h_eq_pl_with_k := exists_eq_mul_right_of_dvd h_pl_div_fac
     have h_eq_pl : ∃ (r : ℕ), r * p^l = n.factorial / (n - k).factorial := by
-      cases' h_eq_pl_with_k with j h_eq
+      rcases h_eq_pl_with_k with ⟨j, h_eq⟩
       use (j * k.factorial)
       rw [(mul_rotate _ _ _).symm, ← h_eq]
       qify
       aesop
-    cases' h_eq_pl with j h_eq
+    rcases h_eq_pl with ⟨j, h_eq⟩
     refine' Dvd.intro j _
     rw [mul_comm]
     exact h_eq
@@ -122,8 +122,8 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
         have h_klp_pow_dvd := factor_in_descFactorial n k p l h_klen (gt_iff_lt.mp h_klp) (h_p)
             h_pl_div_desc h_1lel
         -- working with them
-        cases' h_klp_pow_dvd with i hi
-        cases' hi with hi_left hi_right
+        rcases h_klp_pow_dvd with ⟨i, hi⟩
+        rcases hi with ⟨hi_left, hi_right⟩
         have : p^l ≤ n - i := by
           refine' Nat.le_of_dvd _ hi_right
           simp only [tsub_pos_iff_lt]
@@ -133,8 +133,8 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
         exact le_trans this h_klen4i
       · exact ⟨
             -- prove k^l < p^l
-            Nat.pow_lt_pow_left (h_klp) (Nat.ne_of_gt <| gt_of_ge_of_gt h_2lel two_pos),
-            Nat.pow_le_pow_of_le_right (pos_of_gt h_4lek) h_2lel -- prove k² ≤ k^l
+            Nat.pow_lt_pow_left (h_klp) (Nat.ne_of_gt <| lt_of_le_of_lt' h_2lel two_pos),
+            Nat.pow_le_pow_of_le (by omega) h_2lel -- prove k² ≤ k^l
             ⟩
 
     -- Step (2) : aⱼ only have prime divisors ≤ k ; aᵢ ≠ aⱼ
@@ -157,7 +157,7 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
 
       sorry
 
-  cases' em (n ≥ 2*k) with h_2k h
+  rcases em (n ≥ 2*k) with h_2k | h
   · exact h_wlog k h_4lek h_klen4 h_2k
   · -- transform ¬(n ≥ 2 * k) into (n < 2 * k)
     simp only [not_le] at h
@@ -174,7 +174,7 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
     -- second requirement: k ≤ n - 4
     have h_k'len4 : k' ≤ n - 4 := by
       simp only [h_k'_def, tsub_le_iff_right]
-      have help : k + k ≤ n - 4 + k := add_le_add_right h_klen4 k
+      have help : k + k ≤ n - 4 + k := add_le_add_left h_klen4 k
       rw [← (two_mul k)] at help
       exact le_trans (le_of_lt h) help
     -- first requirement: 4 ≤ k
