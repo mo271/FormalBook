@@ -203,69 +203,12 @@ theorem dalembert_lemma {p : Polynomial ℂ} (hp : p.natDegree > 0)
         linarith only [h3]
       _ < _ := by linarith only [h3]
 
-theorem tendsto_cocompact_atTop {f : ℂ → ℝ} :
-    Tendsto f (cocompact ℂ) atTop ↔ ∀ ε : ℝ, ∃ r : ℝ, ∀ z : ℂ, r < ‖z‖ → ε < f z := by
-  rw [tendsto_def]
-  constructor
-  · intro h ε
-    specialize h (Set.Ioi ε) (by rw [mem_atTop_sets]; use ε + 1; simp; grind)
-    rw [Metric.mem_cocompact_iff_closedBall_compl_subset 0] at h
-    obtain ⟨r, h⟩ := h
-    use r
-    intro z hz
-    simpa using h (by simpa using hz)
-  · intro h s hs
-    rw [mem_atTop_sets] at hs
-    obtain ⟨ε, hs⟩ := hs
-    specialize h ε
-    obtain ⟨r, hr⟩ := h
-    apply Metric.mem_cocompact_of_closedBall_compl_subset 0
-    use r
-    intro x hx
-    apply hs
-    linarith only [hr x (by simpa using hx)]
-
 theorem fundamental_theorem_of_algebra (p : Polynomial ℂ) (hp : p.natDegree > 0) :
     ∃ z : ℂ, p.eval z = 0 := by
-  have h1 := p.tendsto_norm_atTop (natDegree_pos_iff_degree_pos.mp hp) tendsto_norm_cocompact_atTop
-  rw [tendsto_cocompact_atTop] at h1
-  specialize h1 (‖p.eval 0‖)
-  obtain ⟨R0, h2⟩ := h1
-  let R1 := R0 ⊔ 1
-  have R1_pos : 0 < R1 := by simp [R1]
-  replace h2 z (h : R1 < ‖z‖) : ‖eval 0 p‖ < ‖eval z p‖ := h2 z (by grind)
-  set f := fun z : ℂ => ‖p.eval z‖
-  let s := Metric.closedBall (0 : ℂ) R1
-  have nonempty_fs : (f '' s).Nonempty := by
-    use f 0
-    rw [Set.mem_image]
-    use 0
-    simp [s, R1_pos.le]
-  have hinfmem : sInf (f '' s) ∈ f '' s := by
-    apply IsCompact.sInf_mem
-    · refine IsCompact.image_of_continuousOn ?_ ?_
-      · exact isCompact_closedBall 0 R1
-      · fun_prop
-    · exact nonempty_fs
-  rw [Set.mem_image] at hinfmem
-  obtain ⟨z0, hz0_mem, hfz0_le⟩ := hinfmem
-  replace hfz0_le z (hz : z ∈ s) : f z0 ≤ f z := by
-    rw [hfz0_le]
-    rw [Real.sInf_le_iff]
-    · intro ε hε
-      use f z
-      grind
-    · use 0
-      simp [lowerBounds, f]
-    · exact nonempty_fs
-  replace hfz0_le z : f z0 ≤ f z := by
-    by_cases hR1 : R1 < ‖z‖
-    · replace h2 : f 0 < f z := h2 z hR1
-      specialize hfz0_le 0 (by simpa [s] using R1_pos.le)
-      linarith only [h2, hfz0_le]
-    · exact hfz0_le z (by simpa [s] using hR1)
+  obtain ⟨z0, hfz0_le⟩ := p.exists_forall_norm_le
   use z0
+  let R1 := ‖z0‖ + 1
+  have R1_pos : 0 < R1 := by linarith only [norm_nonneg z0]
   by_contra! hz0_ne0
-  obtain ⟨b, hb1, hb2 : f b < f z0⟩ := dalembert_lemma hp hz0_ne0 R1_pos
-  specialize hfz0_le b
-  linarith only [hb2, hfz0_le]
+  obtain ⟨b, hb1, hb2⟩ := dalembert_lemma hp hz0_ne0 R1_pos
+  linarith only [hb2, hfz0_le b]
