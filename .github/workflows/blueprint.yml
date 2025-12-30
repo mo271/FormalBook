@@ -30,7 +30,6 @@ permissions:
   pages: write            # Write access to GitHub Pages
   id-token: write         # Write access to ID tokens
 
-
 jobs:
   build_project:
     runs-on: ubuntu-latest
@@ -56,9 +55,8 @@ jobs:
           docker-images: false
           swap-storage: false
 
-      - name: Build project documentation.
-        id: build-docgen
-        uses: leanprover-community/docgen-action@79a77321c7c11d45cb1815ad45309c71ef4397ec # 2025-11-17
+      - name: Compile blueprint and documentation
+        uses: leanprover-community/docgen-action@1417dc7f90338c875da5e5870c03a287d8348896 # docgen-action#11
         with:
           blueprint: true
           homepage: home_page
