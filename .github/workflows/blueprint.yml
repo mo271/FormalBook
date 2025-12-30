@@ -30,12 +30,22 @@ permissions:
   pages: write            # Write access to GitHub Pages
   id-token: write         # Write access to ID tokens
 
-
 jobs:
   build_project:
     runs-on: ubuntu-latest
     name: Build project
     steps:
+      - name: Cleanup to free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true # saves approximately 12 GB
+          dotnet: false
+          haskell: false
+          large-packages: false
+          docker-images: false
+          swap-storage: false
+
       - name: Checkout project
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
@@ -47,7 +57,6 @@ jobs:
           build: true
           lint: true
           mk_all-check: true
-
 
       - name: Compile blueprint and documentation
         uses: leanprover-community/docgen-action@1417dc7f90338c875da5e5870c03a287d8348896 # docgen-action#11
