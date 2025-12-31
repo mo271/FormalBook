@@ -39,43 +39,43 @@ of the following lemma.
 \begin{proof}
    The name of this lemma stems from the interpretation that the set
   \[
-  C = \{x \in \mathbb{R}^N : Ax = 0, x > 0\}
+  C = \{\mathbf{x} \in \mathbb{R}^N : A\mathbf{x} = \mathbf{0}, \mathbf{x} > \mathbf{0}\}
   \]
   given by an integer matrix \( A \in \mathbb{Z}^{M \times N} \) describes a (relatively open) rational
   cone. We have to show that if this is nonempty, then it also contains integer
   points: \( C \cap \mathbb{N}^N \neq \emptyset \).
 
-  If \( C \) is nonempty, then so is \(\overline{C} := \{x \in \mathbb{R}^N : Ax = 0, x \geq 1\}\), since
+  If \( C \) is nonempty, then so is \(\overline{C} := \{\mathbf{x} \in \mathbb{R}^N : A\mathbf{x} = \mathbf{0}, \mathbf{x} \ge \mathbf{1}\}\), since
   for any positive vector a suitable multiple will have all coordinates equal to or
-  larger than $1$. (Here $1$ denotes the vector with all coordinates equal to $1$.)
+  larger than $1$. (Here $\mathbf{1}$ denotes the vector with all coordinates equal to $1$.)
   It suffices to verify that \( \overline{C} \subseteq C \) contains a point with \emph{rational}
   coordinates, since then multiplication with a common denominator for all coordinates
   will yield an integer point in \( \overline{C} \subseteq C \).
 
   There are many ways to prove this. We follow a well-trodden path that was
   first explored by Fourier and Motzkin \([8, \text{Lecture 1}]\): By ``Fourier-Motzkin
-  elimination" we show that the lexicographically smallest solution to the
+  elimination'' we show that the lexicographically smallest solution to the
   system
   \[
-  Ax = 0, x \geq 1
+  A\mathbf{x} = \mathbf{0}, \mathbf{x} \ge \mathbf{1}
   \]
   exists, and that it is rational if the matrix \( A \) is integral.
 
-  Indeed, any linear equation \( a^T x = 0 \) can be equivalently enforced by two
-  inequalities \( a^T x \geq 0, -a^T x \geq 0 \). (Here \( a \) denotes a column vector and
-  \( a^T \) its transpose.) Thus it suffices to prove that any system of the type
+  Indeed, any linear equation \( \mathbf{a}^T \mathbf{x} = 0 \) can be equivalently enforced by two
+  inequalities \( \mathbf{a}^T \mathbf{x} \ge 0, -\mathbf{a}^T \mathbf{x} \ge 0 \). (Here $\mathbf{a}$ denotes a column vector and
+  $\mathbf{a}^T$ its transpose.) Thus it suffices to prove that any system of the type
   \[
-  Ax \geq b, x \geq 1
+  A\mathbf{x} \ge \mathbf{b}, \mathbf{x} \ge \mathbf{1}
   \]
-  with integral \( A \) and \( b \) has a lexicographically smallest solution, which is
+  with integral \( A \) and \( \mathbf{b} \) has a lexicographically smallest solution, which is
   rational, provided that the system has any real solution at all.
 
   For this we argue with induction on \( N \). The case \( N = 1 \) is clear. For \( N > 1 \)
-  look at all the inequalities that involve \( x_N \). If \( x' = (x_1, \ldots, x_{N-1}) \) is fixed,
+  look at all the inequalities that involve \( x_N \). If \( \mathbf{x}' = (x_1, \ldots, x_{N-1}) \) is fixed,
   these inequalities give lower bounds on \( x_N \) (among them \( x_N \geq 1 \)) and
-  possibly also upper bounds. So we form a new system \( A' x' \geq b \), \( x' \geq 1 \)
+  possibly also upper bounds. So we form a new system \( A' \mathbf{x}' \geq \mathbf{b} \), \( \mathbf{x}' \geq 1 \)
   in \( N-1 \) variables, which contains all the inequalities from the system
-  \( Ax \geq b \) that do not involve \( x_N \), as well as all the inequalities obtained
+  \( A\mathbf{x} \geq \mathbf{b} \) that do not involve \( x_N \), as well as all the inequalities obtained
   by requiring that all upper bounds on \( x_N \) (if there are any) are larger or
   equal to all the lower bounds on \( x_N \) (which include \( x_N \geq 1 \)). This system
   in \( N-1 \) variables has a solution, and thus by induction it has a lexicographically

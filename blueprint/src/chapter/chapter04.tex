@@ -2,7 +2,8 @@
 
 \begin{lemma}[Lemma 1]
   \lean{ch04.lemma₁}
-  \label{ch04.lemma1}
+  \label{ch04.lemma₁}
+  \leanok
   For primes \(p = 4m + 1\) the equation \(s^2 \equiv -1 (\mod p)\) has two
   solutions \(s \in \{1, 2, \dots, p - 1\}\), for \(p = 2\) there is one such solution, while
   for primes of the form \(p = 4m + 3\) there is no solution.
@@ -40,6 +41,7 @@ and this contains the two solutions of $s^2 \equiv -1$ that we were looking for.
 \begin{lemma}[Lemma 2]
   \label{ch04.lemma2}
   \lean{ch04.lemma₂}
+  \leanok
   No number \(n = 4m + 3\) is a sum of two squares.
 \end{lemma}
 \begin{proof}
@@ -52,11 +54,12 @@ and this contains the two solutions of $s^2 \equiv -1$ that we were looking for.
 \begin{proposition}[First proof]
   \label{ch04.proposition1}
   \lean{ch04.theorem₁}
+  \leanok
   Every prime of the form \(p = 4m + 1\) is a sum of two squares,
   that is, it can be written as \(p = x^2 + y^2\) for some natural numbers \(x,y \in \mathbb{N}\).
 \end{proposition}
 \begin{proof}
-  \uses{ch04.lemma1}
+  \uses{ch04.lemma₁}
   Consider the pairs $(x', y')$ of integers with $0 \leq x', y' \leq \sqrt{p}$, that is,
   $x', y' \in \{0, 1, \dots, \lfloor \sqrt{p} \rfloor\}$.
   There are $(\lfloor \sqrt{p} \rfloor + 1)^2$ such pairs.
@@ -91,11 +94,11 @@ and this contains the two solutions of $s^2 \equiv -1$ that we were looking for.
 \begin{proposition}[Second proof]
   \label{ch04.proposition2}
   \lean{ch04.theorem₂}
+  \leanok
   Every prime of the form \(p = 4m + 1\) is a sum of two squares,
   that is, it can be written as \(p = x^2 + y^2\) for some natural numbers \(x,y \in \mathbb{N}\).
 \end{proposition}
 \begin{proof}
-  \leanok
  We study the set
 \[
 S := \{(x, y, z) \in \mathbb{Z}^3 : 4xy + z^2 = p, \ x > 0, \ y > 0\}.
@@ -127,7 +130,7 @@ $x$ and $y$, there are at most two values for $z$.
     What do we get from the study of $f$? The main observation is that since $f$ maps the sets $T$
     and $U$ to their complements, it also interchanges the elements in $T \setminus U$ with these in
     $U \setminus T$. That is, there is the same number of solutions in $U$ that are not in $T$ as
-    there are solutions in $T$ that are not in $U$ — so $T$ and $U$ have the same cardinality.
+    there are solutions in $T$ that are not in $U$ --- \emph{so $T$ and $U$ have the same cardinality}.
 
     \item The second involution that we study is an involution on the set $U$:
     \[
@@ -158,7 +161,7 @@ $x$ and $y$, there are at most two values for $z$.
     This map is clearly well-defined, and an involution. We combine now our knowledge derived from
     the other two involutions: The cardinality of $T$ is equal to the cardinality of $U$, which is
     odd. But if $h$ is an involution on a finite set of odd cardinality, then
-    \emph{it has a fixed point}: There is a point $(x, y, z) \in T$ with $x = y$, that is,
+    it \emph{has a fixed point}: There is a point $(x, y, z) \in T$ with $x = y$, that is,
     a solution of
     \[
     p = 4x^2 + z^2 = (2x)^2 + z^2.
@@ -223,5 +226,15 @@ with $x = y$, and hence at least one, and this yields a solution to $(2x)^2 + z^
 \end{theorem}
 \begin{proof}
   \uses{ch04.lemma2, ch04.proposition1, ch04.proposition2, ch04.proposition3}
-  TODO
+  Call a number $n$ \textit{representable} if it is a sum of two squares, that is, if $n = x^2 + y^2$ for some $x, y \in \mathbb{N}_0$. The theorem is a consequence of the following five facts.
+  \begin{enumerate}[label=(\arabic*)]
+  	\item $1 = 1^2 + 0^2$ and $2 = 1^2 + 1^2$ are representable. Every prime of the form $p = 4m + 1$ is representable.
+  	\item The product of any two representable numbers $n_1 = x_1^2 + y_1^2$ and $n_2 = x_2^2 + y_2^2$ is representable: $n_1 n_2 = (x_1 x_2 + y_1 y_2)^2 + (x_1 y_2 - x_2 y_1)^2$.
+  	\item If $n$ is representable, $n = x^2 + y^2$, then also $nz^2$ is representable, by $nz^2 = (xz)^2 + (yz)^2$.
+  \end{enumerate}
+  Facts (1), (2) and (3) together yield the ``if'' part of the theorem.
+  \begin{enumerate}[start=4,label=(\arabic*)]
+  	\item If $p = 4m + 3$ is a prime that divides a representable number $n = x^2 + y^2$, then $p$ divides both $x$ and $y$, and thus $p^2$ divides $n$. In fact, if we had $x \not\equiv 0 \pmod{p}$, then we could find $\overline{x}$ such that $x\overline{x} \equiv 1 \pmod{p}$, multiply the equation $x^2 + y^2 \equiv 0$ by $\overline{x}^2$, and thus we would obtain that $1 + y^2 \overline{x}^2 = 1 + \left(\overline{x} y\right)^2 \equiv 0 \pmod{p}$, which is impossible for $p = 4m + 3$ by Lemma 1.
+  	\item If $n$ is representable, and $p = 4m + 3$ divides $n$, then $p^2$ divides $n$, and $n/p^2$ is representable. This follows from (4), and completes the proof. \qedhere
+  \end{enumerate}
 \end{proof}

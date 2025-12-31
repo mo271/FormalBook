@@ -1,35 +1,289 @@
 \chapter{The spectral theorem and Hadamard's determinant problem}
 
+We start with some preliminary facts. Let $O(n) \subseteq \mathbb{R}^{n \times n}$ be the set of real orthogonal matrices of order $n$. Since
+\[
+(PQ)^{-1} = Q^{-1} P^{-1} = Q^T P^T = (PQ)^T
+\]
+for $P, Q \in O(n)$, we see that the set $O(n)$ is a group. Regarding any matrix in $\mathbb{R}^{n \times n}$ as a vector in $\mathbb{R}^{n^2}$, we find that $O(n)$ is a compact set. Indeed, as the columns of an orthogonal matrix $Q = (q_{ij})$ are unit vectors, we have $|q_{ij}| \le 1$ for all $i$ and $j$, thus $O(n)$ is bounded. Furthermore, the set $O(n)$ is defined as a subset of $\mathbb{R}^{n^2}$ by the equations
+\[
+x_{i1} x_{j1} + x_{i2} x_{j2} + \dots + x_{in} x_{jn} = \delta_{ij} \quad \text{for } 1 \le i, j \le n,
+\]
+hence it is closed, and thus compact.
+
+For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum of the squares of the off-diagonal entries.
+
 \begin{lemma}
   \label{ch7.lemma}
-  If $A$ is a real symmetric \(n \times n\) matrix that is not diagonal, that is
-  \(\Od(A) > 0\), then there exists \(U \in O(n)\) such that \(\Od(U^TAU)<\Od(A)\).
+  If $A$ is a real symmetric $n \times n$ matrix that is not diagonal, that is,
+  $\Od(A) > 0$, then there exists $U \in O(n)$ such that $\Od(U^T A U) < \Od(A)$.
 \end{lemma}
 \begin{proof}
-  TODO
+  We use a very clever method attributed to Carl Gustav Jacob Jacobi.
+  Suppose that $a_{rs} \ne 0$ for some $r \ne s$.
+  Then we claim that the matrix $U$ that agrees with the identity matrix except that $u_{rr} = u_{ss} = \cos \vartheta$,
+  $u_{rs} = \sin \vartheta$, $u_{sr} = -\sin \vartheta$ does the job, for some choice of the (real) angle $\vartheta$:\vspace{1em}
+  \[
+  U = \left(\begin{array}{@{\,}ccccc@{\hspace{12pt}}l}
+   & \smash{\vbox to 0pt{\vss\hbox{$r$}\vskip 1em}} & & \smash{\vbox to 0pt{\vss\hbox{$s$}\vskip 1em}} & & \\[-1em]
+   \begin{array}{@{}c@{\,}c@{\,}c@{}} 1&&\\[-1ex]&\ddots &\\[-1ex]&&1\end{array} & & & & & \\
+   & \cos \vartheta & & \sin \vartheta & & r \\
+   & & \begin{array}{@{}c@{\,}c@{\,}c@{}} 1&&\\[-1ex]&\ddots &\\[-1ex]&&1\end{array} & & & \\
+   & -\sin \vartheta & & \cos \vartheta & & s\\
+   & & & & \begin{array}{@{}c@{\,}c@{\,}c@{}} 1&&\\[-1ex]&\ddots &\\[-1ex]&&1\end{array} & \\
+  \end{array}\kern-20pt\right)
+  \]
+  Clearly, $U$ is orthogonal for any $\vartheta$.
+
+  Now let us compute the $(k, \ell)$-entry $b_{k\ell}$ of $U^T A U$. We have
+  \begin{equation} \label{eq:b_kl}
+  b_{k\ell} = \sum_{i,j} u_{ik} a_{ij} u_{j\ell}.
+  \end{equation}
+  For $k, \ell \notin \{r, s\}$ we get $b_{k\ell} = a_{k\ell}$. Furthermore, we have
+  \begin{align*}
+  b_{kr} &= \sum_{i=1}^n u_{ik} \sum_{j=1}^n a_{ij} u_{jr} \\
+  &= \sum_{i=1}^n u_{ik} (a_{ir} \cos \vartheta - a_{is} \sin \vartheta) \\
+  &= a_{kr} \cos \vartheta - a_{ks} \sin \vartheta \quad (\text{for } k \ne r, s).
+  \end{align*}
+  Similarly, one computes
+  \[
+  b_{ks} = a_{kr} \sin \vartheta + a_{ks} \cos \vartheta \quad (\text{for } k \ne r, s).
+  \]
+  It follows that
+  \begin{align*}
+  b_{kr}^2 + b_{ks}^2 &= a_{kr}^2 \cos^2 \vartheta - 2 a_{kr} a_{ks} \cos \vartheta \sin \vartheta + a_{ks}^2 \sin^2 \vartheta \\
+  &\quad + a_{kr}^2 \sin^2 \vartheta + 2 a_{kr} a_{ks} \sin \vartheta \cos \vartheta + a_{ks}^2 \cos^2 \vartheta \\
+  &= a_{kr}^2 + a_{ks}^2,
+  \end{align*}
+  and by symmetry
+  \[
+  b_{r\ell}^2 + b_{s\ell}^2 = a_{r\ell}^2 + a_{s\ell}^2 \quad (\text{for } \ell \ne r, s).
+  \]
+  We conclude that the function $\Od$, which sums the squares of the off-diagonal values,
+  agrees for $A$ and $U^T A U$ except for the entries at $(r, s)$ and $(s, r)$, for \emph{any} $\vartheta$.
+  To conclude the proof we now show that $\vartheta_0$ can be chosen suitably as to make $b_{rs} = 0$, which will result in
+  \[
+  \Od(U^T A U) = \Od(A) - 2 a_{rs}^2 < \Od(A)
+  \]
+  as required.
+
+  Using \eqref{eq:b_kl} we find
+  \[
+  b_{rs} = (a_{rr} - a_{ss}) \sin \vartheta \cos \vartheta + a_{rs} (\cos^2 \vartheta - \sin^2 \vartheta).
+  \]
+  For $\vartheta = 0$ this becomes $a_{rs}$, while for $\vartheta = \pi/2$ it is $-a_{rs}$.
+  Hence by the intermediate value theorem there is some $\vartheta_0$ between $0$ and $\pi/2$ such that $b_{rs} = 0$,
+  and we are through.
 \end{proof}
 
 \begin{theorem}
   \label{diagonalize_real_symmetric}
   \lean{chapter7.Theorem₁}
   \leanok
-  For every real symmetric matrix \(A\) there is a real
-  orthogonal matrix \(Q\) such that \(Q^{T}AQ\) is diagonal.
+  For every real symmetric matrix $A$ there is a real
+  orthogonal matrix $Q$ such that $Q^{T}AQ$ is diagonal.
 \end{theorem}
 \begin{proof}
   \uses{ch7.lemma}
-  TODO
+  The theorem follows in three quick steps. Let $A$ be a real symmetric $n \times n$ matrix.
+  \begin{enumerate}
+    \item[(A)] Consider the map $f_A : O(n) \to \mathbb{R}^{n \times n}$ with $f_A(P) := P^T A P$. The map $f_A$ is continuous on the compact set $O(n)$, and so the image $f_A(O(n))$ is compact.
+    \item[(B)] The function $\Od : f_A(O(n)) \to \mathbb{R}$ is continuous, hence it assumes a minimum, say at $D = Q^T A Q \in f_A(O(n))$.
+    \item[(C)] The value $\Od(D)$ must be zero, and hence $D$ is a diagonal matrix as required.
+  \end{enumerate}
+  Indeed, if $\Od(D) > 0$, then applying the Lemma we find $U \in O(n)$ with $\Od(U^T D U) < \Od(D)$. But
+  \[
+  U^T D U = U^T Q^T A Q U = (QU)^T A (QU)
+  \]
+  is in $f_A(O(n))$ (remember $O(n)$ is a group!) with $\Od$-value smaller than that of $D$ --- contradiction, and end of proof.
+\end{proof}
+
+\begin{theorem}[Hadamard's inequality]
+  \label{thm:hadamard_inequality}
+  \lean{chapter7.Theorem₂}
+  For any real $n \times n$ matrix $A = (a_{ij})$ with $|a_{ij}| \le 1$,
+  \[
+  |\det A| \le n^{n/2}.
+  \]
+\end{theorem}
+
+\begin{proof}
+  The problem to find the maximum value of $\det A$ on the set of all real $n \times n$ matrices $A = (a_{ij})$ with $|a_{ij}| \le 1$ is unsolved.
+  Since the determinant is a continuous function in the $a_{ij}$ (considered as variables)
+  and the matrices form a compact set in $\mathbb{R}^{n^2}$, this maximum must exist.
+  Furthermore, the maximum is attained for some matrix all of whose entries are $+1$ or $-1$,
+  because the function $\det A$ is linear in each single entry $a_{ij}$ (if we keep all other entries fixed).
+  Thus we can start with any matrix $A$ and move one entry after the other to $+1$ or to $-1$,
+  in every single step not decreasing the determinant, until we arrive at a $\pm 1$-matrix.
+  In the search for the largest determinant we may thus assume that all entries of $A$ are $\pm 1$.
+
+  Here is the trick:
+  Instead of $A$ we consider the matrix $B = A^T A = (b_{ij})$.
+  That is, if $c_j = (a_{1j}, a_{2j}, \dots, a_{nj})^T$ denotes the $j$-th column vector of $A$,
+  then $b_{ij} = \langle c_i, c_j \rangle$, the inner product of $c_i$ and $c_j$.
+  In particular,
+  \[
+  b_{ii} = \langle c_i, c_i \rangle = n \quad \text{for all } i,
+  \]
+  and
+  \begin{equation} \label{eq:trace_B}
+  \trace B = \sum_{i=1}^n b_{ii} = n^2,
+  \end{equation}
+  which will come in handy in a moment.
+
+  Now we can go to work.
+  First of all, from $B = A^T A$ we get $|\det A| = \sqrt{\det B}$.
+  Since multiplication of a column of $A$ by $-1$ turns $\det A$ into $-\det A$,
+  we see that the maximum problem for $\det A$ is the same as for $\det B$.
+  Furthermore, we may assume that $A$ is nonsingular, and hence that $B$ is nonsingular as well.
+
+  Since $B = A^T A$ is a symmetric matrix the spectral theorem tells us that for some $Q \in O(n)$,
+  \begin{equation} \label{eq:QBQ}
+  \setlength{\arraycolsep}{2pt}
+  Q^T B Q = Q^T A^T A Q = (AQ)^T (AQ) =
+  \begin{pmatrix}
+  \lambda_1 & & & & \\
+  & \ddots & & O & \\
+  & & \ddots & & \\
+  & O & & \ddots & \\
+  & & & & \lambda_n
+  \end{pmatrix},
+  \end{equation}
+  where the $\lambda_i$ are the eigenvalues of $B$. Now, if $d_j$ denotes the $j$-th column vector of $AQ$ (which is nonzero since $A$ is nonsingular), then
+  \[
+  \lambda_j = \langle d_j, d_j \rangle = \sum_{i=1}^n d_{ij}^2 > 0.
+  \]
+  Thus $\lambda_1, \dots, \lambda_n$ are positive real numbers and
+  \[
+  \det B = \lambda_1 \cdots \lambda_n, \quad \trace B = \sum_{i=1}^n \lambda_i.
+  \]
+  Whenever such a product and sum of positive numbers turn up, it is always a good idea to try the arithmetic-geometric mean inequality. In our case this gives with \eqref{eq:trace_B}
+  \begin{equation} \label{eq:AM_GM}
+  \det B = \lambda_1 \cdots \lambda_n \le \left( \frac{\sum_{i=1}^n \lambda_i}{n} \right)^n = \left( \frac{\trace B}{n} \right)^n = n^n,
+  \end{equation}
+  and out comes Hadamard's upper bound
+  \begin{equation} \label{eq:hadamard_bound}
+  |\det A| \le n^{n/2}.
+  \end{equation}
+  When do we have equality in \eqref{eq:hadamard_bound} or, what is the same, in \eqref{eq:AM_GM}? Easy enough: if and only if the geometric mean of the $\lambda_i$'s equals the arithmetic mean, or equivalently, if and only if $\lambda_1 = \dots = \lambda_n = \lambda$. But then $\trace B = n\lambda = n^2$, and so $\lambda_1 = \dots = \lambda_n = n$. Looking at \eqref{eq:QBQ} this means $Q^T B Q = n I_n$, where $I_n$ is the $n \times n$ identity matrix. Now recall $Q^T = Q^{-1}$, multiply by $Q$ on the left, by $Q^{-1}$ on the right, to obtain
+  \[
+  B = n I_n.
+  \]
+  Going back to $A$ this means that
+  \[
+  |\det A| = n^{n/2} \iff \langle c_i, c_j \rangle = 0 \quad \text{for } i \ne j.
+  \]
+  Matrices $A$ with $\pm 1$-entries that achieve equality in \eqref{eq:hadamard_bound} are aptly called \emph{Hadamard matrices}. So an $n \times n$ matrix $A$ with $\pm 1$-entries is a Hadamard matrix if and only if
+  \[
+  A^T A = A A^T = n I_n.
+  \]
 \end{proof}
 
 
 \begin{theorem}
-  \label{exists_matrix}
-  \lean{chapter7.Theorem₂}
-  \leanok
-  There exists an \(n \times n\) matrix with entries \(\pm 1\) whose
-  determinant is greater than \(\sqrt{n!}\).
+  \label{thm:hadamard_order}
+  If a Hadamard matrix of size $n \times n$ exists for $n > 2$, then $n$ must be a multiple of $4$.
 \end{theorem}
+
 \begin{proof}
-  \uses{diagonalize_real_symmetric}
-  TODO
+  A short argument shows that if $n$ is greater than $2$, then it must be a multiple of $4$.
+  Indeed, suppose that $A$ is an $n \times n$ Hadamard matrix, $n \ge 2$, whose rows are the vectors $r_1, \dots, r_n$.
+  Clearly, multiplication of any row or column by $-1$ gives another Hadamard matrix.
+  So we may assume that the first row consists of $1$'s only.
+  Since $\langle r_1, r_i \rangle = 0$ for $i \ne 1$, every other row must contain $n/2$ $1$'s and $n/2$ $-1$'s;
+  in particular, $n$ must be even.
+  Assume now that $n > 2$ and consider rows $r_2$ and $r_3$, and denote by $a, b, c, d$ the numbers of columns that have
+  $\begin{pmatrix} +1 \\ +1 \end{pmatrix}$, $\begin{pmatrix} +1 \\ -1 \end{pmatrix}$, $\begin{pmatrix} -1 \\ +1 \end{pmatrix}$, and $\begin{pmatrix} -1 \\ -1 \end{pmatrix}$
+  in rows $2$ and $3$, respectively.
+  Then from $\langle r_1, r_2 \rangle = 0$ and $\langle r_1, r_3 \rangle = 0$ we get
+  \[
+  a+b = c+d = a+c = b+d = n/2,
+  \]
+  which gives $b = c, a = d$.
+  But from $\langle r_2, r_3 \rangle = 0$ we also have $a+d = b+c$, resulting in $2a = 2b$.
+  We conclude that $a = b = c = d = n/4$.
+  Thus the order of the Hadamard matrix is either $n = 1$ or $n = 2$, or $n = a+b+c+d = 4a$, a multiple of $4$.
+\end{proof}
+
+
+\begin{theorem}
+  \label{thm:hadamard_existence}
+  \leanok
+  Hadamard matrices exist for all $n = 2^m$.
+\end{theorem}
+
+\begin{proof}
+  \leanok
+  Consider an $m$-set $X$ and index the $2^m$ subsets $C \subseteq X$ in any way $C_1, \dots, C_{2^m}$. The matrix $A = (a_{ij})$ is defined as
+  \[
+  a_{ij} = (-1)^{|C_i \cap C_j|}.
+  \]
+  We want to verify $\langle r_i, r_j \rangle = 0$ for $i \ne j$. From the definition,
+  \[
+  \langle r_i, r_j \rangle = \sum_k (-1)^{|C_i \cap C_k| + |C_j \cap C_k|}.
+  \]
+  Now, as $C_i \ne C_j$ there exists an element $a \in X$ with $a \in C_i \setminus C_j$ or $a \in C_j \setminus C_i$;
+  suppose $a \in C_i \setminus C_j$.
+  Half the subsets of $X$ contain $a$, and half do not.
+  Let $C$ run through all subsets that contain $a$, then the pairs $\{C, C \setminus \{a\}\}$ will comprise all subsets of $X$.
+  But for each such pair $\{C, C \setminus \{a\}\}$, $|C_i \cap C| + |C_j \cap C|$ and $|C_i \cap (C \setminus \{a\})| + |C_j \cap (C \setminus \{a\})|$ have different parity,
+  and so the corresponding terms in the sum will sum to $0$.
+  But then the whole sum is $0$, as required.
+\end{proof}
+
+\begin{theorem}
+  \label{thm:det_greater_n_fact}
+  \lean{chapter7.Theorem₂}
+  There exists an $n \times n$ matrix with entries $\pm 1$ whose determinant is greater than $\sqrt{n!}$.
+\end{theorem}
+
+\begin{proof}
+  Let us look at all $2^{n^2}$ matrices with $\pm 1$-entries and consider some averages of the determinant.
+  The arithmetic mean $\frac{1}{2^{n^2}} \sum_A \det A$ is $0$ (clear?), so this is no big help.
+  But if we consider the \emph{mean square average} instead,
+  \[
+  D_n := \sqrt{\frac{\sum_A (\det A)^2}{2^{n^2}}},
+  \]
+  then things brighten up.
+  Clearly,
+  \[
+  \max_A \det A \ge D_n,
+  \]
+  so this will give us a lower bound for the maximum.
+
+  The following stunningly simple calculation of $D_n^2$ probably appeared first in an article by George Szekeres and Paul Tur\'an.
+  We learnt it from a beautiful paper of Herb Wilf who heard it from Mark Kac.
+  In the words of Mark Kac:
+  ``\emph{Just write $(\det A)^2$ out twice, interchange summation, and everything simplifies.}''
+  So we want to do just that.
+
+  From the definition of the determinant we get
+  \begin{align*}
+  D_n^2 &= \frac{1}{2^{n^2}} \sum_A \left( \sum_{\pi} (\sign \pi) a_{1\pi(1)} a_{2\pi(2)} \cdots a_{n\pi(n)} \right)^2 \\
+  &= \frac{1}{2^{n^2}} \sum_A \sum_{\sigma} \sum_{\tau} (\sign \sigma) (\sign \tau) a_{1\sigma(1)} a_{1\tau(1)} \cdots a_{n\sigma(n)} a_{n\tau(n)},
+  \end{align*}
+  where $\sigma$ and $\tau$ run independently through all permutations of $\{1, \dots, n\}$.
+  Interchange of summation yields
+  \[
+  D_n^2 = \frac{1}{2^{n^2}} \sum_{\sigma, \tau} (\sign \sigma) (\sign \tau) \left(\sum_A a_{1\sigma(1)} a_{1\tau(1)} \cdots a_{n\sigma(n)} a_{n\tau(n)}\right).
+  \]
+  This doesn't look too promising, but wait.
+  Look at a fixed pair $(\sigma, \tau)$.
+  The inner sum $\sum_A$ is really a summation over $n^2$ variables, one for each $a_{ij}$:
+  \begin{equation} \label{eq:sum_A}
+  \sum_{a_{11} = \pm 1} \sum_{a_{12} = \pm 1} \cdots \sum_{a_{nn} = \pm 1} a_{1\sigma(1)} a_{1\tau(1)} \cdots a_{n\sigma(n)} a_{n\tau(n)}.
+  \end{equation}
+  Suppose $\sigma(i) = k \ne \tau(i)$.
+  Then every summand contains $a_{ik}$, and therefore the whole sum has the \emph{factor} $\sum_{a_{ik} = \pm 1} a_{ik} = 0$,
+  and hence is $0$ as well.
+  The only way that the sum fails to be $0$ is when $\sigma = \tau$, and everything simplifies indeed:
+  For $\sigma = \tau$, the inner product is $1$ as is the term $(\sign \sigma)^2$.
+  The sum in \eqref{eq:sum_A} is therefore
+  \[
+  \sum_{a_{11} = \pm 1} \cdots \sum_{a_{nn} = \pm 1} 1 = 2^{n^2},
+  \]
+  and wrapping things up we obtain
+  \[
+  D_n^2 = \frac{1}{2^{n^2}} \sum_{\sigma} 2^{n^2} = n!,
+  \]
+  and thus the result.
 \end{proof}
