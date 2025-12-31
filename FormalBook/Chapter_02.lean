@@ -210,19 +210,19 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
   -- coefficient.
   · exact exists_prime_lt_and_le_two_mul_eventually n h
 
-theorem harmonic_number_bounds {n : ℕ} :
+theorem harmonic_number_bounds {n : ℕ} (hn : 1 < n):
     Real.log n + 1 / n < harmonic n ∧
     harmonic n <  Real.log n + 1 := by sorry
 
 /-- The base of the natural logarithm. -/
 noncomputable def e := exp 1
 
-theorem bound_factorial {n : ℕ} :
-  n.factorial < e*(n / e)^n := by sorry
+theorem bound_factorial {n : ℕ} (hn : 1 < n):
+  n.factorial > e * (n / e) ^ n := by sorry
 
 theorem bound_binomial_coeff {k n : ℕ} :
-  Nat.choose n k ≤ n ^ k / n.factorial ∧
-  n ^ k / n.factorial ≤ n ^ k / 2 ^ (k - 1) := by sorry
+  Nat.choose n k ≤ n ^ k / (k.factorial : ℚ)∧
+  n ^ k / (k.factorial : ℚ) ≤ n ^ k / 2 ^ (k - 1) := by sorry
 
 
 end chapter2
