@@ -2,7 +2,7 @@
 \label{chapter28}
 \begin{theorem}[Pigeon-hole princinple]
   \label{pigeon_hole_principle}
-  \lean{pigeon_hole_principle}
+  \lean{chapter28.pigeon_hole_principle}
   If $n$ objects are placed in $r$ boxes, where $r < n$, then at least one of the boxes contains
   more than one object.
 \end{theorem}
@@ -33,7 +33,7 @@
   relatively prime.
 \end{theorem}
 \begin{proof}
-  \uses{pigeon_hole_principle}
+  \uses{chapter28.pigeon_hole_principle}
   obvious
 \end{proof}
 
@@ -43,7 +43,7 @@
   there are always two numbers in $A$ such that one divides the other.
 \end{theorem}
 \begin{proof}
-  \uses{pigeon_hole_principle}
+  \uses{chapter28.pigeon_hole_principle}
   Write every number $a \in A$ in the form $a = 2^k m$, where $m$ is an odd number between $1$
   and $2n - 1$. Since there are $n + 1$ numbers in $A$, but only $n$ different odd parts, there must
   be two numbers in $A$ with the same odd part. Hence one is a multiple of the other.
@@ -64,7 +64,7 @@ a_{j_1} > a_{j_2} > \cdots > a_{j_{n+1}} \quad (j_1 < j_2 < \cdots < j_{n+1})
 of length $n+1$, or both.
 \end{theorem}
 \begin{proof}
-  \uses{pigeon_hole_principle}
+  \uses{chapter28.pigeon_hole_principle}
 This time the application of the pigeon-hole principle is not immediate.
 Associate to each $a_i$ the number $t_i$, which is the length of a longest
 increasing subsequence starting at $a_i$. If $t_i \geq m+1$ for some $i$,
@@ -90,7 +90,7 @@ of length $n+1$.
   whose sum $\sum_{i=k+1}^{\ell} a_i$ is a multiple of $n$.
 \end{theorem}
 \begin{proof}
-  \uses{pigeon_hole_principle}
+  \uses{chapter28.pigeon_hole_principle}
   For the proof we set $N = \{0, 1, \dots, n\}$ and $R = \{0, 1, \dots, n-1\}$.
   Consider the map $f : N \to R$, where $f(m)$ is the remainder of $a_1 + \cdots + a_m$
   upon division by $n$. Since $|N| = n+1 > n = |R|$,
@@ -147,7 +147,7 @@ Assume that the vertices in the triangulation get “colors” from the set $\{1
 Then in the triangulation there must be a small “tricolored” triangle, which has all three different vertex colors.
 \end{lemma}
 \begin{proof}
-  \uses{pigeon_hole_principle}
+  \uses{chapter28.pigeon_hole_principle}
   We will prove a stronger statement: The number of tricolored triangles is not only nonzero,
   it is always \emph{odd}.
 

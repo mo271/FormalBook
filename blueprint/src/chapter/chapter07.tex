@@ -18,7 +18,7 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
   $\Od(A) > 0$, then there exists $U \in O(n)$ such that $\Od(U^T A U) < \Od(A)$.
 \end{lemma}
 \begin{proof}
-  We use a very clever method attributed to Carl Gustav Jacob Jacobi.  
+  We use a very clever method attributed to Carl Gustav Jacob Jacobi.
   Suppose that $a_{rs} \ne 0$ for some $r \ne s$.
   Then we claim that the matrix $U$ that agrees with the identity matrix except that $u_{rr} = u_{ss} = \cos \vartheta$,
   $u_{rs} = \sin \vartheta$, $u_{sr} = -\sin \vartheta$ does the job, for some choice of the (real) angle $\vartheta$:\vspace{1em}
@@ -33,7 +33,7 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
   \end{array}\kern-20pt\right)
   \]
   Clearly, $U$ is orthogonal for any $\vartheta$.
-  
+
   Now let us compute the $(k, \ell)$-entry $b_{k\ell}$ of $U^T A U$. We have
   \begin{equation} \label{eq:b_kl}
   b_{k\ell} = \sum_{i,j} u_{ik} a_{ij} u_{j\ell}.
@@ -99,7 +99,7 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
 
 \begin{theorem}[Hadamard's inequality]
   \label{thm:hadamard_inequality}
-  \lean{chapter7.hadamard_inequality}
+  \lean{chapter7.Theorem₂}
   For any real $n \times n$ matrix $A = (a_{ij})$ with $|a_{ij}| \le 1$,
   \[
   |\det A| \le n^{n/2}.
@@ -181,7 +181,6 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
 
 \begin{theorem}
   \label{thm:hadamard_order}
-  \lean{chapter07.hadamard_order}
   If a Hadamard matrix of size $n \times n$ exists for $n > 2$, then $n$ must be a multiple of $4$.
 \end{theorem}
 
@@ -208,7 +207,6 @@ For any real square matrix $A$ let $\Od(A) = \sum_{i \ne j} a_{ij}^2$ be the sum
 
 \begin{theorem}
   \label{thm:hadamard_existence}
-  \lean{chapter07.hadamard_existence}
   \leanok
   Hadamard matrices exist for all $n = 2^m$.
 \end{theorem}
