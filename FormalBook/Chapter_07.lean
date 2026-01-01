@@ -32,7 +32,7 @@ theorem Theorem₁ (n : ℕ) (A : Matrix (Fin n) (Fin n) ℝ) (h : IsHermitian A
   sorry
 
 
-theorem Theorem₂ (n : ℕ) : ∃ (M : Matrix (Fin n) (Fin n) ℤ),
+theorem Theorem₂ (n : ℕ) (hn : 1 < n) : ∃ (M : Matrix (Fin n) (Fin n) ℤ),
     (∀ i j, M i j = -1 ∨ M i j = 1) ∧
     M.det > Real.sqrt n.factorial := by
   sorry
