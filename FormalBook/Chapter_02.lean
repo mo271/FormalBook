@@ -38,8 +38,8 @@ This is not best possible: it actually holds for 464 ≤ x.
 -/
 theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     x * (2 * x) ^ sqrt (2 * x) * 4 ^ (2 * x / 3) ≤ 4 ^ x := by
-  let f : ℝ → ℝ := fun x => log x + sqrt (2 * x) * log (2 * x) - log 4 / 3 * x
-  have hf' : ∀ x, 0 < x → 0 < x * (2 * x) ^ sqrt (2 * x) / 4 ^ (x / 3) := fun x h =>
+  let f : ℝ → ℝ := fun x ↦ log x + sqrt (2 * x) * log (2 * x) - log 4 / 3 * x
+  have hf' : ∀ x, 0 < x → 0 < x * (2 * x) ^ sqrt (2 * x) / 4 ^ (x / 3) := fun x h ↦
     div_pos (mul_pos h (rpow_pos_of_pos (mul_pos two_pos h) _)) (rpow_pos_of_pos four_pos _)
   have hf : ∀ x, 0 < x → f x = log (x * (2 * x) ^ sqrt (2 * x) / 4 ^ (x / 3)) := by
     intro x h5
@@ -136,27 +136,27 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
   let S := (Finset.range (2 * n / 3 + 1)).filter Nat.Prime
   let f x := x ^ n.centralBinom.factorization x
   have : ∏ x ∈  S, f x = ∏ x ∈ Finset.range (2 * n / 3 + 1), f x := by
-    refine' Finset.prod_filter_of_ne fun p _ h => _
+    refine' Finset.prod_filter_of_ne fun p _ h ↦ _
     contrapose! h
     dsimp [f]
-    rw [factorization_eq_zero_of_non_prime n.centralBinom h, _root_.pow_zero]
+    rw [factorization_eq_zero_of_not_prime n.centralBinom h, _root_.pow_zero]
   rw [centralBinom_factorization_small n n_big no_prime, ← this, ←
     Finset.prod_filter_mul_prod_filter_not S (· ≤ Nat.sqrt (2 * n))]
   apply mul_le_mul'
-  · refine' (Finset.prod_le_prod' fun p _ => (_ : f p ≤ 2 * n)).trans _
+  · refine' (Finset.prod_le_prod' fun p _ ↦ (_ : f p ≤ 2 * n)).trans _
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
     have : (Finset.Icc 1 (Nat.sqrt (2 * n))).card = Nat.sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
     rw [Finset.prod_const]
-    refine' pow_le_pow_right₀ n2_pos ((Finset.card_le_card fun x hx => _).trans this.le)
+    refine' pow_le_pow_right₀ n2_pos ((Finset.card_le_card fun x hx ↦ _).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
   · refine' le_trans _ (primorial_le_4_pow (2 * n / 3))
-    refine' (Finset.prod_le_prod' fun p hp => (_ : f p ≤ p)).trans _
+    refine' (Finset.prod_le_prod' fun p hp ↦ (_ : f p ≤ p)).trans _
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
       refine' (pow_le_pow_right₀ (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
     refine' Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) _
-    exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le
+    exact fun p hp _ ↦ (Finset.mem_filter.1 hp).2.one_lt.le
 
 
 /-- Proves that Bertrand's postulate holds for all sufficiently large `n`.
@@ -173,7 +173,7 @@ theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) 
     Nat.four_pow_lt_mul_centralBinom n (le_trans (by norm_num1) n_big)
   have H3 : n.centralBinom ≤ (2 * n) ^ Nat.sqrt (2 * n) * 4 ^ (2 * n / 3) :=
     centralBinom_le_of_no_bertrand_prime n (lt_of_lt_of_le (by norm_num1) n_big) no_prime
-  rw [mul_assoc] at H1; exact not_le.2 H2 ((mul_le_mul_left' H3 n).trans H1)
+  rw [mul_assoc] at H1; exact not_le.2 H2 ((mul_le_mul_right H3 n).trans H1)
 
 /-- Proves that Bertrand's postulate holds over all positive naturals less than n by identifying a
 descending list of primes, each no more than twice the next, such that the list contains a witness
@@ -205,24 +205,85 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
         let i : Term := quote i
         evalTactic <| ←
           `(tactic| refine' exists_prime_lt_and_le_two_mul_succ $i (by norm_num1) (by norm_num1) _)
-    exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
+    exact fun h2 ↦ ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
   -- If `n` is large, apply the lemma derived from the inequalities on the central binomial
   -- coefficient.
   · exact exists_prime_lt_and_le_two_mul_eventually n h
 
-theorem harmonic_number_bounds {n : ℕ} (hn : 1 < n):
-    Real.log n + 1 / n < harmonic n ∧
-    harmonic n <  Real.log n + 1 := by sorry
+theorem harmonic_number_bounds {n : ℕ} (hn : 1 < n) :
+    Real.log n + 1 / n < harmonic n ∧ harmonic n <  Real.log n + 1 := by
+  constructor
+  · induction hn <;> norm_num [harmonic] at *
+    · norm_num [Finset.sum_range_succ]
+      linarith [@Real.log_lt_sub_one_of_pos 2 zero_lt_two (OfNat.one_ne_ofNat 2).symm]
+    · rw [Finset.sum_range_succ]
+      rename_i k hk ih
+      rw [show (k : ℝ) + 1 = k * (1 + (k : ℝ) ⁻¹) by
+        nlinarith only [mul_inv_cancel₀ (by positivity : (k : ℝ) ≠ 0)],
+          Real.log_mul (by positivity) (by positivity)]
+      nlinarith [inv_pos.mpr (by positivity : 0 < (k : ℝ)),
+        inv_pos.mpr (by positivity : 0 < (k : ℝ) * (1 + (k : ℝ) ⁻¹)), mul_inv_cancel₀
+          (by positivity : (k : ℝ) ≠ 0), mul_inv_cancel₀
+            (by positivity : (k : ℝ) * (1 + (k : ℝ) ⁻¹) ≠ 0), Real.log_lt_sub_one_of_pos
+              (by positivity : 0 < (1 + (k : ℝ) ⁻¹))
+                (by nlinarith [inv_mul_cancel₀ (by positivity : (k : ℝ) ≠ 0)])]
+  · have h_harmonic : ∀ n : ℕ, 1 < n → (∑ k ∈ Finset.range n, (1 / (k + 1) : ℝ)) < Real.log n + 1 := by
+      intro n hn
+      have h_harmonic : ∀ k ∈ Finset.range n, k ≠ 0 → (1 / (k + 1) : ℝ) < Real.log (k + 1) - Real.log k := by
+        intro k hk hk'; rw [← Real.log_div (by positivity) (by positivity)]; ring_nf
+        rw [mul_inv_cancel₀ (by positivity), inv_eq_one_div, div_lt_iff₀] <;> nlinarith [Real.log_inv (1 + (k : ℝ) ⁻¹),
+          Real.log_lt_sub_one_of_pos (inv_pos.mpr (by positivity : 0 < (1 + (k : ℝ) ⁻¹)))
+            (by aesop), inv_pos.mpr (by positivity : 0 < (1 + (k : ℝ) ⁻¹)), mul_inv_cancel₀
+              (by positivity : (1 + (k : ℝ) ⁻¹) ≠ 0), inv_pos.mpr (by positivity : 0 < (k : ℝ)),
+                mul_inv_cancel₀ (by positivity : (k : ℝ) ≠ 0)]
+      have h_sum : ∑ k ∈ Finset.range n, (1 / (k + 1) : ℝ) < 1 + ∑ k ∈ Finset.range (n - 1), (Real.log (k + 2) - Real.log (k + 1)) := by
+        rcases n with ⟨⟩ <;> norm_num [add_comm, add_left_comm, Finset.sum_range_succ'] at *
+        rw [← Finset.sum_sub_distrib]
+        exact Finset.sum_lt_sum_of_nonempty ⟨_, Finset.mem_range.mpr hn⟩ fun x hx ↦ by
+          have := h_harmonic (x + 1) (by linarith [Finset.mem_range.mp hx])
+            (by linarith [Finset.mem_range.mp hx]);  norm_num [add_assoc] at *; linarith
+      have h_telescope :
+          ∑ k ∈ Finset.range (n - 1),
+              (Real.log (k + 2) - Real.log (k + 1)) = Real.log n - Real.log 1 := by
+        exact_mod_cast Eq.trans (Finset.sum_range_sub (fun k ↦ Real.log (k + 1)) _)
+          (by cases n <;> norm_num at *)
+      norm_num at *; linarith
+    simpa [harmonic] using h_harmonic n hn
 
 /-- The base of the natural logarithm. -/
 noncomputable def e := exp 1
 
 theorem bound_factorial {n : ℕ} (hn : 1 < n):
-  n.factorial > e * (n / e) ^ n := by sorry
+    n.factorial > e * (n / e) ^ n := by
+  have h_ln : Real.log n.factorial > 1 + n * Real.log n - n := by
+    induction hn
+    · have := log_lt_sub_one_of_pos two_pos; norm_num at *; linarith
+    · norm_num [factorial_succ] at *
+      rw [log_mul (by positivity) (by positivity)]
+      have h_log_bound : ∀ m : ℕ, 2 ≤ m → Real.log (m + 1) < Real.log m + 1 / m := by
+        intro m hm
+        rw [log_lt_iff_lt_exp (by positivity), exp_add, exp_log (by positivity)]
+        ring_nf
+        nlinarith [add_one_lt_exp (by positivity : (m : ℝ) ⁻¹ ≠ 0),
+          (by norm_cast : (2 : ℝ) ≤ m), mul_inv_cancel₀ (by positivity : (m : ℝ) ≠ 0)]
+      nlinarith [h_log_bound _ ‹_›, one_div_mul_cancel (by positivity : ((Nat.cast : ℕ → ℝ) ‹_›) ≠ 0)]
+  have h_exp : (n.factorial : ℝ) > exp (1 + n * Real.log n - n) := by
+    rwa [gt_iff_lt, lt_log_iff_exp_lt (by positivity)] at h_ln
+  convert h_exp using 1; norm_num [exp_add, exp_sub, exp_nat_mul, exp_log
+    (by positivity : 0 < (n : ℝ)), chapter2.e]
+  ring_nf
+  norm_num [Real.exp_neg, Real.exp_nat_mul]
 
 theorem bound_binomial_coeff {k n : ℕ} :
-  Nat.choose n k ≤ n ^ k / (k.factorial : ℚ)∧
-  n ^ k / (k.factorial : ℚ) ≤ n ^ k / 2 ^ (k - 1) := by sorry
-
+    Nat.choose n k ≤ n ^ k / (k.factorial : ℚ)∧
+    n ^ k / (k.factorial : ℚ) ≤ n ^ k / 2 ^ (k - 1) := by
+  constructor
+  · rw_mod_cast [le_div_iff₀ (by positivity), mul_comm, ← descFactorial_eq_factorial_mul_choose]
+    exact descFactorial_le_pow ..
+  · gcongr
+    rcases k with (_ | _ | k) <;> norm_num
+    exact mod_cast Nat.recOn k (by norm_num) fun n ihn ↦ by
+      rw [factorial_succ, pow_succ']
+      nlinarith [Nat.pow_le_pow_left (show 2 ≤ n + 2 by linarith) 2]
 
 end chapter2
