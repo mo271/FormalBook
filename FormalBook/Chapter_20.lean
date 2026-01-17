@@ -56,8 +56,7 @@ theorem cauchy_schwarz_inequality (a b : V) : ⟪ a, b ⟫ ^ 2 ≤ ‖a‖ ^ 2 *
     · obtain ⟨l, hb⟩ := hl
       rw [hb]
       simp only [pow_two, ← (real_inner_self_eq_norm_mul_norm _)]
-      simp only [inner_add_add_self, inner_smul_right, inner_smul_left, conj_trivial,
-        add_left_inj]
+      simp only [inner_smul_right, inner_smul_left, conj_trivial]
       ring_nf
       rfl
     · have : ∀ (x : ℝ), 0 < ‖x • a + b‖ := by
