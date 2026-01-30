@@ -487,11 +487,13 @@ theorem sum_le_infinite_sum (x: ℝ) (n: ℕ) (hxge : x ≥ n) (hxlt : x < n + 1
         rewrite [Set.mem_setOf]
         assumption
       }
-      simp [this]
+      simp_all only [ge_iff_le, Set.mem_Icc, Set.indicator_of_mem, le_refl]
     . simp [case]
       clear case
       have: i ∈ (S₁ x) ∨ i ∉ S₁ x := by exact Decidable.em (i ∈ S₁ x)
-      rcases this with (case | case) <;> simp [case]
+      rcases this with (case | case)
+      . simp_all only [ge_iff_le, Set.indicator_of_mem, inv_nonneg, cast_nonneg]
+      . simp_all only [ge_iff_le, not_false_eq_true, Set.indicator_of_notMem, le_refl]
 }
 
 theorem geom_series_simp (n : ℕ) (x : ℝ) (hxge : x ≥ n) (hxlt : x < n + 1) : (∏ p ∈ primesBelow (⌊x⌋.natAbs+1), (∑' k : ℕ, (p ^ k : ℝ)⁻¹)) = (∏ k ∈ Icc 1 (primeCountingReal x), ((nth Nat.Prime (k-1)):ℝ) / ((nth Nat.Prime (k-1)) - 1)) := by {
