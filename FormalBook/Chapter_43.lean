@@ -48,7 +48,7 @@ theorem borsuk_ulam_distances {d : ℕ}
   Since the open sets of `S` are obtained by intersecting open sets of `E` with `S`, this is indeed
   what is required. -/
 lemma closure_inter_sphere_disjoint_neg_of_open_inter_sphere {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace ℝ E] (U : Set E) (h_open : IsOpen U) (S : Set E)
+    (U : Set E) (h_open : IsOpen U) (S : Set E)
     (hS_symm : ∀ x ∈ S, -x ∈ S) (h_disjoint : Disjoint (U ∩ S) {x | -x ∈ U ∩ S}) :
     Disjoint (closure (U ∩ S)) {x | -x ∈ U ∩ S} := by
   rw [ Set.disjoint_left ] at *;
