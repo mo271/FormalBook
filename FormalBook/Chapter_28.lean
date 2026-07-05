@@ -61,7 +61,21 @@ lemma handshaking : ∑ v, d(v) = 2 * #E := by
     _ = ∑ v, #{e ∈ E | v ∈ e}  := by simp [G.incidenceFinset_eq_filter]
     _ = ∑ e ∈ E, #{v | v ∈ e}  := Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow _
     -- FIXME: was (G.card_filter_mem_of_mem_edgeFinset e he)) but is commented out currently in Mathlib.EdgeFinset
-    _ = ∑ e ∈ E, 2             := Finset.sum_congr rfl (λ e he ↦ sorry)
+    _ = ∑ e ∈ E, 2             := Finset.sum_congr rfl (λ e he ↦ by
+      induction e using Sym2.ind with
+      | h a b =>
+        simp at he
+        have hne : a ≠ b := by
+          intro h
+          subst b
+          exact G.loopless a he
+        change ({v | v ∈ s(a, b)} : Finset α).card = 2
+        simp [Sym2.mem_iff]
+        have hset : ({v | v = a ∨ v = b} : Finset α) = ({a, b} : Finset α) := by
+          ext v
+          simp
+        rw [hset]
+        simpa using Finset.card_pair hne)
     _ = 2 * ∑ e ∈ E, 1         := (Finset.mul_sum E (λ _ ↦ 1) 2).symm
     _ = 2 * #E                 := by rw [Finset.card_eq_sum_ones E]
 
