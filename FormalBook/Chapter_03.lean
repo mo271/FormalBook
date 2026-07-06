@@ -150,7 +150,7 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
     -- STEP (4) : l ≥ 3 by Contradiction
     -- case l ≥ 3
     · have h_3lel : 3 ≤ l := by
-        sorry
+        omega
       -- main work : n < k³
       have h₄ : n < k^3 := by
         sorry
@@ -170,7 +170,7 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
     have h_k'_def : k' = n - k := by rfl
     -- third requirement: 2 * k' ≤ n
     have h_2k'len : 2 * k' ≤ n := by
-      sorry
+      omega
     -- second requirement: k ≤ n - 4
     have h_k'len4 : k' ≤ n - 4 := by
       simp only [h_k'_def, tsub_le_iff_right]
