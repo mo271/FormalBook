@@ -75,7 +75,7 @@ theorem h_lamb_gt_q_sub_one (q n : ℕ) (lamb : ℂ):
   have h_ineq :
       ‖((X - C lamb).eval (q : ℂ))‖^2 > ((q : ℝ) - 1)^2  := by
     calc
-      _ = ‖q - lamb‖^2 := by sorry
+      _ = ‖q - lamb‖^2 := by simp
         --simp only [eval_sub, eval_X, eval_C, norm_eq_abs]
       _ = ‖(q : ℂ) - a - I*b‖^2 := by sorry
       _ = ‖(q : ℂ) - a‖^2 + ‖b‖^2 := by sorry
