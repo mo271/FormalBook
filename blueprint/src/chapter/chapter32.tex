@@ -2,7 +2,9 @@
 
 \begin{lemma}
   \label{ch32lemma}
-  Let $G = (V, E)$ be a finite weighted acyclic directed graph, $A = \{A_1, \dots, A_n\}$ and $\mathcal{B} = \{B_1, \dots, B_n\}$ two $n$-sets of vertices, and $M$ the path matrix from $A$ to $\mathcal{B}$. Then
+  Let $G = (V, E)$ be a finite weighted acyclic directed graph, $\mathcal{A} =
+  \{A_1, \dots, A_n\}$ and $\mathcal{B} = \{B_1, \dots, B_n\}$ two $n$-sets of
+  vertices, and $M$ the path matrix from $\mathcal{A}$ to $\mathcal{B}$. Then
   \[
   \det M = \sum_{\mathcal{P} \text{ vertex-disjoint path system}} \text{sign}(\mathcal{P}) \, w(\mathcal{P}). \tag{3}
   \]
@@ -13,12 +15,13 @@
 
 \begin{theorem}
   \label{ch32theorem}
-  Let $G = (V, E)$ be a finite weighted acyclic directed graph,
-  $A = \{A_1, \dots, A_n\}$ and $\mathcal{B} = \{B_1, \dots, B_n\}$
-  two $n$-sets of vertices, and $M$ the path matrix from $A$ to $\mathcal{B}$. Then
+  If $P$ is an $r\times s$ matrix and $Q$ an $s\times r$ matrix, $r\le s$, then
   \[
-  \det M = \sum_{\mathcal{P} \text{ vertex-disjoint path system}} \text{sign}(\mathcal{P}) \, w(\mathcal{P}). \tag{3}
+  \det(PQ) = \sum_{\mathcal Z}(\det P_{\mathcal Z})(\det Q_{\mathcal Z}),
   \]
+  where $P_{\mathcal Z}$ is the $r\times r$ submatrix of $P$ with column-set
+  $\mathcal Z$, and $Q_{\mathcal Z}$ the $r\times r$ submatrix of $Q$ with
+  corresponding rows $\mathcal Z$.
 \end{theorem}
 \begin{proof}
   \uses{ch32lemma}
