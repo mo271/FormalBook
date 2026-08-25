@@ -112,7 +112,8 @@ lemma lemma_35_1_aux {F : Type*} [Field F] [Fintype F] [DecidableEq F] (n : ℕ)
       Fintype.card_fin];
     simp +decide only [Finset.filter_not, Finset.card_sdiff, Finset.card_univ, Fintype.card_pi,
       Finset.prod_const, Fintype.card_fin, Finset.inter_univ, Fintype.card_subtype, le_refl];
-  rcases n with ( _ | n ) <;> simp_all +decide only [ne_eq, zero_tsub, pow_zero, mul_one, Nat.reduceAdd,
+  rcases n with ( _ | n ) <;>
+    simp_all +decide only [ne_eq, zero_tsub, pow_zero, mul_one, Nat.reduceAdd,
     Set.coe_setOf, Fintype.card_subtype_compl, Fintype.card_unique, ge_iff_le];
   · refine' le_trans h_count _;
     by_cases h : ( MvPolynomial.eval 0 ) g = 0 <;> simp_all +decide [ Fintype.card_subtype ];
@@ -177,6 +178,7 @@ theorem lemma_35_1 {F : Type*} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
   exact h_ind n p hp
 
 /-- The set of exponents `s \in \mathbb{N}^n` such that `\sum s_i \le d`. -/
+@[nolint defsWithUnderscore]
 def exponents_le {n : ℕ} (d : ℕ) : Set (Fin n →₀ ℕ) := {s | s.sum (fun _ k => k) ≤ d}
 
 /-- The set of exponents with sum at most `d` is finite. -/
@@ -191,7 +193,7 @@ lemma exponents_le_finite (n d : ℕ) : (exponents_le (n := n) d).Finite := by
       ( Finset.mem_univ i ) ) this
 
 /-- The set of exponents with sum at most `d` is finite. -/
-noncomputable instance (n d : ℕ) : Fintype (exponents_le (n := n) d) :=
+noncomputable instance instFintypeExponentsLe (n d : ℕ) : Fintype (exponents_le (n := n) d) :=
   (exponents_le_finite n d).fintype
 
 /-- The number of `n`-tuples of non-negative integers with sum at most `d` is `\binom{n+d}{n}`.

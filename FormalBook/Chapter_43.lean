@@ -175,7 +175,8 @@ lemma KneserGraph_chromaticNumber_le (n k d : ℕ) (hk : 1 ≤ k) (h : n = 2 * k
       ⟨hA.choose.val, by omega⟩
     else
       ⟨d + 1, by omega⟩
-  have hcolor : ∀ (A B : Finset (Fin n)), A.card = k → B.card = k → Disjoint A B → color A ≠ color B := by
+  have hcolor : ∀ (A B : Finset (Fin n)),
+      A.card = k → B.card = k → Disjoint A B → color A ≠ color B := by
     intro A B hA_card hB_card hAB
     by_cases hA : ∃ x ∈ A, (x : ℕ) < d + 1 <;>
     by_cases hB : ∃ x ∈ B, (x : ℕ) < d + 1
@@ -209,9 +210,11 @@ lemma KneserGraph_chromaticNumber_le (n k d : ℕ) (hk : 1 ≤ k) (h : n = 2 * k
         · contrapose! hA; exact ⟨x, hxA, hA⟩
         · contrapose! hB; exact ⟨x, hxB, hB⟩
       have h_le := Finset.card_le_card h_union_subset
-      have h_le_card : (Finset.univ.filter (fun x : Fin n => d + 1 ≤ (x : ℕ))).card ≤ n - (d + 1) := by
+      have h_le_card :
+          (Finset.univ.filter (fun x : Fin n => d + 1 ≤ (x : ℕ))).card ≤ n - (d + 1) := by
         rw [← Fintype.card_fin (n - (d + 1))]
-        have h_inj : Function.Injective (fun (x : {x : Fin n // d + 1 ≤ (x : ℕ)}) => (⟨x.1.val - (d + 1), by omega⟩ : Fin (n - (d + 1)))) := by
+        have h_inj : Function.Injective (fun (x : {x : Fin n // d + 1 ≤ (x : ℕ)}) =>
+            (⟨x.1.val - (d + 1), by omega⟩ : Fin (n - (d + 1)))) := by
           intro ⟨x, hx_val⟩ ⟨y, hy_val⟩ h_xy
           simp only [Fin.mk.injEq] at h_xy
           have : x.val = y.val := by omega
@@ -266,7 +269,7 @@ lemma momentCurve_general_position {d : ℕ} {s : Finset ℝ} (hs : s.card ≤ d
         ∑ x : s, g x * (x.1 ^ j.val) := by
       simp only [WithLp.equiv_apply, WithLp.ofLp_sum, WithLp.ofLp_smul]
       rw [Finset.sum_apply]
-      simp only [momentCurve, WithLp.equiv_symm_apply, WithLp.equiv_apply, Pi.smul_apply, smul_eq_mul]
+      simp only [momentCurve, WithLp.equiv_symm_apply, Pi.smul_apply, smul_eq_mul]
     rw [h_sum] at h_eq
     rw [← (s.orderIsoOfFin rfl).sum_comp] at h_eq
     exact h_eq
@@ -281,6 +284,7 @@ lemma momentCurve_general_position {d : ℕ} {s : Finset ℝ} (hs : s.card ≤ d
   on the sphere and then intersecting the obtained set with the sphere.
   In our case, `V` will be an element of the chosen cover of `k`-subsets of `2k + d₀`
   points in general position on the sphere `S^{d₀ + 1}`. -/
+@[nolint defsWithUnderscore]
 def open_set_for_subsets {d : ℕ} (V : Set (Finset (EuclideanSpace ℝ (Fin d)))) :
   Set (EuclideanSpace ℝ (Fin d)) :=
   { x | ∃ A ∈ V, ∀ y ∈ A, inner (𝕜 := ℝ) x y > 0 }
@@ -374,6 +378,7 @@ lemma antipodal_in_open_set_implies_disjoint_sets {d : ℕ}
   such that for any `k`-set of `P` we can always find an element `y` such that `x` is not on the
   open hemisphere centered at `y`. In particular, here `C` contains all the points outside the
   sphere as well. -/
+@[nolint defsWithUnderscore]
 def kneser_C {d : ℕ} (P : Finset (EuclideanSpace ℝ (Fin d))) (k : ℕ) :
   Set (EuclideanSpace ℝ (Fin d)) :=
   { x | ∀ A ⊆ P, A.card = k → ∃ y ∈ A, inner (𝕜 := ℝ) x y ≤ 0 }

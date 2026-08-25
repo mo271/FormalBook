@@ -93,6 +93,7 @@ lemma S_upper_bound {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) :
 
 -- todo use Fin 2 instead of ({(0 : ℤ), 1})
 /-- Embedding of the set `S k` into a finite product of finite sets for `Fintype` instance. -/
+@[nolint defsWithUnderscore]
 def embed_S : S k → Ioc (0 : ℤ) k ×ˢ Ioc (0 : ℤ) k ×ˢ ({(0 : ℤ), 1}) :=
   fun (⟨⟨x, y, z⟩, h⟩ : S k) ↦ by
   have lb := S_lower_bound k h
@@ -141,7 +142,8 @@ def linearInvo : Function.End (S k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨y, x,
 theorem linearInvo_sq : linearInvo k ^ 2 = (1 : Function.End (S k)) := by
   change linearInvo k ∘ linearInvo k = id
   funext ⟨⟨x, y, z⟩, h⟩
-  rw [show (linearInvo k ∘ linearInvo k) ⟨(x, y, z), h⟩ = linearInvo k (linearInvo k ⟨(x, y, z), h⟩) from rfl]
+  rw [show (linearInvo k ∘ linearInvo k) ⟨(x, y, z), h⟩ =
+      linearInvo k (linearInvo k ⟨(x, y, z), h⟩) from rfl]
   apply Subtype.ext
   dsimp [linearInvo]
   ext <;> simp
@@ -175,6 +177,7 @@ theorem sameCard : Fintype.card (U k) = Fintype.card (T k) := by
 /- 2. -/
 
 /-- The function underlying the second involution. -/
+@[nolint defsWithUnderscore]
 def secondInvo_fun := fun ((x,y,z) : ℤ × ℤ × ℤ) ↦ (x - y + z, y, 2 * y - z)
 
 /-- The second involution that we study is an involution on the set U. -/
@@ -194,7 +197,8 @@ def secondInvo : Function.End (U k) := fun ⟨⟨⟨x, y, z⟩, hS⟩, h⟩ =>
 theorem secondInvo_sq : secondInvo k ^ 2 = 1 := by
   change secondInvo k ∘ secondInvo k = id
   funext ⟨⟨⟨x, y, z⟩, hS⟩, h⟩
-  rw [show (secondInvo k ∘ secondInvo k) ⟨⟨(x, y, z), hS⟩, h⟩ = secondInvo k (secondInvo k ⟨⟨(x, y, z), hS⟩, h⟩) from rfl]
+  rw [show (secondInvo k ∘ secondInvo k) ⟨⟨(x, y, z), hS⟩, h⟩ =
+      secondInvo k (secondInvo k ⟨⟨(x, y, z), hS⟩, h⟩) from rfl]
   apply Subtype.ext
   apply Subtype.ext
   dsimp [secondInvo, secondInvo_fun]

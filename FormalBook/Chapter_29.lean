@@ -52,6 +52,7 @@ def Rectangle.interior (r : Rectangle) : Set (ℝ × ℝ) :=
 
 /-- A list `Ts` of rectangles is a tiling of the rectangle `R` if the elements of `Ts` have pairwise
   disjoint interiors and their union is equal to `R`. -/
+@[nolint defsWithUnderscore]
 def is_tiling (R : Rectangle) (Ts : List Rectangle) : Prop :=
   (∀ i j : Fin Ts.length, i ≠ j → (Ts.get i).interior ∩ (Ts.get j).interior = ∅) ∧
   (⋃ t ∈ Ts, t.toSet) = R.toSet
@@ -237,15 +238,18 @@ theorem rectangle_tiling_integer_side (R : Rectangle) (Ts : List Rectangle)
   its side lengths is rational. -/
 
 /-- A rectangle is a square if its width equals its height. -/
+@[nolint defsWithUnderscore]
 def is_square (r : Rectangle) : Prop := r.w = r.h
 
 /-- A rectangle can be tiled with squares if there exists a tiling of it consisting only of
   squares. -/
+@[nolint defsWithUnderscore]
 def can_be_tiled_with_squares (R : Rectangle) : Prop :=
   ∃ (Ts : List Rectangle), is_tiling R Ts ∧ ∀ t ∈ Ts, is_square t
 
 /-- The `f`-area of a rectangle is the product of the function applied to its width and the function
   applied to its height. -/
+@[nolint defsWithUnderscore]
 def f_area (f : ℝ →+ ℝ) (r : Rectangle) : ℝ := f r.w * f r.h
 
 /-- The `f`-area is additive with respect to width. -/
@@ -352,10 +356,12 @@ lemma grid_f_area_sum (f : ℝ →+ ℝ) (g : Grid) :
   boundaries of the tiles and the large rectangle. -/
 
 /-- The list of `x` coordinates of the grid associated with a tiling. -/
+@[nolint defsWithUnderscore]
 def tiling_grid_xs (R : Rectangle) (Ts : List Rectangle) : List ℝ :=
   (R.x :: (R.x + R.w) :: Ts.flatMap (fun t => [t.x, t.x + t.w])).mergeSort (· ≤ ·) |>.dedup
 
 /-- The list of `y` coordinates of the grid associated with a tiling. -/
+@[nolint defsWithUnderscore]
 def tiling_grid_ys (R : Rectangle) (Ts : List Rectangle) : List ℝ :=
   (R.y :: (R.y + R.h) :: Ts.flatMap (fun t => [t.y, t.y + t.h])).mergeSort (· ≤ ·) |>.dedup
 
@@ -364,6 +370,7 @@ def tiling_grid_ys (R : Rectangle) (Ts : List Rectangle) : List ℝ :=
   In fact, a cell of this grid is a rectangle starting at some set of coordinates `(x₀,y₀)` that
   were individually present in the tiling (so the intersection of the possibly prolonged sides of
   rectangles in the tiling), extending up to the next valid values of `x` and `y`. -/
+@[nolint defsWithUnderscore]
 def tiling_grid (R : Rectangle) (Ts : List Rectangle) : Grid :=
   { xs := tiling_grid_xs R Ts
     ys := tiling_grid_ys R Ts
@@ -421,6 +428,7 @@ def tiling_grid (R : Rectangle) (Ts : List Rectangle) : Grid :=
       simpa using h_contra R.y }
 
 /-- The cells of a grid that are contained in a given rectangle. -/
+@[nolint defsWithUnderscore]
 def cells_in_rect (g : Grid) (r : Rectangle) : List Rectangle :=
   g.cells.filter (fun c => r.x ≤ c.x ∧ c.x + c.w ≤ r.x + r.w ∧ r.y ≤ c.y ∧ c.y + c.h ≤ r.y + r.h)
 
@@ -943,6 +951,7 @@ lemma rational_ratio_of_tiling (R : Rectangle) (h : can_be_tiled_with_squares R)
 /-- A list of squares forming a grid. This is meant to be an explicit tiling of a rectangle into
   squares whenever we know that the ratio of its side length is rational, by setting an appropriate
   value for `s`, proving one direction of the main theorem. -/
+@[nolint defsWithUnderscore]
 def grid_squares (x y s : ℝ) (m n : ℕ) (hs : 0 < s) : List Rectangle :=
   (List.product (List.range m) (List.range n)).map fun (i, j) =>
     { x := x + i * s, y := y + j * s, w := s, h := s, w_pos := hs, h_pos := hs }
@@ -1029,7 +1038,8 @@ lemma grid_squares_union (R : Rectangle) (s : ℝ) (m n : ℕ) (hs : 0 < s)
                        rw [div_lt_iff₀ hs]
                        push_cast
                        cases lt_or_gt_of_ne hy <;> nlinarith
-                     exact Nat.lt_succ_iff.mp (Nat.floor_lt (div_nonneg (by linarith) hs.le) |>.mpr this) },
+                     exact Nat.lt_succ_iff.mp
+                        (Nat.floor_lt (div_nonneg (by linarith) hs.le) |>.mpr this) },
                 by nlinarith [ Nat.lt_floor_add_one ( ( y - R.y ) / s ),
                   mul_div_cancel₀ ( y - R.y ) hs.ne' ] ⟩;
         · obtain ⟨i, hi⟩ : ∃ i : ℕ, i < m ∧ R.x + i * s ≤ x ∧ x < R.x + (i + 1) * s := by

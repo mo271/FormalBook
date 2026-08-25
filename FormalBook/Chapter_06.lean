@@ -135,7 +135,9 @@ lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
     exact Nat.eq_add_of_sub_eq hkm rfl
   exact Nat.strongRecOn n this
 
-/-- The centralizer of an element `x` is isomorphic to the stabilizer of `x` under the conjugation action. -/
+/-- The centralizer of an element `x` is isomorphic to the stabilizer of `x`
+under the conjugation action. -/
+@[nolint defsWithUnderscore]
 def ConjAct_stabilizer_centralizer_eq :
     ∀ x : Rˣ,  Set.centralizer {x} ≃ MulAction.stabilizer (ConjAct Rˣ) x := by
   intro x
@@ -160,8 +162,10 @@ lemma orbit_stabilizer [Fintype R] (A: ConjClasses Rˣ) [Fintype A.carrier] :
   have ha : ConjClasses.mk a = A := ConjClasses.exists_rep A|>.choose_spec
   have horbit : MulAction.orbit (ConjAct Rˣ) a = A.carrier := by
     rw [ConjAct.orbit_eq_carrier_conjClasses, ha]
-  have e_orbit : (MulAction.orbit (ConjAct Rˣ) a : Set Rˣ) ≃ (A.carrier : Set Rˣ) := Equiv.setCongr horbit
-  have e_stab : (MulAction.stabilizer (ConjAct Rˣ) a : Set (ConjAct Rˣ)) ≃ (Set.centralizer {a} : Set Rˣ) :=
+  have e_orbit : (MulAction.orbit (ConjAct Rˣ) a : Set Rˣ) ≃ (A.carrier : Set Rˣ) :=
+    Equiv.setCongr horbit
+  have e_stab : (MulAction.stabilizer (ConjAct Rˣ) a : Set (ConjAct Rˣ)) ≃
+      (Set.centralizer {a} : Set Rˣ) :=
     (ConjAct_stabilizer_centralizer_eq a).symm
   have h1 := MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct Rˣ) a
   have h2 : Fintype.card Rˣ = Fintype.card (ConjAct Rˣ) :=

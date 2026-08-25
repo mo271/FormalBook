@@ -26,9 +26,11 @@ theorem hm_le_gm (a b : ℝ) (ha : 0 < a) (hb : 0 < b) :
   rw [div_le_iff₀ hab]
   have hsqa := Real.mul_self_sqrt ha.le
   have hsqb := Real.mul_self_sqrt hb.le
-  have hsqab : Real.sqrt (a * b) * Real.sqrt (a * b) = a * b := Real.mul_self_sqrt (mul_nonneg ha.le hb.le)
+  have hsqab : Real.sqrt (a * b) * Real.sqrt (a * b) = a * b :=
+    Real.mul_self_sqrt (mul_nonneg ha.le hb.le)
   have hsqab' : Real.sqrt a * Real.sqrt b = Real.sqrt (a * b) := (Real.sqrt_mul ha.le b).symm
-  nlinarith [sq_nonneg (Real.sqrt a - Real.sqrt b), Real.sqrt_nonneg a, Real.sqrt_nonneg b, Real.sqrt_nonneg (a * b)]
+  nlinarith [sq_nonneg (Real.sqrt a - Real.sqrt b), Real.sqrt_nonneg a, Real.sqrt_nonneg b,
+    Real.sqrt_nonneg (a * b)]
 
 /-- Product identity:
     ∏ᵢ (αᵢ - 1) · ∏ᵢ (αᵢ + 1) = ∏ᵢ (αᵢ² - 1). -/
@@ -43,15 +45,18 @@ theorem prod_sub_one_mul_prod_add_one {n : ℕ} (α : Fin n → ℝ) :
 
 /-- f'(1) for our polynomial, up to sign:
     f'(1) = -2 · ∏ᵢ(αᵢ - 1) · ∏ⱼ(βⱼ + 1). -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_deriv_at_one {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   -2 * (∏ i, (α i - 1)) * (∏ j, (β j + 1))
 
 /-- f'(-1) for our polynomial:
     f'(-1) = 2 · ∏ᵢ(αᵢ + 1) · ∏ⱼ(βⱼ - 1). -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_deriv_at_neg_one {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   2 * (∏ i, (α i + 1)) * (∏ j, (β j - 1))
 
 /-- C² = ∏ᵢ(αᵢ² - 1) · ∏ⱼ(βⱼ² - 1). -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_C_sq {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   (∏ i, (α i ^ 2 - 1)) * (∏ j, (β j ^ 2 - 1))
 
@@ -69,6 +74,7 @@ theorem erdos_gallai_deriv_product {m n : ℕ} (α : Fin m → ℝ) (β : Fin n 
 
     When f'(1) < 0 and f'(-1) > 0 (normal case), this equals
     2·|f'(1)|·|f'(-1)| / (|f'(1)| + |f'(-1)|), the harmonic mean. -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_T {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   -2 * (erdos_gallai_deriv_at_one α β) * (erdos_gallai_deriv_at_neg_one α β) /
     (erdos_gallai_deriv_at_one α β - erdos_gallai_deriv_at_neg_one α β)
@@ -78,10 +84,12 @@ noncomputable def erdos_gallai_T {m n : ℕ} (α : Fin m → ℝ) (β : Fin n �
 open MeasureTheory intervalIntegral
 
 /-- f(x) = (1 - x²) · ∏ᵢ (αᵢ - x) · ∏ⱼ (βⱼ + x). -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_f {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) (x : ℝ) : ℝ :=
   (1 - x ^ 2) * (∏ i, (α i - x)) * (∏ j, (β j + x))
 
 /-- The area A = ∫₋₁¹ f(x) dx. -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_area {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   ∫ x in (-1 : ℝ)..1, erdos_gallai_f α β x
 

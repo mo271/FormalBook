@@ -30,14 +30,14 @@ theorem not_isDiag_iff_exists {z : Sym2 α} : ¬ z.IsDiag ↔ ∃ x y, x ≠ y �
   · aesop
 
 
-instance : Coe (Sym2 α) (Multiset α) := ⟨Sym2.toMultiset⟩
+instance instCoeMultiset : Coe (Sym2 α) (Multiset α) := ⟨Sym2.toMultiset⟩
 
 @[simp] lemma toMultiset_mk {x y : α} : (s(x, y) : Multiset α) = {x, y} := rfl
 
 variable [DecidableEq α]
 
 
-instance : Coe (Sym2 α) (Finset α) := ⟨Sym2.toFinset⟩
+instance instCoeFinset : Coe (Sym2 α) (Finset α) := ⟨Sym2.toFinset⟩
 
 @[simp] lemma toFinset_mk {x y : α} : (s(x, y) : Finset α) = {x, y} := by
   ext; rw [Sym2.toFinset, Sym2.toMultiset]; simp

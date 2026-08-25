@@ -200,6 +200,7 @@ private instance subdivVertDecEq (k : ℕ) : DecidableEq (SubdivVert k) :=
   inferInstanceAs (DecidableEq { abc : Fin 3 → ℕ // ∑ i, abc i = k })
 
 /-- The coordinate map: send a subdivision vertex to its barycentric point in Δ². -/
+@[nolint unusedArguments]
 private noncomputable def subdivCoord (k : ℕ) (hk : 0 < k) (v : SubdivVert k) : Fin 3 → ℝ :=
   fun i => (v.1 i : ℝ) / (k : ℝ)
 
@@ -430,6 +431,7 @@ private lemma odd_transitions (n : ℕ) (s : Fin (n + 1) → Bool)
   rw [h0, hlast] at h
   simpa using h
 
+@[nolint unusedArguments]
 private theorem subdivSperner_odd_sum
     (f : (Fin 3 → ℝ) → (Fin 3 → ℝ)) (hfS : ∀ x ∈ stdSimplex2, f x ∈ stdSimplex2)
     (hne : ∀ x ∈ stdSimplex2, f x ≠ x)
@@ -520,6 +522,7 @@ private theorem subdivSperner_odd_sum
 
 /-- From a rainbow triangle in the subdivision, extract three vertices with the
     desired geometric properties. -/
+@[nolint unusedArguments]
 private theorem rainbow_triangle_gives_vertices
     (f : (Fin 3 → ℝ) → (Fin 3 → ℝ)) (hfS : ∀ x ∈ stdSimplex2, f x ∈ stdSimplex2)
     (hne : ∀ x ∈ stdSimplex2, f x ≠ x)
