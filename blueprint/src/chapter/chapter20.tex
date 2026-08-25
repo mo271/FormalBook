@@ -27,65 +27,169 @@ and thus the discriminant $\langle a, b \rangle^2 - |a|^2 |b|^2$ is less than 0.
 \begin{theorem}[First proof]
   \label{ch20theoremIIproof1}
   \lean{harmonic_geometric_arithmetic₁}
-  Let $a_1, \dots a_n$ be positive real numbers, then
+  \leanok
+  Let $a_1, \dots, a_n$ be positive real numbers, then
   \[
-  \frac{n}{\frac{1}{a_1}+\dots+\frac{1}{n_n}} \le
+  \frac{n}{\frac{1}{a_1}+\dots+\frac{1}{a_n}} \le
     \sqrt[n]{a_1a_2\dots a_n} \le
-    \frac{a_1\dots a_n}{n}
+    \frac{a_1+\dots+ a_n}{n}
   \]
  with equality in both cases if and only if all $a_i$'s are equal.
 \end{theorem}
  \begin{proof}
-  TODO
+  \leanok
+  The following beautiful nonstandard induction proof is attributed to Cauchy.
+  Let $P(n)$ be the statement of the second inequality, written in the form
+  \[
+  a_1 a_2 \cdots a_n \le \left(\frac{a_1 + \cdots + a_n}{n}\right)^n.
+  \]
+  For $n=2$, we have $a_1 a_2 \le \left(\frac{a_1+a_2}{2}\right)^2 \iff (a_1-a_2)^2 \ge 0$, which is true.
+  Now we proceed in the following two steps:
+  \begin{enumerate}
+    \item[(A)] $P(n) \implies P(n-1)$
+    \item[(B)] $P(n)$ and $P(2) \implies P(2n)$
+  \end{enumerate}
+  which will clearly imply the full result.
+
+  To prove (A), set $A := \frac{\sum_{k=1}^{n-1} a_k}{n-1}$, then
+  \[
+  \left(\prod_{k=1}^{n-1} a_k\right) A \stackrel{P(n)}{\le} \left(\frac{\sum_{k=1}^{n-1} a_k + A}{n}\right)^n = \left(\frac{(n-1)A + A}{n}\right)^n = A^n
+  \]
+  and hence $\prod_{k=1}^{n-1} a_k \le A^{n-1}$.
+
+  For (B), we see
+  \[
+  \prod_{k=1}^{2n} a_k = \left(\prod_{k=1}^{n} a_k\right)\left(\prod_{k=n+1}^{2n} a_k\right)
+  \stackrel{P(n)}{\le} \left(\frac{\sum_{k=1}^{n} a_k}{n}\right)^n \left(\frac{\sum_{k=n+1}^{2n} a_k}{n}\right)^n
+  \stackrel{P(2)}{\le} \left(\frac{\sum_{k=1}^{2n} a_k}{2n}\right)^{2n}.
+  \]
+  The condition for equality is derived just as easily.
+
+  The left-hand inequality, between the harmonic and the geometric mean,
+  follows now by considering $\frac{1}{a_1}, \dots, \frac{1}{a_n}$.
 \end{proof}
 
 \begin{theorem}[Another Proof]
   \label{ch20theoremIIproof2}
-  \lean{harmonic_geometric_arithmetic₂ }
-  Let $a_1, \dots a_n$ be positive real numbers, then
+  \lean{harmonic_geometric_arithmetic₂}
+  \leanok
+  Let $a_1, \dots, a_n$ be positive real numbers, then
   \[
-  \frac{n}{\frac{1}{a_1}+\dots+\frac{1}{n_n}} \le
+  \frac{n}{\frac{1}{a_1}+\dots+\frac{1}{a_n}} \le
     \sqrt[n]{a_1a_2\dots a_n} \le
-    \frac{a_1\dots a_n}{n}
+    \frac{a_1+\dots+ a_n}{n}
   \]
  with equality in both cases if and only if all $a_i$'s are equal.
 \end{theorem}
  \begin{proof}
-  TODO
+  \leanok
+  Of the many other proofs of the arithmetic-geometric mean inequality, let us single out
+  a particularly striking one by Horst Alzer, with some shortenings due to France Dacar.
+  As a matter of fact, this proof yields the stronger inequality
+  \[
+  a_1^{p_1} a_2^{p_2} \cdots a_n^{p_n} \le p_1 a_1 + p_2 a_2 + \cdots + p_n a_n
+  \]
+  for any positive numbers $a_1, \dots, a_n$, $p_1, \dots, p_n$ with $\sum_{i=1}^n p_i = 1$.
+  Let us denote the expression on the left side by $G$, and on the right side by $A$.
+  Fix $c > 0$ and define the function $f(t) := \frac{1}{c} - \frac{1}{t}$ on $\mathbb{R}_{>0}$.
+  Since $f(t) < 0$ for $t < c$ and $f(t) > 0$ for $t > c$, we get the inequality
+  \[
+  \int_c^x f(t)\,dt \ge 0
+  \]
+  for every $x > 0$, with equality if and only if $x = c$.
+  Now
+  \[
+  0 \le \int_c^x f(t)\,dt = \left[\frac{t}{c} - \log t\right]_c^x = \frac{x}{c} - 1 - \log\frac{x}{c},
+  \]
+  and setting $c = G$ and $x = a_i$ we conclude that
+  \[
+  \frac{a_i}{G} - 1 \ge \log a_i - \log G \qquad \text{for } i = 1, 2, \dots, n.
+  \]
+  Multiplying this inequality by $p_i$ and summing over all $i$ gives
+  \[
+  \sum_{i=1}^n p_i \frac{a_i}{G} - \sum_{i=1}^n p_i \ge \sum_{i=1}^n p_i \log a_i - \sum_{i=1}^n p_i \log G.
+  \]
+  With $\sum p_i = 1$, the left side equals $\frac{A}{G} - 1$, while the right side is
+  $\log\left(\prod a_i^{p_i}\right) - \log G = \log G - \log G = 0$.
+  We conclude $\frac{A}{G} - 1 \ge 0$, which is $A \ge G$.
+  In the case of equality, all inequalities must be equalities, which implies $a_1 = \cdots = a_n = G$.
 \end{proof}
 
 \begin{theorem}[Still another Proof]
   \label{ch20theoremIIproof3}
   \lean{harmonic_geometric_arithmetic₃}
-  Let $a_1, \dots a_n$ be positive real numbers, then
+  \leanok
+  Let $a_1, \dots, a_n$ be positive real numbers, then
   \[
-  \frac{n}{\frac{1}{a_1}+\dots+\frac{1}{n_n}} \le
+  \frac{n}{\frac{1}{a_1}+\dots+\frac{1}{a_n}} \le
     \sqrt[n]{a_1a_2\dots a_n} \le
-    \frac{a_1\dots a_n}{n}
+    \frac{a_1+\dots+ a_n}{n}
   \]
  with equality in both cases if and only if all $a_i$'s are equal.
 \end{theorem}
  \begin{proof}
-  TODO
+  \leanok
+  There is another nice proof, due to Michael D.\ Hirschhorn. It uses Bernoulli's inequality, which says
+  \[
+  (1+t)^{n+1} \ge 1 + (n+1)t \qquad \text{for real } t \ge -1.
+  \]
+  Suppose $a_1, a_2, \dots, a_{n+1} > 0$ and set
+  \[
+  t = \frac{\frac{a_1 + \cdots + a_{n+1}}{n+1}}{\frac{a_1 + \cdots + a_n}{n}} - 1.
+  \]
+  By Bernoulli,
+  \[
+  \left(\frac{\frac{a_1 + \cdots + a_{n+1}}{n+1}}{\frac{a_1 + \cdots + a_n}{n}}\right)^{n+1}
+  \ge 1 + (n+1)\left(\frac{\frac{a_1 + \cdots + a_{n+1}}{n+1}}{\frac{a_1 + \cdots + a_n}{n}} - 1\right)
+  = \frac{n\, a_{n+1}}{a_1 + \cdots + a_n},
+  \]
+  which translates into
+  \[
+  \left(\frac{a_1 + \cdots + a_{n+1}}{n+1}\right)^{n+1} \ge a_{n+1} \left(\frac{a_1 + \cdots + a_n}{n}\right)^n,
+  \]
+  and the arithmetic-geometric mean inequality follows by induction.
 \end{proof}
 
 \begin{theorem}
   \label{ch20theorem1}
-  Suppose all roots fo the polynomial
-  $x^n + a_{n - 1}x^{n - 1} + \dots +a_0$ are real.
-  Then the roots of are contained in the interval with the endpoints
+  \lean{laguerre_root_bound}
+  \leanok
+  Suppose all roots of the polynomial
+  $x^n + a_{n-1}x^{n-1} + \dots + a_0$ are real.
+  Then the roots are contained in the interval with the endpoints
   \[
-  -\frac{n_{n-1}}{n}\pm\frac{n - 1}{n}\sqrt{a^n_{n - 1} - \frac{2n}{n - 1}a_{n - 2}}.
+  -\frac{a_{n-1}}{n}\pm\frac{n-1}{n}\sqrt{a_{n-1}^2 - \frac{2n}{n-1}a_{n-2}}.
   \]
 \end{theorem}
 \begin{proof}
-  TODO
+  \leanok
+  Let $y$ be one of the roots and $y_1, \dots, y_{n-1}$ the others. Then
+  the polynomial is $(x-y)(x-y_1)\cdots(x-y_{n-1})$. Thus by comparing coefficients
+  \begin{align*}
+  -a_{n-1} &= y + y_1 + \cdots + y_{n-1}, \\
+  a_{n-2} &= y(y_1 + \cdots + y_{n-1}) + \sum_{i<j} y_i y_j,
+  \end{align*}
+  and so $a_{n-1}^2 - 2a_{n-2} - y^2 = \sum_{i=1}^{n-1} y_i^2$.
+
+  By Cauchy's inequality applied to $(y_1, \dots, y_{n-1})$ and $(1, \dots, 1)$,
+  \[
+  (a_{n-1} + y)^2 = (y_1 + \cdots + y_{n-1})^2 \le (n-1)\sum_{i=1}^{n-1} y_i^2 = (n-1)(a_{n-1}^2 - 2a_{n-2} - y^2),
+  \]
+  or
+  \[
+  y^2 + \frac{2a_{n-1}}{n}y + \frac{2(n-1)}{n}a_{n-2} - \frac{n-2}{n}a_{n-1}^2 \le 0.
+  \]
+  Thus $y$ (and hence all $y_i$) lie between the two roots of the quadratic function,
+  and these roots are our bounds.
 \end{proof}
 
 
 
 \begin{theorem}
-  \label{ch20theorem2} Let $f(x)$ be a real polynomial of degree $n \ge 2$ with only real
+  \label{ch20theorem2}
+  \lean{erdos_gallai_A_ge_two_thirds_T}
+  \leanok
+  Let $f(x)$ be a real polynomial of degree $n \ge 2$ with only real
   roots, such that $f(x)> 0$ for $ -1 < x < 1$ amd $f(-1) = f(1) = 0$. Then
   \[
   \frac{2}{3}T \le A \le \frac{2}{3}R,
@@ -93,7 +197,41 @@ and thus the discriminant $\langle a, b \rangle^2 - |a|^2 |b|^2$ is less than 0.
   and equality holds in both cases only for $n=2$.
 \end{theorem}
 \begin{proof}
-  TODO
+  \leanok
+  \textbf{Proof of $\frac{2}{3}T \le A$.}
+  Since $f(x)$ has only real roots, and none of them in the open interval $(-1,1)$, it can be written
+  (apart from a constant positive factor which cancels out) in the form
+  \[
+  f(x) = (1-x^2)\prod_i (\alpha_i - x)\prod_j (\beta_j + x)
+  \]
+  with $\alpha_i \ge 1$, $\beta_j \ge 1$. Hence $A = \int_{-1}^{1} f(x)\,dx$.
+
+  By making the substitution $x \to -x$, we find that also
+  $A = \int_{-1}^{1} (1-x^2)\prod_i(\alpha_i + x)\prod_j(\beta_j - x)\,dx$,
+  and hence by the inequality of the arithmetic and the geometric mean
+  (note that all factors are $\ge 0$):
+  \begin{align*}
+  A &= \int_{-1}^{1} \frac{1}{2}\left[(1-x^2)\prod(\alpha_i - x)\prod(\beta_j + x) + (1-x^2)\prod(\alpha_i + x)\prod(\beta_j - x)\right] dx \\
+  &\ge \int_{-1}^{1} (1-x^2)\left[\prod(\alpha_i^2 - x^2)\prod(\beta_j^2 - x^2)\right]^{1/2} dx \\
+  &\ge \int_{-1}^{1} (1-x^2)\left[\prod(\alpha_i^2 - 1)\prod(\beta_j^2 - 1)\right]^{1/2} dx \\
+  &= \frac{4}{3}\left[\prod(\alpha_i^2 - 1)\prod(\beta_j^2 - 1)\right]^{1/2}.
+  \end{align*}
+
+  Computing $f'(1)$ and $f'(-1)$ from the product form, we find
+  $f'(1) = -2\prod(\alpha_i - 1)\prod(\beta_j + 1)$ and
+  $f'(-1) = 2\prod(\alpha_i + 1)\prod(\beta_j - 1)$,
+  hence $-f'(1)f'(-1) = 4\prod(\alpha_i^2-1)\prod(\beta_j^2-1)$, so
+  \[
+  A \ge \frac{2}{3}(-f'(1)f'(-1))^{1/2}.
+  \]
+  Applying the inequality of the harmonic and geometric mean to $-f'(1)$ and $f'(-1)$, we arrive by
+  formula~(2) for $T$ at
+  \[
+  A \ge \frac{2}{3}\cdot\frac{2}{\frac{1}{-f'(1)} + \frac{1}{f'(-1)}} = \frac{4}{3}\cdot\frac{f'(1)f'(-1)}{f'(1)-f'(-1)} = \frac{2}{3}T.
+  \]
+
+  \textbf{The inequality $A \le \frac{2}{3}R$:} The book notes ``The reader is invited to search for
+  an equally inspired proof of the second inequality in Theorem~2.'' This half is not formalized in Lean.
 \end{proof}
 
 \begin{theorem}
@@ -131,10 +269,25 @@ and thus the discriminant $\langle a, b \rangle^2 - |a|^2 |b|^2$ is less than 0.
 
 \begin{theorem}
   \label{ch20theorem3proof2}
+  \lean{mantel_amgm}
+  \leanok
   Suppose $G$ is a graph on $n$ vertices without triangles. Then $G$
   has at most $\frac{n^2}{4}$ edges, and equality holds only when $n$ is even and $G$ is the
   complete bipartite graph $K_{n/2, n/2}$.
 \end{theorem}
 \begin{proof}
-  TODO
+  \leanok
+  The following proof of Theorem~3, using the inequality of the arithmetic and the geometric mean,
+  is a folklore Book Proof. Let $\alpha$ be the size of a largest independent set $A$, and set $\beta = n - \alpha$.
+  Since $G$ is triangle-free, the neighbors of a vertex $i$ form an independent set, and we infer
+  $d_i \le \alpha$ for all $i$.
+
+  The set $B = V \setminus A$ of size $\beta$ meets every edge of $G$.
+  Counting the edges of $G$ according to their endvertices in $B$, we obtain
+  $|E| \le \sum_{i \in B} d_i$.
+  The inequality of the arithmetic and geometric mean now yields
+  \[
+  |E| \le \sum_{i \in B} d_i \le \alpha\beta \le \left(\frac{\alpha + \beta}{2}\right)^2 = \frac{n^2}{4},
+  \]
+  and again the case of equality is easily dealt with.
 \end{proof}
