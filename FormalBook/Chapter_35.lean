@@ -26,7 +26,7 @@ noncomputable section
 /-- Auxiliary lemma containing the bulk of the proof of the following: every nonzero polynomial
   `p(x) \in F[x_1, \dots, x_n]` of degree `d` has at most `dq^{n-1}` roots in `F^n`, where `q` is
   the cardinality of the field.-/
-lemma lemma_35_1_aux {F : Type*} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
+lemma lemma_35_1_aux {F : Type*} [Field F] [Fintype F] [DecidableEq F] (n : ℕ)
   (IH : ∀ (p : MvPolynomial (Fin n) F) (_ : p ≠ 0),
     Fintype.card {x : Fin n → F // MvPolynomial.eval x p = 0} ≤
     p.totalDegree * (Fintype.card F) ^ (n - 1))
@@ -45,7 +45,7 @@ lemma lemma_35_1_aux {F : Type*} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
     /- For each $a \in F^n$, the number of $b \in F$ such that $P(a, b) = 0$ is at most $d$ if
       $g(a) \neq 0$, and at most $|F|$ if $g(a) = 0$.-/
     have h_count : ∀ a : Fin n → F, Fintype.card
-      { b : F | (MvPolynomial.eval (Fin.cons b a)) P = 0 } ≤ if (MvPolynomial.eval a) g = 0
+      { b : F // (MvPolynomial.eval (Fin.cons b a)) P = 0 } ≤ if (MvPolynomial.eval a) g = 0
       then Fintype.card F else d := by
       intro a
       by_cases ha : (MvPolynomial.eval a) g = 0;
@@ -112,7 +112,8 @@ lemma lemma_35_1_aux {F : Type*} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
       Fintype.card_fin];
     simp +decide only [Finset.filter_not, Finset.card_sdiff, Finset.card_univ, Fintype.card_pi,
       Finset.prod_const, Fintype.card_fin, Finset.inter_univ, Fintype.card_subtype, le_refl];
-  rcases n <;> simp_all +decide only [ne_eq, zero_tsub, pow_zero, mul_one, Nat.reduceAdd,
+  rcases n with ( _ | n ) <;>
+    simp_all +decide only [ne_eq, zero_tsub, pow_zero, mul_one, Nat.reduceAdd,
     Set.coe_setOf, Fintype.card_subtype_compl, Fintype.card_unique, ge_iff_le];
   · refine' le_trans h_count _;
     by_cases h : ( MvPolynomial.eval 0 ) g = 0 <;> simp_all +decide [ Fintype.card_subtype ];
@@ -138,8 +139,12 @@ lemma lemma_35_1_aux {F : Type*} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
       (MvPolynomial.totalDegree_coeff_finSuccEquiv_add_le p d hg_nonzero) );
     rw [ add_mul ];
     refine' add_le_add _ _;
-    · convert Nat.mul_le_mul_right ( Fintype.card F ) ( IH g hg_nonzero ) using 1
-      rw [add_tsub_cancel_right, hg_def, pow_add, pow_one, mul_assoc]
+    · have h_IH := IH g hg_nonzero
+      simp only [add_tsub_cancel_right] at h_IH
+      calc Fintype.card { a | (MvPolynomial.eval a) g = 0 } * Fintype.card F
+        _ ≤ (g.totalDegree * (Fintype.card F) ^ n) * Fintype.card F := Nat.mul_le_mul_right _ h_IH
+        _ = g.totalDegree * ((Fintype.card F) ^ n * Fintype.card F) := by ring
+        _ = g.totalDegree * (Fintype.card F) ^ (n + 1) := by rw [pow_succ]
     · rw [ mul_comm ] ;
       gcongr ;
       apply le_trans (Nat.sub_le _ _) ?_
@@ -169,10 +174,11 @@ theorem lemma_35_1 {F : Type*} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
       subst h
       simp_all only [map_eq_zero, MvPolynomial.eval_C, Fintype.card_eq_zero,
         MvPolynomial.totalDegree_C, le_refl];
-    case succ n ih => convert lemma_35_1_aux ih using 1;
+    case succ n ih => exact lemma_35_1_aux n ih;
   exact h_ind n p hp
 
 /-- The set of exponents `s \in \mathbb{N}^n` such that `\sum s_i \le d`. -/
+@[nolint defsWithUnderscore]
 def exponents_le {n : ℕ} (d : ℕ) : Set (Fin n →₀ ℕ) := {s | s.sum (fun _ k => k) ≤ d}
 
 /-- The set of exponents with sum at most `d` is finite. -/
@@ -187,7 +193,7 @@ lemma exponents_le_finite (n d : ℕ) : (exponents_le (n := n) d).Finite := by
       ( Finset.mem_univ i ) ) this
 
 /-- The set of exponents with sum at most `d` is finite. -/
-noncomputable instance (n d : ℕ) : Fintype (exponents_le (n := n) d) :=
+noncomputable instance instFintypeExponentsLe (n d : ℕ) : Fintype (exponents_le (n := n) d) :=
   (exponents_le_finite n d).fintype
 
 /-- The number of `n`-tuples of non-negative integers with sum at most `d` is `\binom{n+d}{n}`.
@@ -220,7 +226,7 @@ lemma card_exponents_le (n d : ℕ) :
         · rintro ⟨ a, ha, b, hb, rfl ⟩ ; simp_all +decide [ Fin.sum_univ_succ ];
           constructor
           · exact fun i => by cases i using Fin.inductionOn <;>
-              [ exact Nat.le_of_lt_succ ha; exact le_trans ( hb.1 _ ) ( Nat.sub_le _ _ ) ]
+              [ exact ha; exact le_trans ( hb.1 _ ) ( Nat.sub_le _ _ ) ]
           · linarith [ Nat.sub_add_cancel ( by linarith : a ≤ d ) ];
       rw [ h_split, Finset.card_biUnion ];
       · rw [ Finset.sum_congr rfl fun x hx => Finset.card_image_of_injective _ <| fun a b h =>
@@ -302,7 +308,10 @@ theorem lemma_35_2 {F : Type*} [Field F] [Fintype F] {n d : ℕ} {E : Set (Fin n
     simp_all +decide [ Submodule.ne_bot_iff ];
     tauto;
   obtain ⟨ p, hp ⟩ := h_kernel_nontrivial;
-  exact ⟨ p, p.2, by simpa using hp.1, fun x hx => by simpa using congr_fun ( hp.2 ) ⟨ x, hx ⟩ ⟩
+  have h_eval : ∀ x ∈ E, MvPolynomial.eval x p.1 = 0 := fun x hx => by
+    have := congr_fun hp.2 ⟨x, hx⟩
+    exact this
+  exact ⟨ p.1, p.2, fun h => hp.1 (Subtype.ext h), h_eval ⟩
 
 /-- A set `K \subseteq F^n` is a Kakeya set if it contains a line in every direction. -/
 def IsKakeyaSet (F : Type*) [Field F] {n : ℕ} (K : Set (Fin n → F)) : Prop :=
@@ -367,7 +376,7 @@ lemma coeff_linePoly_eq_homogeneousComponent_eval {F : Type*} [CommSemiring F] {
             ( Nat.zero_le _ ) ) ) _;
         simp +decide [ Polynomial.natDegree_C ];
         refine' Finset.sum_lt_sum _ _;
-        · exact fun i _ => Nat.le_of_lt_succ ( hb i );
+        · exact fun i _ => hb i;
         · grind;
     · rw [ Polynomial.coeff_eq_zero_of_natDegree_lt ];
       · simp_all +decide [ Finsupp.weight ];
@@ -497,11 +506,13 @@ theorem theorem_35_3 {F : Type*} [Field F] [Fintype F] [DecidableEq F] {n : ℕ}
             exact ⟨ h_max_deg.choose, h_max_deg.choose_spec.1,
               le_antisymm ( Finset.le_sup ( f := fun s => s.sum fun _ k => k )
               h_max_deg.choose_spec.1 ) ( Finset.sup_le fun t ht => h_max_deg.choose_spec.2 t ht )⟩;
-          refine' le_trans _ ( Finset.le_sup <| show s ∈ ( MvPolynomial.homogeneousComponent
-            p.totalDegree p |> MvPolynomial.support ) from _ );
-          · rw [ hs.2 ];
-          · simp_all +decide [ MvPolynomial.coeff_homogeneousComponent ];
-            convert hs.2 using 1;
+          have hs_hom : s ∈ (MvPolynomial.homogeneousComponent p.totalDegree p).support := by
+            simp only [MvPolynomial.mem_support_iff, MvPolynomial.coeff_homogeneousComponent]
+            split_ifs with h_deg
+            · exact MvPolynomial.mem_support_iff.mp hs.1
+            · exact (h_deg hs.2).elim
+          exact le_trans (show p.totalDegree ≤ s.sum fun _ k => k by rw [hs.2])
+            (Finset.le_sup (f := fun s => s.sum fun _ k => k) hs_hom)
       have := lemma_35_1 h_homogeneous_nonzero;
       rcases n with ( _ | n ) <;> simp_all +decide [ pow_succ' ];
       exact this.not_gt ( mul_lt_mul_of_pos_right hp_deg ( pow_pos ( Fintype.card_pos ) _ ) )

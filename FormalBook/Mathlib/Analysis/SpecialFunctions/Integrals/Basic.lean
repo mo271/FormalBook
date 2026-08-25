@@ -42,7 +42,7 @@ theorem intervalIntegral.integral_inv_sqrt_one_sub_sq {a b : ℝ} :
         grind only
       · simp
 
-@[simp]
+@[simp, nolint simpNF]
 theorem intervalIntegral.integral_inv_sq_add_sq {a b c : ℝ} (hc : c ≠ 0) :
     ∫ x : ℝ in a..b, (c ^ 2 + x ^ 2)⁻¹ = c⁻¹ * (arctan (b / c) - arctan (a / c)) := calc
   _ = ∫ x : ℝ in a..b, (c ^ 2)⁻¹ * (1 + (x / c) ^ 2)⁻¹ := by field_simp

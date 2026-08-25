@@ -139,7 +139,7 @@ private theorem stdSimplex2_eq : stdSimplex2 = stdSimplex ℝ (Fin 3) := by
 
 /-- The standard 2-simplex is compact. -/
 private theorem stdSimplex2_isCompact : IsCompact stdSimplex2 := by
-  rw [stdSimplex2_eq]; exact isCompact_stdSimplex _
+  rw [stdSimplex2_eq]; exact isCompact_stdSimplex ℝ (Fin 3)
 
 /-- The Sperner coloring is well-defined: if v ∈ Δ² and f(v) ≠ v with f(v) ∈ Δ²,
     then some coordinate strictly decreases. -/
@@ -200,6 +200,7 @@ private instance subdivVertDecEq (k : ℕ) : DecidableEq (SubdivVert k) :=
   inferInstanceAs (DecidableEq { abc : Fin 3 → ℕ // ∑ i, abc i = k })
 
 /-- The coordinate map: send a subdivision vertex to its barycentric point in Δ². -/
+@[nolint unusedArguments]
 private noncomputable def subdivCoord (k : ℕ) (hk : 0 < k) (v : SubdivVert k) : Fin 3 → ℝ :=
   fun i => (v.1 i : ℝ) / (k : ℝ)
 
@@ -207,7 +208,7 @@ private theorem subdivCoord_mem (k : ℕ) (hk : 0 < k) (v : SubdivVert k) :
     subdivCoord k hk v ∈ stdSimplex2 := by
   constructor
   · intro i; apply div_nonneg (Nat.cast_nonneg _) (Nat.cast_nonneg _)
-  · simp only [subdivCoord, div_add_div_same, ← Finset.sum_div]
+  · simp only [subdivCoord, ← Finset.sum_div]
     rw [show (∑ i : Fin 3, (v.1 i : ℝ)) = (∑ i : Fin 3, v.1 i : ℕ) from by push_cast; rfl]
     rw [v.2]; field_simp
 
@@ -430,6 +431,7 @@ private lemma odd_transitions (n : ℕ) (s : Fin (n + 1) → Bool)
   rw [h0, hlast] at h
   simpa using h
 
+@[nolint unusedArguments]
 private theorem subdivSperner_odd_sum
     (f : (Fin 3 → ℝ) → (Fin 3 → ℝ)) (hfS : ∀ x ∈ stdSimplex2, f x ∈ stdSimplex2)
     (hne : ∀ x ∈ stdSimplex2, f x ≠ x)
@@ -520,6 +522,7 @@ private theorem subdivSperner_odd_sum
 
 /-- From a rainbow triangle in the subdivision, extract three vertices with the
     desired geometric properties. -/
+@[nolint unusedArguments]
 private theorem rainbow_triangle_gives_vertices
     (f : (Fin 3 → ℝ) → (Fin 3 → ℝ)) (hfS : ∀ x ∈ stdSimplex2, f x ∈ stdSimplex2)
     (hne : ∀ x ∈ stdSimplex2, f x ≠ x)

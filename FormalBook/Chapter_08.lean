@@ -92,6 +92,7 @@ Let `n : ℕ`, `n ≥ 1` be fixed, and consider `f_aux n x = x ^ n * (1 - x) ^ n
 -/
 
 /-- The auxiliary function `xⁿ * (1 - x)ⁿ / n!` used in the irrationality proofs. -/
+@[nolint defsWithUnderscore]
 noncomputable def f_aux (n : ℕ) (x : ℝ) :=  x ^ n * (1 - x) ^ n / n.factorial
 
 lemma lem_aux_i (n : ℕ) (x : ℝ) : ∃ c : ℕ → ℤ, f_aux n x = ∑ i ∈ Icc n (2 * n), (c i) * x ^ i := by
@@ -105,8 +106,9 @@ lemma lem_aux_ii (n : ℕ) (x : ℝ) (h_1 : 0 < x) (h_2 : x < 0) :
 WARNING: There might be a better way to state this, not sure what the best API for derivatives of
 smooth (polynomial) functions is
 -/
-lemma lem_aux_iii (n : ℕ) (k : ℕ): iteratedDeriv k (f_aux n) 0 ∈  Set.range (fun (q : ℚ) ↦ (q : ℝ)) ∧
-  iteratedDeriv k (f_aux n) 1 ∈ Set.range (fun (q : ℚ) ↦ (q : ℝ))  := by
+lemma lem_aux_iii (n : ℕ) (k : ℕ):
+    iteratedDeriv k (f_aux n) 0 ∈ Set.range (fun (q : ℚ) ↦ (q : ℝ)) ∧
+    iteratedDeriv k (f_aux n) 1 ∈ Set.range (fun (q : ℚ) ↦ (q : ℝ))  := by
   sorry
 
 

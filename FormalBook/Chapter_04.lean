@@ -54,34 +54,21 @@ lemma lemma₁ {p : ℕ} [h : Fact p.Prime] :
 
 -- TODO: golf, and perhaps make it even close to book proof
 lemma lemma₂ (n m : ℕ) (hn : n = 4 * m + 3) :
-  ¬ ∃ a b, n = a ^2 + b ^2 := by
-  push_neg
-  intro a b
-  by_contra h
-  have : (n : ZMod 4) =  a ^ 2 + b ^ 2 := by
+  ¬ ∃ a b, n = a ^ 2 + b ^ 2 := by
+  intro ⟨a, b, h⟩
+  have : (n : ZMod 4) = a ^ 2 + b ^ 2 := by
     rw [h]
     simp only [Nat.cast_add, Nat.cast_pow]
   rw [hn] at this
   simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat] at this
   rw [mul_eq_zero_of_left (by rfl) (m : ZMod 4), zero_add] at this
-  have hx : ∀ (x : ZMod 4),  x ^2 ∈ ({0, 1} : Finset (ZMod 4)) := by
-    intro x
-    fin_cases x <;> simp
-    · exact Or.inl rfl
-    · exact Or.inr rfl
-  have ha := hx <| a
-  have hb := hx  <| b
-  generalize hA: (a : ZMod 4) ^ 2 = A
-  generalize hB: (b : ZMod 4) ^ 2 = B
-  rw [hA, hB] at this
-  rw [hA] at ha
-  rw [hB] at hb
-  fin_cases A <;> fin_cases B <;> norm_num at this <;> tauto
+  have h_mod : ∀ (x y : ZMod 4), (3 : ZMod 4) ≠ x ^ 2 + y ^ 2 := by decide
+  exact h_mod a b this
 
 -- We follow a similar path taken by Jeremy Tan and Thomas Browning in
 -- mathlib4/Archive/ZagierTwoSquares.lean.
 
-theorem theorem₁  {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) : ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
+theorem theorem₁ {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) : ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   sorry
 
 section Sets
@@ -94,20 +81,21 @@ variable (k : ℕ) [hk : Fact (4 * k + 1).Prime]
 def S : Set (ℤ × ℤ × ℤ) := {((x, y, z) : ℤ × ℤ × ℤ) | 4 * x * y + z ^ 2 = 4 * k + 1 ∧ x > 0 ∧ y > 0}
 
 omit hk in
-lemma S_lower_bound {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) : 0 < x ∧ 0 < y  := ⟨h.2.1, h.2.2⟩
+lemma S_lower_bound {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) : 0 < x ∧ 0 < y := ⟨h.2.1, h.2.2⟩
 
 omit hk in
 lemma S_upper_bound {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) :
     x ≤ k ∧ y ≤ k := by
   obtain ⟨_, _⟩ := S_lower_bound k h
-  simp [S, mem_setOf_eq] at h
+  simp [S] at h
   refine ⟨?_, ?_⟩
   all_goals try nlinarith
 
 -- todo use Fin 2 instead of ({(0 : ℤ), 1})
 /-- Embedding of the set `S k` into a finite product of finite sets for `Fintype` instance. -/
+@[nolint defsWithUnderscore]
 def embed_S : S k → Ioc (0 : ℤ) k ×ˢ Ioc (0 : ℤ) k ×ˢ ({(0 : ℤ), 1}) :=
-  fun  (⟨⟨x, y, z⟩, h⟩ : S k) ↦ by
+  fun (⟨⟨x, y, z⟩, h⟩ : S k) ↦ by
   have lb := S_lower_bound k h
   have ub := S_upper_bound k h
   exact ⟨⟨x, y, if 0 ≤ z then 1 else 0⟩, ⟨⟨lb.1, ub.1⟩, ⟨lb.2, ub.2⟩, by
@@ -115,27 +103,23 @@ def embed_S : S k → Ioc (0 : ℤ) k ×ˢ Ioc (0 : ℤ) k ×ˢ ({(0 : ℤ), 1})
     Int.lt_or_le z 0 ⟩⟩
 
 omit hk in
-lemma embed_S_injective : Function.Injective (embed_S k):= by
-  intro s1 s2 hS
-  simp [embed_S] at hS
-  ext
-  · exact hS.1
-  · exact hS.2.1
-  · have := hS.2.2
-    have ⟨⟨x1, y1, z1⟩, ⟨h1, _, _⟩⟩ := s1
-    have ⟨⟨x2, y2, z2⟩, ⟨h2, _, _⟩⟩ := s2
-    have hz_eq_z: z1 ^ 2 = z2 ^ 2 := by
-      nlinarith
-    simp at this
-    by_cases hz1 : 0 ≤ z1
-    · simp [hz1] at this
-      by_cases hz2 : 0 ≤ z2
-      · nlinarith
-      · simp [hz2] at this
-    · by_cases hz2 : 0 ≤ z2
-      · simp [hz2] at this
-        tauto
-      · nlinarith
+lemma embed_S_injective : Function.Injective (embed_S k) := by
+  intro ⟨⟨x1, y1, z1⟩, h1⟩ ⟨⟨x2, y2, z2⟩, h2⟩ hS
+  have h_val := congr_arg Subtype.val hS
+  simp only [embed_S, Prod.mk.injEq] at h_val
+  obtain ⟨rfl, rfl, hz⟩ := h_val
+  have hz_sq : z1 ^ 2 = z2 ^ 2 := by
+    have h1_eq := h1.1
+    have h2_eq := h2.1
+    linarith
+  have hz_eq : z1 = z2 := by
+    split_ifs at hz with hz1 hz2
+    · nlinarith
+    · linarith
+    · linarith
+    · nlinarith
+  subst hz_eq
+  rfl
 
 noncomputable instance : Fintype (S k) := by
   refine' Fintype.ofInjective (embed_S k) (embed_S_injective k)
@@ -155,15 +139,20 @@ def linearInvo : Function.End (S k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨y, x,
   simp only [S, Set.mem_setOf_eq] at h ⊢
   exact ⟨by linarith [h], h.2.2, h.2.1⟩ ⟩
 
-theorem linearInvo_sq : linearInvo k ^2  = (1 : Function.End (S k)) := by
+theorem linearInvo_sq : linearInvo k ^ 2 = (1 : Function.End (S k)) := by
   change linearInvo k ∘ linearInvo k = id
-  funext x
-  simp [linearInvo]
+  funext ⟨⟨x, y, z⟩, h⟩
+  rw [show (linearInvo k ∘ linearInvo k) ⟨(x, y, z), h⟩ =
+      linearInvo k (linearInvo k ⟨(x, y, z), h⟩) from rfl]
+  apply Subtype.ext
+  dsimp [linearInvo]
+  ext <;> simp
 
 theorem linearInvo_no_fixedPoints : IsEmpty (fixedPoints (linearInvo k)) := by
   simp only [isEmpty_subtype, mem_fixedPoints, Subtype.forall, Prod.forall]
   intro x y z h hfixed
-  simp only [IsFixedPt, linearInvo, Subtype.mk.injEq, Prod.mk.injEq] at hfixed
+  have hfixed' : (linearInvo k ⟨⟨x, y, z⟩, h⟩).1.2.2 = z := by rw [hfixed]
+  have : -z = z := hfixed'
   have : z = 0 := by linarith
   obtain ⟨h, _, _⟩ := h
   simp only [this, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, add_zero] at h
@@ -171,7 +160,7 @@ theorem linearInvo_no_fixedPoints : IsEmpty (fixedPoints (linearInvo k)) := by
   simp [mul_assoc, Int.add_emod] at h
 
 /-- The subset of `S k` where `z` is positive. -/
-def T : Set (S k) := {⟨(_, _, z), _⟩ : S k |  z > 0}
+def T : Set (S k) := {⟨(_, _, z), _⟩ : S k | z > 0}
 
 noncomputable instance : Fintype <| T k := by
   exact Fintype.ofFinite ↑(T k)
@@ -180,6 +169,7 @@ noncomputable instance : Fintype <| T k := by
 def U : Set (S k) := {⟨(x, y, z), _⟩ | (x - y) + z > 0}
 
 noncomputable instance : Fintype <| U k := Fintype.ofFinite ↑(U k)
+noncomputable instance (s : Set (U k)) : Fintype s := Fintype.ofFinite s
 
 theorem sameCard : Fintype.card (U k) = Fintype.card (T k) := by
   sorry
@@ -187,6 +177,7 @@ theorem sameCard : Fintype.card (U k) = Fintype.card (T k) := by
 /- 2. -/
 
 /-- The function underlying the second involution. -/
+@[nolint defsWithUnderscore]
 def secondInvo_fun := fun ((x,y,z) : ℤ × ℤ × ℤ) ↦ (x - y + z, y, 2 * y - z)
 
 /-- The second involution that we study is an involution on the set U. -/
@@ -205,11 +196,16 @@ def secondInvo : Function.End (U k) := fun ⟨⟨⟨x, y, z⟩, hS⟩, h⟩ =>
 /-- `secondInvo k` is indeed an involution. -/
 theorem secondInvo_sq : secondInvo k ^ 2 = 1 := by
   change secondInvo k ∘ secondInvo k = id
-  funext ⟨⟨x, y, z⟩, h⟩
-  rw [comp_apply]
-  simp only [secondInvo, secondInvo_fun, sub_sub_cancel, id_eq, Subtype.mk.injEq, Prod.mk.injEq,
-    and_true]
-  ring_nf
+  funext ⟨⟨⟨x, y, z⟩, hS⟩, h⟩
+  rw [show (secondInvo k ∘ secondInvo k) ⟨⟨(x, y, z), hS⟩, h⟩ =
+      secondInvo k (secondInvo k ⟨⟨(x, y, z), hS⟩, h⟩) from rfl]
+  apply Subtype.ext
+  apply Subtype.ext
+  dsimp [secondInvo, secondInvo_fun]
+  ext
+  · ring
+  · rfl
+  · ring
 
 variable [hk : Fact (4 * k + 1).Prime]
 theorem k_pos : 0 < k := by
@@ -241,48 +237,37 @@ theorem eq_of_mem_fixedPoints : fixedPoints (secondInvo k) = singletonFixedPoint
 
 /-- `secondInvo k` has exactly one fixed point. -/
 theorem card_fixedPoints_eq_one : Fintype.card (fixedPoints (secondInvo k)) = 1 := by
-  simp only [eq_of_mem_fixedPoints, singletonFixedPoint]
-  rfl
+  have : fixedPoints (secondInvo k) = (singletonFixedPoint k : Set (U k)) := eq_of_mem_fixedPoints k
+  rw [this]
+  simp [singletonFixedPoint]
 
 theorem card_T_odd : Odd <| Fintype.card <| T k := by
   sorry
 
 /- 3. -/
 /-- The third, trivial, involution `(x, y, z) ↦ (y, x, z)`. -/
-def trivialInvo : Function.End (T k) := fun ⟨⟨⟨x, y, z⟩, ⟨h, hx, hy⟩⟩, hz⟩ => ⟨⟨⟨y, x, z⟩, by
-  exact ⟨by rw [← h,Int.mul_assoc, Int.mul_comm y x, Int.mul_assoc], hy, hx⟩⟩, hz⟩
+def trivialInvo : Function.End (T k) := fun ⟨⟨⟨x, y, z⟩, hS⟩, hz⟩ => ⟨⟨⟨y, x, z⟩, by
+  obtain ⟨h, hx, hy⟩ := hS
+  exact ⟨by rw [← h, Int.mul_assoc, Int.mul_comm y x, Int.mul_assoc], hy, hx⟩⟩, hz⟩
 
 omit hk in
 theorem trivialInvo_apply (x y z : ℤ) (hS : ⟨x, y, z⟩ ∈ S k) (hT : ⟨⟨x, y, z⟩ , hS⟩ ∈ T k)
   (hS' : ⟨y, x, z⟩ ∈ S k) (hT' : ⟨⟨y, x, z⟩ , hS'⟩ ∈ T k) :
-  trivialInvo k ⟨⟨⟨x, y, z⟩, hS⟩, hT⟩ = ⟨⟨⟨y,x,z⟩, hS'⟩, hT'⟩ := by
-    simp [trivialInvo]
-    aesop
+  trivialInvo k ⟨⟨⟨x, y, z⟩, hS⟩, hT⟩ = ⟨⟨⟨y,x,z⟩, hS'⟩, hT'⟩ := rfl
 
 omit hk in
 /-- If `trivialInvo k` has a fixed point, a representation of `4 * k + 1` as a sum of two squares
 can be extracted from it. -/
 theorem sq_add_sq_of_nonempty_fixedPoints (hn : (fixedPoints (trivialInvo k)).Nonempty) :
     ∃ a b : ℤ, a ^ 2 + b ^ 2 = 4 * k + 1 := by
-  simp only [sq]
   obtain ⟨⟨⟨⟨x, y, z⟩, hS⟩, hT⟩, hf⟩ := hn
-  have hf := mem_fixedPoints_iff.mp hf
-  simp only [ Subtype.mk.injEq, Prod.mk.injEq, true_and] at hf
-  have : (trivialInvo k ⟨⟨(x, y, z), hS⟩, hT⟩).1.1 = (⟨⟨(x, y, z), hS⟩, hT⟩ : T k).1.1 := by
+  have hf' : (trivialInvo k ⟨⟨⟨x, y, z⟩, hS⟩, hT⟩).1.1.1 = (⟨⟨⟨x, y, z⟩, hS⟩, hT⟩ : T k).1.1.1 := by
     rw [hf]
-  simp at this
-  rw [trivialInvo_apply] at this
-  · simp at this
-    use (2 * y), z
-    rw [show 2 * y * (2 * y) = 4 * y * y by linarith, ← hS.1]
-    congr
-    · exact this.1
-    · ring
-  --TODO: avoid repeating from the definition of trivialInvo here!
-  · exact ⟨by rw [← hS.1,Int.mul_assoc, Int.mul_comm y x, Int.mul_assoc], hS.2.2, hS.2.1⟩
-  · exact hT
-
-
+  have h_eq : y = x := hf'
+  use 2 * y, z
+  have hS1 := hS.1
+  subst h_eq
+  linear_combination hS1
 
 theorem trivialInvo_fixedPoints : (fixedPoints (trivialInvo k)).Nonempty := by sorry
 
@@ -290,12 +275,17 @@ end Involutions
 
 theorem theorem₂ {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
-  rw [← div_add_mod p 4, hp] at h ⊢
-  let k := p / 4
-  have ⟨a, b, h⟩ := sq_add_sq_of_nonempty_fixedPoints k <| trivialInvo_fixedPoints k
+  have hk : Fact (4 * (p / 4) + 1).Prime := ⟨by
+    have : 4 * (p / 4) + 1 = p := by omega
+    rw [this]
+    exact h.out⟩
+  have ⟨a, b, h_sq⟩ := sq_add_sq_of_nonempty_fixedPoints (p / 4) (trivialInvo_fixedPoints (p / 4))
   refine ⟨a.natAbs, b.natAbs, ?_⟩
+  have hp_eq : p = 4 * (p / 4) + 1 := by omega
+  rw [hp_eq]
   zify
-  simpa only [sq_abs] using h
+  simp only [sq_abs]
+  exact h_sq
 
 
 -- The windged square of area 4xy + z^2 = 73 that corresponds to (x,y,z) = (3,4,5)

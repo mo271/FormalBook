@@ -37,6 +37,7 @@ variable {α : Type _} [DecidableEq α] {X : Finset α}
 variable {d : ℕ} {h_d : d ≥ 2}
 
 /-- `𝓕` is a collection of `d`-sets of `X`-/
+@[nolint defsWithUnderscore]
 def two_colorable (𝓕 : Finset (Finset X)) :=
   ∃ c : X → Fin 2, ∀ A : Finset X,
   A ∈ 𝓕 → ∃ x y : A, (c (x : X) = (0 : Fin 2)) ∧ (c y = (1 : Fin 2))
@@ -109,7 +110,8 @@ theorem MeasureTheory.measure_biUnion_lt_sum_of_inter {β : Type _}
       grind only [= Set.subset_def, = mem_erase, cases eager Subtype]
     · dsimp [t']
       simp only [↓reduceIte, coe_sdiff]
-      rw [← @MeasureTheory.measure_diff_add_inter _ _ P (t j) (t i) (Set.Finite.measurableSet <| finite_toSet (t j))]
+      rw [← @MeasureTheory.measure_diff_add_inter _ _ P (t j) (t i)
+        (Set.Finite.measurableSet <| finite_toSet (t j))]
       apply ENNReal.lt_add_right (by apply measure_ne_top) h
 
 
@@ -121,7 +123,8 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
   by_cases base :  2 ≤ 𝓕.card
   · have I : Fintype ({ x // x ∈ X } → Fin 2) := (by apply Fintype.ofFinite)
     set P : Measure (X → Fin 2) := (PMF.uniformOfFintype (X → Fin 2)).toMeasure with Pdef
-    set E : (Finset X) → Finset (X → Fin 2) := (fun A => {c | ∀ x ∈ A, ∀ y ∈ A, c x = c y}) with Edef
+    set E : (Finset X) → Finset (X → Fin 2) :=
+      (fun A => {c | ∀ x ∈ A, ∀ y ∈ A, c x = c y}) with Edef
     have probaEA (A : Finset X) (hA : A ∈ 𝓕) : P (E A) = (1 / 2)^(@Nat.cast ℤ _ (d-1)) := by
       have forComp : d ≤ #X := by
         rw [← H_𝓕 A hA] ; convert (card_le_univ A) ; simp only [Fintype.card_coe]
@@ -132,15 +135,39 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
         have sizeEA : #(E A) = 2 ^ (#X - #A + 1) := by
           have : A.Nonempty := by
             rw [← card_pos, (H_𝓕 A hA)] ; omega
-          have charaEA : E A = disjUnion {c | ∀ x ∈ A, c x = 0} {c | ∀ x ∈ A, c x = 1}
-            (fun C c₀ c₁ c ohno => by
-                obtain ⟨a,ah⟩ := this
-                replace c₀ := ((Finset.mem_filter_univ c).mp (c₀ ohno)) a ah
-                replace c₁ := ((Finset.mem_filter_univ c).mp (c₁ ohno)) a ah
-                rw [c₀] at c₁
-                contradiction
-                )
-            := by grind only [= mem_filter, = mem_disjUnion, mem_univ, cases eager Subtype, cases Or]
+          let S0 : Finset (↥X → Fin 2) := {c ∈ Finset.univ | ∀ x ∈ A, c x = 0}
+          let S1 : Finset (↥X → Fin 2) := {c ∈ Finset.univ | ∀ x ∈ A, c x = 1}
+          have hdisj : Disjoint S0 S1 := by
+            refine Finset.disjoint_left.mpr ?_
+            intro c hc₀ hc₁
+            obtain ⟨a, ah⟩ := this
+            have h0 := (Finset.mem_filter.mp hc₀).2 a ah
+            have h1 := (Finset.mem_filter.mp hc₁).2 a ah
+            rw [h0] at h1
+            revert h1; decide
+          have charaEA : E A = S0.disjUnion S1 hdisj := by
+            ext c
+            simp only [E, S0, S1, mem_filter, mem_univ, true_and, mem_disjUnion]
+            constructor
+            · intro h
+              obtain ⟨a, ha⟩ := this
+              by_cases hc0 : c a = 0
+              · left; intro x hx
+                have := h x hx a ha
+                rw [this, hc0]
+              · right; intro x hx
+                have hca1 : c a = 1 := by
+                  have : c a = 0 ∨ c a = 1 := by
+                    generalize hc : c a = val
+                    fin_cases val <;> simp
+                  rcases this with h0 | h1
+                  · contradiction
+                  · exact h1
+                have := h x hx a ha
+                rw [this, hca1]
+            · rintro (h | h) x hx y hy
+              · rw [h x hx, h y hy]
+              · rw [h x hx, h y hy]
           have cardComp {i} : #{c : { x // x ∈ X } → Fin 2 | ∀ x ∈ A, c x = i} = 2 ^ (#X - #A) := by
             rw [show #X = Fintype.card X from by simp only [Fintype.card_coe]]
             rw [← card_compl]
@@ -166,15 +193,20 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
                   funext x
                   grind only [= mem_filter, mem_univ, cases eager Subtype, cases Or]
             rwa [Nat.card_fun, Nat.card_fin, Nat.card_eq_fintype_card, Fintype.card_coe] at main
-          rw [pow_add,pow_one,mul_two,charaEA,card_disjUnion, cardComp, cardComp]
+          have hcardS0 : #S0 = #{c : { x // x ∈ X } → Fin 2 | ∀ x ∈ A, c x = 0} := rfl
+          have hcardS1 : #S1 = #{c : { x // x ∈ X } → Fin 2 | ∀ x ∈ A, c x = 1} := rfl
+          rw [pow_add, pow_one, mul_two, charaEA, card_disjUnion, hcardS0, hcardS1,
+            cardComp, cardComp]
         simp only [Nat.cast_pow, Nat.cast_ofNat, one_div]
         rw [sizeEA]
         simp only [Nat.cast_pow, Nat.cast_ofNat]
         rw [div_eq_mul_inv, ENNReal.mul_inv_eq_iff_eq_mul (by simp) (by simp) (by simp)
-              (by rw [← show (2 : ENNReal)⁻¹ ^ (d-1) = 2⁻¹ ^ (@Nat.cast ℤ _ (d-1)) from by simp] ; simp)]
+              (by rw [← show (2 : ENNReal)⁻¹ ^ (d-1) =
+                2⁻¹ ^ (@Nat.cast ℤ _ (d-1)) from by simp] ; simp)]
         rw [@Nat.cast_sub _ _ 1 d (by omega), Nat.cast_one, ENNReal.inv_zpow' 2 (d-1)]
         rw [show (2 : ENNReal) ^ #X = 2 ^ (#X : ℤ) from by rw [zpow_natCast]]
-        rw [show (2 : ENNReal) ^ (#X - #A + 1) = 2 ^ (@Nat.cast ℤ _ (#X - #A + 1)) from by rw [zpow_natCast]]
+        rw [show (2 : ENNReal) ^ (#X - #A + 1) =
+            2 ^ (@Nat.cast ℤ _ (#X - #A + 1)) from by rw [zpow_natCast]]
         rw [← ENNReal.zpow_add (by simp) (by simp)]
         rw [neg_sub, H_𝓕 A hA]
         congr 1
@@ -254,6 +286,7 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
 A complete graph `G` on `N` vertices has the Ramsey property `R(m, n)`, if for each two-coloring of
 the edges of `G`, either there is a complete subgraph on `m` vertices  of the first color, or there
 is a complete subgraph on `n` vertices in the second color. -/
+@[nolint defsWithUnderscore]
 def ramsey_property (m n : ℕ) (N : ℕ) :=
   ∀ c : (completeGraph (Fin N)).edgeSet → Fin 2,
   ( ∃ g : completeGraph (Fin m) →g completeGraph (Fin N), ∀ e : (completeGraph (Fin m)).edgeSet,
@@ -313,7 +346,8 @@ noncomputable def crossing_number {V : Type _} (G: SimpleGraph V) :=
   Inf {N : ℕ | ∃ (c : V → ℝ × ℝ) (f : G.edgeSet → (Set.Icc (0:ℝ) 1) → ℝ × ℝ),
                   Function.Injective c ∧
                   ∀ (e : G.edgeSet) (v : V) (h : v ∈ (e : Sym2 V)),
-                    ({v, Sym2.Mem.other h} :Set V).image c = (Coe.coe ⁻¹' ({0,1} : set ℝ)).image (f e) ∧
+                    ({v, Sym2.Mem.other h} :Set V).image c =
+                      (Coe.coe ⁻¹' ({0,1} : set ℝ)).image (f e) ∧
                     true }
         -- We'd like that at every point in ℝ× ℝ, at most two paths intersect transversally
 

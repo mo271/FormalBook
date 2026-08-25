@@ -27,7 +27,7 @@ private def acCov : IsCoveringMap (QuotientAddGroup.mk : ℝ → AddCircle (1 : 
 private theorem acLoop_lift_eq :
     (⟨fun t => (t : ℝ), continuous_subtype_val⟩ : C(I, ℝ)) =
     acCov.liftPath acLoop.toContinuousMap 0 rfl := by
-  rw [IsCoveringMap.eq_liftPath_iff']
+  rw [acCov.eq_liftPath_iff' rfl]
   exact ⟨by ext; simp [acLoop], by simp⟩
 
 private theorem not_sc_addCircle : ¬ SimplyConnectedSpace (AddCircle (1 : ℝ)) := by
@@ -39,7 +39,7 @@ private theorem not_sc_addCircle : ¬ SimplyConnectedSpace (AddCircle (1 : ℝ))
   have h2 : (acCov.liftPath (Path.refl acBase).toContinuousMap 0 rfl) 1 = (0 : ℝ) := by
     have : (ContinuousMap.const I (0 : ℝ)) =
         acCov.liftPath (Path.refl acBase).toContinuousMap 0 rfl := by
-      rw [IsCoveringMap.eq_liftPath_iff']
+      rw [acCov.eq_liftPath_iff' rfl]
       exact ⟨by ext; simp only [ContinuousMap.const_zero, ContinuousMap.coe_zero,
         Function.comp_apply, Pi.zero_apply, QuotientAddGroup.mk_zero, Path.coe_toContinuousMap,
         Path.refl_apply], by simp only [ContinuousMap.const_zero, ContinuousMap.zero_apply]⟩

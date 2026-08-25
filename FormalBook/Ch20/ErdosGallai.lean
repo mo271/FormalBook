@@ -26,9 +26,11 @@ theorem hm_le_gm (a b : ℝ) (ha : 0 < a) (hb : 0 < b) :
   rw [div_le_iff₀ hab]
   have hsqa := Real.mul_self_sqrt ha.le
   have hsqb := Real.mul_self_sqrt hb.le
-  have hsqab : Real.sqrt (a * b) * Real.sqrt (a * b) = a * b := Real.mul_self_sqrt (mul_nonneg ha.le hb.le)
+  have hsqab : Real.sqrt (a * b) * Real.sqrt (a * b) = a * b :=
+    Real.mul_self_sqrt (mul_nonneg ha.le hb.le)
   have hsqab' : Real.sqrt a * Real.sqrt b = Real.sqrt (a * b) := (Real.sqrt_mul ha.le b).symm
-  nlinarith [sq_nonneg (Real.sqrt a - Real.sqrt b), Real.sqrt_nonneg a, Real.sqrt_nonneg b, Real.sqrt_nonneg (a * b)]
+  nlinarith [sq_nonneg (Real.sqrt a - Real.sqrt b), Real.sqrt_nonneg a, Real.sqrt_nonneg b,
+    Real.sqrt_nonneg (a * b)]
 
 /-- Product identity:
     ∏ᵢ (αᵢ - 1) · ∏ᵢ (αᵢ + 1) = ∏ᵢ (αᵢ² - 1). -/
@@ -43,15 +45,18 @@ theorem prod_sub_one_mul_prod_add_one {n : ℕ} (α : Fin n → ℝ) :
 
 /-- f'(1) for our polynomial, up to sign:
     f'(1) = -2 · ∏ᵢ(αᵢ - 1) · ∏ⱼ(βⱼ + 1). -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_deriv_at_one {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   -2 * (∏ i, (α i - 1)) * (∏ j, (β j + 1))
 
 /-- f'(-1) for our polynomial:
     f'(-1) = 2 · ∏ᵢ(αᵢ + 1) · ∏ⱼ(βⱼ - 1). -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_deriv_at_neg_one {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   2 * (∏ i, (α i + 1)) * (∏ j, (β j - 1))
 
 /-- C² = ∏ᵢ(αᵢ² - 1) · ∏ⱼ(βⱼ² - 1). -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_C_sq {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   (∏ i, (α i ^ 2 - 1)) * (∏ j, (β j ^ 2 - 1))
 
@@ -69,6 +74,7 @@ theorem erdos_gallai_deriv_product {m n : ℕ} (α : Fin m → ℝ) (β : Fin n 
 
     When f'(1) < 0 and f'(-1) > 0 (normal case), this equals
     2·|f'(1)|·|f'(-1)| / (|f'(1)| + |f'(-1)|), the harmonic mean. -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_T {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   -2 * (erdos_gallai_deriv_at_one α β) * (erdos_gallai_deriv_at_neg_one α β) /
     (erdos_gallai_deriv_at_one α β - erdos_gallai_deriv_at_neg_one α β)
@@ -78,10 +84,12 @@ noncomputable def erdos_gallai_T {m n : ℕ} (α : Fin m → ℝ) (β : Fin n �
 open MeasureTheory intervalIntegral
 
 /-- f(x) = (1 - x²) · ∏ᵢ (αᵢ - x) · ∏ⱼ (βⱼ + x). -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_f {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) (x : ℝ) : ℝ :=
   (1 - x ^ 2) * (∏ i, (α i - x)) * (∏ j, (β j + x))
 
 /-- The area A = ∫₋₁¹ f(x) dx. -/
+@[nolint defsWithUnderscore]
 noncomputable def erdos_gallai_area {m n : ℕ} (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   ∫ x in (-1 : ℝ)..1, erdos_gallai_f α β x
 
@@ -92,9 +100,9 @@ theorem erdos_gallai_f_continuous {m n : ℕ} (α : Fin m → ℝ) (β : Fin n �
   apply Continuous.mul
   · apply Continuous.mul
     · exact continuous_const.sub (continuous_pow 2)
-    · exact continuous_finset_prod _ fun i _ =>
+    · exact continuous_finsetProd _ fun i _ =>
         continuous_const.sub continuous_id
-  · exact continuous_finset_prod _ fun j _ =>
+  · exact continuous_finsetProd _ fun j _ =>
       continuous_const.add continuous_id
 
 /-- f is interval-integrable on [-1, 1]. -/
@@ -199,10 +207,10 @@ theorem integral_one_sub_sq : ∫ x in (-1:ℝ)..1, (1 - x ^ 2) = 4 / 3 := by
     intro x _
     have h1 := hasDerivAt_id (𝕜 := ℝ) x
     have h3 : HasDerivAt (fun x => x ^ 3 / 3) (x ^ 2) x := by
-      have := (hasDerivAt_pow 3 x).div_const (3 : ℝ)
-      convert this using 1
-      push_cast; ring
-    convert h1.sub h3 using 1
+      have h := (hasDerivAt_pow 3 x).div_const (3 : ℝ)
+      have h_eq : ((3 : ℕ) : ℝ) * x ^ (3 - 1) / 3 = x ^ 2 := by ring
+      rwa [h_eq] at h
+    convert h1.sub h3 using 1 <;> rfl
   have hint : IntervalIntegrable (fun x => (1:ℝ) - x ^ 2) volume (-1) 1 :=
     (continuous_const.sub (continuous_pow 2)).intervalIntegrable _ _
   rw [integral_eq_sub_of_hasDerivAt hderiv hint]

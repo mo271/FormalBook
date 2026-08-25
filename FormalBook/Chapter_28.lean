@@ -643,10 +643,16 @@ abbrev PG2 := ℙ (ZMod p) (Fin 3 → ZMod p)
 /-- The Reiman graph Gp: vertices are points of PG(2,p), adjacency is orthogonality. -/
 noncomputable def reimanGraph : SimpleGraph (PG2 p) where
   Adj v w := v ≠ w ∧ Projectivization.orthogonal v w
-  symm := by
-    intro v w ⟨hne, horth⟩
-    exact ⟨hne.symm, Projectivization.orthogonal_comm.mp horth⟩
-  loopless := by intro v ⟨h, _⟩; exact h rfl
+  symm := {
+    symm := by
+      intro v w ⟨hne, horth⟩
+      exact ⟨hne.symm, Projectivization.orthogonal_comm.mp horth⟩
+  }
+  loopless := {
+    irrefl := by
+      intro v ⟨h, _⟩
+      exact h rfl
+  }
 
 /-- The number of vertices of Gp is p² + p + 1.
     Note: The tex assumes p is an odd prime, but oddness is not needed for the cardinality
@@ -757,7 +763,7 @@ lemma reimanGraph_degree_eq [Fintype (PG2 p)] [DecidableEq (PG2 p)]
   rw [SimpleGraph.degree]
   have hN : (reimanGraph p).neighborFinset v =
       Finset.univ.filter (fun w => v ≠ w ∧ Projectivization.orthogonal v w) := by
-    ext w; simp [reimanGraph, SimpleGraph.neighborFinset, SimpleGraph.neighborSet]
+    ext w; rw [Finset.mem_filter, SimpleGraph.mem_neighborFinset]; simp [reimanGraph]
   rw [hN]
   set S := Finset.univ.filter (fun w : PG2 p => Projectivization.orthogonal v w)
   have hS_card := orthogonal_set_card p v

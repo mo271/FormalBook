@@ -39,6 +39,7 @@ namespace quadratic_reciprocity
 variable (p : ℕ) (h_p : p ≠ 2) [Fact (Nat.Prime p)]
 
 /-- The Legendre symbol `(a / p)`, where `p` is an odd prime. -/
+@[nolint defsWithUnderscore]
 def legendre_sym (a : ℤ) : ℤ :=
   ite ( (a : ZMod p) = 0) 0 $
     ite (∃ b : ZMod p, a = (b ^ (2 : ℤ) : ZMod p)) 1 (-1)
