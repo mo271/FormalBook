@@ -6,6 +6,7 @@ lintDriver = "batteries/runLinter"
 pp.unicode.fun = true
 autoImplicit = false
 relaxedAutoImplicit = false
+warn.sorry = false
 
 [[require]]
 name = "mathlib"
