@@ -108,12 +108,12 @@ theorem false_of_three_le_degree_real (hG : Friendship G) (hd : G.IsRegularOfDeg
     ext i j
     have : ((G.adjMatrix ℝ) ^ 2) i j = if i = j then (d : ℝ) else 1 := by
       rw [h]; simp [of_apply]
-    simp only [this, smul_apply, smul_eq_mul, add_apply, one_apply, of_apply, J]
+    simp only [this, Matrix.smul_apply, smul_eq_mul, Matrix.add_apply, Matrix.one_apply, of_apply, J]
     split_ifs <;> ring
   -- ── Step 2: J² = n·J (J has eigenvalue n on 𝟏, eigenvalue 0 on 𝟏⊥) ──
   have hJsq : J * J = (n : ℝ) • J := by
     show J * J = (Fintype.card V : ℝ) • J
-    ext i j; simp [J, mul_apply, of_apply, sum_const, Finset.card_univ, nsmul_eq_mul, smul_apply,
+    ext i j; simp [J, mul_apply, of_apply, sum_const, Finset.card_univ, nsmul_eq_mul, Matrix.smul_apply,
       smul_eq_mul]
   -- ── Step 4 (trace): ∑ eigenvalues = tr(A) = 0 ──
   have hsum0 : ∑ i : V, ev i = 0 := by
@@ -126,7 +126,8 @@ theorem false_of_three_le_degree_real (hG : Friendship G) (hd : G.IsRegularOfDeg
     have hJ : (G.adjMatrix ℝ) ^ 2 - ((d : ℝ) - 1) • 1 = J := by rw [hAsq]; abel
     have hJn : (G.adjMatrix ℝ) ^ 2 - (d : ℝ) ^ 2 • 1 = J - (n : ℝ) • 1 := by
       rw [hAsq, hn_eq]; ext i j
-      simp only [sub_apply, smul_apply, smul_eq_mul, one_apply, add_apply, of_apply, J]; ring
+      simp only [Matrix.sub_apply, Matrix.smul_apply, smul_eq_mul, Matrix.one_apply, Matrix.add_apply, of_apply, J]
+      split_ifs <;> ring
     rw [hJ, hJn, mul_sub, mul_smul_comm, hJsq, mul_one, sub_self]
   -- ── Step 3: each eigenvalue λ satisfies λ² ∈ {k-1, k²} ──
   have hev_sq : ∀ j : V, ev j ^ 2 = (d : ℝ) - 1 ∨ ev j ^ 2 = (d : ℝ) ^ 2 := by
@@ -169,7 +170,7 @@ theorem false_of_three_le_degree_real (hG : Friendship G) (hd : G.IsRegularOfDeg
       simp [trace_diagonal, sq, diagonal_mul_diagonal]
     have htrval : ((G.adjMatrix ℝ) ^ 2).trace = (n : ℝ) * d := by
       rw [hAsq]
-      simp only [Matrix.trace, Matrix.diag, smul_apply, smul_eq_mul, add_apply, one_apply,
+      simp only [Matrix.trace, Matrix.diag, Matrix.smul_apply, smul_eq_mul, Matrix.add_apply, Matrix.one_apply,
         of_apply, J]
       simp only [Finset.sum_add_distrib, Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
       push_cast; ring

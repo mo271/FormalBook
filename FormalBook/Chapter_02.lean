@@ -7,7 +7,8 @@ import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Data.Real.StarOrdered
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Tactic.NormNum.Prime
@@ -53,18 +54,17 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     mul_one_div, ← log_nonpos_iff (hf' x h5).le, ← hf x h5]
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
-    apply ConcaveOn.add
-    exact strictConcaveOn_log_Ioi.concaveOn.subset
-      (Set.Ioi_subset_Ioi (by norm_num)) (convex_Ioi 0.5)
-    convert ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
-      ((2 : ℝ) • LinearMap.id))) using 1
-    · ext x
-      norm_num1
-      simp
-      field_simp
-    apply ConvexOn.smul
-    refine div_nonneg (log_nonneg (by norm_num1)) (by norm_num1)
-    exact convexOn_id (convex_Ioi (0.5 : ℝ))
+    · apply ConcaveOn.add
+      · exact strictConcaveOn_log_Ioi.concaveOn.subset
+          (Set.Ioi_subset_Ioi (by norm_num)) (convex_Ioi 0.5)
+      · have h1 := (strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap ((2 : ℝ) • (LinearMap.id : ℝ →ₗ[ℝ] ℝ)))
+        have hsub : Set.Ioi (0.5 : ℝ) ⊆ ((2 : ℝ) • (LinearMap.id : ℝ →ₗ[ℝ] ℝ)) ⁻¹' Set.Ioi 1 := by
+          intro x hx
+          simp only [Set.mem_preimage, Set.mem_Ioi, LinearMap.smul_apply, LinearMap.id_apply, smul_eq_mul]
+          linarith [Set.mem_Ioi.mp hx]
+        exact h1.subset hsub (convex_Ioi 0.5)
+    · have hpos : 0 ≤ log 4 / 3 := div_nonneg (log_nonneg (by norm_num1)) (by norm_num1)
+      exact (convexOn_id (convex_Ioi (0.5 : ℝ))).smul hpos
   suffices ∃ x1 x2, 0.5 < x1 ∧ x1 < x2 ∧ x2 ≤ x ∧ 0 ≤ f x1 ∧ f x2 ≤ 0 by
     obtain ⟨x1, x2, h1, h2, h0, h3, h4⟩ := this
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
@@ -150,7 +150,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
     refine' pow_le_pow_right₀ n2_pos ((Finset.card_le_card fun x hx ↦ _).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
-  · refine' le_trans _ (primorial_le_4_pow (2 * n / 3))
+  · refine' le_trans _ (primorial_le_four_pow (2 * n / 3))
     refine' (Finset.prod_le_prod' fun p hp ↦ (_ : f p ≤ p)).trans _
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
       refine' (pow_le_pow_right₀ (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
@@ -214,8 +214,7 @@ theorem harmonic_number_bounds {n : ℕ} (hn : 1 < n) :
     Real.log n + 1 / n < harmonic n ∧ harmonic n <  Real.log n + 1 := by
   constructor
   · induction hn <;> norm_num [harmonic] at *
-    · norm_num [Finset.sum_range_succ]
-      linarith [@Real.log_lt_sub_one_of_pos 2 zero_lt_two (OfNat.one_ne_ofNat 2).symm]
+    · linarith [@Real.log_lt_sub_one_of_pos 2 zero_lt_two (OfNat.one_ne_ofNat 2).symm]
     · rw [Finset.sum_range_succ]
       rename_i k hk ih
       rw [show (k : ℝ) + 1 = k * (1 + (k : ℝ) ⁻¹) by

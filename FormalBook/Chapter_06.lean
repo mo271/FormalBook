@@ -6,7 +6,8 @@ Authors: Moritz Firsching, Nick Kuhn
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Data.Int.Star
-import Mathlib.Data.Real.StarOrdered
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.SimpleRing.Principal
 
@@ -151,22 +152,23 @@ def ConjAct_stabilizer_centralizer_eq :
     left_inv := congrFun rfl
     right_inv := congrFun rfl}
 
--- Orbit stabilizer theorem, specialized to conjugacy classes
 lemma orbit_stabilizer [Fintype R] (A: ConjClasses Rˣ) [Fintype A.carrier] :
   Fintype.card Rˣ = (Fintype.card A.carrier) *
-    (@Fintype.card  (Set.centralizer {ConjClasses.exists_rep A|>.choose}) (
-      Fintype.ofFinite (Set.centralizer {ConjClasses.exists_rep A|>.choose}))) := by
-  letI := Fintype.ofFinite (Set.centralizer {ConjClasses.exists_rep A|>.choose})
-  letI : Fintype ↑(MulAction.orbit (ConjAct Rˣ) (ConjClasses.exists_rep A|>.choose))
-      := by refine Set.fintypeRange fun m => m • Exists.choose ?_
-  letI : Fintype { x // x ∈ MulAction.stabilizer (ConjAct Rˣ)
-        (ConjClasses.exists_rep A|>.choose) } := Fintype.ofFinite _
-  have := MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct Rˣ)
-      (ConjClasses.exists_rep A|>.choose)
-  replace this := this.symm
-  rw [Fintype.card_congr <| ConjAct_stabilizer_centralizer_eq (ConjClasses.exists_rep A|>.choose)]
-  convert this
-  rw [ConjAct.orbit_eq_carrier_conjClasses, (ConjClasses.exists_rep A|>.choose_spec)]
+    (Fintype.card (Set.centralizer {ConjClasses.exists_rep A|>.choose})) := by
+  classical
+  let a := ConjClasses.exists_rep A|>.choose
+  have ha : ConjClasses.mk a = A := ConjClasses.exists_rep A|>.choose_spec
+  have horbit : MulAction.orbit (ConjAct Rˣ) a = A.carrier := by
+    rw [ConjAct.orbit_eq_carrier_conjClasses, ha]
+  have e_orbit : (MulAction.orbit (ConjAct Rˣ) a : Set Rˣ) ≃ (A.carrier : Set Rˣ) := Equiv.setCongr horbit
+  have e_stab : (MulAction.stabilizer (ConjAct Rˣ) a : Set (ConjAct Rˣ)) ≃ (Set.centralizer {a} : Set Rˣ) :=
+    (ConjAct_stabilizer_centralizer_eq a).symm
+  have h1 := MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct Rˣ) a
+  have h2 : Fintype.card Rˣ = Fintype.card (ConjAct Rˣ) :=
+    (Fintype.card_congr ConjAct.toConjAct.toEquiv).symm
+  rw [h2, ← h1, Fintype.card_congr e_orbit]
+  congr 1
+  exact Fintype.card_congr e_stab
 
 section wedderburn
 
@@ -263,9 +265,12 @@ theorem wedderburn (h: Fintype R): IsField R := by
       have := @eval_dvd ℤ _ _ _ q h_noneval
       simp only [eval_mul, eval_sub, eval_pow, eval_X, eval_one, IsUnit.mul_iff] at this
       rw [← hq] at *
-      convert this
-      · simp [hq_pow_pos <| n_k A]
-      · simp [hq_pow_pos n]
+      have h_cast_nk : (((q ^ (n_k A) - 1 : ℕ) : ℤ)) = (q : ℤ) ^ (n_k A) - 1 :=
+        Nat.cast_sub (hq_pow_pos (n_k A))
+      have h_cast_n : (((q ^ n - 1 : ℕ) : ℤ)) = (q : ℤ) ^ n - 1 :=
+        Nat.cast_sub (hq_pow_pos n)
+      rw [h_cast_nk, h_cast_n]
+      exact this
     simp only [eval_sub, eval_pow, eval_X, eval_one] at h₁_dvd
     have h1' :  (((q:ℤ) ^ n - (1 : ℕ)) : ℤ) =
         ((q - (1 :ℕ) : ℕ):ℤ) + ∑ A : S', (q ^ n - 1) / (q ^ (n_k A) - 1) := by

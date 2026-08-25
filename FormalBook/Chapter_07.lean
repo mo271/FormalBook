@@ -6,6 +6,7 @@ Authors: Moritz Firsching
 import Mathlib.Tactic
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.LinearAlgebra.UnitaryGroup
 /-!
 # The spectral theorem and Hadamard's determinant problem
 

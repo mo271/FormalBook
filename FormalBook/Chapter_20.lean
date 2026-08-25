@@ -714,8 +714,7 @@ theorem mantel_eq_regular (h : G.CliqueFree 3) (heq : #E * 4 = n ^ 2)
 
   -- Cast everything to ℤ
   have hsumsq_z : (∑ w : α, (d(w) : ℤ) ^ 2) = ↑(#E) * ↑n := by
-    have := hsumsq; simp only [] at this ⊢
-    exact_mod_cast this
+    exact_mod_cast hsumsq
   have hsumdeg_z : (∑ w : α, (d(w) : ℤ)) = 2 * ↑(#E) := by
     have := G.sum_degrees_eq_twice_card_edges
     exact_mod_cast this
@@ -778,7 +777,7 @@ theorem mantel_eq_bipartite (h : G.CliqueFree 3) (heq : #E * 4 = n ^ 2)
     intro ha
     have hadj_iw : G.Adj i w := by rwa [SimpleGraph.mem_neighborFinset] at hw
     by_cases hiw : i = w
-    · exact absurd (hiw ▸ hadj_iw) (G.loopless i)
+    · exact G.irrefl (hiw ▸ hadj_iw)
     · exact absurd hadj_iw (hA_indep hi ha hiw)
   have hNi_eq : G.neighborFinset i = B :=
     Finset.eq_of_subset_of_card_le hNi_sub (by

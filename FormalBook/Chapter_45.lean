@@ -132,15 +132,39 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
         have sizeEA : #(E A) = 2 ^ (#X - #A + 1) := by
           have : A.Nonempty := by
             rw [← card_pos, (H_𝓕 A hA)] ; omega
-          have charaEA : E A = disjUnion {c | ∀ x ∈ A, c x = 0} {c | ∀ x ∈ A, c x = 1}
-            (fun C c₀ c₁ c ohno => by
-                obtain ⟨a,ah⟩ := this
-                replace c₀ := ((Finset.mem_filter_univ c).mp (c₀ ohno)) a ah
-                replace c₁ := ((Finset.mem_filter_univ c).mp (c₁ ohno)) a ah
-                rw [c₀] at c₁
-                contradiction
-                )
-            := by grind only [= mem_filter, = mem_disjUnion, mem_univ, cases eager Subtype, cases Or]
+          let S0 : Finset (↥X → Fin 2) := {c ∈ Finset.univ | ∀ x ∈ A, c x = 0}
+          let S1 : Finset (↥X → Fin 2) := {c ∈ Finset.univ | ∀ x ∈ A, c x = 1}
+          have hdisj : Disjoint S0 S1 := by
+            refine Finset.disjoint_left.mpr ?_
+            intro c hc₀ hc₁
+            obtain ⟨a, ah⟩ := this
+            have h0 := (Finset.mem_filter.mp hc₀).2 a ah
+            have h1 := (Finset.mem_filter.mp hc₁).2 a ah
+            rw [h0] at h1
+            revert h1; decide
+          have charaEA : E A = S0.disjUnion S1 hdisj := by
+            ext c
+            simp only [E, S0, S1, mem_filter, mem_univ, true_and, mem_disjUnion]
+            constructor
+            · intro h
+              obtain ⟨a, ha⟩ := this
+              by_cases hc0 : c a = 0
+              · left; intro x hx
+                have := h x hx a ha
+                rw [this, hc0]
+              · right; intro x hx
+                have hca1 : c a = 1 := by
+                  have : c a = 0 ∨ c a = 1 := by
+                    generalize hc : c a = val
+                    fin_cases val <;> simp
+                  rcases this with h0 | h1
+                  · contradiction
+                  · exact h1
+                have := h x hx a ha
+                rw [this, hca1]
+            · rintro (h | h) x hx y hy
+              · rw [h x hx, h y hy]
+              · rw [h x hx, h y hy]
           have cardComp {i} : #{c : { x // x ∈ X } → Fin 2 | ∀ x ∈ A, c x = i} = 2 ^ (#X - #A) := by
             rw [show #X = Fintype.card X from by simp only [Fintype.card_coe]]
             rw [← card_compl]
@@ -166,7 +190,9 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
                   funext x
                   grind only [= mem_filter, mem_univ, cases eager Subtype, cases Or]
             rwa [Nat.card_fun, Nat.card_fin, Nat.card_eq_fintype_card, Fintype.card_coe] at main
-          rw [pow_add,pow_one,mul_two,charaEA,card_disjUnion, cardComp, cardComp]
+          have hcardS0 : #S0 = #{c : { x // x ∈ X } → Fin 2 | ∀ x ∈ A, c x = 0} := rfl
+          have hcardS1 : #S1 = #{c : { x // x ∈ X } → Fin 2 | ∀ x ∈ A, c x = 1} := rfl
+          rw [pow_add, pow_one, mul_two, charaEA, card_disjUnion, hcardS0, hcardS1, cardComp, cardComp]
         simp only [Nat.cast_pow, Nat.cast_ofNat, one_div]
         rw [sizeEA]
         simp only [Nat.cast_pow, Nat.cast_ofNat]

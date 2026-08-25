@@ -186,7 +186,11 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
       · intro uv huv
         beta_reduce
         congr 1
-        norm_num [f', Matrix.det_fin_two, J]
+        dsimp [f']
+        rw [LinearMap.det_conj (Matrix.toLin' J) (LinearEquiv.finTwoArrow ℝ ℝ)]
+        rw [LinearMap.det_toLin', Matrix.det_fin_two]
+        dsimp [J]
+        norm_num
     · exact measurableSet_S
     · intro uv huv
       refine (hasFDerivWithinAt_of_mem_nhds ?_).mpr ?_
@@ -195,8 +199,26 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
       · rw [hasFDerivAt_iff_isLittleO_nhds_zero]
         suffices ∀ h, f (uv + h) - f uv - (f' uv) h = 0 by simp [this]
         intro h
-        simp [f, f', J, Matrix.mulVec]
-        split_ands <;> ring
+        have h1 : (Matrix.toLin' J ![h.1, h.2]) 0 = h.1 - h.2 := by
+          rw [Matrix.toLin'_apply]
+          simp [J, Matrix.mulVec]
+          ring
+        have h2 : (Matrix.toLin' J ![h.1, h.2]) 1 = h.1 + h.2 := by
+          rw [Matrix.toLin'_apply]
+          simp [J, Matrix.mulVec]
+        apply Prod.ext
+        · simp only [f, f', LinearMap.coe_toContinuousLinearMap', LinearMap.comp_apply,
+            LinearEquiv.coe_coe, LinearEquiv.finTwoArrow_apply,
+            LinearEquiv.finTwoArrow_symm_apply,
+            Prod.fst_sub, Prod.fst_zero, Prod.fst_add, Prod.snd_add]
+          rw [h1]
+          ring
+        · simp only [f, f', LinearMap.coe_toContinuousLinearMap', LinearMap.comp_apply,
+            LinearEquiv.coe_coe, LinearEquiv.finTwoArrow_apply,
+            LinearEquiv.finTwoArrow_symm_apply,
+            Prod.snd_sub, Prod.snd_zero, Prod.snd_add, Prod.fst_add]
+          rw [h2]
+          ring
     · exact bijective_f.injective.injOn
   clear! f finv J f'
   -- Pull the ofReal upwards to prepare going back to regular ℝ valued interval based integrals.
@@ -352,7 +374,7 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
     all_goals
     · refine setLIntegral_congr_fun measurableSet_Ioo fun u hu => ?_
       congr 1
-      rw [integral_inv_sq_add_sq]
+      rw [intervalIntegral.integral_inv_sq_add_sq]
       swap
       · rw [sqrt_ne_zero] <;> nlinarith only [hu.1, hu.2]
       simp_rw [sub_eq_add_neg, ←arctan_neg]
@@ -454,8 +476,8 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
       · exact h3
       · exact h1
     show deriv (fun u => ((arctan ∘ fun u => _ / ((sqrt ∘ fun u => _) u)) ^ 2) u) u = _
-    erw [deriv_fun_pow, deriv_comp, deriv_fun_div, deriv_comp, deriv_fun_sub]
-    erw [deriv_sqrt, deriv_fun_pow]
+    erw [deriv_pow, deriv_comp, deriv_fun_div, deriv_comp, deriv_fun_sub]
+    erw [deriv_sqrt, deriv_pow]
     erw [Real.deriv_arctan, deriv_id'', deriv_const]
     · simp
       field_simp
@@ -516,8 +538,8 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
       · exact h1
     show deriv (fun u => -2 * ((arctan ∘ fun u => _ / ((sqrt ∘ fun u => _) u)) ^ 2) u) u = _
     erw [deriv_const_mul]
-    erw [deriv_fun_pow, deriv_comp, deriv_fun_div, deriv_comp, deriv_fun_sub]
-    erw [deriv_sqrt, deriv_sub, deriv_fun_pow]
+    erw [deriv_pow, deriv_comp, deriv_fun_div, deriv_comp, deriv_fun_sub]
+    erw [deriv_sqrt, deriv_sub, deriv_pow]
     erw [Real.deriv_arctan, deriv_id'', deriv_const]
     · simp
       field_simp
@@ -604,10 +626,9 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
     · exact integrable_deriv_h
   unfold g h
   norm_num
-  cancel_denoms
-  rw [arctan_inv_of_pos (by norm_num), arctan_sqrt_three]
-  field_simp
-  norm_num
+  have : ((1 : ℝ) / 2 / (√3 / 2)) = (√3)⁻¹ := by field_simp
+  rw [this, arctan_inv_sqrt_three]
+  ring
 
 
 theorem euler_series' :

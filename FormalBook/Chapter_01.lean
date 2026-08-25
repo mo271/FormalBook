@@ -12,6 +12,7 @@ import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.PrimesCongruentOne
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 open Finset Nat
 open BigOperators
@@ -195,22 +196,41 @@ noncomputable def invRealHom : ℕ →*₀ ℝ :=
       grind }
 
 lemma S1_eq_smoothNumbers (x : ℝ) : S₁ x = Nat.smoothNumbers (⌊x⌋₊ + 1) := by
-  ext n;
-  constructor <;> intro hn <;> simp_all +decide [ S₁ ];
-  · by_cases hn0 : n = 0 <;> simp_all +decide [ Nat.smoothNumbers ];
-    · exact absurd ( hn ( Nat.find ( Nat.exists_infinite_primes ( ⌊x⌋₊ + 1 ) ) ) ( Nat.find_spec ( Nat.exists_infinite_primes ( ⌊x⌋₊ + 1 ) ) |>.2 ) ) ( by exact not_le_of_gt ( Nat.lt_of_floor_lt ( Nat.find_spec ( Nat.exists_infinite_primes ( ⌊x⌋₊ + 1 ) ) |>.1 ) ) );
-    · exact fun p pp dp => Nat.lt_succ_of_le <| Nat.le_floor <| hn p pp dp;
-  · intro p pp dp;
-    -- Since $p$ is a prime factor of $n$ and $n$ is in the set of smooth numbers up to $\lfloor x \rfloor + 1$, it follows that $p \leq \lfloor x \rfloor$.
-    have hp_le_floor : p ≤ ⌊x⌋₊ := by
-      simp_all +decide [ Nat.smoothNumbers ];
-      linarith [ hn.2 p pp dp hn.1 ];
-    exact le_trans ( Nat.cast_le.mpr hp_le_floor ) ( Nat.floor_le ( show x ≥ 0 from le_of_not_gt fun h => by { rw [ Nat.floor_of_nonpos h.le ] at hp_le_floor; aesop } ) )
+  ext n
+  simp only [S₁, Nat.smoothNumbers, Set.mem_setOf_eq]
+  constructor
+  · intro hn
+    have hn0 : n ≠ 0 := by
+      intro hn0
+      obtain ⟨p, hp_le, hp_prime⟩ := Nat.exists_infinite_primes (⌊x⌋₊ + 1)
+      have hle := hn p hp_prime (hn0 ▸ dvd_zero p)
+      have : (p : ℝ) ≤ x := hle
+      have : p ≤ ⌊x⌋₊ := Nat.le_floor this
+      omega
+    refine ⟨hn0, ?_⟩
+    intro p hp
+    have hp_prime : Nat.Prime p := Nat.prime_of_mem_primeFactorsList hp
+    have hp_dvd : p ∣ n := Nat.dvd_of_mem_primeFactorsList hp
+    have hle : (p : ℝ) ≤ x := hn p hp_prime hp_dvd
+    have : p ≤ ⌊x⌋₊ := Nat.le_floor hle
+    omega
+  · rintro ⟨hn0, hn⟩ p hp_prime hp_dvd
+    have hp_mem : p ∈ n.primeFactorsList :=
+      (Nat.mem_primeFactorsList hn0).2 ⟨hp_prime, hp_dvd⟩
+    have hlt : p < ⌊x⌋₊ + 1 := hn p hp_mem
+    have hp_le : p ≤ ⌊x⌋₊ := by omega
+    have hx0 : 0 ≤ x := by
+      by_contra hneg
+      have : ⌊x⌋₊ = 0 := Nat.floor_of_nonpos (by linarith)
+      have hp_pos := Nat.Prime.pos hp_prime
+      omega
+    exact le_trans (Nat.cast_le.mpr hp_le) (Nat.floor_le hx0)
 
 lemma norm_invRealHom_prime_lt_one (p : ℕ) (hp : Nat.Prime p) : ‖invRealHom p‖ < 1 := by
-  erw [ Real.norm_of_nonneg ];
-  · exact inv_lt_one_of_one_lt₀ <| mod_cast hp.one_lt;
+  erw [Real.norm_of_nonneg]
+  · exact inv_lt_one_of_one_lt₀ <| mod_cast hp.one_lt
   · exact inv_nonneg.2 <| Nat.cast_nonneg _
+
 /-- The inverse function is a monoid homomorphism. -/
 noncomputable def invRealMonoidHom : ℕ →* ℝ :=
   { toFun := fun n => (n : ℝ)⁻¹
@@ -220,50 +240,57 @@ noncomputable def invRealMonoidHom : ℕ →* ℝ :=
       simp [mul_comm] }
 
 lemma summable_invRealHom_smoothNumbers (N : ℕ) : Summable (fun (m : Nat.smoothNumbers N) ↦ ‖invRealHom m‖) := by
-  have := @EulerProduct.summable_and_hasSum_smoothNumbers_prod_primesBelow_geometric;
-  convert this ( show ∀ { p : ℕ }, Nat.Prime p → ‖( invRealMonoidHom : ℕ → ℝ ) p‖ < 1 from ?_ ) N |>.1;
-  intro p hp; erw [ Real.norm_of_nonneg ( inv_nonneg.2 <| Nat.cast_nonneg _ ) ] ; exact inv_lt_one_of_one_lt₀ <| mod_cast hp.one_lt;
+  have h : ∀ {p : ℕ}, Nat.Prime p → ‖invRealMonoidHom p‖ < 1 := by
+    intro p hp
+    have : invRealMonoidHom p = (p : ℝ)⁻¹ := rfl
+    rw [this, Real.norm_of_nonneg (inv_nonneg.2 (Nat.cast_nonneg _))]
+    exact inv_lt_one_of_one_lt₀ (mod_cast hp.one_lt)
+  have := (EulerProduct.summable_and_hasSum_smoothNumbers_prod_primesBelow_geometric (f := invRealMonoidHom) h N).1
+  exact this
 
 theorem f_abs_summable (x : ℝ) (n : ℕ) (hxge : x ≥ ↑n) (hxlt : x < ↑n + 1)
   (f : ArithmeticFunction ℝ) (hf : f.toFun = (S₁ x).indicator fun y ↦ (↑y)⁻¹) :
   Summable fun x ↦ ‖f x‖ := by
-    -- By Lemma `summable_invRealHom_smoothNumbers`, we know that `Summable (fun m : Nat.smoothNumbers (n + 1) ↦ ‖invRealHom m‖)`.
-    have h_summable : Summable (fun m : Nat.smoothNumbers (n + 1) ↦ ‖invRealHom m‖) := by
-      convert summable_invRealHom_smoothNumbers ( n + 1 ) using 1;
-    have h_summable_f : Summable (fun m : ℕ ↦ ‖(f.toFun m)‖) := by
-      have h_eq : ∀ m : ℕ, ‖(f.toFun m)‖ = if m ∈ S₁ x then ‖(invRealHom m)‖ else 0 := by
-        unfold invRealHom; aesop;
-      have h_eq : ∀ m : ℕ, ‖(f.toFun m)‖ = if m ∈ Nat.smoothNumbers (n + 1) then ‖(invRealHom m)‖ else 0 := by
-        convert h_eq using 3;
-        rw [ S1_eq_smoothNumbers ];
-        norm_num [ show ⌊x⌋₊ = n by exact Nat.floor_eq_iff ( by linarith ) |>.2 ⟨ by linarith, by linarith ⟩ ];
-      refine' summable_of_sum_le _ _;
-      exact ∑' m : Nat.smoothNumbers ( n + 1 ), ‖invRealHom m‖;
-      · exact fun _ => norm_nonneg _;
-      · intro u; rw [ Finset.sum_congr rfl fun m hm => h_eq m ] ; simp +decide [ Finset.sum_ite ] ;
-        refine' le_trans _ ( Summable.sum_le_tsum _ _ h_summable );
-        rotate_left;
-        exact Finset.subtype (fun x ↦ x ∈ (n + 1).smoothNumbers) u;
-        · exact fun _ _ => abs_nonneg _;
-        · refine' le_of_eq _;
-          refine' Finset.sum_bij ( fun x hx => ⟨ x, _ ⟩ ) _ _ _ _ <;> aesop;
-    convert h_summable_f using 1
+  have h_floor : ⌊x⌋₊ = n := by
+    have h1 : (n : ℝ) ≤ x := hxge
+    have h2 : x < (n : ℝ) + 1 := hxlt
+    exact Nat.floor_eq_on_Ico n x ⟨h1, h2⟩
+  have hS : S₁ x = Nat.smoothNumbers (n + 1) := by
+    rw [S1_eq_smoothNumbers, h_floor]
+  have h_summable : Summable (fun m : Nat.smoothNumbers (n + 1) ↦ ‖(m : ℝ)⁻¹‖) :=
+    summable_invRealHom_smoothNumbers (n + 1)
+  have h_ind : Summable ((Nat.smoothNumbers (n + 1)).indicator (fun m : ℕ ↦ ‖(m : ℝ)⁻¹‖)) :=
+    summable_subtype_iff_indicator.mp h_summable
+  have h_eq : (fun x ↦ ‖f x‖) = (Nat.smoothNumbers (n + 1)).indicator (fun m : ℕ ↦ ‖(m : ℝ)⁻¹‖) := by
+    rw [← hS]
+    ext m
+    have : f m = f.toFun m := rfl
+    rw [this, hf, Set.indicator_apply, Set.indicator_apply]
+    split_ifs with hm
+    · rfl
+    · simp
+  rw [h_eq]
+  exact h_ind
 
 lemma exists_image_primes_eq_primesBelow (n : ℕ) :
-  ∃ (s : Finset Primes), s.image (fun p ↦ ↑p) = n.primesBelow := by
-    use n.primesBelow.attach.image (fun p => ⟨p.val, Nat.prime_of_mem_primesBelow p.property⟩);
-    ext; aesop
+  ∃ (s : Finset Nat.Primes), s.image (fun p : Nat.Primes ↦ p.1) = n.primesBelow := by
+  unfold Nat.Primes
+  refine ⟨Finset.subtype Nat.Prime n.primesBelow, ?_⟩
+  ext a
+  simp only [Finset.mem_image, Finset.mem_subtype, Nat.mem_primesBelow]
+  constructor
+  · rintro ⟨p, hp, rfl⟩
+    exact hp
+  · intro ha
+    exact ⟨⟨a, ha.2⟩, ha, rfl⟩
 
 lemma arithmetic_f (x: ℝ) (n: ℕ) (hxlt : x < n + 1) : ∃ f: ArithmeticFunction ℝ, f.toFun = (S₁ x).indicator (fun y ↦ (↑y)⁻¹) := by {
     exists ZeroHom.mk ((S₁ x).indicator (fun y: ℕ ↦ (y: ℝ)⁻¹)) (by
   {
     have: ¬ (0 ∈ S₁ x) := by {
       unfold S₁
-      rewrite [Set.mem_setOf]
       intro h
-      contrapose! h
       have: ∃ p, Nat.Prime p ∧ p > x := by {
-
         have := @Nat.exists_prime_gt_modEq_one 1 (n+1) (by bound)
         obtain ⟨p, hp⟩ := this
         obtain ⟨pprime, ⟨pgt, _⟩⟩ := hp
@@ -275,13 +302,8 @@ lemma arithmetic_f (x: ℝ) (n: ℕ) (hxlt : x < n + 1) : ∃ f: ArithmeticFunct
         exists p
       }
       obtain ⟨p, ⟨pprime, pgt⟩⟩ := this
-      exists p
-      have: p ∣ 0 := by bound
-      constructor
-      . assumption
-      . constructor
-        . assumption
-        . linarith
+      have hle := h p pprime (dvd_zero p)
+      linarith
     }
     apply Set.indicator_of_notMem
     assumption
@@ -296,13 +318,7 @@ theorem euler_product_rearrangement (x: ℝ) (n: ℕ) (hxge : x ≥ n) (hxlt : x
   obtain ⟨f, hf⟩ := hf
   have f_one_eq_one: f.toFun 1 = 1 := by {
         rewrite [hf]; clear hf
-        have: 1 ∈ S₁ x := by {
-          unfold S₁
-          rewrite [Set.mem_setOf]
-          intro p Hp contra
-          contrapose! contra
-          exact not_dvd_one Hp
-        }
+        have: 1 ∈ S₁ x := fun p Hp contra => (Nat.Prime.not_dvd_one Hp contra).elim
         simp [this]
       }
   have f_mul: f.IsMultiplicative := by {
@@ -328,102 +344,80 @@ theorem euler_product_rearrangement (x: ℝ) (n: ℕ) (hxge : x ≥ n) (hxlt : x
   clear this
   rewrite [← euler_rewrite]
   clear euler_rewrite
-  have hs: ∃ s: Finset Primes, s.image (fun i: Primes => i.val) = (⌊x⌋.natAbs+1).primesBelow := by convert exists_image_primes_eq_primesBelow ( Int.natAbs ⌊x⌋ + 1 ) using 1
+  have hs : ∃ s : Finset Nat.Primes, s.image (fun i : Nat.Primes ↦ i.1) = (⌊x⌋.natAbs + 1).primesBelow :=
+    exists_image_primes_eq_primesBelow (Int.natAbs ⌊x⌋ + 1)
   obtain ⟨s, hs⟩ := hs
-  have f_eq_one: ∀ p ∉ s, ∑' (e : ℕ), f (↑p ^ e) = 1 := by {
+  have f_eq_one: ∀ p ∉ s, ∑' (e : ℕ), f (↑p ^ e) = 1 := by
     intro p hp
-    have: ∑' e: ℕ, f.toFun (↑p^e) = 1 := by {
-      have pprime: Nat.Prime ↑p := by {
-        have: ↑p ∈ { p : ℕ | Nat.Prime p }:= by bound
-        rewrite [Set.mem_setOf] at this
-        assumption
-      }
-      have: ↑p ∉ (⌊x⌋.natAbs+1).primesBelow := by {
-        contrapose! hp
-        rewrite [← hs] at hp
-        rewrite [Function.Injective.mem_finset_image] at hp
-        assumption
-        exact (Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
-      }
-      rewrite [Nat.mem_primesBelow] at this
-      simp at this
-      have pfloor: ↑ p ≥ (⌊x⌋.natAbs+1) := by {
-        contrapose! pprime
-        apply this at pprime; assumption
-      }
-      clear this
-      have: ∀ e, e ∉ ({0}: Finset ℕ) → f.toFun (↑p^e) = 0 := by {
-        intro e he
-        have enz: e ≠ 0 := by bound
-        clear he
-        have pnin: (p: ℕ)^e ∉ S₁ x := by {
-          unfold S₁
-          rewrite [Set.mem_setOf]
-          intro h
-          specialize h ↑p
-          apply h at pprime
-          simp [enz] at pprime
-          have: p ≤ ⌊x⌋ := by exact Int.le_floor.mpr pprime
-
-          have contra: p > ⌊x⌋ := by {
-            have contra: p > ⌊x⌋.natAbs := by bound
-            omega
-          }
-          linarith
-        }
-        rewrite [hf]
-        simp [pnin]
-      }
-      clear pfloor
-      rewrite [tsum_eq_sum this]
-      simp
-      bound
-
-    }
-    bound
-  }
-  have tprod_rewrite := @tprod_eq_prod ℝ Primes _ _ (fun p => ∑' (e : ℕ), f (↑p ^ e)) (SummationFilter.unconditional Primes) _ (s) f_eq_one
-  simp at tprod_rewrite
-  rewrite [tprod_rewrite]
-  rewrite [← hs]
-  have: Set.InjOn (fun i: Primes => (i: Nat)) s := by {
-    -- Since primes are unique by their value, if two primes are equal, their values must be the same. So, if i and j are primes in s and i.val = j.val, then i must equal j. That makes sense because each prime has a unique value. So the function is injective.
-    intros i hi j hj hij; exact (by
-    -- Since primes are unique by their value, if two primes have the same value, they must be the same prime. So, if i.val = j.val, then i = j. That makes sense because each prime has a unique value. So the function is injective.
-    apply Subtype.ext; exact hij)
-  }
-  apply @Finset.prod_image ℕ Primes ℝ _ (fun p => ∑' (k : ℕ), (↑p ^ k)⁻¹) _ s (fun i: Primes => (i: Nat)) at this
-  conv =>
-    right
-    rewrite [this]
-  clear this
-  apply Finset.prod_congr
-  rfl
-  intro y hy
-  apply congrArg tsum
-  ext i
-  have: f.toFun (↑y^i) = (↑↑y ^ i)⁻¹ := by {
-    rewrite [hf]
-    have: (y: ℕ)^i ∈ S₁ x := by {
-      intro p pp dp; have := Nat.Prime.dvd_of_dvd_pow pp dp; simp_all +decide [] ;
-      -- Since $p$ divides $y.val$ and $y \in s$, we have $p \leq y.val$.
-      have hp_le_y : p ≤ y.val := by
-        exact Nat.le_of_dvd y.2.pos this;
-      -- Since $y$ is a prime in the set $s$, and $s$ is defined as the image of the primes below $\lfloor x \rfloor + 1$, we have $y.val \leq \lfloor x \rfloor$.
-      have hy_le_floor : y.val ≤ ⌊x⌋₊ := by
-        -- Since $y$ is a prime in the set $s$, and $s$ is defined as the image of the primes below $\lfloor x \rfloor + 1$, we have $y \leq \lfloor x \rfloor$ by definition of `primesBelow`.
-        have hy_le_floor : y.val ∈ Nat.primesBelow (⌊x⌋₊ + 1) := by
-          convert hs ▸ Finset.mem_image_of_mem _ hy using 1;
-          erw [ show ⌊x⌋ = ⌊x⌋₊ by exact Eq.symm <| Int.toNat_of_nonneg <| Int.floor_nonneg.mpr <| by linarith ] ; norm_num [ Int.natAbs_eq_iff ] ;
-        exact Nat.le_of_lt_succ ( Nat.lt_of_succ_le ( Nat.succ_le_of_lt ( Nat.lt_of_mem_primesBelow hy_le_floor ) ) );
-      exact le_trans ( Nat.cast_le.mpr ( hp_le_y.trans hy_le_floor ) ) ( Nat.floor_le ( show 0 ≤ x by linarith ) )
-    }
-
-    simp [this]
-  }
-  bound
-
-
+    have pprime : Nat.Prime (p : ℕ) := p.2
+    have hp_not_below : (p : ℕ) ∉ (⌊x⌋.natAbs + 1).primesBelow := by
+      intro hmem
+      rw [← hs, Finset.mem_image] at hmem
+      obtain ⟨q, hq_s, hq_eq⟩ := hmem
+      have : q = p := Subtype.ext hq_eq
+      exact hp (this ▸ hq_s)
+    have pfloor : (p : ℕ) ≥ ⌊x⌋.natAbs + 1 := by
+      rw [Nat.mem_primesBelow] at hp_not_below
+      by_contra hlt
+      have : (p : ℕ) < ⌊x⌋.natAbs + 1 := by omega
+      exact hp_not_below ⟨this, pprime⟩
+    have h_tsum_zero : ∀ e, e ∉ ({0}: Finset ℕ) → f.toFun (↑p^e) = 0 := by
+      intro e he
+      have enz : e ≠ 0 := by
+        intro he0; subst he0; exact he (Finset.mem_singleton_self 0)
+      have pnin : (p : ℕ)^e ∉ S₁ x := by
+        intro h
+        simp only [S₁, Set.mem_setOf_eq] at h
+        have h_dvd : (p : ℕ) ∣ (p : ℕ)^e := dvd_pow_self _ enz
+        have hle : (p : ℝ) ≤ x := h (p : ℕ) pprime h_dvd
+        have : (p : ℕ) ≤ ⌊x⌋ := Int.le_floor.mpr hle
+        have contra : (p : ℕ) > ⌊x⌋ := by
+          have : (p : ℕ) > ⌊x⌋.natAbs := by omega
+          omega
+        linarith
+      rw [hf]
+      simp [pnin]
+    have ht : ∑' e : ℕ, f.toFun (↑p ^ e) = ∑ e ∈ {0}, f.toFun (↑p ^ e) :=
+      tsum_eq_sum (s := {0}) h_tsum_zero
+    simp only [Finset.sum_singleton, pow_zero, f_one_eq_one] at ht
+    exact ht
+  have tprod_rewrite := @tprod_eq_prod ℝ Nat.Primes _ _ (fun p : Nat.Primes => ∑' (e : ℕ), f (p.1 ^ e)) (SummationFilter.unconditional Nat.Primes) _ s f_eq_one
+  rw [tprod_rewrite]
+  have h_prod_img : (∏ p ∈ (⌊x⌋.natAbs + 1).primesBelow, ∑' k : ℕ, ((p : ℝ) ^ k)⁻¹) =
+      ∏ y ∈ s, ∑' k : ℕ, ((y.1 : ℝ) ^ k)⁻¹ := by
+    rw [← hs]
+    exact Finset.prod_image (s := s) (g := fun i : Nat.Primes ↦ i.1) (f := fun (p : ℕ) ↦ ∑' k : ℕ, ((p : ℝ) ^ k)⁻¹) (fun i _ j _ hij => Subtype.ext hij)
+  rw [h_prod_img]
+  refine Finset.prod_congr rfl fun y hy => ?_
+  congr 1
+  ext e
+  have hy_mem : y.1 ∈ (⌊x⌋.natAbs + 1).primesBelow := by
+    rw [← hs]
+    exact Finset.mem_image_of_mem (fun i : Nat.Primes ↦ i.1) hy
+  have hy_le : (y.1 : ℝ) ≤ x := by
+    rw [Nat.mem_primesBelow] at hy_mem
+    have hx0 : 0 ≤ x := by linarith
+    have : (y.1 : ℝ) ≤ ⌊x⌋₊ := by
+      have : y.1 < ⌊x⌋.natAbs + 1 := hy_mem.1
+      have h1 : 0 ≤ ⌊x⌋ := Int.floor_nonneg.mpr hx0
+      have h_floor : ⌊x⌋.natAbs = ⌊x⌋₊ := by
+        exact_mod_cast (Int.natAbs_of_nonneg h1).trans (Int.toNat_of_nonneg h1).symm
+      have : y.1 ≤ ⌊x⌋₊ := by omega
+      exact_mod_cast this
+    exact le_trans this (Nat.floor_le hx0)
+  have h_mem_S1 : (y.1 : ℕ) ^ e ∈ S₁ x := by
+    intro p hp_prime hp_dvd
+    have hp_eq : p = y.1 := by
+      have := hp_prime.dvd_of_dvd_pow hp_dvd
+      have hy_prime : y.1.Prime := y.2
+      exact (Nat.dvd_prime hy_prime).mp this |>.resolve_left (Nat.Prime.ne_one hp_prime)
+    rw [hp_eq]
+    exact hy_le
+  have : f.toFun (y.1 ^ e) = ((y.1 : ℝ) ^ e)⁻¹ := by
+    have : f.toFun = (S₁ x).indicator (fun y ↦ (y : ℝ)⁻¹) := hf
+    rw [this, Set.indicator_of_mem h_mem_S1]
+    push_cast; rfl
+  exact this
 }
 
 theorem log_riemann_bound (x: ℝ) (n: ℕ) (hxge : x ≥ n) (hxlt : x < n + 1): Real.log x ≤ ∑ k ∈ Icc 1 n, (k : ℝ)⁻¹ := by {

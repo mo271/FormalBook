@@ -92,7 +92,7 @@ lemma cauchy_amgm_backward_iter (d n : ℕ) (hn : 0 < n) (h : CauchyAMGM (n + d)
   | zero => exact h
   | succ d ihd =>
     apply ihd
-    exact cauchy_amgm_backward (n + d) (by omega) (by convert h using 1)
+    exact cauchy_amgm_backward (n + d) (by omega) (by rw [add_assoc]; exact h)
 
 /-- **Cauchy's AM-GM inequality**: for n ≥ 1 and nonneg reals, ∏aᵢ ≤ (∑aᵢ/n)ⁿ.
     Proved by forward doubling P(2)→P(4)→...→P(2^k), then backward P(2^k)→...→P(n). -/

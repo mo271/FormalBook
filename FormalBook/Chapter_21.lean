@@ -50,28 +50,28 @@ theorem dalembert_lemma {p : Polynomial ℂ} (hp : p.natDegree > 0)
     use n
     simp only [s, mem_filter, mem_Icc]
     split_ands
-    · simpa using hp
+    · omega
     · simp
     · exact hcnne0
   let m := s.min' h1
   have hm1 : ∀ x ∈ s, m ≤ _ := s.min'_le
   have hm2 : m ∈ s := s.min'_mem h1
   simp [s] at hm1 hm2
-  let r := ofFinsupp (indicator (Icc (m + 1) n) (fun k _ => c k))
+  let r := ofFinsupp (.ofCoeff (indicator (Icc (m + 1) n) (fun k _ => c k)))
   have h2 : p = C 1 + C (c m) * X ^ m + r := by
     symm
     calc
     _ = C 1 + 0 + C (c m) * X ^ m + r := by simp
     _ =
-      (ofFinsupp (indicator {0} (fun k _ => p.coeff k))) +
-      (ofFinsupp (indicator (Ico 1 m) (fun k _ => p.coeff k))) +
-      (ofFinsupp (indicator {m} (fun k _ => p.coeff k))) +
-      (ofFinsupp (indicator (Icc (m + 1) n) (fun k _ => p.coeff k))) := by
+      (ofFinsupp (.ofCoeff (indicator {0} (fun k _ => p.coeff k)))) +
+      (ofFinsupp (.ofCoeff (indicator (Ico 1 m) (fun k _ => p.coeff k)))) +
+      (ofFinsupp (.ofCoeff (indicator {m} (fun k _ => p.coeff k)))) +
+      (ofFinsupp (.ofCoeff (indicator (Icc (m + 1) n) (fun k _ => p.coeff k)))) := by
       congr 3
       · ext k; simp [coeff_one]; grind only [coeff_zero_eq_eval_zero]
       · ext k; simp; grind
       · ext k; simp [c]; grind
-    _ = (ofFinsupp (indicator (Icc 0 n) (fun k _ => p.coeff k))) := by ext k; simp; grind
+    _ = (ofFinsupp (.ofCoeff (indicator (Icc 0 n) (fun k _ => p.coeff k)))) := by ext k; simp; grind
     _ = p := by
       ext k
       symm

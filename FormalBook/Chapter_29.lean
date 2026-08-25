@@ -4,7 +4,8 @@ Authors: Matteo Del Vecchio, Aristotle (Harmonic)
 
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Data.Real.StarOrdered
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.RCLike.Basic
@@ -111,7 +112,7 @@ lemma integral_rectangle_eq_integral_interior (r : Rectangle) :
     have h_boundary_zero :
       MeasureTheory.volume (Set.Icc r.x (r.x + r.w) ×ˢ Set.Icc r.y (r.y + r.h) \
       Set.Ioo r.x (r.x + r.w) ×ˢ Set.Ioo r.y (r.y + r.h)) = 0 := by
-      erw [ MeasureTheory.measure_diff ] <;> norm_num;
+      erw [ MeasureTheory.measure_sdiff ] <;> norm_num;
       · erw [ show ( Set.Icc ( r.x, r.y ) ( r.x + r.w, r.y + r.h ) : Set ( ℝ × ℝ ) ) =
           Set.Icc r.x ( r.x + r.w ) ×ˢ Set.Icc r.y ( r.y + r.h ) by ext ; aesop,
           show ( Set.Ioo r.x ( r.x + r.w ) ×ˢ Set.Ioo r.y ( r.y + r.h ) : Set ( ℝ × ℝ ) ) =
@@ -125,7 +126,7 @@ lemma integral_rectangle_eq_integral_interior (r : Rectangle) :
     rw [ MeasureTheory.ae_eq_set ];
     constructor
     · exact h_boundary_zero
-    · rw [Set.diff_eq_empty.mpr
+    · rw [Set.sdiff_eq_empty.mpr
         (by exact Set.prod_mono (Set.Ioo_subset_Icc_self) (Set.Ioo_subset_Icc_self))]
       norm_num
 
@@ -163,7 +164,7 @@ lemma integral_union_rectangles (Ts : List Rectangle)
         intro t;
         rw [ show t.toSet \ t.interior = ( Set.Icc t.x ( t.x + t.w ) ×ˢ Set.Icc t.y ( t.y + t.h ) )
           \ ( Set.Ioo t.x ( t.x + t.w ) ×ˢ Set.Ioo t.y ( t.y + t.h ) ) by rfl ];
-        erw [ MeasureTheory.measure_diff ] ;
+        erw [ MeasureTheory.measure_sdiff ] ;
         norm_num;
         · erw [ show ( Set.Icc ( t.x, t.y ) ( t.x + t.w, t.y + t.h ) : Set ( ℝ × ℝ ) ) =
             Set.Icc t.x ( t.x + t.w ) ×ˢ Set.Icc t.y ( t.y + t.h )
@@ -550,14 +551,14 @@ lemma subgrid_bounds (g : Grid) (r : Rectangle)
     have := (subgrid g r hx1 hy1).ys_ne_nil
     exact this) = r.y + r.h := by
       refine' ⟨ _, _, _, _ ⟩;
-      · convert head_filter_interval_eq_left g.xs g.xs_sorted r.x ( r.x + r.w ) hx1
-          ( by linarith [ r.w_pos ] );
-      · convert last_filter_interval_eq_right g.xs g.xs_sorted r.x ( r.x + r.w ) hx2
-          ( by linarith [ r.w_pos ] );
-      · convert head_filter_interval_eq_left g.ys g.ys_sorted r.y ( r.y + r.h ) hy1
-          ( by linarith [ r.h_pos ] );
-      · convert last_filter_interval_eq_right g.ys g.ys_sorted r.y ( r.y + r.h ) hy2
-          ( by linarith [ r.h_pos ] );
+      · (convert head_filter_interval_eq_left g.xs g.xs_sorted r.x ( r.x + r.w ) hx1
+          ( by linarith [ r.w_pos ] ); simp [subgrid]);
+      · (convert last_filter_interval_eq_right g.xs g.xs_sorted r.x ( r.x + r.w ) hx2
+          ( by linarith [ r.w_pos ] ); simp [subgrid]);
+      · (convert head_filter_interval_eq_left g.ys g.ys_sorted r.y ( r.y + r.h ) hy1
+          ( by linarith [ r.h_pos ] ); simp [subgrid]);
+      · (convert last_filter_interval_eq_right g.ys g.ys_sorted r.y ( r.y + r.h ) hy2
+          ( by linarith [ r.h_pos ] ); simp [subgrid]);
 
 /-- If a rectangle's boundaries are in the grid, then the sum of the `f`-areas of the grid cells
   contained in the rectangle equals the `f`-area of the rectangle. -/
@@ -665,8 +666,15 @@ lemma exists_additive_map_of_irrational (a : ℝ) (ha : Irrational a) :
       refine' ⟨ { 1, a } ∪ C, _, _, _, _ ⟩ <;> simp_all +decide [ Submodule.span_union ];
       · rw [ linearIndependent_subtype_iff ] at *;
         refine' LinearIndepOn.union _ _ _;
-        · convert h_linear_indep.linearIndepOn_id using 1;
-          aesop;
+        · have : {1, a} = Set.range (![1, a] : Fin 2 → ℝ) := by
+            ext x; simp only [Set.mem_insert_iff, Set.mem_singleton_iff, Set.mem_range]
+            constructor
+            · rintro (rfl | rfl)
+              · exact ⟨0, rfl⟩
+              · exact ⟨1, rfl⟩
+            · rintro ⟨i, rfl⟩; fin_cases i <;> simp [Matrix.cons_val_zero, Matrix.cons_val_one]
+          rw [this]
+          exact h_linear_indep.linearIndepOn_id
         · exact hC.2.2;
         · simp_all +decide [ Set.image_insert_eq, Set.image_singleton ];
           exact hB.disjoint;
@@ -687,11 +695,11 @@ lemma exists_additive_map_of_irrational (a : ℝ) (ha : Irrational a) :
       refine' ⟨ _, _ ⟩;
       refine' ( LinearEquiv.ofBijective _ ⟨ _, _ ⟩ );
       refine' Finsupp.linearCombination ℚ ( fun x => x.val );
-      all_goals norm_num [ Finsupp.linearCombination_apply ];
       · exact hB₂;
       · intro x;
         have := hB₃.ge ( show x ∈ ⊤ from trivial );
         rw [ Finsupp.mem_span_iff_linearCombination ] at this ; aesop;
+      · intro a; simp [LinearEquiv.ofBijective, Finsupp.linearCombination_single];
     obtain ⟨ h, hh ⟩ := h_ext;
     exact ⟨ g.comp h.symm.toLinearMap, fun b => by simp +decide [ ← hg, ← hh ] ⟩;
   exact ⟨ h_ext.choose, by simpa [ hf ] using h_ext.choose_spec ⟨ 1, hB₄ ⟩,
@@ -779,61 +787,58 @@ lemma f_area_sum_tiling (f : ℝ →+ ℝ) (R : Rectangle) (Ts : List Rectangle)
   f_area f R = (Ts.map (f_area f)).sum := by
     have h_sum_f_areas : f_area f R = ∑ c ∈ (tiling_grid R Ts).cells.toFinset,
       if c ∈ cells_in_rect (tiling_grid R Ts) R then f_area f c else 0 := by
-      convert sum_cells_in_rect_eq_f_area f ( tiling_grid R Ts ) R _ _ _ _ using 1;
-      rw [ sum_cells_in_rect_eq_f_area ];
-      all_goals norm_num [ tiling_grid ];
-      all_goals norm_num [ tiling_grid_xs, tiling_grid_ys ];
-      convert sum_cells_in_rect_eq_f_area f _ _ _ _ _ _ using 1;
-      any_goals exact tiling_grid R Ts;
-      · rw [ Finset.sum_ite ];
-        simp +zetaDelta at *;
-        rw [ ← List.sum_toFinset ];
-        · congr! 1;
-          ext; simp [cells_in_rect];
-          unfold tiling_grid;
-          intros;
-          rfl;
-        · refine' List.Nodup.filter _ _;
-          unfold Grid.cells;
+      have hx1 : R.x ∈ (tiling_grid R Ts).xs := by
+        unfold tiling_grid tiling_grid_xs; simp
+      have hx2 : R.x + R.w ∈ (tiling_grid R Ts).xs := by
+        unfold tiling_grid tiling_grid_xs; simp
+      have hy1 : R.y ∈ (tiling_grid R Ts).ys := by
+        unfold tiling_grid tiling_grid_ys; simp
+      have hy2 : R.y + R.h ∈ (tiling_grid R Ts).ys := by
+        unfold tiling_grid tiling_grid_ys; simp
+      have h_inner : ∑ c ∈ (tiling_grid R Ts).cells.toFinset,
+        (if c ∈ cells_in_rect (tiling_grid R Ts) R then f_area f c else 0) =
+        ∑ c ∈ (cells_in_rect (tiling_grid R Ts) R).toFinset, f_area f c := by
+        rw [ ← Finset.sum_filter ];
+        refine' Finset.sum_bij ( fun x hx => x ) _ _ _ _ <;> simp +contextual;
+        exact fun x hx => List.mem_filter.mp hx |>.1;
+      have h_nodup : (cells_in_rect (tiling_grid R Ts) R).Nodup := by
+        refine' List.Nodup.filter _ _;
+        unfold Grid.cells;
+        rw [ List.nodup_flatMap ];
+        constructor;
+        · intro x hx;
           rw [ List.nodup_flatMap ];
           constructor;
-          · intro x hx;
-            rw [ List.nodup_flatMap ];
-            constructor;
-            · intro x_1 a
-              simp_all only
-              obtain ⟨fst, snd⟩ := x
-              obtain ⟨fst_1, snd_1⟩ := x_1
-              simp_all only
-              split
-              next h_1 => simp_all only
-                [List.nodup_cons, List.not_mem_nil, not_false_eq_true, List.nodup_nil, and_self]
-              next h_1 => simp_all only [not_and, not_lt, List.nodup_nil]
-            · rw [ List.pairwise_iff_get ];
-              intro i j hij; simp +decide [ List.disjoint_left ] ;
-              rintro a ha hb rfl ha' hb';
-              intro H; have := congr_arg ( fun z => z.y ) H; norm_num at this;
-              have := List.pairwise_iff_get.mp ( show List.Pairwise ( fun x y => x < y )
-                ( tiling_grid R Ts |> Grid.ys ) from ( tiling_grid R Ts ).ys_sorted );
-              exact absurd ( this ⟨ i, by
-                exact lt_of_lt_of_le i.2 ( by simp ) ⟩ ⟨ j, by
-                exact j.2.trans_le ( by simp ) ⟩ hij ) ( by aesop );
+          · intro x_1 a
+            simp_all only
+            obtain ⟨fst, snd⟩ := x
+            obtain ⟨fst_1, snd_1⟩ := x_1
+            simp_all only
+            split
+            next h_1 => simp_all only
+              [List.nodup_cons, List.not_mem_nil, not_false_eq_true, List.nodup_nil, and_self]
+            next h_1 => simp_all only [not_and, not_lt, List.nodup_nil]
           · rw [ List.pairwise_iff_get ];
-            intro i j hij;
-            simp +decide [ Function.onFun, List.disjoint_left ];
-            rintro a x y hxy hx hy rfl u v huv hu hv;
-            intro H;
+            intro i j hij; simp +decide [ List.disjoint_left ] ;
+            rintro a ha hb rfl ha' hb';
+            intro H; have := congr_arg ( fun z => z.y ) H; norm_num at this;
             have := List.pairwise_iff_get.mp ( show List.Pairwise ( fun x y => x < y )
-              ( tiling_grid R Ts |> Grid.xs ) from ( tiling_grid R Ts ).xs_sorted );
+              ( tiling_grid R Ts |> Grid.ys ) from ( tiling_grid R Ts ).ys_sorted );
             exact absurd ( this ⟨ i, by
               exact lt_of_lt_of_le i.2 ( by simp ) ⟩ ⟨ j, by
-              exact Nat.lt_of_lt_of_le j.2 ( by simp ) ⟩ hij ) ( by aesop );
-      · unfold tiling_grid tiling_grid_xs;
-        simp_all only [List.mem_dedup, List.mem_mergeSort, List.mem_cons, left_eq_add,
-          List.mem_flatMap, List.not_mem_nil, or_false, true_or]
-      · exact List.mem_dedup.mpr ( List.mem_mergeSort.mpr ( by aesop ) );
-      · exact List.mem_dedup.mpr ( List.mem_mergeSort.mpr ( by aesop ) );
-      · exact List.mem_dedup.mpr ( List.mem_mergeSort.mpr ( by aesop ) );
+              exact j.2.trans_le ( by simp ) ⟩ hij ) ( by aesop );
+        · rw [ List.pairwise_iff_get ];
+          intro i j hij;
+          simp +decide [ Function.onFun, List.disjoint_left ];
+          rintro a x y hxy hx hy rfl u v huv hu hv;
+          intro H;
+          have := List.pairwise_iff_get.mp ( show List.Pairwise ( fun x y => x < y )
+            ( tiling_grid R Ts |> Grid.xs ) from ( tiling_grid R Ts ).xs_sorted );
+          exact absurd ( this ⟨ i, by
+            exact lt_of_lt_of_le i.2 ( by simp ) ⟩ ⟨ j, by
+            exact Nat.lt_of_lt_of_le j.2 ( by simp ) ⟩ hij ) ( by aesop );
+      rw [ h_inner, List.sum_toFinset _ h_nodup ];
+      exact (sum_cells_in_rect_eq_f_area f (tiling_grid R Ts) R hx1 hx2 hy1 hy2).symm
     have h_sum_over_tiles : ∑ c ∈ (tiling_grid R Ts).cells.toFinset,
       (if c ∈ cells_in_rect (tiling_grid R Ts) R then f_area f c else 0) =
       ∑ t ∈ Ts.toFinset, ∑ c ∈ (tiling_grid R Ts).cells.toFinset,
@@ -855,8 +860,9 @@ lemma f_area_sum_tiling (f : ℝ →+ ℝ) (R : Rectangle) (Ts : List Rectangle)
           have := disjoint_cells_of_tiling R Ts h b t hb ht.1 hb_ne_t;
           simp_all +decide [ List.disjoint_left ] ;
       · rw [ Finset.sum_eq_zero ];
-        · rw [ if_neg ];
-          exact fun h => h_center <| center_mem_rect_of_mem_cells _ _ _ h;
+        · split_ifs with hc
+          · exact False.elim (h_center (center_mem_rect_of_mem_cells _ _ _ hc))
+          · rfl
         · intro t ht; split_ifs <;> simp_all +decide [ cells_in_rect ] ;
           have h_center_in_t : (c.x + c.w / 2, c.y + c.h / 2) ∈ t.toSet := by
             constructor <;> constructor <;> linarith [ c.w_pos, c.h_pos ];
@@ -1011,18 +1017,19 @@ lemma grid_squares_union (R : Rectangle) (s : ℝ) (m n : ℕ) (hs : 0 < s)
           · linarith [ R.w_pos ];
           · linarith [ R.h_pos ];
           · by_cases hy : y = R.y + (n + 1) * s;
-            · exact ⟨ m, Nat.lt_succ_self _, n,
-                ⟨ by linarith, by linarith ⟩, by linarith, Nat.lt_succ_self _, by linarith ⟩;
+            · exact ⟨ m, le_refl _, n,
+                ⟨ by linarith, by linarith ⟩, by linarith, le_refl _, by linarith ⟩;
             · use m, by linarith, Nat.floor ((y - R.y) / s), by
                 exact ⟨ by linarith,
                   by nlinarith [ Nat.floor_le
                       ( show 0 ≤ ( y - R.y ) / s by exact div_nonneg ( by linarith ) hs.le ),
                       mul_div_cancel₀ ( y - R.y ) hs.ne' ] ⟩;
               exact ⟨ by linarith,
-                Nat.succ_le_of_lt <|
-                by rw [ Nat.floor_lt' ] <;>
-                  norm_num ; cases lt_or_gt_of_ne hy <;>
-                  nlinarith [ mul_div_cancel₀ ( y - R.y ) hs.ne' ],
+                by { have : (y - R.y) / s < ↑(n + 1) := by
+                       rw [div_lt_iff₀ hs]
+                       push_cast
+                       cases lt_or_gt_of_ne hy <;> nlinarith
+                     exact Nat.lt_succ_iff.mp (Nat.floor_lt (div_nonneg (by linarith) hs.le) |>.mpr this) },
                 by nlinarith [ Nat.lt_floor_add_one ( ( y - R.y ) / s ),
                   mul_div_cancel₀ ( y - R.y ) hs.ne' ] ⟩;
         · obtain ⟨i, hi⟩ : ∃ i : ℕ, i < m ∧ R.x + i * s ≤ x ∧ x < R.x + (i + 1) * s := by

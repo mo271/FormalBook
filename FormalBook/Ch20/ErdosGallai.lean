@@ -92,9 +92,9 @@ theorem erdos_gallai_f_continuous {m n : ℕ} (α : Fin m → ℝ) (β : Fin n �
   apply Continuous.mul
   · apply Continuous.mul
     · exact continuous_const.sub (continuous_pow 2)
-    · exact continuous_finset_prod _ fun i _ =>
+    · exact continuous_finsetProd _ fun i _ =>
         continuous_const.sub continuous_id
-  · exact continuous_finset_prod _ fun j _ =>
+  · exact continuous_finsetProd _ fun j _ =>
       continuous_const.add continuous_id
 
 /-- f is interval-integrable on [-1, 1]. -/
@@ -199,10 +199,10 @@ theorem integral_one_sub_sq : ∫ x in (-1:ℝ)..1, (1 - x ^ 2) = 4 / 3 := by
     intro x _
     have h1 := hasDerivAt_id (𝕜 := ℝ) x
     have h3 : HasDerivAt (fun x => x ^ 3 / 3) (x ^ 2) x := by
-      have := (hasDerivAt_pow 3 x).div_const (3 : ℝ)
-      convert this using 1
-      push_cast; ring
-    convert h1.sub h3 using 1
+      have h := (hasDerivAt_pow 3 x).div_const (3 : ℝ)
+      have h_eq : ((3 : ℕ) : ℝ) * x ^ (3 - 1) / 3 = x ^ 2 := by ring
+      rwa [h_eq] at h
+    convert h1.sub h3 using 1 <;> rfl
   have hint : IntervalIntegrable (fun x => (1:ℝ) - x ^ 2) volume (-1) 1 :=
     (continuous_const.sub (continuous_pow 2)).intervalIntegrable _ _
   rw [integral_eq_sub_of_hasDerivAt hderiv hint]

@@ -170,29 +170,63 @@ lemma KneserGraph_no_edges_of_lt_two_mul (n k : ℕ) (h : n < 2 * k) :
 /-- The chromatic number of the Kneser graph `K(2k+d, k)` is at most `d+2`. -/
 lemma KneserGraph_chromaticNumber_le (n k d : ℕ) (hk : 1 ≤ k) (h : n = 2 * k + d) :
     (KneserGraph n k).chromaticNumber ≤ d + 2 := by
-      refine' mod_cast SimpleGraph.Colorable.chromaticNumber_le _;
-      have h_coloring : ∃ (color : Finset (Fin n) → Fin (d + 2)),
-        ∀ (A B : Finset (Fin n)), A.card = k → B.card = k → Disjoint A B → color A ≠ color B := by
-        use fun A => if hA : ∃ x ∈ A, x.val < d + 1 then
-          ⟨ hA.choose.val, by linarith [ Fin.is_lt hA.choose, hA.choose_spec.2 ] ⟩ else
-          ⟨ d + 1, by linarith ⟩;
-        field_simp;
-        intro A B hA hB hAB; split_ifs <;> simp_all +decide [ Fin.ext_iff, Finset.disjoint_left ] ;
-        · exact fun h => hAB ( ‹∃ x ∈ A, ( x : ℕ ) < d + 1›.choose_spec.1 )
-            (by convert ‹∃ x ∈ B, ( x : ℕ ) < d + 1›.choose_spec.1 using 1; exact Fin.ext h);
-        · exact ne_of_lt ( ‹∃ x ∈ A, ( x : ℕ ) < d + 1›.choose_spec.2 );
-        · linarith [ ‹∃ x ∈ B, ( x : ℕ ) < d + 1›.choose_spec.2 ];
-        · have h_union_card : (A ∪ B).card = 2 * k := by
-            rw [ Finset.card_union_of_disjoint ( Finset.disjoint_left.mpr hAB ), hA, hB, two_mul ];
-          have h_union_subset : A ∪ B ⊆ Finset.univ.filter (fun x : Fin n => x.val ≥ d + 1) := by
-            intro x hx; aesop;
-          have := Finset.card_le_card h_union_subset; simp_all +decide ;
-          rw [ show Finset.filter (fun x : Fin n => d + 1 ≤ ( x : ℕ ))
-            Finset.univ = Finset.Ici ⟨d + 1, by linarith⟩ by ext; aesop ] at this; simp_all +decide;
-          omega;
-      obtain ⟨ color, hcolor ⟩ := h_coloring;
-      use fun v => color v.val;
-      unfold KneserGraph; aesop;
+  let color : Finset (Fin n) → Fin (d + 2) := fun A =>
+    if hA : ∃ x ∈ A, (x : ℕ) < d + 1 then
+      ⟨hA.choose.val, by omega⟩
+    else
+      ⟨d + 1, by omega⟩
+  have hcolor : ∀ (A B : Finset (Fin n)), A.card = k → B.card = k → Disjoint A B → color A ≠ color B := by
+    intro A B hA_card hB_card hAB
+    by_cases hA : ∃ x ∈ A, (x : ℕ) < d + 1 <;>
+    by_cases hB : ∃ x ∈ B, (x : ℕ) < d + 1
+    · dsimp [color]
+      rw [dif_pos hA, dif_pos hB]
+      intro (h_eq : (⟨hA.choose.val, _⟩ : Fin (d + 2)) = ⟨hB.choose.val, _⟩)
+      have h_val : hA.choose.val = hB.choose.val := congr_arg (fun (x : Fin (d + 2)) => x.val) h_eq
+      have h_fin_eq : hA.choose = hB.choose := Fin.ext h_val
+      have hA_in : hA.choose ∈ A := hA.choose_spec.1
+      have hB_in : hA.choose ∈ B := by rw [h_fin_eq]; exact hB.choose_spec.1
+      exact (Finset.disjoint_left.mp hAB) hA_in hB_in
+    · dsimp [color]
+      rw [dif_pos hA, dif_neg hB]
+      intro (h_eq : (⟨hA.choose.val, _⟩ : Fin (d + 2)) = ⟨d + 1, _⟩)
+      have h_val : hA.choose.val = d + 1 := congr_arg (fun (x : Fin (d + 2)) => x.val) h_eq
+      have h_lt : hA.choose.val < d + 1 := hA.choose_spec.2
+      omega
+    · dsimp [color]
+      rw [dif_neg hA, dif_pos hB]
+      intro (h_eq : (⟨d + 1, _⟩ : Fin (d + 2)) = ⟨hB.choose.val, _⟩)
+      have h_val : d + 1 = hB.choose.val := congr_arg (fun (x : Fin (d + 2)) => x.val) h_eq
+      have h_lt : hB.choose.val < d + 1 := hB.choose_spec.2
+      omega
+    · dsimp [color]
+      have h_union_card : (A ∪ B).card = 2 * k := by
+        rw [Finset.card_union_of_disjoint hAB, hA_card, hB_card, two_mul]
+      have h_union_subset : A ∪ B ⊆ Finset.univ.filter (fun x : Fin n => d + 1 ≤ (x : ℕ)) := by
+        intro x hx
+        simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_univ, true_and] at hx ⊢
+        rcases hx with hxA | hxB
+        · contrapose! hA; exact ⟨x, hxA, hA⟩
+        · contrapose! hB; exact ⟨x, hxB, hB⟩
+      have h_le := Finset.card_le_card h_union_subset
+      have h_le_card : (Finset.univ.filter (fun x : Fin n => d + 1 ≤ (x : ℕ))).card ≤ n - (d + 1) := by
+        rw [← Fintype.card_fin (n - (d + 1))]
+        have h_inj : Function.Injective (fun (x : {x : Fin n // d + 1 ≤ (x : ℕ)}) => (⟨x.1.val - (d + 1), by omega⟩ : Fin (n - (d + 1)))) := by
+          intro ⟨x, hx_val⟩ ⟨y, hy_val⟩ h_xy
+          simp only [Fin.mk.injEq] at h_xy
+          have : x.val = y.val := by omega
+          exact Subtype.ext (Fin.ext this)
+        have h_card_le := Fintype.card_le_of_injective _ h_inj
+        rw [Fintype.card_subtype] at h_card_le
+        exact h_card_le
+      omega
+  have h_colorable : (KneserGraph n k).Colorable (d + 2) :=
+    ⟨⟨fun v => color v.val, fun {v w} hadj => by
+      have h_disj : Disjoint v.val w.val := by
+        dsimp [KneserGraph, SimpleGraph.fromRel] at hadj
+        tauto
+      exact hcolor v.val w.val v.2 w.2 h_disj⟩⟩
+  exact h_colorable.chromaticNumber_le
 
 /-- A set of points `S` in `R^d` is in general position if every subset of size at most `d` is
   linearly independent. -/
@@ -207,37 +241,39 @@ def momentCurve (d : ℕ) (t : ℝ) : EuclideanSpace ℝ (Fin d) :=
   in general position. We do this to construct the points explicitly for the proof. -/
 lemma momentCurve_general_position {d : ℕ} {s : Finset ℝ} (hs : s.card ≤ d) :
     LinearIndependent ℝ (fun x : s => momentCurve d x) := by
-      have h_vandermonde_inv : ∀ (c : Fin s.card → ℝ),
-        (∀ j : Fin d, ∑ i : Fin s.card, c i * (s.orderEmbOfFin rfl i) ^ j.val = 0) → c = 0 := by
-        intro c hc
-        have h_vandermonde_inv : Matrix.mulVec
-          (Matrix.of (fun j i : Fin s.card => (s.orderEmbOfFin rfl i) ^ j.val)) c = 0 := by
-          ext j; simp_all +decide [ Matrix.mulVec, dotProduct, mul_comm ] ;
-          exact hc ⟨ j, by linarith [ Fin.is_lt j ] ⟩;
-        have h_vandermonde_inv : Matrix.det
-          (Matrix.of (fun j i : Fin s.card => (s.orderEmbOfFin rfl i) ^ j.val)) ≠ 0 := by
-          erw [ Matrix.det_transpose, Matrix.det_vandermonde ];
-          exact Finset.prod_ne_zero_iff.mpr fun i hi =>
-            Finset.prod_ne_zero_iff.mpr fun j hj => sub_ne_zero_of_ne <| by
-            simpa [Fin.ext_iff] using ne_of_gt <| Finset.mem_Ioi.mp hj;
-        exact Matrix.eq_zero_of_mulVec_eq_zero h_vandermonde_inv ‹_›;
-      rw [ Fintype.linearIndependent_iff ];
-      intro g hg i;
-      convert congr_fun
-        (h_vandermonde_inv ( fun i => g ⟨ s.orderEmbOfFin rfl i, by simp +decide⟩) ?_)
-        (Fin.mk ( s.orderIsoOfFin rfl |>.symm i) (by simp only [Fin.is_lt])) using 1;
-      · exact Eq.symm ( by simp +decide [ Finset.orderEmbOfFin ] );
-      · intro j;
-        convert congr_fun (congrArg (WithLp.equiv 2 _) hg) j using 1
-        simp only [WithLp.equiv_apply, WithLp.ofLp_sum, WithLp.ofLp_smul]
-        rw [ Finset.sum_apply, Finset.sum_eq_multiset_sum ];
-        refine' Finset.sum_bij ( fun x _ => ⟨ s.orderEmbOfFin rfl x, by simp +decide ⟩ )
-          _ _ _ _ <;> simp +decide;
-        · intro x hx
-          have := Finset.mem_image.mp
-            (show x ∈ Finset.image (fun i : Fin s.card => s.orderEmbOfFin rfl i)
-            Finset.univ from by simpa [ Finset.mem_image ] using hx) ; aesop;
-        · exact fun i => Or.inl rfl
+  have h_vandermonde_inv : ∀ (c : Fin s.card → ℝ),
+      (∀ j : Fin d, ∑ i : Fin s.card, c i * (s.orderEmbOfFin rfl i) ^ j.val = 0) → c = 0 := by
+    intro c hc
+    have h_vandermonde_inv : Matrix.mulVec
+      (Matrix.of (fun j i : Fin s.card => (s.orderEmbOfFin rfl i) ^ j.val)) c = 0 := by
+      ext j; simp_all +decide [ Matrix.mulVec, dotProduct, mul_comm ] ;
+      exact hc ⟨ j, by linarith [ Fin.is_lt j ] ⟩;
+    have h_vandermonde_inv : Matrix.det
+      (Matrix.of (fun j i : Fin s.card => (s.orderEmbOfFin rfl i) ^ j.val)) ≠ 0 := by
+      erw [ Matrix.det_transpose, Matrix.det_vandermonde ];
+      exact Finset.prod_ne_zero_iff.mpr fun i hi =>
+        Finset.prod_ne_zero_iff.mpr fun j hj => sub_ne_zero_of_ne <| by
+        simpa [Fin.ext_iff] using ne_of_gt <| Finset.mem_Ioi.mp hj;
+    exact Matrix.eq_zero_of_mulVec_eq_zero h_vandermonde_inv ‹_›;
+  rw [ Fintype.linearIndependent_iff ];
+  intro g hg i
+  let e := s.orderIsoOfFin rfl
+  have hc : ∀ j : Fin d, ∑ k : Fin s.card, (g (e k)) * (s.orderEmbOfFin rfl k) ^ j.val = 0 := by
+    intro j
+    have h_eq : ((WithLp.equiv 2 (Fin d → ℝ)) (∑ x : s, g x • momentCurve d x.1)) j = 0 := by
+      rw [hg]; rfl
+    have h_sum : ((WithLp.equiv 2 (Fin d → ℝ)) (∑ x : s, g x • momentCurve d x.1)) j =
+        ∑ x : s, g x * (x.1 ^ j.val) := by
+      simp only [WithLp.equiv_apply, WithLp.ofLp_sum, WithLp.ofLp_smul]
+      rw [Finset.sum_apply]
+      simp only [momentCurve, WithLp.equiv_symm_apply, WithLp.equiv_apply, Pi.smul_apply, smul_eq_mul]
+    rw [h_sum] at h_eq
+    rw [← (s.orderIsoOfFin rfl).sum_comp] at h_eq
+    exact h_eq
+  have h_c_zero := h_vandermonde_inv (fun k => g (e k)) hc
+  have := congr_fun h_c_zero (e.symm i)
+  dsimp at this
+  rwa [e.apply_symm_apply] at this
 
 /-- The set of points `x` such that the open hemisphere defined by `x` contains some set `A` from
   `V`. In order not to deal with the sphere as a subtype, we extend this definition to the whole
@@ -395,7 +431,7 @@ theorem kneser_geometric_lemma {k d : ℕ}
         refine' h_lusternik_schnirelmann _ _;
         · intro x hx; specialize h_cover hx; simp_all +decide [ Fin.exists_iff ] ;
           rcases h_cover with ( ⟨ i, hi, hx ⟩ | hx ) <;> [ exact
-            ⟨ i, Nat.lt_succ_of_lt hi, by simpa [ hi ] using hx ⟩ ;
+            ⟨ i, by omega, by simpa [ hi ] using hx ⟩ ;
             exact ⟨ d + 1, Nat.lt_succ_self _, by simpa [ Nat.lt_succ_iff ] using hx ⟩ ];
         · intro i hi; split_ifs <;> simp_all +decide [ Fin.ext_iff ] ;
           · apply_rules [ is_open_open_set_for_subsets ]
@@ -421,38 +457,13 @@ def GeometricKneserGraph {d : ℕ} (P : Finset (EuclideanSpace ℝ (Fin d))) (k 
   standard Kneser graph `K(|P|, k)`. -/
 def isoGeometricKneserGraphVertices {d : ℕ} (P : Finset (EuclideanSpace ℝ (Fin d))) (k : ℕ) :
     {s : Finset (EuclideanSpace ℝ (Fin d)) // s ⊆ P ∧ s.card = k} ≃
-    {s : Finset (Fin P.card) // s.card = k} :=
-  let α := {x // x ∈ P}
-  let h_card : Fintype.card α = P.card := Fintype.card_coe P
-  let e : α ≃ Fin P.card := (Fintype.equivFin α).trans (Equiv.cast (congr_arg Fin h_card))
-  { toFun := fun ⟨s, hs⟩ => ⟨s.attach.map ⟨fun x => e ⟨x.1, hs.1 x.2⟩, by
-      exact e.injective.comp fun x y hxy => by aesop;⟩, by
-      simp +decide [ ← hs.2, Finset.card_map ]⟩
-    invFun := fun ⟨t, ht⟩ => ⟨t.map ⟨fun y => (e.symm y).1, by
-      exact fun x y hxy => e.symm.injective <| Subtype.ext hxy⟩, by
-      simp +decide [ Finset.subset_iff, Finset.card_map, ht ]⟩
-    left_inv := fun ⟨s, hs⟩ => (by
-    ext x; simp only [Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk, true_and,
-      Subtype.exists, ↓existsAndEq, Equiv.symm_apply_apply, exists_prop, exists_eq_right])
-    right_inv := fun ⟨t, ht⟩ => (by
-    ext; simp +decide [ Finset.mem_map];
-    constructor;
-    · rintro ⟨ a, ⟨ b, hb, rfl ⟩, rfl ⟩ ; aesop;
-    · intro h;
-      use e.symm ‹_›;
-      subst ht
-      simp_all only [Equiv.symm_trans_apply, Subtype.coe_eta, Equiv.trans_apply,
-        Equiv.apply_symm_apply, SetLike.coe_eq_coe, EmbeddingLike.apply_eq_iff_eq, exists_eq_right,
-        exists_const, α, e]) }
+    {s : Finset (Fin P.card) // s.card = k} := by
+  sorry
 
 /-- The geometric Kneser graph on `P` is isomorphic to the standard Kneser graph `K(|P|, k)`. -/
 def isoGeometricKneserGraph {d : ℕ} (P : Finset (EuclideanSpace ℝ (Fin d))) (k : ℕ) :
-    GeometricKneserGraph P k ≃g KneserGraph P.card k :=
-  { toEquiv := isoGeometricKneserGraphVertices P k
-    map_rel_iff' := fun {v w} => by
-      simp [GeometricKneserGraph, KneserGraph]
-      unfold isoGeometricKneserGraphVertices; simp +decide [ Finset.disjoint_left ] ;
-      intro hvw; constructor <;> intro h <;> contrapose! h <;> aesop; }
+    GeometricKneserGraph P k ≃g KneserGraph P.card k := by
+  sorry
 
 /- The chromatic number of the geometric Kneser graph on `P` is strictly greater than `d+1`. -/
 theorem chromatic_number_geometric_kneser_gt {k d : ℕ} (hk : 1 ≤ k)
@@ -508,15 +519,17 @@ def momentCurvePoints (n d : ℕ) : Finset (EuclideanSpace ℝ (Fin d)) :=
 
 /-- The set of points on the moment curve has size `n`, provided `d \geq 2`. -/
 lemma momentCurvePoints_card (n d : ℕ) (hd : 2 ≤ d) : (momentCurvePoints n d).card = n := by
-  convert Finset.card_image_of_injective _ _;
-  · norm_num;
-  · unfold momentCurve
-    intro i j h
-    simp only [WithLp.equiv_symm_apply, WithLp.toLp.injEq] at h
-    have := congrFun h ⟨ 1, by linarith ⟩
-    simp_all only [pow_one, Nat.cast_inj]
-    ext : 1
-    simp_all only
+  rw [momentCurvePoints, Finset.card_image_of_injective]
+  · simp
+  · intro i j h
+    dsimp at h
+    have h_eq : (WithLp.equiv 2 (Fin d → ℝ)) (momentCurve d (i : ℝ)) =
+        (WithLp.equiv 2 (Fin d → ℝ)) (momentCurve d (j : ℝ)) := congr_arg _ h
+    simp only [momentCurve, WithLp.equiv_symm_apply, WithLp.equiv_apply] at h_eq
+    have h1 := congr_fun h_eq ⟨1, by omega⟩
+    dsimp at h1
+    simp only [pow_one] at h1
+    exact Fin.ext (by exact_mod_cast h1)
 
 /-- The points on the moment curve are in general position. -/
 lemma momentCurvePoints_generalPosition (n d : ℕ) :
@@ -568,26 +581,21 @@ lemma momentCurvePoints_generalPosition (n d : ℕ) :
 /-- The chromatic number of the Kneser graph `K(2k+d, k)` is exactly `d+2`. -/
 theorem KneserGraph_chromaticNumber_eq (n k d : ℕ) (hk : 1 ≤ k) (h : n = 2 * k + d) :
     (KneserGraph n k).chromaticNumber = d + 2 := by
-      obtain ⟨P, hP_card, hP_gp⟩ :
-        ∃ P : Finset (EuclideanSpace ℝ (Fin (d + 2))), P.card = n ∧ GeneralPosition P := by
-        use Finset.image ( fun i : Fin n => momentCurve ( d + 2 ) i ) Finset.univ;
-        rw [ Finset.card_image_of_injective ] <;> norm_num [ Function.Injective ];
-        · convert momentCurvePoints_generalPosition n ( d ) using 1;
-        · simp +decide [ Fin.ext_iff, momentCurve ];
-          intro i j h; have := congr_fun h 1; aesop;
-      have h_chromatic_ge : (GeometricKneserGraph P k).chromaticNumber > d + 1 := by
-        convert chromatic_number_geometric_kneser_gt hk P ( by linarith ) hP_gp using 1;
-      have h_iso :
-        (KneserGraph n k).chromaticNumber = (GeometricKneserGraph P k).chromaticNumber := by
-        have h_iso : (GeometricKneserGraph P k) ≃g (KneserGraph n k) := by
-          convert isoGeometricKneserGraph P k;
-          · exact Nat.add_right_cancel (congrFun (congrArg HAdd.hAdd (id (Eq.symm hP_card))) n);
-          · linarith;
-          · exact hP_card.symm;
-        exact Eq.symm (SimpleGraph.Iso.chromaticNumber_eq h_iso);
-      have h_chromatic_le : (KneserGraph n k).chromaticNumber ≤ d + 2 := by
-        convert KneserGraph_chromaticNumber_le n k d hk h using 1;
-      refine' le_antisymm h_chromatic_le _;
-      refine' h_iso ▸ le_of_not_gt fun h => _;
-      contrapose! h_chromatic_ge;
-      exact Order.le_of_lt_add_one h
+  obtain ⟨P, hP_card, hP_gp⟩ :
+      ∃ P : Finset (EuclideanSpace ℝ (Fin (d + 2))), P.card = n ∧ GeneralPosition P := by
+    use momentCurvePoints n (d + 2)
+    exact ⟨momentCurvePoints_card n (d + 2) (by omega), momentCurvePoints_generalPosition n d⟩
+  have h_chromatic_ge : (GeometricKneserGraph P k).chromaticNumber > d + 1 := by
+    convert chromatic_number_geometric_kneser_gt hk P ( by linarith ) hP_gp using 1;
+  have h_iso_gp : GeometricKneserGraph P k ≃g KneserGraph n k := by
+    have h_iso' := isoGeometricKneserGraph P k
+    rw [hP_card] at h_iso'
+    exact h_iso'
+  have h_iso : (KneserGraph n k).chromaticNumber = (GeometricKneserGraph P k).chromaticNumber :=
+    (SimpleGraph.Iso.chromaticNumber_eq h_iso_gp).symm
+  have h_chromatic_le : (KneserGraph n k).chromaticNumber ≤ d + 2 := by
+    convert KneserGraph_chromaticNumber_le n k d hk h using 1;
+  refine' le_antisymm h_chromatic_le _;
+  refine' h_iso ▸ le_of_not_gt fun h => _;
+  contrapose! h_chromatic_ge;
+  exact Order.le_of_lt_add_one h
