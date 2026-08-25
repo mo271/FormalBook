@@ -5,10 +5,11 @@ Authors: Moritz Firsching, Julien Michel
 -/
 import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import FormalBook.Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
-import Mathlib.Data.Real.StarOrdered
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Arctan
 import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Tactic.NormNum.RealSqrt
 
 /-!
@@ -83,22 +84,22 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
   · ring_nf
   convert_to ∑' n : ℕ, ∫⁻ x : ℝ, (Ioo 0 1).indicator 1 x * ofReal x ^ n *
     ∫⁻ y : ℝ, (Ioo 0 1).indicator 1 y * ofReal y ^ n = _ using 3 with n
-  . rw [lintegral_mul_const _ (by clear * -; measurability)]
+  . rw [lintegral_mul_const _ (by measurability)]
   convert_to ∑' n : ℕ, ∫⁻ x : ℝ, ∫⁻ y : ℝ,
     (Ioo 0 1).indicator 1 x * (Ioo 0 1).indicator 1 y * (ofReal x * ofReal y) ^ n = _
       using 5 with n x
-  . rw [←lintegral_const_mul _ (by clear * -; measurability)]
+  . rw [←lintegral_const_mul _ (by measurability)]
     ring_nf
     -- Now we exchange the sum and the integrals using Tonelli's theorem twice.
     -- Using ℝ≥0∞ integrals saves us from checking integrability conditions.
   convert_to ∫⁻ x : ℝ, ∑' n : ℕ, ∫⁻ y : ℝ,
     (Ioo 0 1).indicator 1 x * (Ioo 0 1).indicator 1 y * (ofReal x * ofReal y) ^ n = _
       using 1
-  . rw [lintegral_tsum (by clear * -; measurability)]
+  . rw [lintegral_tsum (by measurability)]
   convert_to ∫⁻ x : ℝ, ∫⁻ y : ℝ, ∑' n : ℕ,
     (Ioo 0 1).indicator 1 x * (Ioo 0 1).indicator 1 y * (ofReal x * ofReal y) ^ n = _
       using 3 with x
-  . rw [lintegral_tsum (by clear * -; measurability)]
+  . rw [lintegral_tsum (by measurability)]
   convert_to ∫⁻ x : ℝ, ∫⁻ y : ℝ, (Ioo 0 1).indicator 1 x * (Ioo 0 1).indicator 1 y *
     ((1 - ofReal x * ofReal y)⁻¹) = _ using 5 with x y
   · rw [ENNReal.tsum_mul_left, tsum_geometric]
@@ -131,7 +132,7 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
     · intro a; ext <;> linarith only
   have fS_eq_T : f '' S = T := by
     ext xy
-    simp only [mem_setOf_eq, mem_image, T, f, S]
+    simp only [mem_ofPred_eq, mem_image, T, f, S]
     constructor
     · intro ⟨uv, h1, h2⟩
       set u := uv.1
@@ -309,7 +310,7 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
     · congr! 2 with u
       rw [←lintegral_const_mul]
       · ring_nf
-      · clear *-; measurability
+      · measurability
   convert_to
     (2 * ∫⁻ u : ℝ in Ioo 0 2⁻¹, ∫⁻ v : ℝ in Ioo (-u) u,
       ofReal ((1 - (u - v) * (u + v))⁻¹)) +

@@ -21,7 +21,7 @@ private def acLoop : Path acBase acBase where
     show QuotientAddGroup.mk (1 : ℝ) = QuotientAddGroup.mk 0
     rw [QuotientAddGroup.eq]; simp
 
-private def acCov : IsCoveringMap (QuotientAddGroup.mk : ℝ → AddCircle (1 : ℝ)) :=
+private theorem acCov : IsCoveringMap (QuotientAddGroup.mk : ℝ → AddCircle (1 : ℝ)) :=
   AddCircle.isCoveringMap_coe 1
 
 private theorem acLoop_lift_eq :
@@ -245,7 +245,7 @@ private theorem retraction_from_fp_free {f : ℂ → ℂ}
 private theorem brouwer_complex
     (f : ℂ → ℂ) (hf : Continuous f) (hB : ∀ x, ‖x‖ ≤ 1 → ‖f x‖ ≤ 1) :
     ∃ x, ‖x‖ ≤ 1 ∧ f x = x := by
-  by_contra h; push_neg at h
+  by_contra h; push Not at h
   have hfp : ∀ x, ‖x‖ ≤ 1 → f x ≠ x := fun x hx hfx => (h x hx hfx).elim
   exact no_retraction_complex (retraction_from_fp_free hf hB hfp)
 

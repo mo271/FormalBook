@@ -378,7 +378,7 @@ theorem c4_free_edge_bound
   -- If 4e ≤ n, done since n * √(4n-3) ≥ 0
   by_cases h4e_le : 4 * (e : ℝ) ≤ (n : ℝ)
   · linarith [mul_nonneg (Nat.cast_nonneg n) (Real.sqrt_nonneg (4 * (n : ℝ) - 3))]
-  push_neg at h4e_le
+  push Not at h4e_le
   -- Otherwise 4e > n, so 4e - n > 0. We square both sides.
   rw [show 4 * (e : ℝ) ≤ (n : ℝ) + (n : ℝ) * Real.sqrt (4 * (n : ℝ) - 3) ↔
       4 * (e : ℝ) - (n : ℝ) ≤ (n : ℝ) * Real.sqrt (4 * (n : ℝ) - 3) by constructor <;> intro h <;> linarith]
@@ -434,7 +434,7 @@ theorem sum_divisor_count (n : ℕ) :
         exact ⟨Nat.lt_succ_of_le (Nat.le_of_dvd (by omega) hdj), hdj⟩
       · rintro ⟨hd_lt, hdj⟩
         refine ⟨⟨?_, ?_⟩, hdj⟩
-        · by_contra h; push_neg at h; interval_cases d; simp at hdj; exact hj0 hdj
+        · by_contra h; push Not at h; interval_cases d; simp at hdj; exact hj0 hdj
         · exact le_trans (Nat.le_of_dvd (by omega) hdj) hj.2
   · intro i hi
     have hioc : Finset.Ioc 0 n = Finset.Icc 1 n := by
@@ -721,15 +721,15 @@ lemma orthogonal_set_card [Fintype (PG2 p)]
   have hφ_apply : ∀ w, φ w = u ⬝ᵥ w := fun _ => rfl
   have hφ : φ ≠ 0 := by
     intro h; exact hu ((dotProductEquiv (ZMod p) (Fin 3)).map_eq_zero_iff.mp h)
-  haveI : FiniteDimensional (ZMod p) (Fin 3 → ZMod p) := inferInstance
+  have : FiniteDimensional (ZMod p) (Fin 3 → ZMod p) := inferInstance
   have hfr : Module.finrank (ZMod p) (LinearMap.ker φ) = 2 := by
     have h1 := Module.Dual.finrank_ker_add_one_of_ne_zero hφ; simp at h1; omega
-  haveI : Finite (ZMod p) := inferInstance
+  have : Finite (ZMod p) := inferInstance
   have hcard : Nat.card (ℙ (ZMod p) (LinearMap.ker φ)) = p + 1 := by
     rw [Projectivization.card_of_finrank_two _ _ hfr, Nat.card_zmod]
   have hι_inj : Function.Injective (Projectivization.map (LinearMap.ker φ).subtype
     (Submodule.injective_subtype _)) := Projectivization.map_injective _ _
-  haveI : Fintype (ℙ (ZMod p) (LinearMap.ker φ)) := Fintype.ofFinite _
+  have : Fintype (ℙ (ZMod p) (LinearMap.ker φ)) := Fintype.ofFinite _
   rw [show p + 1 = Finset.card (Finset.univ : Finset (ℙ (ZMod p) (LinearMap.ker φ))) from by
     rw [Finset.card_univ, Fintype.card_eq_nat_card]; exact hcard.symm]
   symm

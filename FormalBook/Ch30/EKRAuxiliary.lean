@@ -98,7 +98,7 @@ lemma arc_lemma {n k : ℕ} (h2k : 2 * k ≤ n) (S : Finset (Fin n))
   · obtain ⟨i₀, hi₀⟩ := hne; exact absurd (hS i₀ hi₀ i₀ hi₀) (by simp [circularArc])
   have hkn : k ≤ n := by omega
   obtain ⟨i₀, hi₀⟩ := hne
-  haveI : NeZero n := ⟨by omega⟩
+  have : NeZero n := ⟨by omega⟩
   let f : Fin n → ℕ := fun s =>
     let d := (s - i₀).val
     if d < k then d else d - (n - k)

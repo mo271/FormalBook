@@ -24,7 +24,7 @@ theorem isDiag_iff_exists {z : Sym2 α} : z.IsDiag ↔ ∃ x, z = s(x, x) := by
 theorem not_isDiag_iff_exists {z : Sym2 α} : ¬ z.IsDiag ↔ ∃ x y, x ≠ y ∧ z = s(x, y) := by
   induction z with | _ x y =>
   rw [mk_isDiag_iff, not_iff_comm]
-  push_neg
+  push Not
   constructor
   · intro h; simpa using h x y
   · aesop
