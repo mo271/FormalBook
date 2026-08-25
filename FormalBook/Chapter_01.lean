@@ -197,7 +197,7 @@ noncomputable def invRealHom : ℕ →*₀ ℝ :=
 
 lemma S1_eq_smoothNumbers (x : ℝ) : S₁ x = Nat.smoothNumbers (⌊x⌋₊ + 1) := by
   ext n
-  simp only [S₁, Nat.smoothNumbers, Set.mem_setOf_eq]
+  simp only [S₁, Nat.smoothNumbers, Set.mem_ofPred_eq]
   constructor
   · intro hn
     have hn0 : n ≠ 0 := by
@@ -367,7 +367,7 @@ theorem euler_product_rearrangement (x: ℝ) (n: ℕ) (hxge : x ≥ n) (hxlt : x
         intro he0; subst he0; exact he (Finset.mem_singleton_self 0)
       have pnin : (p : ℕ)^e ∉ S₁ x := by
         intro h
-        simp only [S₁, Set.mem_setOf_eq] at h
+        simp only [S₁, Set.mem_ofPred_eq] at h
         have h_dvd : (p : ℕ) ∣ (p : ℕ)^e := dvd_pow_self _ enz
         have hle : (p : ℝ) ≤ x := h (p : ℕ) pprime h_dvd
         have : (p : ℕ) ≤ ⌊x⌋ := Int.le_floor.mpr hle
@@ -465,7 +465,7 @@ theorem sum_le_infinite_sum (x: ℝ) (n: ℕ) (hxge : x ≥ n) (hxlt : x < n + 1
 
   . have: i ∈ Set.Icc 1 n ∨ i ∉ Set.Icc 1 n := by exact Decidable.em (i ∈ Set.Icc 1 n)
     rcases this with (case | case)
-    . simp [case]
+    . simp
       have: i ∈ S₁ x := by {
         unfold S₁
         have i_lt_n: i ≤ n := by simp_all only [ge_iff_le, Set.mem_Icc]
@@ -478,18 +478,18 @@ theorem sum_le_infinite_sum (x: ℝ) (n: ℕ) (hxge : x ≥ n) (hxlt : x < n + 1
 
           bound
         }
-        rewrite [Set.mem_setOf]
+        rewrite [Set.mem_ofPred]
         assumption
       }
-      simp_all only [ge_iff_le, Set.mem_Icc, Set.indicator_of_mem, le_refl]
+      simp_all only [ge_iff_le, Set.mem_Icc]
       sorry
-    . simp [case]
+    . simp
       clear case
       have: i ∈ (S₁ x) ∨ i ∉ S₁ x := by exact Decidable.em (i ∈ S₁ x)
       rcases this with (case | case)
-      . simp_all only [ge_iff_le, Set.indicator_of_mem, inv_nonneg, cast_nonneg]
+      . simp_all only [ge_iff_le]
         sorry
-      . simp_all only [ge_iff_le, not_false_eq_true, Set.indicator_of_notMem, le_refl]
+      . simp_all only [ge_iff_le]
         sorry
 }
 
@@ -534,7 +534,7 @@ theorem geom_series_simp (n : ℕ) (x : ℝ) (hxge : x ≥ n) (hxlt : x < n + 1)
     clear this
     apply Finset.prod_image
     intros i hi j hj hij
-    have := Nat.nth_injective (Nat.infinite_setOf_prime) hij
+    have := Nat.nth_injective (Nat.infinite_setOfPred_prime) hij
     assumption
   }
   rewrite [this]
@@ -588,7 +588,7 @@ lemma prime_counting_lemma (x : ℝ) :
       have h_term_le : ∀ k ∈ Finset.Icc 1 (primeCountingReal x), ((Nat.nth Nat.Prime k : ℝ) / ((Nat.nth Nat.Prime k) - 1)) ≤ ((k + 1) : ℝ) / (k : ℝ) := by
         intro k hk; rw [ div_le_div_iff₀ ] <;> norm_num;
         · norm_cast;
-          rw [ Int.subNatNat_eq_coe ] ; push_cast ; nlinarith [ Nat.Prime.one_lt ( Nat.prime_nth_prime k ), show Nat.nth Nat.Prime k ≥ k + 1 from Nat.recOn k ( Nat.Prime.pos ( Nat.prime_nth_prime 0 ) ) fun n ihn => Nat.succ_le_of_lt ( Nat.lt_of_le_of_lt ihn ( Nat.nth_strictMono ( Nat.infinite_setOf_prime ) ( Nat.lt_succ_self _ ) ) ) ];
+          rw [ Int.subNatNat_eq_coe ] ; push_cast ; nlinarith [ Nat.Prime.one_lt ( Nat.prime_nth_prime k ), show Nat.nth Nat.Prime k ≥ k + 1 from Nat.recOn k ( Nat.Prime.pos ( Nat.prime_nth_prime 0 ) ) fun n ihn => Nat.succ_le_of_lt ( Nat.lt_of_le_of_lt ihn ( Nat.nth_strictMono ( Nat.infinite_setOfPred_prime ) ( Nat.lt_succ_self _ ) ) ) ];
         · exact Nat.Prime.one_lt ( Nat.prime_nth_prime k );
         · linarith [ Finset.mem_Icc.mp hk ];
       exact Finset.prod_le_prod ( fun _ _ => div_nonneg ( Nat.cast_nonneg _ ) ( sub_nonneg.mpr ( Nat.one_le_cast.mpr ( Nat.Prime.pos ( Nat.prime_nth_prime _ ) ) ) ) ) h_term_le
@@ -685,7 +685,7 @@ theorem infinity_of_primes₅ : { p : ℕ | p.Prime }.Infinite := by
       obtain ⟨b₂, hb₂, hNab₂⟩ := hO₂ a haO₂
       refine ⟨b₁*b₂, mul_pos hb₁ hb₂,
         Set.subset_inter (subset_trans ?_ hNab₁) (subset_trans ?_ hNab₂)⟩
-      <;> simp only [N, Set.setOf_subset_setOf, forall_exists_index, forall_apply_eq_imp_iff,
+      <;> simp only [N, Set.ofPred_subset_ofPred, forall_exists_index, forall_apply_eq_imp_iff,
         add_right_inj]
       · refine fun k ↦ ⟨b₂*k, by ring⟩
       · refine fun k ↦ ⟨b₁*k, by ring⟩
@@ -706,7 +706,7 @@ theorem infinity_of_primes₅ : { p : ℕ | p.Prime }.Infinite := by
 
   have IsClosed_N (a b : ℤ) (hb : 0 < b) : IsClosed (N a b):= by
     refine isOpen_compl_iff.1 (Or.inr fun n hn ↦ ⟨b, hb, fun k hk ↦ ?_⟩)
-    simp only [N, Set.mem_compl_iff, Set.mem_setOf_eq, not_exists] at *
+    simp only [N, Set.mem_compl_iff, Set.mem_ofPred_eq, not_exists] at *
     intro b₁ hb₁
     obtain ⟨m, hm⟩ := hk
     apply hn (b₁ - m)
@@ -726,7 +726,7 @@ theorem infinity_of_primes₅ : { p : ℕ | p.Prime }.Infinite := by
       rw [Int.ofNat_dvd_left]
       exact (Nat.minFac_dvd (Int.natAbs n))
     ext n
-    simp only [Set.mem_setOf_eq, N, zero_add, Set.mem_iUnion, exists_prop, Int.reduceNeg,
+    simp only [Set.mem_ofPred_eq, N, zero_add, Set.mem_iUnion, exists_prop, Int.reduceNeg,
       Set.mem_compl_iff, Set.mem_insert_iff, Set.mem_singleton_iff, not_or]
     constructor
     · intro ⟨p, hp, ⟨k, hk⟩⟩

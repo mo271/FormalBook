@@ -131,7 +131,7 @@ theorem dalembert_lemma {p : Polynomial ℂ} (hp : p.natDegree > 0)
       split_ands
       · calc
           _ = ‖(∑ k ∈ Icc (m + 1) n, C (c k) * X ^ k).eval z‖ := by congr 2; ext i; simp [r]
-          _ = ‖∑ k ∈ Icc (m + 1) n, c k * z ^ k‖ := by simp [eval_finset_sum]
+          _ = ‖∑ k ∈ Icc (m + 1) n, c k * z ^ k‖ := by simp [eval_finsetSum]
           _ ≤ ∑ k ∈ Icc (m + 1) n, ‖c k * z ^ k‖ := by apply norm_sum_le
           _ ≤ ∑ k ∈ Icc (m + 1) n, ‖c k‖ * ‖z‖ ^ k := by simp
           _ ≤ (∑ k ∈ Icc (m + 1) n, ‖c k‖) * ‖z‖ ^ (m + 1) := by
