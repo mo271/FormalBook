@@ -89,7 +89,7 @@ lemma lemma_35_1_aux {F : Type*} [Field F] [Fintype F] [DecidableEq F] (n : ℕ)
                 apply Or.inl
                 rfl
         obtain ⟨ q, hq_ne_zero, hq_deg, hq_eval ⟩ := h_poly_b;
-        simp +decide only [hq_eval, Set.coe_setOf, ha, ↓reduceIte, ge_iff_le] ;
+        simp +decide only [hq_eval, ha, ↓reduceIte, ge_iff_le] ;
         rw [ Fintype.card_subtype ] ;
         exact le_trans ( Finset.card_le_card ( show q.roots.toFinset ⊇ Finset.filter
           ( fun b => Polynomial.eval b q = 0 ) Finset.univ from fun x hx => by aesop ) )
@@ -107,14 +107,14 @@ lemma lemma_35_1_aux {F : Type*} [Field F] [Fintype F] [DecidableEq F] (n : ℕ)
     refine' h_count.symm ▸ le_trans ( Finset.sum_le_sum fun a _ => ‹∀ a : Fin n → F,
       Fintype.card { b : F | ( MvPolynomial.eval ( Fin.cons b a ) ) p = 0 } ≤
       if ( MvPolynomial.eval a ) g = 0 then Fintype.card F else d› a ) _;
-    simp +decide only [Finset.sum_ite, Finset.sum_const, smul_eq_mul, Set.coe_setOf, ne_eq,
+    simp +decide only [Finset.sum_ite, Finset.sum_const, smul_eq_mul, Set.coe_ofPred, ne_eq,
       Fintype.card_subtype_compl, Fintype.card_pi, Finset.prod_const, Finset.card_univ,
       Fintype.card_fin];
     simp +decide only [Finset.filter_not, Finset.card_sdiff, Finset.card_univ, Fintype.card_pi,
       Finset.prod_const, Fintype.card_fin, Finset.inter_univ, Fintype.card_subtype, le_refl];
   rcases n with ( _ | n ) <;>
     simp_all +decide only [ne_eq, zero_tsub, pow_zero, mul_one, Nat.reduceAdd,
-    Set.coe_setOf, Fintype.card_subtype_compl, Fintype.card_unique, ge_iff_le];
+    Set.coe_ofPred, Fintype.card_subtype_compl, Fintype.card_unique, ge_iff_le];
   · refine' le_trans h_count _;
     by_cases h : ( MvPolynomial.eval 0 ) g = 0 <;> simp_all +decide [ Fintype.card_subtype ];
     · simp_all +decide only [MvPolynomial.eval_eq', Finset.univ_eq_empty, Finset.prod_empty,
@@ -248,7 +248,7 @@ lemma card_exponents_le (n d : ℕ) :
     intro x; constructor <;> intro hx;
     · rcases hx with ⟨ a, ⟨ ha₁, ha₂ ⟩, rfl ⟩;
       convert ha₂ using 1;
-      simp +decide [ ← Finsupp.sum_finset_sum_index, exponents_le ];
+      simp +decide [ ← Finsupp.sum_finsetSum_index, exponents_le ];
     · refine' ⟨ fun i => x i, ⟨ _, _ ⟩, _ ⟩;
       · intro i; have := hx.out; simp_all +decide [ Finsupp.sum_fintype ];
         exact le_trans
@@ -331,7 +331,7 @@ lemma eval_linePoly {F : Type*} [CommSemiring F] {n : ℕ} (w v : Fin n → F)
     (linePoly w v p).eval t = MvPolynomial.eval (w + t • v) p := by
   rw [ linePoly ];
   simp +decide [ MvPolynomial.eval₂_eq', MvPolynomial.eval_eq' ];
-  simp +decide [ Polynomial.eval_finset_sum, Polynomial.eval_prod ];
+  simp +decide [ Polynomial.eval_finsetSum, Polynomial.eval_prod ];
   ac_rfl
 
 /-- The coefficient of `t^d` in `p(w+tv)` is equal to the evaluation of the homogeneous component
@@ -352,7 +352,7 @@ lemma coeff_linePoly_eq_homogeneousComponent_eval {F : Type*} [CommSemiring F] {
       rw [ Finset.prod_congr rfl fun i _ => by rw [ add_comm, add_pow ] ];
       simp +decide [mul_pow ];
       rw [ Finset.prod_sum ];
-      rw [ Polynomial.finset_sum_coeff, Finset.sum_eq_single ( fun i _ => x i ) ] <;>
+      rw [ Polynomial.finsetSum_coeff, Finset.sum_eq_single ( fun i _ => x i ) ] <;>
         simp +decide [Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum ]
       · simp +decide [ Polynomial.coeff_mul, Polynomial.coeff_X_pow ];
         rw [ Finset.sum_eq_single ( 0, ∑ i, x i ) ] <;> simp +decide;

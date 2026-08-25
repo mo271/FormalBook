@@ -135,7 +135,7 @@ vertex extraction) below; `sperner_coloring_rainbow_triangles` is proved modulo 
 
 /-- The standard 2-simplex equals Mathlib's `stdSimplex`. -/
 private theorem stdSimplex2_eq : stdSimplex2 = stdSimplex ℝ (Fin 3) := by
-  ext x; simp only [stdSimplex2, stdSimplex, Set.mem_setOf_eq]
+  ext x; simp only [stdSimplex2, stdSimplex, Set.mem_ofPred_eq]
 
 /-- The standard 2-simplex is compact. -/
 private theorem stdSimplex2_isCompact : IsCompact stdSimplex2 := by
@@ -146,14 +146,14 @@ private theorem stdSimplex2_isCompact : IsCompact stdSimplex2 := by
 private theorem spernerColor_exists {f : (Fin 3 → ℝ) → (Fin 3 → ℝ)}
     {v : Fin 3 → ℝ} (hv : v ∈ stdSimplex2) (hfv : f v ∈ stdSimplex2)
     (hne : f v ≠ v) : ∃ i : Fin 3, f v i < v i := by
-  by_contra h; push_neg at h
+  by_contra h; push Not at h
   have hsum_v := hv.2; have hsum_fv := hfv.2
   have : ∀ i, f v i = v i := by
     intro i
     have hle_sum : ∑ j, v j ≤ ∑ j, f v j := Finset.sum_le_sum (fun j _ => h j)
     rw [hsum_v, hsum_fv] at hle_sum
     have hge : f v i ≤ v i := by
-      by_contra hlt; push_neg at hlt
+      by_contra hlt; push Not at hlt
       have : ∑ j, v j < ∑ j, f v j :=
         Finset.sum_lt_sum (fun j _ => h j) ⟨i, Finset.mem_univ _, hlt⟩
       linarith
@@ -167,7 +167,7 @@ private theorem spernerColor_boundary {f : (Fin 3 → ℝ) → (Fin 3 → ℝ)}
     (hne : f v ≠ v) : spernerColor f v ≠ j := by
   have hex := spernerColor_exists hv hfv hne
   intro heq
-  unfold spernerColor at heq; rw [dif_pos hex] at heq
+  unfold spernerColor at heq; rw [dite_eq_left hex] at heq
   have hchoose := hex.choose_spec
   rw [heq] at hchoose
   rw [hvj] at hchoose; linarith [hfv.1 j]
@@ -201,7 +201,7 @@ private instance subdivVertDecEq (k : ℕ) : DecidableEq (SubdivVert k) :=
 
 /-- The coordinate map: send a subdivision vertex to its barycentric point in Δ². -/
 @[nolint unusedArguments]
-private noncomputable def subdivCoord (k : ℕ) (hk : 0 < k) (v : SubdivVert k) : Fin 3 → ℝ :=
+private noncomputable def subdivCoord (k : ℕ) (_hk : 0 < k) (v : SubdivVert k) : Fin 3 → ℝ :=
   fun i => (v.1 i : ℝ) / (k : ℝ)
 
 private theorem subdivCoord_mem (k : ℕ) (hk : 0 < k) (v : SubdivVert k) :
@@ -290,7 +290,7 @@ private noncomputable def subdivTriangulation (k : ℕ) (_hk : 0 < k) :
   have mkVert_coord0 : ∀ a b (h : a + b ≤ k), (mkVert a b h).1 0 = a := by
     intro a b h; simp [mkVert, Matrix.cons_val_zero]
   have mkVert_coord1 : ∀ a b (h : a + b ≤ k), (mkVert a b h).1 1 = b := by
-    intro a b h; simp [mkVert, Matrix.cons_val_one, Matrix.head_cons]
+    intro a b h; simp [mkVert, Matrix.cons_val_one]
   have hcard : ∀ t ∈ allTris, t.card = 3 := by
     intro t ht
     simp only [allTris, Finset.mem_biUnion, Finset.mem_univ, true_and] at ht
@@ -316,7 +316,7 @@ private noncomputable def subdivTriangulation (k : ℕ) (_hk : 0 < k) :
         rw [Finset.card_insert_of_notMem, Finset.card_insert_of_notMem, Finset.card_singleton]
         · simp; exact he12
         · simp only [Finset.mem_insert, Finset.mem_singleton]
-          push_neg; exact ⟨he01, he02⟩
+          push Not; exact ⟨he01, he02⟩
       · -- Down triangle: (i+1,j), (i,j+1), (i+1,j+1)
         have h01 : mkVert (i+1) j (by omega) ≠ mkVert i (j+1) (by omega) := by
           intro h; have := congr_arg (fun v => v.1 0) h; simp [mkVert_coord0] at this
@@ -333,7 +333,7 @@ private noncomputable def subdivTriangulation (k : ℕ) (_hk : 0 < k) :
         rw [Finset.card_insert_of_notMem, Finset.card_insert_of_notMem, Finset.card_singleton]
         · simp; exact he12
         · simp only [Finset.mem_insert, Finset.mem_singleton]
-          push_neg; exact ⟨he01, he02⟩
+          push Not; exact ⟨he01, he02⟩
     · simp at hcond
   refine ⟨m, ⟨allTris, hcard⟩, decode, ?_⟩
   -- Adjacency: any two vertices in the same triangle differ by ≤ 1 in each coordinate
@@ -357,11 +357,11 @@ private noncomputable def subdivTriangulation (k : ℕ) (_hk : 0 < k) :
     · -- Up triangle: mkVert ii jj, mkVert (ii+1) jj, mkVert ii (jj+1)
       rcases hda with ha' | ha' | ha' <;> rcases hdb with hb' | hb' | hb' <;>
         (simp only [Set.mem_Icc]; rw [ha', hb']; fin_cases idx <;>
-          simp [mkVert, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] <;> omega)
+          simp [mkVert, Matrix.cons_val_zero, Matrix.cons_val_one] <;> omega)
     · -- Down triangle: mkVert (ii+1) jj, mkVert ii (jj+1), mkVert (ii+1) (jj+1)
       rcases hda with ha' | ha' | ha' <;> rcases hdb with hb' | hb' | hb' <;>
         (simp only [Set.mem_Icc]; rw [ha', hb']; fin_cases idx <;>
-          simp [mkVert, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] <;> omega)
+          simp [mkVert, Matrix.cons_val_zero, Matrix.cons_val_one] <;> omega)
   · simp at hcond
 
 /-! ### Boundary parity for Sperner coloring
@@ -413,7 +413,7 @@ private lemma transitions_parity_nat : ∀ (m : ℕ) (f : Fin (m + 1) → Bool),
     have hlast_cs : f (Fin.last m).castSucc = f ⟨m, by omega⟩ :=
       congrArg f (by simp [Fin.last, Fin.castSucc])
     have hlast_succ : f (Fin.last m).succ = f ⟨m + 1, by omega⟩ :=
-      congrArg f (by simp [Fin.last, Fin.val_succ])
+      congrArg f (by simp [Fin.last])
     rw [hlast_cs, hlast_succ]
     rcases Bool.eq_false_or_eq_true (f 0) with h0 | h0 <;>
     rcases Bool.eq_false_or_eq_true (f (⟨m, by omega⟩ : Fin (m + 2))) with hm | hm <;>
@@ -433,14 +433,14 @@ private lemma odd_transitions (n : ℕ) (s : Fin (n + 1) → Bool)
 
 @[nolint unusedArguments]
 private theorem subdivSperner_odd_sum
-    (f : (Fin 3 → ℝ) → (Fin 3 → ℝ)) (hfS : ∀ x ∈ stdSimplex2, f x ∈ stdSimplex2)
-    (hne : ∀ x ∈ stdSimplex2, f x ≠ x)
-    (k : ℕ) (hk : 0 < k)
+    (f : (Fin 3 → ℝ) → (Fin 3 → ℝ)) (_hfS : ∀ x ∈ stdSimplex2, f x ∈ stdSimplex2)
+    (_hne : ∀ x ∈ stdSimplex2, f x ≠ x)
+    (k : ℕ) (_hk : 0 < k)
     (m : ℕ) (T : Triangulation m) (decode : Fin m → SubdivVert k)
-    (hadj : ∀ t ∈ T.triangles, ∀ a ∈ t, ∀ b ∈ t,
+    (_hadj : ∀ t ∈ T.triangles, ∀ a ∈ t, ∀ b ∈ t,
       ∀ i, ((decode a).1 i : ℤ) - ((decode b).1 i : ℤ) ∈ Set.Icc (-1 : ℤ) 1)
     (col : Fin m → Fin 3)
-    (hcol_boundary : ∀ v j, (decode v).1 j = 0 → col v ≠ j)
+    (_hcol_boundary : ∀ v j, (decode v).1 j = 0 → col v ≠ j)
     (h_odd_sum_hyp : Odd (∑ t ∈ T.triangles,
       (t.filter (fun v => col v = 1)).card * (t.filter (fun v => col v = 2)).card)) :
     ∃ count12 : Finset (Fin m) → ℕ,
@@ -528,7 +528,7 @@ private theorem rainbow_triangle_gives_vertices
     (hne : ∀ x ∈ stdSimplex2, f x ≠ x)
     (k : ℕ) (hk : 0 < k) (m : ℕ) (T : Triangulation m) (decode : Fin m → SubdivVert k)
     (col : Fin m → Fin 3) (t : Finset (Fin m)) (ht : t ∈ T.triangles)
-    (hcard : t.card = 3) (hrainbow : isRainbow col t)
+    (_hcard : t.card = 3) (hrainbow : isRainbow col t)
     (hcol_def : ∀ v, col v = spernerColor f (subdivCoord k hk (decode v)))
     (hadj : ∀ t ∈ T.triangles, ∀ a ∈ t, ∀ b ∈ t,
       ∀ i, ((decode a).1 i : ℤ) - ((decode b).1 i : ℤ) ∈ Set.Icc (-1 : ℤ) 1) :
@@ -555,21 +555,20 @@ private theorem rainbow_triangle_gives_vertices
   · -- f (v i) i < (v i) i
     intro i
     have hcol_i : col (vert i) = i := by
-      fin_cases i <;> simp only [vert, Matrix.cons_val_zero, Matrix.cons_val_one,
-        Matrix.head_cons] <;> assumption
+      fin_cases i <;> simp [vert] <;> assumption
     rw [hcol_def] at hcol_i
     unfold spernerColor at hcol_i
     split_ifs at hcol_i with hex
     · have := hex.choose_spec; rw [hcol_i] at this; exact this
     · -- ¬∃ j, f v j < v j means f(v) ≥ v componentwise, and ∑ = 1 forces f(v) = v.
       -- But hne says f(v) ≠ v, contradiction.
-      push_neg at hex
+      push Not at hex
       have hv_mem := subdivCoord_mem k hk (decode (vert i))
       have hfv_mem := hfS _ hv_mem
       have heq : f (subdivCoord k hk (decode (vert i))) = subdivCoord k hk (decode (vert i)) := by
         ext j
         exact le_antisymm (by
-          by_contra hlt; push_neg at hlt
+          by_contra hlt; push Not at hlt
           have : ∑ l, f (subdivCoord k hk (decode (vert i))) l >
                  ∑ l, subdivCoord k hk (decode (vert i)) l :=
             Finset.sum_lt_sum (fun l _ => hex l)
@@ -585,11 +584,9 @@ private theorem rainbow_triangle_gives_vertices
     apply subdivCoord_dist
     intro idx
     have hvi : vert i ∈ t := by
-      fin_cases i <;> simp [vert, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] <;>
-        assumption
+      fin_cases i <;> simp [vert] <;> assumption
     have hvj : vert j ∈ t := by
-      fin_cases j <;> simp [vert, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] <;>
-        assumption
+      fin_cases j <;> simp [vert] <;> assumption
     exact hadj t ht (vert i) hvi (vert j) hvj idx
 
 /-- **Geometric Sperner:** For each k ≥ 1, the Sperner coloring of the k-th regular
@@ -736,7 +733,7 @@ private theorem brouwer_fixed_point_simplex2_sperner
     ∃ x ∈ stdSimplex2, f x = x := by
   -- Use contradiction: assume no fixed point, then spernerColor is always well-defined
   by_contra hno
-  push_neg at hno
+  push Not at hno
   have hne : ∀ x ∈ stdSimplex2, f x ≠ x := by
     intro x hx heq; exact hno x hx heq
   -- For each k ≥ 1, get rainbow triangle vertices
@@ -752,7 +749,7 @@ private theorem brouwer_fixed_point_simplex2_sperner
   suffices hle : ∀ i, f xstar i ≤ xstar i by
     have heq : f xstar = xstar := by
       ext i; exact le_antisymm (hle i) (by
-        by_contra hlt; push_neg at hlt
+        by_contra hlt; push Not at hlt
         have : ∑ j, f xstar j < ∑ j, xstar j :=
           Finset.sum_lt_sum (fun j _ => hle j) ⟨i, Finset.mem_univ _, hlt⟩
         linarith [hfxstar_mem.2, hxstar_mem.2])

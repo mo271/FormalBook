@@ -170,11 +170,11 @@ theorem harmonic_geometric_arithmetic₁ (n : ℕ) (hn : 1 ≤ n)
     rwa [inv_inv, inv_div] at this
   -- Equality conditions via Mathlib's weighted AM-GM characterization
   have lhs_a : ∏ i ∈ S, a i ^ w i = geometric :=
-    Real.finset_prod_rpow _ _ (fun i _ => le_of_lt (hpos i)) _
+    Real.finsetProd_rpow _ _ (fun i _ => le_of_lt (hpos i)) _
   have rhs_a : ∑ i ∈ S, w i * a i = arithmetic := by
     change ∑ i ∈ S, (1 : ℝ) / ↑n * a i = (∑ i : Finset.Icc 1 n, a i) / ↑n
     simp_rw [div_mul_eq_mul_div, one_mul]; simp [S, Finset.sum_div]
-  have eq_a := geom_mean_eq_arith_mean_weighted_iff' S w a hw_pos hw_sum ha_nn
+  have eq_a := geom_mean_eq_arith_mean_weighted_iff_of_pos' S w a hw_pos hw_sum ha_nn
   have gm_eq_am : (geometric = arithmetic) ↔ all_equal := by
     rw [← lhs_a, ← rhs_a, eq_a]
     constructor
@@ -185,14 +185,14 @@ theorem harmonic_geometric_arithmetic₁ (n : ℕ) (hn : 1 ≤ n)
       simp [Finset.sum_const, nsmul_eq_mul, hS_card, hn_ne]
   have hb_nn : ∀ i ∈ S, (0 : ℝ) ≤ b i := fun i _ => le_of_lt (hb_pos i)
   have lhs_b : ∏ i ∈ S, b i ^ w i = geometric⁻¹ := by
-    rw [Real.finset_prod_rpow _ _ (fun i _ => le_of_lt (hb_pos i)) _]
+    rw [Real.finsetProd_rpow _ _ (fun i _ => le_of_lt (hb_pos i)) _]
     have : ∏ i ∈ S, b i = (∏ i ∈ S, a i)⁻¹ := by
       simp only [b]; exact Finset.prod_inv_distrib a
     rw [this, Real.inv_rpow (le_of_lt prod_a_pos)]
   have rhs_b : ∑ i ∈ S, w i * b i = (∑ i : Finset.Icc 1 n, 1 / a i) / ↑n := by
     change ∑ i ∈ S, (1 : ℝ) / ↑n * (a i)⁻¹ = (∑ i : Finset.Icc 1 n, 1 / a i) / ↑n
     simp_rw [div_mul_eq_mul_div, one_mul, one_div]; simp [S, Finset.sum_div]
-  have eq_b := geom_mean_eq_arith_mean_weighted_iff' S w b hw_pos hw_sum hb_nn
+  have eq_b := geom_mean_eq_arith_mean_weighted_iff_of_pos' S w b hw_pos hw_sum hb_nn
   have hm_eq_gm : (harmonic = geometric) ↔ all_equal := by
     constructor
     · intro heq
@@ -252,7 +252,7 @@ theorem harmonic_geometric_arithmetic₂ (n : ℕ) (hn : 1 ≤ n)
   have prod_a_pos : 0 < ∏ i ∈ S, a i := Finset.prod_pos (fun i _ => hpos i)
   -- Rewriting lemmas
   have lhs_a : ∏ i ∈ S, a i ^ w i = geometric :=
-    Real.finset_prod_rpow _ _ (fun i _ => le_of_lt (hpos i)) _
+    Real.finsetProd_rpow _ _ (fun i _ => le_of_lt (hpos i)) _
   have rhs_a : ∑ i ∈ S, w i * a i = arithmetic := by
     change ∑ i ∈ S, (1 : ℝ) / ↑n * a i = (∑ i : Finset.Icc 1 n, a i) / ↑n
     simp_rw [div_mul_eq_mul_div, one_mul]; simp [S, Finset.sum_div]
@@ -299,7 +299,7 @@ theorem harmonic_geometric_arithmetic₂ (n : ℕ) (hn : 1 ≤ n)
   -- Part B: GM = AM ↔ all_equal
   have gm_eq_am : (geometric = arithmetic) ↔ all_equal := by
     rw [← lhs_a, ← rhs_a,
-      geom_mean_eq_arith_mean_weighted_iff' S w a hw_pos hw_sum ha_nn]
+      geom_mean_eq_arith_mean_weighted_iff_of_pos' S w a hw_pos hw_sum ha_nn]
     constructor
     · intro h i; linarith [h i₁ (Finset.mem_univ _), h i (Finset.mem_univ _)]
     · intro h j _
@@ -312,7 +312,7 @@ theorem harmonic_geometric_arithmetic₂ (n : ℕ) (hn : 1 ≤ n)
   have hb_pos : ∀ i, 0 < b i := fun i => inv_pos.mpr (hpos i)
   have hb_nn : ∀ i ∈ S, (0 : ℝ) ≤ b i := fun i _ => le_of_lt (hb_pos i)
   have lhs_b : ∏ i ∈ S, b i ^ w i = geometric⁻¹ := by
-    rw [Real.finset_prod_rpow _ _ (fun i _ => le_of_lt (hb_pos i)) _]
+    rw [Real.finsetProd_rpow _ _ (fun i _ => le_of_lt (hb_pos i)) _]
     have : ∏ i ∈ S, b i = (∏ i ∈ S, a i)⁻¹ := by
       simp only [b]; exact Finset.prod_inv_distrib a
     rw [this, Real.inv_rpow (le_of_lt prod_a_pos)]
@@ -380,7 +380,7 @@ theorem harmonic_geometric_arithmetic₂ (n : ℕ) (hn : 1 ≤ n)
       inv_anti₀ (by positivity) inv_gm_le
     rwa [inv_inv, inv_div] at this
   -- Part D: HM = GM ↔ all_equal
-  have eq_b := geom_mean_eq_arith_mean_weighted_iff' S w b hw_pos hw_sum hb_nn
+  have eq_b := geom_mean_eq_arith_mean_weighted_iff_of_pos' S w b hw_pos hw_sum hb_nn
   have hm_eq_gm : (harmonic = geometric) ↔ all_equal := by
     constructor
     · intro heq
@@ -442,12 +442,12 @@ theorem harmonic_geometric_arithmetic₃ (n : ℕ) (hn : 1 ≤ n)
   have hb_nn : ∀ i ∈ S, (0 : ℝ) ≤ b i := fun i _ => le_of_lt (hb_pos i)
   -- Key rewriting lemmas
   have lhs_a : ∏ i ∈ S, a i ^ w i = geometric :=
-    Real.finset_prod_rpow _ _ (fun i _ => le_of_lt (hpos i)) _
+    Real.finsetProd_rpow _ _ (fun i _ => le_of_lt (hpos i)) _
   have rhs_a : ∑ i ∈ S, w i * a i = arithmetic := by
     change ∑ i ∈ S, (1 : ℝ) / ↑n * a i = (∑ i : Finset.Icc 1 n, a i) / ↑n
     simp_rw [div_mul_eq_mul_div, one_mul]; simp [S, Finset.sum_div]
   have lhs_b : ∏ i ∈ S, b i ^ w i = geometric⁻¹ := by
-    rw [Real.finset_prod_rpow _ _ (fun i _ => le_of_lt (hb_pos i)) _]
+    rw [Real.finsetProd_rpow _ _ (fun i _ => le_of_lt (hb_pos i)) _]
     have : ∏ i ∈ S, b i = (∏ i ∈ S, a i)⁻¹ := by
       simp only [b]; exact Finset.prod_inv_distrib a
     rw [this, Real.inv_rpow (le_of_lt prod_a_pos)]
@@ -494,7 +494,7 @@ theorem harmonic_geometric_arithmetic₃ (n : ℕ) (hn : 1 ≤ n)
     rwa [inv_inv, inv_div] at this
   case gm_eq =>
     rw [← lhs_a, ← rhs_a,
-      geom_mean_eq_arith_mean_weighted_iff' S w a hw_pos hw_sum ha_nn]
+      geom_mean_eq_arith_mean_weighted_iff_of_pos' S w a hw_pos hw_sum ha_nn]
     constructor
     · intro h i; linarith [h i₁ (Finset.mem_univ _), h i (Finset.mem_univ _)]
     · intro h j _
@@ -502,7 +502,7 @@ theorem harmonic_geometric_arithmetic₃ (n : ℕ) (hn : 1 ≤ n)
       simp_rw [hall]; rw [← Finset.mul_sum]
       simp [Finset.sum_const, nsmul_eq_mul, hS_card, hn_ne]
   case hm_eq =>
-    have eq_b := geom_mean_eq_arith_mean_weighted_iff' S w b hw_pos hw_sum hb_nn
+    have eq_b := geom_mean_eq_arith_mean_weighted_iff_of_pos' S w b hw_pos hw_sum hb_nn
     have sum_inv_pos : 0 < ∑ i : Finset.Icc 1 n, 1 / a i :=
       Finset.sum_pos (fun i _ => div_pos one_pos (hpos i)) ⟨i₁, Finset.mem_univ _⟩
     constructor
@@ -630,7 +630,7 @@ theorem mantel_eq_adj_degree (h : G.CliqueFree 3) (heq : #E * 4 = n ^ 2)
     intro e he
     induction e with | _ v w =>
       simp at he
-      by_contra hc; push_neg at hc
+      by_contra hc; push Not at hc
       obtain ⟨k, hk⟩ :=
         Finset.inter_nonempty_of_card_lt_card_add_card (by simp) (by simp) hc
       simp at hk; obtain ⟨hvk, hwk⟩ := hk
@@ -668,7 +668,7 @@ theorem mantel_eq_adj_degree (h : G.CliqueFree 3) (heq : #E * 4 = n ^ 2)
   -- Cauchy–Schwarz, contradicting the edge-count hypothesis.
   have hforall : ∀ e ∈ E, sum_deg e = n := by
     by_contra hc
-    push_neg at hc
+    push Not at hc
     obtain ⟨e₀, he₀, hne⟩ := hc
     have hlt : sum_deg e₀ < n := lt_of_le_of_ne (adj_degree_bnd' e₀ he₀) hne
     have h1 : ∑ e ∈ E, sum_deg e < ∑ _ ∈ E, n :=
@@ -805,7 +805,7 @@ private lemma degree_le_indepNum (h : G.CliqueFree 3) (v : α) :
     G.isIndepSet_neighborSet_of_triangleFree h v
   have hind' : G.IsIndepSet (G.neighborFinset v : Set α) := by
     intro x hx y hy hne
-    simp [SimpleGraph.mem_neighborFinset] at hx hy
+    simp only [Finset.mem_coe, SimpleGraph.mem_neighborFinset] at hx hy
     exact hind hx hy hne
   exact hind'.card_le_indepNum
 

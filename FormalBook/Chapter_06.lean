@@ -119,7 +119,7 @@ lemma div_of_qpoly_div (k n q : ℕ) (hq : 1 < q) (hk : 0 < k) (hn : 0 < n)
       simp [one_le_pow m q hq', one_le_pow k q hq', one_le_pow (m - k) q hq']
       rw [mul_sub, mul_one]
       ring_nf
-      simp only [ge_iff_le, add_right_inj]
+      simp only [add_right_inj]
       exact (pow_sub_mul_pow (q : ℤ) hkm).symm
 
     have h1 : q ^ k - 1 ∣ q ^ (m - k) - 1 :=
@@ -203,19 +203,19 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have : ∀ (A :  ConjClasses Rˣ), Fintype ↑(Set.centralizer {Quotient.out A}) :=
     fun _ ↦ setFintype (Set.centralizer {Quotient.out _})
 
-  letI fintypea : ∀ (A :  ConjClasses Rˣ), Fintype ↑{A |
+  let fintypea : ∀ (A :  ConjClasses Rˣ), Fintype ↑{A |
       have := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1} :=
         fun A ↦
-          setFintype {A | let_fun this := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1}
+          setFintype {A | have := finclassa A; Fintype.card ↑(ConjClasses.carrier A) > 1}
 
   have : Fintype ↑{A |
       have := finclassa A;  Fintype.card ↑(ConjClasses.carrier A) > 1} :=
     setFintype {A |
-                  let_fun this := finclassa A;
+                  have := finclassa A;
                   Fintype.card ↑(ConjClasses.carrier A) > 1}
 
   let S' := ConjClasses.noncenter Rˣ
-  haveI : Fintype S' := Fintype.ofFinite ↑S'
+  have : Fintype S' := Fintype.ofFinite ↑S'
   let S := S'.toFinset
   --This was wrong: n_k should be the dimension of the centralizer( in `R`), not the cardinality
   let n_k : S' → ℕ := sorry -- fun A => Fintype.card
@@ -224,15 +224,13 @@ theorem wedderburn (h: Fintype R): IsField R := by
   have h_R: Fintype.card Rˣ = q ^ n - 1 := by
     have : Fintype.card Rˣ + 1 = Fintype.card R := (Fintype.card_eq_card_units_add_one R).symm
     rw [← h_card, ← this]
-    simp only [ge_iff_le, add_le_iff_nonpos_left, nonpos_iff_eq_zero, Fintype.card_ne_zero,
-    add_tsub_cancel_right]
+    simp only [add_tsub_cancel_right]
 
   have h_Z : Fintype.card Zˣ = q - 1 := by
     have h : Fintype.card Zˣ + 1 = Fintype.card Z := (Fintype.card_eq_card_units_add_one _).symm
     have : Fintype.card Z = q := rfl
     rw [← this, ← h]
-    simp only [center_toSubsemiring, Subsemiring.center_toSubmonoid, ge_iff_le,
-      add_le_iff_nonpos_left, nonpos_iff_eq_zero, Fintype.card_ne_zero, add_tsub_cancel_right]
+    simp only [add_tsub_cancel_right]
 
   --class  formula (1)
 
@@ -267,7 +265,7 @@ theorem wedderburn (h: Fintype R): IsField R := by
       have h_k_n_lt_n: n_k A < n := by sorry
       have h_noneval := phi_div_2 n (n_k A) (h_n_k_A_dvd A) h_k_n_lt_n
       have := @eval_dvd ℤ _ _ _ q h_noneval
-      simp only [eval_mul, eval_sub, eval_pow, eval_X, eval_one, IsUnit.mul_iff] at this
+      simp only [eval_mul, eval_sub, eval_pow, eval_X, eval_one] at this
       rw [← hq] at *
       have h_cast_nk : (((q ^ (n_k A) - 1 : ℕ) : ℤ)) = (q : ℤ) ^ (n_k A) - 1 :=
         Nat.cast_sub (hq_pow_pos (n_k A))

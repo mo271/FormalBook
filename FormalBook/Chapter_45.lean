@@ -51,7 +51,7 @@ theorem remark_1 {d : ℕ} : ∃ α : Type, ∃ X : Finset α, ∃ 𝓕 : Finset
   use (Finset.powerset univ).filter (Finset.card · = d)
   simp only [univ_eq_attach, mem_filter, mem_powerset, and_imp, imp_self, implies_true, true_and]
   unfold two_colorable
-  push_neg
+  push Not
   intro coloring
   by_cases h : d ≤ (Finset.univ.filter (coloring · = 1)).card
   · refine (Finset.exists_subset_card_eq h).imp ?_
@@ -110,7 +110,7 @@ theorem MeasureTheory.measure_biUnion_lt_sum_of_inter {β : Type _}
       grind only [= Set.subset_def, = mem_erase, cases eager Subtype]
     · dsimp [t']
       simp only [↓reduceIte, coe_sdiff]
-      rw [← @MeasureTheory.measure_diff_add_inter _ _ P (t j) (t i)
+      rw [← @MeasureTheory.measure_sdiff_add_inter _ _ P (t j) (t i)
         (Set.Finite.measurableSet <| finite_toSet (t j))]
       apply ENNReal.lt_add_right (by apply measure_ne_top) h
 
@@ -184,8 +184,8 @@ theorem theorem_1 {h_d : d ≥ 2} (𝓕 : Finset (Finset X))
                   simp only [mem_compl, dite_not, Subtype.forall] at H
                   funext x
                   specialize H x.val (by simp only [coe_mem])
-                  rw [dif_neg (by simp only [Subtype.coe_eta] ; exact (mem_compl.mp x.property)),
-                    dif_neg (by simp only [Subtype.coe_eta] ; exact (mem_compl.mp x.property))] at H
+                  rw [dite_eq_right (by simp only [Subtype.coe_eta] ; exact (mem_compl.mp x.property)),
+                    dite_eq_right (by simp only [Subtype.coe_eta] ; exact (mem_compl.mp x.property))] at H
                   convert H
                 · intro k kdef
                   use (fun x => k x.val)

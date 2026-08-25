@@ -136,7 +136,7 @@ variable (k : ℕ)
 
 /-- The linear involution `(x, y, z) ↦ (y, x, -z)`. -/
 def linearInvo : Function.End (S k) := fun ⟨⟨x, y, z⟩, h⟩ => ⟨⟨y, x, -z⟩, by
-  simp only [S, Set.mem_setOf_eq] at h ⊢
+  simp only [S, Set.mem_ofPred_eq] at h ⊢
   exact ⟨by linarith [h], h.2.2, h.2.1⟩ ⟩
 
 theorem linearInvo_sq : linearInvo k ^ 2 = (1 : Function.End (S k)) := by
@@ -149,7 +149,7 @@ theorem linearInvo_sq : linearInvo k ^ 2 = (1 : Function.End (S k)) := by
   ext <;> simp
 
 theorem linearInvo_no_fixedPoints : IsEmpty (fixedPoints (linearInvo k)) := by
-  simp only [isEmpty_subtype, mem_fixedPoints, Subtype.forall, Prod.forall]
+  simp only [isEmpty_subtype, Subtype.forall, Prod.forall]
   intro x y z h hfixed
   have hfixed' : (linearInvo k ⟨⟨x, y, z⟩, h⟩).1.2.2 = z := by rw [hfixed]
   have : -z = z := hfixed'
@@ -188,7 +188,7 @@ def secondInvo : Function.End (U k) := fun ⟨⟨⟨x, y, z⟩, hS⟩, h⟩ =>
   · rw [← hS.1]; ring
   refine ⟨h, hS.2.2⟩
   ⟩, by
-    simp only [U, gt_iff_lt, secondInvo_fun, Set.mem_setOf_eq]
+    simp only [U, gt_iff_lt, secondInvo_fun, Set.mem_ofPred_eq]
     ring_nf
     exact hS.2.1⟩
 
@@ -307,6 +307,6 @@ def toTriple := fun (xyz : ℤ × ℤ × ℤ) ↦
 
 -- The second winged derived from the windeg shape of are 73 using `secondInvo`:
 
-#eval secondInvo_fun xyz
+-- #eval secondInvo_fun xyz
 
 #widget WindmillWidget with ({triple? := (toTriple <| secondInvo_fun xyz)} : WindmillWidgetProps)

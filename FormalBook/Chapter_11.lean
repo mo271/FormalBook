@@ -344,7 +344,7 @@ theorem collinear_of_subset_line {S : Set P} {a b : P}
 theorem exists_ne_of_not_collinear {S : Set P} (hncol : ¬ Collinear ℝ S) :
     ∃ a ∈ S, ∃ b ∈ S, a ≠ b := by
   by_contra h
-  push_neg at h
+  push Not at h
   -- if all points coincide, `S` is empty or a singleton: collinear in either case
   rcases Set.eq_empty_or_nonempty S with rfl | ⟨a, ha⟩
   · exact hncol (collinear_empty ℝ P)
@@ -364,7 +364,7 @@ theorem exists_third {S : Set P} {a b : P} (ha : a ∈ S) (hb : b ∈ S) (hab : 
     (h : ¬ IsOrdinaryLine (V := V) S a b) :
     ∃ c ∈ S, c ∈ lineThrough (V := V) a b ∧ c ≠ a ∧ c ≠ b := by
   by_contra hc
-  push_neg at hc
+  push Not at hc
   refine h ⟨ha, hb, hab, fun c hcS hcL => ?_⟩
   by_cases hca : c = a
   · exact Or.inl hca
@@ -384,7 +384,7 @@ that is **strictly closer**. -/
 theorem sylvester_gallai (S : Set P) (hfin : S.Finite) (hncol : ¬ Collinear ℝ S) :
     ∃ a ∈ S, ∃ b ∈ S, IsOrdinaryLine (V := V) S a b := by
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   -- the set of configurations: a point off the line through two other points
   set T : Set (P × P × P) :=
     {x | x.1 ∈ S ∧ x.2.1 ∈ S ∧ x.2.2 ∈ S ∧ x.2.1 ≠ x.2.2 ∧

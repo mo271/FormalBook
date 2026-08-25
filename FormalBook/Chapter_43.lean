@@ -4,7 +4,7 @@ Authors: Matteo Del Vecchio, Aristotle (Harmonic)
 
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 import Mathlib.Data.Int.Star
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
 import Mathlib.LinearAlgebra.Vandermonde
@@ -129,7 +129,7 @@ lemma lusternik_schnirelmann {d : ℕ}
           sub_zero, Set.mem_inter_iff, and_true];
         · have := closure_inter_sphere_disjoint_neg_of_open_inter_sphere ( U k ) ‹_›
             (Metric.sphere 0 1 ) ( by aesop ) ; simp_all +decide only [Set.mem_inter_iff,
-              mem_sphere_iff_norm, sub_zero, norm_neg, Set.disjoint_left, Set.mem_setOf_eq,
+              mem_sphere_iff_norm, sub_zero, norm_neg, Set.disjoint_left, Set.mem_ofPred_eq,
               and_true, and_imp, not_and] ;
           contrapose! this
           simp_all only [not_false_eq_true, implies_true, true_and]
@@ -147,7 +147,7 @@ lemma lusternik_schnirelmann {d : ℕ}
               }
               · simp_all only
               · apply h_neg_x_closure
-                simp_all only [Set.mem_setOf_eq, Set.inter_subset_left, and_self]
+                simp_all only [Set.mem_ofPred_eq, Set.inter_subset_left, and_self]
 
 
 /-- A Kneser graph for natural numbers `n`, `k` is a graph with vertices being `k`-subsets of
@@ -181,7 +181,7 @@ lemma KneserGraph_chromaticNumber_le (n k d : ℕ) (hk : 1 ≤ k) (h : n = 2 * k
     by_cases hA : ∃ x ∈ A, (x : ℕ) < d + 1 <;>
     by_cases hB : ∃ x ∈ B, (x : ℕ) < d + 1
     · dsimp [color]
-      rw [dif_pos hA, dif_pos hB]
+      rw [dite_eq_left hA, dite_eq_left hB]
       intro (h_eq : (⟨hA.choose.val, _⟩ : Fin (d + 2)) = ⟨hB.choose.val, _⟩)
       have h_val : hA.choose.val = hB.choose.val := congr_arg (fun (x : Fin (d + 2)) => x.val) h_eq
       have h_fin_eq : hA.choose = hB.choose := Fin.ext h_val
@@ -189,13 +189,13 @@ lemma KneserGraph_chromaticNumber_le (n k d : ℕ) (hk : 1 ≤ k) (h : n = 2 * k
       have hB_in : hA.choose ∈ B := by rw [h_fin_eq]; exact hB.choose_spec.1
       exact (Finset.disjoint_left.mp hAB) hA_in hB_in
     · dsimp [color]
-      rw [dif_pos hA, dif_neg hB]
+      rw [dite_eq_left hA, dite_eq_right hB]
       intro (h_eq : (⟨hA.choose.val, _⟩ : Fin (d + 2)) = ⟨d + 1, _⟩)
       have h_val : hA.choose.val = d + 1 := congr_arg (fun (x : Fin (d + 2)) => x.val) h_eq
       have h_lt : hA.choose.val < d + 1 := hA.choose_spec.2
       omega
     · dsimp [color]
-      rw [dif_neg hA, dif_pos hB]
+      rw [dite_eq_right hA, dite_eq_left hB]
       intro (h_eq : (⟨d + 1, _⟩ : Fin (d + 2)) = ⟨hB.choose.val, _⟩)
       have h_val : d + 1 = hB.choose.val := congr_arg (fun (x : Fin (d + 2)) => x.val) h_eq
       have h_lt : hB.choose.val < d + 1 := hB.choose_spec.2
@@ -298,7 +298,7 @@ lemma is_open_open_set_for_subsets {d : ℕ} (V : Set (Finset (EuclideanSpace �
       exact Finset ( EuclideanSpace ℝ ( Fin d ) );
       exact V
       exact fun A => { x : EuclideanSpace ℝ ( Fin d ) | ∀ y ∈ A, 0 < inner ℝ x y };
-      · simp +decide only [Set.setOf_forall];
+      · simp +decide only [Set.ofPred_forall];
         exact isOpen_biInter_finset fun x hx =>
           isOpen_lt continuous_const <| continuous_id.inner continuous_const;
       · exact Set.ext fun x =>
