@@ -45,10 +45,10 @@ def legendre_sym (a : ℤ) : ℤ :=
     ite (∃ b : ZMod p, a = (b ^ (2 : ℤ) : ZMod p)) 1 (-1)
 
 /--
-Fermat's little theorem: If `a` is nonzero modulo the odd prime `p`, then `a ^ (p - 1) = -1`
+Fermat's little theorem: If `a` is nonzero modulo the odd prime `p`, then `a ^ (p - 1) = 1`
 modulo `p`.
 -/
-lemma fermat_little (a : ℤ): (a : ZMod p) ≠ 0 → a ^ (p - 1) = (-1 : ZMod p) := by
+lemma fermat_little (a : ℤ): (a : ZMod p) ≠ 0 → a ^ (p - 1) = (1 : ZMod p) := by
   let units_finset := (Finset.univ : Finset (ZMod p)).erase 0
   let image_finset := (units_finset).image (fun x : ZMod p => (a : ZMod p) * x)
   have : units_finset = image_finset := by sorry
@@ -80,8 +80,8 @@ lemma lemma_of_Gauss (p : ℕ) [Fact (Nat.Prime p)] (a : ℤ) (h_a : (a : ZMod p
   sorry
 
 theorem quadratic_reciprocity_1 (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2)
-  [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] :
-  (legendre_sym p q) * (legendre_sym q p) = -1 ^ ((p-1) / 2 * (q - 1) / 2 ) :=
+  [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] (h_pq : p ≠ q) :
+  (legendre_sym p q) * (legendre_sym q p) = (-1) ^ ((p - 1) / 2 * ((q - 1) / 2)) :=
   sorry
 
 /-!
@@ -114,8 +114,8 @@ lemma fact_B (p : ℕ) [Fact (Prime p)] (K : Type _) [Field K] (ζ : Kˣ) (h_1 :
   sorry
 
 theorem quadratic_reciprocity_2 (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2)
-  [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] :
-  (legendre_sym p q) * (legendre_sym q p) = -1 ^ ((p-1) / 2 * (q - 1) / 2 ) := by
+  [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] (h_pq : p ≠ q) :
+  (legendre_sym p q) * (legendre_sym q p) = (-1) ^ ((p - 1) / 2 * ((q - 1) / 2)) := by
   sorry
 
 
