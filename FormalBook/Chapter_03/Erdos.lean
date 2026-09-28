@@ -130,8 +130,7 @@ theorem sum_factorization_sub (n k p m l : ℕ) (hkn : k ≤ n)
     intro h0
     rw [h0, mul_zero, descFactorial_eq_prod_range] at hdesc
     exact prod_ne_zero_iff.mpr hne hdesc
-  have := congrArg (fun x => x.factorization p) hdesc
-  simp only at this
+  have : (n.descFactorial k).factorization p = (k ! * m ^ l).factorization p := by rw [hdesc]
   rw [descFactorial_eq_prod_range, Nat.factorization_prod hne, Finsupp.coe_finsetSum,
     Finset.sum_apply, Nat.factorization_mul (factorial_ne_zero k) hml,
     Nat.factorization_pow] at this
