@@ -170,7 +170,7 @@ theorem small_n (n : ℕ) (hn : n < 4096) (k : ℕ) (hk : 0 < k) (h2k : 2 * k �
   have hhead : (primesBelow4096 ++ [4096]).head hL = 2 := rfl
   have hlast : (primesBelow4096 ++ [4096]).getLast hL = 4096 := List.getLast_append_singleton _
   have h2 : 2 ≤ n := by omega
-  exact checkAll_sound _ hL check_ok n (hhead ▸ h2) (hlast ▸ hn) k hk h2k
+  exact checkAll_sound _ hL check_ok n (hhead.trans_le h2) (hn.trans_eq hlast.symm) k hk h2k
 
 /-! ### Upper bounds when all prime factors are small -/
 
