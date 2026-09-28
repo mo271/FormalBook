@@ -1,7 +1,7 @@
 /-
-Copyright 2026 AItoBit. All rights reserved.
+Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: AItoBit
+Authors: Moritz Firsching, AItoBit
 -/
 import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Data.Nat.Choose.Factorization
