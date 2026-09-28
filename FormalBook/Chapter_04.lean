@@ -184,7 +184,8 @@ theorem linearInvo_sq : linearInvo k ^ 2 = (1 : Function.End (S k)) := by
   change linearInvo k ∘ linearInvo k = id
   funext ⟨⟨x, y, z⟩, h⟩
   apply Subtype.ext
-  simp [linearInvo]
+  change ((x, y, - -z) : ℤ × ℤ × ℤ) = (x, y, z)
+  rw [neg_neg]
 
 /-- There is no point of `S k` with `z = 0`. -/
 lemma S_z_ne_zero {x y z : ℤ} (h : ⟨x, y, z⟩ ∈ S k) : z ≠ 0 := by
@@ -205,6 +206,8 @@ def T : Set (S k) := {⟨(_, _, z), _⟩ : S k | z > 0}
 
 noncomputable instance : Fintype <| T k := by
   exact Fintype.ofFinite ↑(T k)
+
+noncomputable instance (s : Set (T k)) : Fintype s := Fintype.ofFinite s
 
 /-- The subset of `S k` where `x - y + z > 0`. -/
 def U : Set (S k) := {⟨(x, y, z), _⟩ | (x - y) + z > 0}
@@ -336,8 +339,8 @@ theorem secondInvo_sq : secondInvo k ^ 2 = 1 := by
   funext ⟨⟨⟨x, y, z⟩, hS⟩, h⟩
   apply Subtype.ext
   apply Subtype.ext
-  simp only [comp_apply, secondInvo, secondInvo_fun, id_eq, Prod.mk.injEq]
-  refine ⟨by ring, trivial, by ring⟩
+  change ((x - y + z - y + (2 * y - z), y, 2 * y - (2 * y - z)) : ℤ × ℤ × ℤ) = (x, y, z)
+  ext <;> dsimp only <;> ring
 
 variable [hk : Fact (4 * k + 1).Prime]
 theorem k_pos : 0 < k := by
@@ -359,28 +362,49 @@ def singletonFixedPoint : Finset (U k) :=
 /-- Any fixed point of `secondInvo k` must be `(k, 1, 1)`. -/
 theorem eq_of_mem_fixedPoints : fixedPoints (secondInvo k) = singletonFixedPoint k := by
   ext ⟨⟨⟨x, y, z⟩, hS⟩, hU⟩
-  simp only [mem_fixedPoints, IsFixedPt, singletonFixedPoint, Finset.coe_singleton,
-    Set.mem_singleton_iff, secondInvo, secondInvo_fun, Subtype.mk.injEq, Prod.mk.injEq]
+  have key : (⟨⟨(x, y, z), hS⟩, hU⟩ : U k) ∈ fixedPoints (secondInvo k) ↔
+      x = k ∧ y = 1 ∧ z = 1 := by
+    constructor
+    · intro hfix
+      have hfix' : secondInvo k ⟨⟨(x, y, z), hS⟩, hU⟩ = ⟨⟨(x, y, z), hS⟩, hU⟩ :=
+        hfix
+      have hv : secondInvo_fun (x, y, z) = (x, y, z) :=
+        congrArg (fun t : U k => t.1.1) hfix'
+      have hz : 2 * y - z = z := congrArg (fun t : ℤ × ℤ × ℤ => t.2.2) hv
+      have hyz : y = z := by linarith
+      subst y
+      obtain ⟨hS, hx, hy⟩ := hS
+      have hmul : z * (4 * x + z) = 4 * k + 1 := by rw [← hS]; ring
+      have hdvd : z.toNat ∣ 4 * k + 1 := by
+        refine ⟨(4 * x + z).toNat, ?_⟩
+        have : (((z.toNat * (4 * x + z).toNat : ℕ)) : ℤ) = 4 * k + 1 := by
+          push_cast
+          rw [Int.toNat_of_nonneg (by linarith), Int.toNat_of_nonneg (by linarith), hmul]
+        exact_mod_cast this.symm
+      rcases hk.out.eq_one_or_self_of_dvd _ hdvd with h1 | h1
+      · have hz1 : z = 1 := by omega
+        subst hz1
+        have h4 : 4 * x = 4 * (k : ℤ) := by linear_combination hS
+        exact ⟨by linarith, rfl, rfl⟩
+      · have hz1 : z = 4 * k + 1 := by omega
+        exfalso
+        subst hz1
+        nlinarith [mul_pos (show (0 : ℤ) < 4 * k + 1 by positivity) hx, sq_nonneg (k : ℤ),
+          (Nat.cast_nonneg k : (0 : ℤ) ≤ k)]
+    · rintro ⟨rfl, rfl, rfl⟩
+      apply Subtype.ext
+      apply Subtype.ext
+      change ((k : ℤ) - 1 + 1, (1 : ℤ), 2 * (1 : ℤ) - 1) =
+        ((k : ℤ), (1 : ℤ), (1 : ℤ))
+      ext <;> dsimp only <;> ring
+  rw [key, singletonFixedPoint, Finset.coe_singleton, Set.mem_singleton_iff]
   constructor
-  · rintro ⟨_, _, hz⟩
-    have hyz : z = y := by linarith
-    subst hyz
-    obtain ⟨hS, hx, hy⟩ := hS
-    have hmul : z * (4 * x + z) = 4 * k + 1 := by rw [← hS]; ring
-    have hdvd : z.toNat ∣ 4 * k + 1 := by
-      refine ⟨(4 * x + z).toNat, ?_⟩
-      have : (((z.toNat * (4 * x + z).toNat : ℕ)) : ℤ) = 4 * k + 1 := by
-        push_cast
-        rw [Int.toNat_of_nonneg (by linarith), Int.toNat_of_nonneg (by linarith), hmul]
-      exact_mod_cast this.symm
-    rcases hk.out.eq_one_or_self_of_dvd _ hdvd with h1 | h1
-    · have hz1 : z = 1 := by omega
-      subst hz1
-      refine ⟨by linarith, rfl, rfl⟩
-    · have hz1 : z = 4 * k + 1 := by omega
-      nlinarith
   · rintro ⟨rfl, rfl, rfl⟩
-    refine ⟨by ring, trivial, by ring⟩
+    rfl
+  · intro h
+    have hv := congrArg (fun t : U k => t.1.1) h
+    simp only [Prod.mk.injEq] at hv
+    exact hv
 
 /-- `secondInvo k` has exactly one fixed point. -/
 theorem card_fixedPoints_eq_one : Fintype.card (fixedPoints (secondInvo k)) = 1 := by
@@ -436,11 +460,12 @@ theorem trivialInvo_fixedPoints : (fixedPoints (trivialInvo k)).Nonempty := by
   have hmod := Equiv.Perm.card_fixedPoints_modEq (p := 2) (n := 1) (f := trivialInvo k)
     (by simpa using trivialInvo_sq k)
   have hodd := card_T_odd k
+  simp only [Fintype.card_eq_nat_card] at hmod hodd
   rw [Nat.odd_iff] at hodd
   rw [Nat.ModEq, hodd] at hmod
-  have hpos : 0 < Fintype.card (fixedPoints (trivialInvo k)) := by omega
-  rw [Fintype.card_pos_iff] at hpos
-  exact Set.nonempty_coe_sort.mp hpos
+  have hpos : 0 < Nat.card (fixedPoints (trivialInvo k)) := by omega
+  rw [Nat.card_pos_iff] at hpos
+  exact Set.nonempty_coe_sort.mp hpos.1
 
 end Involutions
 
