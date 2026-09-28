@@ -13,6 +13,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.PrimesCongruentOne
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.NumberTheory.SumPrimeReciprocals
 
 open Finset Nat
 open BigOperators
@@ -22,10 +23,6 @@ open BigOperators
 ## TODO
  - Second Proof : golf/formatting
  - Third Proof : golf/formatting/comments
- - Fourth Proof
- - Fifth Proof
- - Sixth Proof
- - Appendix: Infinitely many more proofs
 
 
 ### Euclid's Proof
@@ -389,8 +386,7 @@ theorem euler_product_rearrangement (x: ℝ) (n: ℕ) (hxge : x ≥ n) (hxlt : x
     exact Finset.prod_image (s := s) (g := fun i : Nat.Primes ↦ i.1) (f := fun (p : ℕ) ↦ ∑' k : ℕ, ((p : ℝ) ^ k)⁻¹) (fun i _ j _ hij => Subtype.ext hij)
   rw [h_prod_img]
   refine Finset.prod_congr rfl fun y hy => ?_
-  congr 1
-  ext e
+  refine tsum_congr fun e => ?_
   have hy_mem : y.1 ∈ (⌊x⌋.natAbs + 1).primesBelow := by
     rw [← hs]
     exact Finset.mem_image_of_mem (fun i : Nat.Primes ↦ i.1) hy
@@ -443,108 +439,64 @@ theorem log_riemann_bound (x: ℝ) (n: ℕ) (hxge : x ≥ n) (hxlt : x < n + 1):
 }
 
 theorem sum_le_infinite_sum (x: ℝ) (n: ℕ) (hxge : x ≥ n) (hxlt : x < n + 1): ∑ k ∈ Icc 1 n, (k : ℝ)⁻¹ ≤ (∑' m : (S₁ x), (m : ℝ)⁻¹):= by {
-  have:= _root_.tsum_subtype (S₁ x) (fun y => (y:ℝ)⁻¹)
-  rewrite [this]
-  clear this
-  rewrite [sum_eq_tsum_indicator]
-
-  gcongr with i
-  . rewrite [← summable_subtype_iff_indicator]
-    apply Finset.summable
-  . apply Summable.of_norm
-    have hf:= arithmetic_f x n hxlt
-    obtain ⟨f, hf⟩ := hf
+  rw [_root_.tsum_subtype (S₁ x) (fun y => (y:ℝ)⁻¹)]
+  have hsum : Summable ((S₁ x).indicator (fun y : ℕ => (y:ℝ)⁻¹)) := by
+    apply Summable.of_norm
+    obtain ⟨f, hf⟩ := arithmetic_f x n hxlt
     have sum := f_abs_summable x n hxge hxlt f hf
-    have: ∀ i, f i = f.toFun i := by exact fun i ↦ rfl
-    conv at sum =>
-      left
-      ext i
-      rewrite [this i]
-      rewrite [hf]
-    assumption
-
-  . have: i ∈ Set.Icc 1 n ∨ i ∉ Set.Icc 1 n := by exact Decidable.em (i ∈ Set.Icc 1 n)
-    rcases this with (case | case)
-    . simp
-      have: i ∈ S₁ x := by {
-        unfold S₁
-        have i_lt_n: i ≤ n := by simp_all only [ge_iff_le, Set.mem_Icc]
-        have i_ge_one: i ≥ 1 := by simp_all only [ge_iff_le, Set.mem_Icc, and_true]
-        have: ∀ p, Nat.Prime p → p ∣ i → ↑ p ≤ x := by {
-          intro p pprime pdvd
-          have: p ≤ i := by exact le_of_dvd i_ge_one pdvd
-          have: p ≤ n := by bound
-          have: (p: ℝ) ≤ ↑ n := by gcongr
-
-          bound
-        }
-        rewrite [Set.mem_ofPred]
-        assumption
-      }
-      simp_all only [ge_iff_le, Set.mem_Icc]
-      sorry
-    . simp
-      clear case
-      have: i ∈ (S₁ x) ∨ i ∉ S₁ x := by exact Decidable.em (i ∈ S₁ x)
-      rcases this with (case | case)
-      . simp_all only [ge_iff_le]
-        sorry
-      . simp_all only [ge_iff_le]
-        sorry
+    have : ∀ i, f i = f.toFun i := fun i ↦ rfl
+    simp only [this, hf] at sum
+    exact sum
+  have hmem : ∀ k ∈ Icc 1 n, k ∈ S₁ x := by
+    intro k hk p pprime pdvd
+    rw [Finset.mem_Icc] at hk
+    have : p ≤ n := le_trans (le_of_dvd hk.1 pdvd) hk.2
+    have : (p : ℝ) ≤ n := by exact_mod_cast this
+    linarith
+  calc ∑ k ∈ Icc 1 n, (k : ℝ)⁻¹
+        = ∑ k ∈ Icc 1 n, (S₁ x).indicator (fun y : ℕ => (y:ℝ)⁻¹) k :=
+        Finset.sum_congr rfl fun k hk =>
+          (Set.indicator_of_mem (hmem k hk) (fun y : ℕ => (y:ℝ)⁻¹)).symm
+    _ ≤ _ := hsum.sum_le_tsum _ (fun i _ => Set.indicator_nonneg (fun _ _ => by positivity) i)
 }
 
-theorem geom_series_simp (n : ℕ) (x : ℝ) (hxge : x ≥ n) (hxlt : x < n + 1) : (∏ p ∈ primesBelow (⌊x⌋.natAbs+1), (∑' k : ℕ, (p ^ k : ℝ)⁻¹)) = (∏ k ∈ Icc 1 (primeCountingReal x), ((nth Nat.Prime (k-1)):ℝ) / ((nth Nat.Prime (k-1)) - 1)) := by {
-
-  have: ∏ p ∈ (⌊x⌋.natAbs + 1).primesBelow, ∑' (k : ℕ), ((p: ℝ) ^ k)⁻¹ = ∏ p ∈ (⌊x⌋.natAbs + 1).primesBelow, ∑' (k : ℕ), ((p: ℝ)⁻¹ ^ k) := by {
-    have: ∀ p: ℕ, ∀ k: ℕ, ((p: ℝ)^k)⁻¹ = ((p: ℝ)⁻¹)^k := by {
-    intro p k
-    bound
-    }
-    apply Finset.prod_congr
-    rfl
-    intro i hi
-    congr
-    ext k
-    exact this i k
-  }
-
-  rewrite [this]
-  clear this
-  have:  ∏ p ∈ (⌊x⌋.natAbs + 1).primesBelow, ∑' (k : ℕ), ((p: ℝ))⁻¹ ^ k =  ∏ p ∈ (⌊x⌋.natAbs + 1).primesBelow, (1-(p: ℝ)⁻¹)⁻¹ := by {
-    apply Finset.prod_congr
-    rfl
+theorem geom_series_simp (n : ℕ) (x : ℝ) (hxge : x ≥ n) (hxlt : x < n + 1) : (∏ p ∈ primesBelow (⌊x⌋.natAbs+1), (∑' k : ℕ, (p ^ k : ℝ)⁻¹)) = (∏ k ∈ Icc 1 (primeCountingReal x), ((nth Nat.Prime (k-1)):ℝ) / ((nth Nat.Prime (k-1)) - 1)) := by
+  have hx0 : 0 ≤ x := le_trans (Nat.cast_nonneg n) hxge
+  have hMf : ⌊x⌋.natAbs = ⌊x⌋₊ := by
+    have h1 : 0 ≤ ⌊x⌋ := Int.floor_nonneg.mpr hx0
+    exact_mod_cast (Int.natAbs_of_nonneg h1).trans (Int.toNat_of_nonneg h1).symm
+  have hpc : primeCountingReal x = count Nat.Prime (⌊x⌋.natAbs + 1) := by
+    unfold primeCountingReal
+    split_ifs with h
+    · have : x = 0 := le_antisymm h hx0
+      subst this
+      simp [Nat.count_succ, Nat.not_prime_zero]
+    · rw [hMf]
+      rfl
+  rw [hpc]
+  have hL : ∀ p ∈ (⌊x⌋.natAbs + 1).primesBelow,
+      ∑' k : ℕ, ((p:ℝ)^k)⁻¹ = (p:ℝ) / ((p:ℝ) - 1) := by
     intro p hp
-
-    have: p > 1 := by {
-      have: Nat.Prime p := by exact prime_of_mem_primesBelow hp
-      exact one_lt this
-    }
-    apply tsum_geometric_of_lt_one
-    bound
-    have: (p:ℝ) > 1 := by exact one_lt_cast.mpr this
-    bound
-  }
-  rewrite [this]
-  clear this
-  have: ∏ p ∈ (⌊x⌋.natAbs + 1).primesBelow, (1 - (p: ℝ)⁻¹)⁻¹ = ∏ k ∈ Icc 1 (primeCountingReal (x)), (1 - ((nth Nat.Prime (k)): ℝ)⁻¹)⁻¹ := by {
-    have: (⌊x⌋.natAbs + 1).primesBelow = (Icc 1 (primeCountingReal (x))).image (fun k => nth Nat.Prime (k)) := by {
-      sorry
-    }
-    rewrite [this]
-    clear this
-    apply Finset.prod_image
-    intros i hi j hj hij
-    have := Nat.nth_injective (Nat.infinite_setOfPred_prime) hij
-    assumption
-  }
-  rewrite [this]
-  clear this
-  apply Finset.prod_congr
-  rfl
-  intro i hi
-  sorry
-
-}
+    have h1 : (1:ℝ) < p := by exact_mod_cast (prime_of_mem_primesBelow hp).one_lt
+    simp_rw [← inv_pow]
+    rw [tsum_geometric_of_lt_one (by positivity) (inv_lt_one_of_one_lt₀ h1)]
+    have : (p:ℝ) - 1 ≠ 0 := by linarith
+    field_simp
+  rw [Finset.prod_congr rfl hL]
+  have himg : (⌊x⌋.natAbs + 1).primesBelow =
+      (range (count Nat.Prime (⌊x⌋.natAbs + 1))).image (nth Nat.Prime) := by
+    ext p
+    simp only [Finset.mem_image, Finset.mem_range, Nat.mem_primesBelow]
+    constructor
+    · rintro ⟨hlt, hp⟩
+      exact ⟨count Nat.Prime p, (lt_nth_iff_count_lt Nat.infinite_setOfPred_prime).2
+        (by rw [nth_count hp]; exact hlt), nth_count hp⟩
+    · rintro ⟨i, hi, rfl⟩
+      exact ⟨(lt_nth_iff_count_lt Nat.infinite_setOfPred_prime).1 hi, prime_nth_prime i⟩
+  rw [himg, Finset.prod_image
+    (fun i _ j _ hij => Nat.nth_injective Nat.infinite_setOfPred_prime hij)]
+  refine Finset.prod_nbij' (fun i => i + 1) (fun j => j - 1) ?_ ?_ ?_ ?_ ?_ <;>
+    intro a ha <;> (simp_all; try omega)
 
 lemma H_P4_1 {k p: ℝ} (hk: k > 0) (hp: p ≥ k + 1): p / (p - 1) ≤ (k + 1) / k := by
   have h_k_nonzero: k ≠ 0 := ne_iff_lt_or_gt.mpr (Or.inr hk)
@@ -605,8 +557,19 @@ theorem infinity_of_primes₄ : Tendsto π atTop atTop := by
       _ ≤ (∑' m : (S₁ x), (m : ℝ)⁻¹) := by exact sum_le_infinite_sum x n hxge hxlt
       _ ≤ (∏ p ∈ primesBelow (⌊x⌋.natAbs+1), (∑' k : ℕ, (p ^ k : ℝ)⁻¹)) := by {have := euler_product_rearrangement x n hxge hxlt; bound}
       _ ≤ (∏ k ∈ Icc 1 (primeCountingReal x), ((nth Nat.Prime (k-1)):ℝ) / ((nth Nat.Prime (k-1)) - 1)) := by {have := geom_series_simp n x hxge hxlt; bound}
-      _ ≤ (∏ k ∈ Icc 1 (primeCountingReal x), (k) / k-1) := by {sorry}
-      _ ≤ primeCountingReal x + 1 := by {sorry}
+      _ ≤ (∏ k ∈ Icc 1 (primeCountingReal x), ((k : ℝ) + 1) / k) := by
+        apply Finset.prod_le_prod
+        · intro k hk
+          have h2 : (2 : ℝ) ≤ nth Nat.Prime (k-1) := by
+            exact_mod_cast (prime_nth_prime (k-1)).two_le
+          exact div_nonneg (by linarith) (by linarith)
+        · intro k hk
+          have hk1 : 1 ≤ k := (Finset.mem_Icc.mp hk).1
+          have hle : k + 1 ≤ nth Nat.Prime (k-1) := by
+            have := add_two_le_nth_prime (k-1)
+            omega
+          exact H_P4_1 (by exact_mod_cast hk1) (by exact_mod_cast hle)
+      _ ≤ primeCountingReal x + 1 := prod_Icc_le _
   apply tendsto_atTop.2
   intro b
   apply Filter.eventually_atTop.2
@@ -757,15 +720,33 @@ using the sum of inverses of primes
 theorem infinity_of_primes₆ :
   Tendsto (fun n ↦ ∑ p ∈ Finset.filter (fun p ↦ Nat.Prime p) (range n), 1 / (p : ℝ))
       atTop atTop := by
-  sorry
+  have h := (not_summable_iff_tendsto_nat_atTop_of_nonneg
+    (f := Set.indicator {p | p.Prime} (fun n : ℕ ↦ (1 : ℝ) / n))
+    (fun n ↦ Set.indicator_nonneg (fun p _ ↦ by positivity) n)).mp
+    not_summable_one_div_on_primes
+  refine h.congr fun n ↦ ?_
+  rw [Finset.sum_filter]
+  refine Finset.sum_congr rfl fun p _ ↦ ?_
+  simp [Set.indicator_apply]
 
 /-!
 ### Appendix: Infinitely many more proofs
 -/
 
-/-- A sequence `S` is almost injective if the preimages of singletons are uniformly bounded. -/
+/-
+The original definition quantified only over natural numbers `k : ℕ`:
+
 def AlmostInjective (S : ℕ → ℤ) : Prop :=
   ∃ c : ℕ, ∀ k : ℕ, ∃ h : Set.Finite {n : ℕ | S n = k }, (Set.Finite.toFinset h).card ≤ c
+
+This only bounds how often `S` takes *nonnegative* values, so e.g. the constant sequence `-1`
+would count as "almost injective" (see `almostInjective_on_nat_values_too_weak` below).
+The book requires that every integer value is taken at most `c` times, so `k` ranges over `ℤ`.
+-/
+/-- A sequence `S` is almost injective if the preimages of singletons are uniformly bounded. -/
+def AlmostInjective (S : ℕ → ℤ) : Prop :=
+  ∃ c : ℕ, ∀ k : ℤ, ∃ h : Set.Finite {n : ℕ | S n = k },
+    (Set.Finite.toFinset h).card ≤ c
 
 variable (fn : NNReal)
 
@@ -777,7 +758,267 @@ namespace Asymptotics
 def ofSubexponentialGrowth (S : ℕ → ℤ) : Prop := ∃ f : ℕ → ℝ≥0, ∀ n,
   |S n| ≤ (2 : ℝ) ^ ((2 : ℝ) ^ (f n : ℝ)) ∧ Tendsto (fun n ↦ (f n) / (log 2 n)) atTop (𝓝 0)
 
+/-- An almost injective sequence takes at least `N / c` distinct values on `0, …, N - 1`. -/
+lemma card_le_of_almostInjective {S : ℕ → ℤ} {c : ℕ}
+    (hc : ∀ k : ℤ, ∃ h : Set.Finite {n : ℕ | S n = k }, (Set.Finite.toFinset h).card ≤ c)
+    (N : ℕ) : N ≤ c * ((range N).image S).card := by
+  have := Finset.card_le_mul_card_image (f := S) (range N) c (fun b _ => by
+    obtain ⟨h, hcard⟩ := hc b
+    refine le_trans (Finset.card_le_card ?_) hcard
+    intro a ha
+    simp only [Finset.mem_filter] at ha
+    simpa using ha.2)
+  simpa using this
+
+/-- There are at most `2 (E+1)^|P|` nonzero integers whose prime factors lie in `P` and
+whose prime exponents are all at most `E`. -/
+lemma card_smooth_le (P : Finset ℕ) (E : ℕ) (V : Finset ℤ)
+    (hV : ∀ v ∈ V, v ≠ 0 ∧ (∀ p, p.Prime → p ∣ v.natAbs → p ∈ P) ∧
+      ∀ p, v.natAbs.factorization p ≤ E) :
+    V.card ≤ 2 * (E + 1) ^ P.card := by
+  classical
+  let g : ℤ → Bool × (P → Fin (E + 1)) := fun v =>
+    (decide (0 ≤ v), fun p => ⟨min (v.natAbs.factorization p) E, by omega⟩)
+  have hinj : Set.InjOn g V := by
+    intro v hv w hw hvw
+    obtain ⟨hv0, hvP, hvE⟩ := hV v hv
+    obtain ⟨hw0, hwP, hwE⟩ := hV w hw
+    simp only [g, Prod.mk.injEq] at hvw
+    obtain ⟨hs, hf⟩ := hvw
+    have hfac : v.natAbs.factorization = w.natAbs.factorization := by
+      ext p
+      by_cases hp : p ∈ P
+      · have := congrFun hf ⟨p, hp⟩
+        simp only [Fin.mk.injEq] at this
+        have h1 := hvE p
+        have h2 := hwE p
+        omega
+      · have h1 : v.natAbs.factorization p = 0 := by
+          by_contra h
+          have hpp := Nat.prime_of_mem_primeFactors (Finsupp.mem_support_iff.mpr h)
+          exact hp (hvP p hpp (Nat.dvd_of_mem_primeFactors (Finsupp.mem_support_iff.mpr h)))
+        have h2 : w.natAbs.factorization p = 0 := by
+          by_contra h
+          have hpp := Nat.prime_of_mem_primeFactors (Finsupp.mem_support_iff.mpr h)
+          exact hp (hwP p hpp (Nat.dvd_of_mem_primeFactors (Finsupp.mem_support_iff.mpr h)))
+        rw [h1, h2]
+    have habs : v.natAbs = w.natAbs :=
+      Nat.eq_of_factorization_eq (by simpa using hv0) (by simpa using hw0)
+        (fun p => by rw [hfac])
+    rcases Int.natAbs_eq_natAbs_iff.mp habs with h | h
+    · exact h
+    · subst h
+      simp only [decide_eq_decide] at hs
+      omega
+  have := Finset.card_le_card_of_injOn g (t := Finset.univ)
+    (fun _ _ => Finset.mem_coe.mpr (Finset.mem_univ _)) hinj
+  simpa [Fintype.card_prod, Fintype.card_bool, Fintype.card_fun] using this
+
+/-- If `|v| ≤ 2^B`, then every exponent in the prime factorization of `v` is at most `B`. -/
+lemma factorization_le_of_abs_le {v : ℤ} (hv : v ≠ 0) {B : ℝ}
+    (hB : ((|v| : ℤ) : ℝ) ≤ (2 : ℝ) ^ B)
+    (p : ℕ) : (v.natAbs.factorization p : ℝ) ≤ B := by
+  by_cases hp : p.Prime
+  · set e := v.natAbs.factorization p
+    have hdvd : p ^ e ∣ v.natAbs := Nat.ordProj_dvd _ _
+    have hle : p ^ e ≤ v.natAbs := Nat.le_of_dvd (by simpa using hv) hdvd
+    have h2 : 2 ^ e ≤ p ^ e := Nat.pow_le_pow_left hp.two_le e
+    have h3 : ((2 ^ e : ℕ) : ℤ) ≤ |v| := by
+      rw [Int.abs_eq_natAbs]; exact_mod_cast h2.trans hle
+    have h4 : (2:ℝ) ^ e ≤ ((|v| : ℤ) : ℝ) := by exact_mod_cast h3
+    have : (2 : ℝ) ^ (e : ℝ) ≤ (2 : ℝ) ^ B := by
+      rw [Real.rpow_natCast]; linarith
+    exact (Real.rpow_le_rpow_left_iff (by norm_num)).mp this
+  · rw [Nat.factorization_eq_zero_of_not_prime _ hp]
+    simp only [CharP.cast_eq_zero]
+    by_contra h
+    push_neg at h
+    have : (2 : ℝ) ^ B < 1 := Real.rpow_lt_one_of_one_lt_of_neg (by norm_num) h
+    have : (1 : ℝ) ≤ ((|v| : ℤ) : ℝ) := by
+      exact_mod_cast Int.one_le_abs hv
+    linarith
+
+lemma tendsto_nat_log_two_atTop : Tendsto (Nat.log 2) atTop atTop := by
+  refine tendsto_atTop.2 fun b => eventually_atTop.2 ⟨2 ^ b, fun n hn => ?_⟩
+  exact Nat.le_log_of_pow_le (by norm_num) hn
+
+/-- The sequence `n ↦ n` has subexponential growth. -/
+lemma ofSubexponentialGrowth_natCast :
+    ofSubexponentialGrowth (fun n : ℕ => (n : ℤ)) := by
+  refine ⟨fun n => ((Nat.log 2 (Nat.log 2 n) + 1 : ℕ) : ℝ≥0), fun n => ⟨?_, ?_⟩⟩
+  · set L := Nat.log 2 n
+    set m := Nat.log 2 L + 1
+    have h1 : n < 2 ^ (L + 1) := Nat.lt_pow_succ_log_self (by norm_num) n
+    have h2 : L + 1 ≤ 2 ^ m := Nat.lt_pow_succ_log_self (by norm_num) L
+    have h3 : n ≤ 2 ^ (2 ^ m) := h1.le.trans (Nat.pow_le_pow_right (by norm_num) h2)
+    have e1 : (((m : ℝ≥0)) : ℝ) = ((m : ℕ) : ℝ) := by simp
+    rw [e1, Real.rpow_natCast]
+    have e2 : ((2 : ℝ) ^ m) = ((2 ^ m : ℕ) : ℝ) := by push_cast; rfl
+    rw [e2, Real.rpow_natCast]
+    have : |((n : ℤ))| = (n : ℤ) := abs_of_nonneg (by positivity)
+    rw [this]
+    exact_mod_cast h3
+  · rw [← NNReal.tendsto_coe]
+    have hu : Tendsto (fun j : ℕ => ((j : ℝ) + 1) / 2 ^ j) atTop (𝓝 0) := by
+      have h1 := tendsto_pow_const_div_const_pow_of_one_lt 1 (by norm_num : (1:ℝ) < 2)
+      have h2 := tendsto_pow_const_div_const_pow_of_one_lt 0 (by norm_num : (1:ℝ) < 2)
+      simpa [add_div] using h1.add h2
+    have hu' := hu.comp (tendsto_nat_log_two_atTop.comp tendsto_nat_log_two_atTop)
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hu' ?_ ?_
+    · exact Eventually.of_forall fun n => by positivity
+    · refine eventually_atTop.2 ⟨2, fun n hn => ?_⟩
+      have hL : 0 < Nat.log 2 n := Nat.log_pos (by norm_num) hn
+      have hpow : 2 ^ Nat.log 2 (Nat.log 2 n) ≤ Nat.log 2 n := Nat.pow_log_le_self 2 hL.ne'
+      simp only [Function.comp_apply, NNReal.coe_div, NNReal.coe_natCast]
+      push_cast
+      apply div_le_div_of_nonneg_left (by positivity) (by positivity)
+      exact_mod_cast hpow
+
+/-
+The original statement claimed that the set of primes is *finite*, which is the negation of
+what the book proves (and is false, see `infinitely_many_more_proofs_finite_false`):
+
 theorem infinitely_many_more_proofs (S : ℕ → ℤ)
   (h₁ : AlmostInjective S) (h₂ : ofSubexponentialGrowth S) :
-  {p : Nat.Primes | ∃ n : ℕ, (p : ℤ) ∣ S n}.Finite := by
-  sorry
+  {p : Nat.Primes | ∃ n : ℕ, (p : ℤ) ∣ S n}.Finite
+-/
+
+/-- The original (`Finite`) version of the statement is false: `S n = n` is a counterexample. -/
+theorem infinitely_many_more_proofs_finite_false :
+    ¬ ∀ S : ℕ → ℤ, AlmostInjective S → ofSubexponentialGrowth S →
+      {p : Nat.Primes | ∃ n : ℕ, (p : ℤ) ∣ S n}.Finite := by
+  intro h
+  have hinj : AlmostInjective (fun n : ℕ => (n : ℤ)) := by
+    refine ⟨1, fun k => ⟨(Set.finite_singleton k.toNat).subset ?_, ?_⟩⟩
+    · intro n hn; simp only [Set.mem_ofPred_eq] at hn; simp; omega
+    · refine le_trans (Finset.card_le_card (t := {k.toNat}) ?_) (by simp)
+      intro n hn; simp only [Set.Finite.mem_toFinset, Set.mem_ofPred_eq] at hn; simp; omega
+  apply Set.infinite_univ (α := Nat.Primes)
+  convert h _ hinj ofSubexponentialGrowth_natCast
+  ext p
+  simp only [Set.mem_univ, Set.mem_ofPred_eq, true_iff]
+  exact ⟨p, dvd_refl _⟩
+
+/-- With the original definition of almost injective (only nonnegative values `k : ℕ`),
+even the corrected statement would be false: the constant sequence `-1` is a counterexample. -/
+theorem almostInjective_on_nat_values_too_weak :
+    ¬ ∀ S : ℕ → ℤ,
+      (∃ c : ℕ, ∀ k : ℕ, ∃ h : Set.Finite {n : ℕ | S n = k },
+        (Set.Finite.toFinset h).card ≤ c) →
+      ofSubexponentialGrowth S →
+      {p : Nat.Primes | ∃ n : ℕ, (p : ℤ) ∣ S n}.Infinite := by
+  intro h
+  have h1 : ∃ c : ℕ, ∀ k : ℕ, ∃ h : Set.Finite {n : ℕ | (fun _ => (-1 : ℤ)) n = k },
+      (Set.Finite.toFinset h).card ≤ c := by
+    refine ⟨0, fun k => ⟨?_, ?_⟩⟩
+    · convert Set.finite_empty (α := ℕ); ext n; simp
+    · simp only [Nat.le_zero, Finset.card_eq_zero, Set.Finite.toFinset_eq_empty]
+      ext n; simp
+  have h2 : ofSubexponentialGrowth (fun _ => (-1 : ℤ)) :=
+    ⟨fun _ => 0, fun n => ⟨by norm_num, by simp⟩⟩
+  apply h _ h1 h2
+  convert Set.finite_empty (α := Nat.Primes)
+  ext p
+  simp only [Set.mem_ofPred_eq, Set.mem_empty_iff_false, iff_false, not_exists]
+  intro n hdvd
+  have := Int.eq_one_of_dvd_one (Int.natCast_nonneg _) (by simpa using hdvd)
+  exact p.2.one_lt.ne' (by exact_mod_cast this)
+
+/-- **Infinitely many more proofs** (corrected statement): if `S` is almost injective and of
+subexponential growth, then infinitely many primes divide some value of `S`. -/
+theorem infinitely_many_more_proofs (S : ℕ → ℤ)
+  (h₁ : AlmostInjective S) (h₂ : ofSubexponentialGrowth S) :
+  {p : Nat.Primes | ∃ n : ℕ, (p : ℤ) ∣ S n}.Infinite := by
+  intro hfin
+  obtain ⟨c, hc⟩ := h₁
+  obtain ⟨f, hf⟩ := h₂
+  by_cases hz : ∃ n, S n = 0
+  · obtain ⟨n, hn⟩ := hz
+    apply (Set.infinite_univ (α := Nat.Primes))
+    convert hfin
+    ext p
+    simp only [Set.mem_univ, Set.mem_ofPred_eq, true_iff]
+    exact ⟨n, by rw [hn]; exact dvd_zero _⟩
+  push_neg at hz
+  set P : Finset ℕ := hfin.toFinset.image (fun p : Nat.Primes => (p:ℕ)) with hPdef
+  set k := P.card
+  have hP : ∀ n p, p.Prime → p ∣ (S n).natAbs → p ∈ P := by
+    intro n p hp hdvd
+    rw [hPdef, Finset.mem_image]
+    refine ⟨⟨p, hp⟩, ?_, rfl⟩
+    rw [Set.Finite.mem_toFinset]
+    exact ⟨n, Int.natCast_dvd.mpr hdvd⟩
+  have htend := (hf 0).2
+  set ε : ℝ≥0 := 1 / (2 * k + 2) with hεdef
+  have hε : 0 < ε := by positivity
+  have hεr : (ε : ℝ) = 1 / (2 * k + 2) := by simp [hεdef]
+  obtain ⟨n0, hn0⟩ := eventually_atTop.mp (htend.eventually (gt_mem_nhds hε))
+  have hfle : ∀ n, n0 ≤ n → 2 ≤ n → (f n : ℝ) ≤ ε * Nat.log 2 n := by
+    intro n h1 h2
+    have hL : 0 < Nat.log 2 n := Nat.log_pos (by norm_num) h2
+    have := hn0 n h1
+    have : f n < ε * (Nat.log 2 n : ℝ≥0) := by
+      rwa [div_lt_iff₀ (by exact_mod_cast hL)] at this
+    exact_mod_cast this.le
+  set B0 : ℝ := ∑ n ∈ range (n0 + 2), (2:ℝ) ^ (f n : ℝ) with hB0def
+  have hB0 : 0 ≤ B0 := by positivity
+  set A : ℝ := c * 2 * (B0 + 2) ^ k with hAdef
+  set N : ℕ := ⌈A ^ 2⌉₊ + n0 + 2 with hNdef
+  set L : ℝ := ((Nat.log 2 N : ℕ) : ℝ) with hLdef
+  set T : ℝ := (2:ℝ) ^ ((ε : ℝ) * L) with hTdef
+  have hL0 : 0 ≤ L := by positivity
+  have hT1 : 1 ≤ T := Real.one_le_rpow (by norm_num) (by positivity)
+  have hbound : ∀ n < N, (2:ℝ) ^ (f n : ℝ) ≤ B0 + T := by
+    intro n hn
+    by_cases h : n < n0 + 2
+    · have : (2:ℝ) ^ (f n : ℝ) ≤ B0 :=
+        Finset.single_le_sum (f := fun n => (2:ℝ) ^ (f n : ℝ)) (fun i _ => by positivity)
+          (Finset.mem_range.mpr h)
+      linarith
+    · have h1 := hfle n (by omega) (by omega)
+      have hlog : (Nat.log 2 n : ℝ) ≤ L := by
+        rw [hLdef]; exact_mod_cast Nat.log_mono_right hn.le
+      have : (f n : ℝ) ≤ ε * L := h1.trans (mul_le_mul_of_nonneg_left hlog (by positivity))
+      have : (2:ℝ) ^ (f n : ℝ) ≤ T := Real.rpow_le_rpow_of_exponent_le (by norm_num) this
+      linarith
+  set E : ℕ := ⌊B0 + T⌋₊ with hEdef
+  have hcard1 := card_le_of_almostInjective hc N
+  have hcard2 : ((range N).image S).card ≤ 2 * (E + 1) ^ k := by
+    apply card_smooth_le
+    intro v hv
+    obtain ⟨n, hn, rfl⟩ := Finset.mem_image.mp hv
+    refine ⟨hz n, hP n, fun p => ?_⟩
+    apply Nat.le_floor
+    exact (factorization_le_of_abs_le (hz n) ((hf n).1) p).trans
+      (hbound n (Finset.mem_range.mp hn))
+  have hE1 : ((E:ℝ) + 1) ≤ (B0 + 2) * T := by
+    have : (E:ℝ) ≤ B0 + T := Nat.floor_le (by positivity)
+    nlinarith
+  have hTk : T ^ k ≤ (2:ℝ) ^ (L / 2) := by
+    rw [hTdef, ← Real.rpow_natCast, ← Real.rpow_mul (by norm_num)]
+    apply Real.rpow_le_rpow_of_exponent_le (by norm_num)
+    have : (ε:ℝ) * k ≤ 1 / 2 := by
+      rw [hεr, div_mul_eq_mul_div, div_le_iff₀ (by positivity)]
+      linarith
+    nlinarith
+  have hsq : ((2:ℝ) ^ (L / 2)) ^ 2 ≤ N := by
+    rw [← Real.rpow_natCast, ← Real.rpow_mul (by norm_num)]
+    have : L / 2 * ((2:ℕ):ℝ) = L := by push_cast; ring
+    rw [this, hLdef, Real.rpow_natCast]
+    exact_mod_cast Nat.pow_log_le_self 2 (by omega)
+  have hN : (N:ℝ) ≤ A * (2:ℝ) ^ (L / 2) := by
+    have h1 : (N:ℝ) ≤ c * (2 * ((E:ℝ) + 1) ^ k) := by
+      exact_mod_cast hcard1.trans (Nat.mul_le_mul_left c hcard2)
+    calc (N:ℝ) ≤ c * (2 * ((E:ℝ) + 1) ^ k) := h1
+      _ ≤ c * (2 * ((B0 + 2) * T) ^ k) := by gcongr
+      _ = c * 2 * (B0 + 2) ^ k * T ^ k := by rw [mul_pow]; ring
+      _ ≤ A * 2 ^ (L / 2) := by rw [hAdef]; gcongr
+  have hNA : A ^ 2 < N := by
+    have := Nat.le_ceil (A ^ 2)
+    rw [hNdef]; push_cast; linarith
+  set t := (2:ℝ) ^ (L / 2)
+  have ht : 0 ≤ t := by positivity
+  have hA : 0 ≤ A := by positivity
+  have hNpos : (0:ℝ) < N := by positivity
+  nlinarith [mul_le_mul hN hN (by positivity) (by positivity),
+    mul_le_mul_of_nonneg_left hsq (sq_nonneg A)]
