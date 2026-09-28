@@ -945,8 +945,7 @@ theorem infinitely_many_more_proofs (S : ℕ → ℤ)
   have hP : ∀ n p, p.Prime → p ∣ (S n).natAbs → p ∈ P := by
     intro n p hp hdvd
     rw [hPdef, Finset.mem_image]
-    refine ⟨⟨p, hp⟩, ?_, rfl⟩
-    rw [Set.Finite.mem_toFinset]
+    refine ⟨⟨p, hp⟩, hfin.mem_toFinset.mpr ?_, rfl⟩
     exact ⟨n, Int.natCast_dvd.mpr hdvd⟩
   have htend := (hf 0).2
   set ε : ℝ≥0 := 1 / (2 * k + 2) with hεdef
