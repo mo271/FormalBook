@@ -163,7 +163,7 @@ lemma orbit_stabilizer [Fintype R] (A: ConjClasses Rˣ) [Fintype A.carrier] :
   have horbit : MulAction.orbit (ConjAct Rˣ) a = A.carrier := by
     rw [ConjAct.orbit_eq_carrier_conjClasses, ha]
   have e_orbit : (MulAction.orbit (ConjAct Rˣ) a : Set Rˣ) ≃ (A.carrier : Set Rˣ) :=
-    Equiv.setCongr horbit
+    Set.equivOfEq horbit
   have e_stab : (MulAction.stabilizer (ConjAct Rˣ) a : Set (ConjAct Rˣ)) ≃
       (Set.centralizer {a} : Set Rˣ) :=
     (ConjAct_stabilizer_centralizer_eq a).symm
