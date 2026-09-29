@@ -849,7 +849,7 @@ theorem mantel_amgm (h: G.CliqueFree 3) : G.edgeFinset.card ≤ (Fintype.card α
       intro e he
       rw [Finset.mem_biUnion]
       obtain ⟨v, hv_mem, hv_in⟩ := h_cover e he
-      exact ⟨v, hv_mem, (G.mem_incidenceFinset v e).mpr ⟨G.mem_edgeFinset.mp he, hv_in⟩⟩
+      exact ⟨v, hv_mem, G.mem_incidenceFinset.mpr ⟨G.mem_edgeFinset.mp he, hv_in⟩⟩
     calc G.edgeFinset.card
         ≤ (Aᶜ.biUnion (fun v => G.incidenceFinset v)).card := Finset.card_le_card hsub
       _ ≤ ∑ v ∈ Aᶜ, (G.incidenceFinset v).card := Finset.card_biUnion_le
