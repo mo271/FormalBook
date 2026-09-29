@@ -4,12 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Tactic
+import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Algebra.Star.UnitaryStarAlgAut
 import Mathlib.Analysis.Matrix.Spectrum
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.Analysis.Matrix.PosDef
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.LinearAlgebra.UnitaryGroup
 /-!
@@ -130,8 +132,8 @@ theorem hadamard_matrix_exists (m : ℕ) : ∃ H : Matrix (Fin (2 ^ m)) (Fin (2 
   ext i j
   rw [submatrix_apply, Matrix.smul_apply, Matrix.smul_apply, one_apply, one_apply]
   by_cases h : i = j
-  · subst h; rw [if_pos rfl, if_pos rfl]
-  · rw [if_neg h, if_neg (e.symm.injective.ne h)]
+  · subst h; simp
+  · simp [h, e.symm.injective.ne h]
 
 /-- A Hadamard matrix attains Hadamard's bound: `(det H) ^ 2 = n ^ n` for `n = 2 ^ m`. -/
 theorem hadamard_det_sq (m : ℕ) (H : Matrix (Fin (2 ^ m)) (Fin (2 ^ m)) ℤ)
