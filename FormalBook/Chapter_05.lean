@@ -45,14 +45,36 @@ def legendre_sym (a : ℤ) : ℤ :=
     ite (∃ b : ZMod p, a = (b ^ (2 : ℤ) : ZMod p)) 1 (-1)
 
 /--
-Fermat's little theorem: If `a` is nonzero modulo the odd prime `p`, then `a ^ (p - 1) = -1`
+Fermat's little theorem: If `a` is nonzero modulo the odd prime `p`, then `a ^ (p - 1) = 1`
 modulo `p`.
 -/
-lemma fermat_little (a : ℤ): (a : ZMod p) ≠ 0 → a ^ (p - 1) = (-1 : ZMod p) := by
+lemma fermat_little (a : ℤ) : (a : ZMod p) ≠ 0 → a ^ (p - 1) = (1 : ZMod p) := by
+  intro ha
   let units_finset := (Finset.univ : Finset (ZMod p)).erase 0
-  let image_finset := (units_finset).image (fun x : ZMod p => (a : ZMod p) * x)
-  have : units_finset = image_finset := by sorry
-  sorry
+  let image_finset := units_finset.image (fun x : ZMod p => (a : ZMod p) * x)
+  -- multiplication by `a` permutes the nonzero residues
+  have h_eq : units_finset = image_finset := by
+    symm
+    apply Finset.eq_of_subset_of_card_le
+    · intro y hy
+      obtain ⟨x, hx, rfl⟩ := Finset.mem_image.mp hy
+      exact Finset.mem_erase.mpr
+        ⟨mul_ne_zero ha (Finset.mem_erase.mp hx).1, Finset.mem_univ _⟩
+    · exact (Finset.card_image_of_injective _ (mul_right_injective₀ ha)).ge
+  -- hence the products over both sets agree
+  have hprod : ∏ x ∈ units_finset, x =
+      ∏ x ∈ units_finset.image (fun x : ZMod p => (a : ZMod p) * x), x :=
+    congrArg (fun s => ∏ x ∈ s, x) h_eq
+  rw [Finset.prod_image (mul_right_injective₀ ha).injOn,
+    Finset.prod_mul_distrib, Finset.prod_const] at hprod
+  have hcard : units_finset.card = p - 1 := by
+    show ((Finset.univ : Finset (ZMod p)).erase 0).card = p - 1
+    rw [Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ, ZMod.card]
+  have hne : ∏ x ∈ units_finset, x ≠ 0 :=
+    Finset.prod_ne_zero_iff.mpr fun x hx => (Finset.mem_erase.mp hx).1
+  rw [hcard] at hprod
+  -- cancel the (nonzero) product
+  exact_mod_cast mul_right_cancel₀ hne (hprod.symm.trans (one_mul _).symm)
 
 
 theorem euler_criterion (a : ℤ) :
@@ -80,8 +102,8 @@ lemma lemma_of_Gauss (p : ℕ) [Fact (Nat.Prime p)] (a : ℤ) (h_a : (a : ZMod p
   sorry
 
 theorem quadratic_reciprocity_1 (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2)
-  [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] :
-  (legendre_sym p q) * (legendre_sym q p) = -1 ^ ((p-1) / 2 * (q - 1) / 2 ) :=
+  [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] (h_pq : p ≠ q) :
+  (legendre_sym p q) * (legendre_sym q p) = (-1) ^ ((p - 1) / 2 * ((q - 1) / 2)) :=
   sorry
 
 /-!
@@ -114,8 +136,8 @@ lemma fact_B (p : ℕ) [Fact (Prime p)] (K : Type _) [Field K] (ζ : Kˣ) (h_1 :
   sorry
 
 theorem quadratic_reciprocity_2 (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2)
-  [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] :
-  (legendre_sym p q) * (legendre_sym q p) = -1 ^ ((p-1) / 2 * (q - 1) / 2 ) := by
+  [Fact (Nat.Prime p)] [Fact (Nat.Prime q)] (h_pq : p ≠ q) :
+  (legendre_sym p q) * (legendre_sym q p) = (-1) ^ ((p - 1) / 2 * ((q - 1) / 2)) := by
   sorry
 
 
