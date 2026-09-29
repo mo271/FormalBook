@@ -327,7 +327,6 @@ def secondInvo : Function.End (U k) := fun ⟨⟨⟨x, y, z⟩, hS⟩, h⟩ =>
   ⟨⟨secondInvo_fun ⟨x, y, z⟩, by
     obtain ⟨hS, _, hy⟩ := hS
     refine ⟨?_, h, hy⟩
-    change 4 * (x - y + z) * y + (2 * y - z) ^ 2 = 4 * k + 1
     rw [← hS]; ring⟩, by
     obtain ⟨_, hx, _⟩ := hS
     change 0 < (x - y + z) - y + (2 * y - z)
