@@ -3,9 +3,15 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-module
-
-public import Mathlib
+import Mathlib.Tactic
+import Mathlib.Algebra.Star.UnitaryStarAlgAut
+import Mathlib.Analysis.Matrix.Spectrum
+import Mathlib.Analysis.MeanInequalities
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.PosDef
+import Mathlib.LinearAlgebra.UnitaryGroup
 /-!
 # The spectral theorem and Hadamard's determinant problem
 
@@ -22,8 +28,6 @@ Formalization of the chapter "The spectral theorem and Hadamard's determinant pr
     `2 ^ (n ^ 2) * n!`, i.e. its average is `n!`.
   - `Theorem₂`: for `n ≥ 2` there is a `±1` matrix with `det M > √(n!)`.
 -/
-
-@[expose] public section
 
 namespace chapter7
 
@@ -80,7 +84,8 @@ theorem det_sq_le_of_pm_one (n : ℕ) (M : Matrix (Fin n) (Fin n) ℤ)
     (hM : ∀ i j, M i j = -1 ∨ M i j = 1) : M.det ^ 2 ≤ (n : ℤ) ^ n := by
   have h := det_sq_le n (M.map (Int.cast : ℤ → ℝ)) fun i j => by
     rcases hM i j with h | h <;> simp [h]
-  have e : ((M.det : ℤ) : ℝ) = (M.map (Int.cast : ℤ → ℝ)).det := (Int.castRingHom ℝ).map_det M
+  have e : ((M.det : ℤ) : ℝ) = (M.map (Int.cast : ℤ → ℝ)).det :=
+    (Int.castRingHom ℝ).map_det M
   rw [← e] at h
   exact_mod_cast h
 
@@ -123,7 +128,10 @@ theorem hadamard_matrix_exists (m : ℕ) : ∃ H : Matrix (Fin (2 ^ m)) (Fin (2 
   rw [transpose_reindex, reindex_apply, reindex_apply, submatrix_mul_equiv,
     sylvester_mul_transpose]
   ext i j
-  simp only [submatrix_apply, Matrix.smul_apply, one_apply, EmbeddingLike.apply_eq_iff_eq]
+  rw [submatrix_apply, Matrix.smul_apply, Matrix.smul_apply, one_apply, one_apply]
+  by_cases h : i = j
+  · subst h; rw [if_pos rfl, if_pos rfl]
+  · rw [if_neg h, if_neg (e.symm.injective.ne h)]
 
 /-- A Hadamard matrix attains Hadamard's bound: `(det H) ^ 2 = n ^ n` for `n = 2 ^ m`. -/
 theorem hadamard_det_sq (m : ℕ) (H : Matrix (Fin (2 ^ m)) (Fin (2 ^ m)) ℤ)
@@ -207,7 +215,8 @@ lemma sum_prod_signMatrices {n : ℕ} (σ τ : Perm (Fin n)) :
 /-- The average of `det M ^ 2` over all `±1` matrices `M` is `n!`. -/
 theorem sum_det_sq_signMatrices (n : ℕ) :
     ∑ M ∈ signMatrices n, M.det ^ 2 = ((signMatrices n).card : ℤ) * n.factorial := by
-  have : ∀ M : Matrix (Fin n) (Fin n) ℤ, M.det ^ 2 = ∑ σ : Perm (Fin n), ∑ τ : Perm (Fin n),
+  have : ∀ M : Matrix (Fin n) (Fin n) ℤ,
+      M.det ^ 2 = ∑ σ : Perm (Fin n), ∑ τ : Perm (Fin n),
       ((Perm.sign σ * Perm.sign τ : ℤˣ) : ℤ) * ∏ i, (M (σ i) i * M (τ i) i) := by
     intro M
     rw [sq, det_apply, Finset.sum_mul_sum]
@@ -229,10 +238,12 @@ theorem Theorem₂ (n : ℕ) (hn : 1 < n) : ∃ (M : Matrix (Fin n) (Fin n) ℤ)
   obtain ⟨M, hM, hdet⟩ : ∃ M ∈ signMatrices n, (n.factorial : ℤ) < M.det ^ 2 := by
     by_contra hc
     push Not at hc
-    have hJ : (of fun _ _ => (1 : ℤ)) ∈ signMatrices n := mem_signMatrices.2 fun _ _ => Or.inr rfl
+    have hJ : (of fun _ _ => (1 : ℤ)) ∈ signMatrices n :=
+      mem_signMatrices.2 fun _ _ => Or.inr rfl
     have hJdet : (of fun (_ : Fin n) (_ : Fin n) => (1 : ℤ)).det = 0 :=
       det_zero_of_row_eq (i := (⟨0, by omega⟩ : Fin n)) (j := ⟨1, hn⟩) (by simp) rfl
-    have hlt : ∑ M ∈ signMatrices n, M.det ^ 2 < ∑ _M ∈ signMatrices n, (n.factorial : ℤ) :=
+    have hlt :
+        ∑ M ∈ signMatrices n, M.det ^ 2 < ∑ _M ∈ signMatrices n, (n.factorial : ℤ) :=
       Finset.sum_lt_sum hc ⟨_, hJ, by rw [hJdet]; simpa using n.factorial_pos⟩
     rw [sum_det_sq_signMatrices, Finset.sum_const, nsmul_eq_mul] at hlt
     exact lt_irrefl _ hlt
