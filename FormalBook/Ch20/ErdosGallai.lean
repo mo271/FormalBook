@@ -180,11 +180,11 @@ theorem erdos_gallai_f_mul_neg_ge {m n : ℕ} (α : Fin m → ℝ) (β : Fin n �
     (1 - x ^ 2) ^ 2 * (∏ i, (α i ^ 2 - 1)) * (∏ j, (β j ^ 2 - 1)) from by ring]
   apply mul_le_mul
   · apply mul_le_mul_of_nonneg_left
-    · apply Finset.prod_le_prod
+    · apply Finset.prod_le_prod₀
       · intro i _; nlinarith [hα i]
       · intro i _; exact sq_sub_sq_ge hx
     · exact sq_nonneg _
-  · apply Finset.prod_le_prod
+  · apply Finset.prod_le_prod₀
     · intro j _; nlinarith [hβ j]
     · intro j _; exact sq_sub_sq_ge hx
   · exact Finset.prod_nonneg fun j _ => by nlinarith [hβ j]
@@ -210,7 +210,8 @@ theorem integral_one_sub_sq : ∫ x in (-1:ℝ)..1, (1 - x ^ 2) = 4 / 3 := by
       have h := (hasDerivAt_pow 3 x).div_const (3 : ℝ)
       have h_eq : ((3 : ℕ) : ℝ) * x ^ (3 - 1) / 3 = x ^ 2 := by ring
       rwa [h_eq] at h
-    convert h1.sub h3 using 1 <;> rfl
+    convert h1.sub h3 using 1
+    rfl
   have hint : IntervalIntegrable (fun x => (1:ℝ) - x ^ 2) volume (-1) 1 :=
     (continuous_const.sub (continuous_pow 2)).intervalIntegrable _ _
   rw [integral_eq_sub_of_hasDerivAt hderiv hint]
