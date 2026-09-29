@@ -1,4 +1,10 @@
-import Mathlib
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Pow
+import Mathlib.Basic.Real.Basic
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 open Real
 open BigOperators
@@ -69,4 +75,3 @@ lemma amgm_bernoulli_fintype {α : Type*} [Fintype α]
     rw [← Finset.sum_equiv e.symm (s := Finset.univ) (t := Finset.univ)] <;> simp
   rw [h1, h2]
   exact amgm_bernoulli n hcard (fun i => a (e.symm i)) (fun i => hpos _)
-
