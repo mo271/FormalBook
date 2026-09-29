@@ -1,4 +1,8 @@
-import Mathlib
+import Mathlib.Topology.Homotopy.Lifting
+import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+import Mathlib.Analysis.Convex.Contractible
+import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Brouwer Fixed Point Theorem via Covering Spaces
@@ -264,4 +268,3 @@ theorem brouwer_fixed_point_2d_from_complex
     have := congr_arg e hz2; simp [hg] at this; exact this⟩
 
 end BrouwerProof
-
