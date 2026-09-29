@@ -1,4 +1,9 @@
-import Mathlib
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Analysis.Convex.StdSimplex
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+import Mathlib.Topology.Sequences
 
 /-!
 # Sperner's Lemma and Brouwer Fixed Point Theorem via Sperner
@@ -793,7 +798,5 @@ private theorem brouwer_fixed_point_simplex2_sperner
   have hvi_i_tends := ((continuous_apply i).tendsto xstar).comp hvi_tends
   exact le_of_tendsto_of_tendsto hfi_tends hvi_i_tends
     (Filter.eventually_atTop.mpr ⟨0, fun n _ => le_of_lt (hvk_col (φ n) i)⟩)
-
-
 
 end chapter28
