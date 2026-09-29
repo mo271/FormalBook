@@ -122,7 +122,7 @@ lemma lemma_35_1_aux {F : Type*} [Field F] [Fintype F] [DecidableEq F] (n : ℕ)
         Finset.prod_singleton, ↓reduceIte, Finset.card_singleton, one_mul, tsub_self, zero_mul,
         add_zero];
       contrapose! hg_nonzero;
-      ext x; simp_all +decide only [Fin.isValue, MvPolynomial.coeff_zero] ;
+      ext x; simp_all +decide only [Fin.isValue, AddMonoidAlgebra.coeff_zero] ;
       convert h using 1;
       rw [ Finset.sum_eq_single x ] <;> simp +contextual [ Finsupp.ext_iff ];
     · simp_all +decide [ Finset.filter_singleton ];
@@ -524,7 +524,7 @@ lemma le_binom_sum (k n : ℕ) [NeZero n] : k^n ≤ (k + n - 1).choose n * Nat.f
     ∏ i ∈ Finset.range n, (k + n - 1 - i) := by
     rw [ mul_comm, ← Nat.descFactorial_eq_factorial_mul_choose ];
     rw [ Nat.descFactorial_eq_prod_range ];
-  exact h_binom ▸ le_trans ( by norm_num ) ( Finset.prod_le_prod' fun i hi =>
+  exact h_binom ▸ le_trans ( by norm_num ) ( Finset.prod_le_prod fun i hi =>
     show k + n - 1 - i ≥ k from Nat.le_sub_of_add_le
     ( by
       linarith [ Finset.mem_range.mp hi, Nat.sub_add_cancel
