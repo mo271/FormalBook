@@ -42,6 +42,7 @@ namespace quadratic_reciprocity
 variable (p : ℕ) (h_p : p ≠ 2) [Fact (Nat.Prime p)]
 
 /-- The Legendre symbol `(a / p)`, where `p` is an odd prime. -/
+@[nolint defsWithUnderscore]
 def legendre_sym (a : ℤ) : ℤ :=
   ite ( (a : ZMod p) = 0) 0 $
     ite (∃ b : ZMod p, a = (b ^ (2 : ℤ) : ZMod p)) 1 (-1)
@@ -256,6 +257,7 @@ lemma mult_cyclic (K : Type _) [Field K] [Fintype K] : ∃ ζ : Kˣ, ∀ α : K�
 set_option linter.unusedVariables false in
 /-- Frobenius is additive in a field with `q ^ (p - 1)` elements. The hypotheses `hp`, `hq` and
 `h_pq` from the original statement are kept but turn out to be unnecessary. -/
+@[nolint unusedArguments]
 lemma fact_A (p q : ℕ) (hp : p ≠ 2) (hq : q ≠ 2) [Fact (Nat.Prime p)] [Fact (Nat.Prime q)]
   (h_pq : p ≠ q) (K : Type _) [Field K] [Fintype K] (H : Fintype.card K = q ^ (p - 1)) :
   ∀ a b : K, (a + b) ^ q = a ^ q + b ^ q := by
