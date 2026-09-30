@@ -147,10 +147,6 @@ vertex extraction) below; `sperner_coloring_rainbow_triangles` is proved modulo 
 **Gaps 2–3 (Compactness + Limit):** Fully proved below.
 -/
 
---/-- The standard 2-simplex equals Mathlib's `stdSimplex`. -/
---private theorem stdSimplex2_eq : stdSimplex2 = stdSimplex ℝ (Fin 3) := by
---  ext x; simp only [stdSimplex2, stdSimplex, Set.mem_ofPred_eq]
-
 /-- The standard 2-simplex is compact. -/
 private theorem stdSimplex2_isCompact : IsCompact stdSimplex2 := by
   set f := fun (x : Convexity.StdSimplex ℝ (Fin 3)) ↦ ⇑x.weights with hf
