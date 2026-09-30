@@ -6,14 +6,9 @@ Authors: Moritz Firsching
 module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-
-import Mathlib.Tactic
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.NumberTheory.Niven
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.Topology.Algebra.Order.Floor
