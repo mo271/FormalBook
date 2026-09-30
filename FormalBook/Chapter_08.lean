@@ -655,6 +655,7 @@ lemma Ic_int (a c : ℤ) (hca : (c : ℝ) * (π / 2) ^ 2 = a) (n : ℕ) : ∃ z 
 end PiIntegrals
 
 /-- Note: the hypotheses `r` and `h_r` are not needed. -/
+@[nolint unusedArguments]
 theorem Theorem_2 (r : ℚ) (h_r : r ≠ 0) : Irrational (π ^ 2) := by
   rintro ⟨q, hq⟩
   beta_reduce at hq
