@@ -3,15 +3,17 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+module
+
+public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import Mathlib.Data.Nat.Choose.Factorization
+public import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
-import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Tactic.NormNum.Prime
+
+@[expose] public section
+
 /-!
 # Bertrand's postulate
 

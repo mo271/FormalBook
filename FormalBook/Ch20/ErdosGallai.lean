@@ -1,11 +1,11 @@
-import FormalBook.Mathlib.EdgeFinset
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Mul
+
+@[expose] public section
 
 open Real
 open BigOperators

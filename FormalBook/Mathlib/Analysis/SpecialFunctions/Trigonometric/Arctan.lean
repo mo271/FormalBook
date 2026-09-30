@@ -1,4 +1,8 @@
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+
+@[expose] public section
 
 open Real
 

@@ -1,6 +1,10 @@
-import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
+
+@[expose] public section
 
 open Real MeasureTheory
 

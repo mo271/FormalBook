@@ -3,14 +3,17 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Julien Michel
 -/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import FormalBook.Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-import Mathlib.Analysis.Real.Sqrt
+import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Arctan
-import Mathlib.RingTheory.Finiteness.Prod
-import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Tactic.NormNum.RealSqrt
+import Mathlib.Analysis.SpecialFunctions.Sqrt
+
+@[expose] public section
 
 /-!
 # Four times $π^2/6$
@@ -35,6 +38,7 @@ local notation "ofReal" => ENNReal.ofReal
 
 open Set ENNReal MeasureTheory Filter intervalIntegral
 
+--set_option trace.Meta.synthInstance true
 set_option maxHeartbeats 1000000 in
 theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
   convert_to ∑' n : ℕ, (n : ℝ)⁻¹ ^ 2 = _ using 3 with n

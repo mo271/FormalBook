@@ -3,17 +3,17 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ralf Stephan
 -/
-import Mathlib.Algebra.Order.Ring.Star
+module
+
+public import Mathlib.NumberTheory.LucasLehmer
+public import Mathlib.NumberTheory.EulerProduct.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Int.Lemmas
-import Mathlib.Data.Int.Star
-import Mathlib.NumberTheory.LucasLehmer
-import Mathlib.NumberTheory.PrimeCounting
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.PrimesCongruentOne
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.NumberTheory.SumPrimeReciprocals
+import Mathlib.Algebra.Order.Group.Indicator
+
+@[expose] public section
 
 open Finset Nat
 open BigOperators

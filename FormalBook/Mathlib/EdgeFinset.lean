@@ -1,5 +1,10 @@
+module
+
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Data.Fintype.Sets
 import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Combinatorics.SimpleGraph.Operations
+
+@[expose] public section
 
 -- https://github.com/leanprover-community/mathlib4/pull/17587
 

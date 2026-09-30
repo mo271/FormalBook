@@ -3,8 +3,12 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Analysis.Convex.DoublyStochasticMatrix
-import Mathlib.LinearAlgebra.Matrix.Permanent
+module
+
+public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
+public import Mathlib.LinearAlgebra.Matrix.Permanent
+
+@[expose] public section
 
 /-!
 # Van der Waerden's permanent conjecture

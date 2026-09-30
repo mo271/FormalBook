@@ -1,8 +1,12 @@
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Topology.Homotopy.Lifting
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.Convex.Contractible
-import Mathlib.Analysis.InnerProductSpace.PiL2
+
+@[expose] public section
 
 /-!
 # Brouwer Fixed Point Theorem via Covering Spaces

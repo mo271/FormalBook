@@ -3,13 +3,14 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Nick Kuhn
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Data.Int.Star
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.RingTheory.LittleWedderburn
-import Mathlib.RingTheory.SimpleRing.Principal
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+import Mathlib.GroupTheory.ClassEquation
+import Mathlib.Algebra.GroupWithZero.Action.Center
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+
+@[expose] public section
 
 open Finset Subring Polynomial Complex BigOperators Nat
 /-!

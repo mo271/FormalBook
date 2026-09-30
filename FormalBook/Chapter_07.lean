@@ -3,17 +3,14 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Tactic
+module
+
+public import Mathlib.Analysis.Matrix.Spectrum
 import Mathlib.Algebra.Order.Star.Real
-import Mathlib.Algebra.Star.UnitaryStarAlgAut
-import Mathlib.Analysis.Matrix.Spectrum
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Analysis.Matrix.PosDef
-import Mathlib.LinearAlgebra.Matrix.PosDef
-import Mathlib.LinearAlgebra.UnitaryGroup
+
+@[expose] public section
+
 /-!
 # The spectral theorem and Hadamard's determinant problem
 

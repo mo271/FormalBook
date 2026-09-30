@@ -3,11 +3,15 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Tactic
-import Mathlib.Analysis.Matrix.Spectrum
-import Archive.Wiedijk100Theorems.FriendshipGraphs
-import FormalBook.Ch44.Auxiliary
+module
 
+public import Archive.Wiedijk100Theorems.FriendshipGraphs
+public import Mathlib.Data.Fintype.Defs
+import FormalBook.Ch44.Auxiliary
+import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.Analysis.Matrix.Spectrum
+
+@[expose] public section
 /-!
 # Of friends and politicians — The Friendship Theorem via ℝ eigenvalue analysis
 

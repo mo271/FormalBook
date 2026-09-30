@@ -3,13 +3,17 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Tactic
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.NumberTheory.LegendreSymbol.Basic
+module
+
+public import Mathlib.Data.Int.Interval
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.NumberTheory.SumTwoSquares
-import Mathlib.SetTheory.Cardinal.Finite
+
+public meta import FormalBook.Widgets.Windmill
 import FormalBook.Widgets.Windmill
+
+@[expose] public section
 
 /-!
 # Representing numbers as sums of two squares

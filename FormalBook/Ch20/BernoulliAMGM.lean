@@ -1,10 +1,16 @@
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Pow
-import Mathlib.Basic.Real.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
+
+@[expose] public section
 
 open Real
 open BigOperators

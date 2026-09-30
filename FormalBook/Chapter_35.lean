@@ -1,20 +1,16 @@
 /-
 Authors: Matteo Del Vecchio, Aristotle (Harmonic)
 -/
+module
 
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Data.Int.Star
+public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Pi.Interval
-import Mathlib.Order.BourbakiWitt
-import Mathlib.RingTheory.Henselian
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.PicardGroup
-import Mathlib.RingTheory.SimpleRing.Principal
-import Mathlib.Tactic
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.Tactic.Cases
 
+@[expose] public section
 /-!
 # The finite Kakeya problem
 

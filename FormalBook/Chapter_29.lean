@@ -1,18 +1,15 @@
 /-
 Authors: Matteo Del Vecchio, Aristotle (Harmonic)
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+public import Mathlib.NumberTheory.Real.Irrational
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Int.Star
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.NumberTheory.Real.Irrational
-import Mathlib.RingTheory.SimpleModule.Basic
+
+@[expose] public section
 
 /-!
 # Tiling rectangles

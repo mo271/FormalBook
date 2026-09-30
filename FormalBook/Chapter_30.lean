@@ -3,9 +3,15 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, OpenClaw
 -/
-import Mathlib
-import FormalBook.Ch30.EKRAuxiliary
+module
 
+public import Mathlib.Combinatorics.SetFamily.Intersecting
+public import Mathlib.Data.Finset.Slice
+import FormalBook.Ch30.EKRAuxiliary
+import Mathlib.Combinatorics.SetFamily.LYM
+import Mathlib.Combinatorics.Hall.Basic
+
+@[expose] public section
 /-!
 # Three famous theorems on finite sets
 

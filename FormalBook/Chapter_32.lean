@@ -3,6 +3,8 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Christopher Schmidt
 -/
+module
+
 import Mathlib.Tactic
 /-
 import data.rel
@@ -17,6 +19,8 @@ import set_theory.zfc.basic
 
 import linear_algebra.matrix.determinant
 -/
+@[expose] public section
+
 open BigOperators
 /-!
 # Lattice paths and determinants

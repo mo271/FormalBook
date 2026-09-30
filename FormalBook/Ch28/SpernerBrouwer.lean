@@ -1,9 +1,18 @@
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Analysis.Convex.StdSimplex
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Data.Fintype.Basic
+import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
 import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Topology.Sequences
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.IntervalCases
+
+@[expose] public section
 
 /-!
 # Sperner's Lemma and Brouwer Fixed Point Theorem via Sperner

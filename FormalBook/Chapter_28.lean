@@ -3,19 +3,25 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 import Archive.Wiedijk100Theorems.AscendingDescendingSequences
 import FormalBook.Ch28.BrouwerCovering
 import FormalBook.Ch28.SpernerBrouwer
 import FormalBook.Mathlib.EdgeFinset
-import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Order.Chebyshev
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.Projectivization.Cardinality
-import Mathlib.LinearAlgebra.Projectivization.Constructions
 import Mathlib.Tactic.NormNum.Prime
 
+@[expose] public section
 /-!
 # Pigeon-hole and double counting
 

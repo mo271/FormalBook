@@ -3,8 +3,19 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, OpenClaw
 -/
-import Mathlib
+module
 
+public import Mathlib.Combinatorics.SetFamily.Intersecting
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Data.Finset.Slice
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.Group.Fin.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Ring
+
+@[expose] public section
 /-!
 # Auxiliary lemmas for Erdős–Ko–Rado (Katona's cyclic permutation proof)
 

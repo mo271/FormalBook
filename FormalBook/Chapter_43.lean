@@ -1,15 +1,13 @@
 /-
 Authors: Matteo Del Vecchio, Aristotle (Harmonic)
 -/
+module
 
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
-import Mathlib.Data.Int.Star
-import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 import Mathlib.LinearAlgebra.Vandermonde
-import Mathlib.Order.BourbakiWitt
 
+@[expose] public section
 /-!
 # The chromatic number of Kneser graphs
 

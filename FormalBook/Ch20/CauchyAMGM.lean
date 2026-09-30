@@ -1,7 +1,8 @@
-import FormalBook.Mathlib.EdgeFinset
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+@[expose] public section
 
 open Real
 open BigOperators
@@ -125,5 +126,3 @@ lemma cauchy_amgm_rpow {n : ℕ} (hn : 0 < n)
     _ = y := by
         rw [← rpow_natCast y n, ← rpow_mul hy]
         simp [ne_of_gt (Nat.cast_pos.mpr hn : (0 : ℝ) < n)]
-
-
