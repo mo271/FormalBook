@@ -127,18 +127,13 @@ lemma Jc_recursion' (n : ℕ) (θ : ℝ) :
   have hv₁d : Continuous v₁' := by fun_prop
   have hu₂d : Continuous u₂' := by fun_prop
   have hv₂d : Continuous v₂' := by fun_prop
-  have hf (x) : HasDerivAt f (- 2 * x) x := by
-    convert (hasDerivAt_pow 2 x).const_sub 1 using 1
-    simp
-  have hu₁ (x) : HasDerivAt u₁ (u₁' x) x := by
-    convert (hf x).pow (n + 1) using 1
-    simp only [Nat.add_sub_cancel, u₁', Nat.cast_add_one]
-    ring
+  have hf (x) : HasDerivAt f (- 2 * x) x :=
+    ((hasDerivAt_pow 2 x).const_sub 1).congr_deriv (by push_cast; ring)
+  have hu₁ (x) : HasDerivAt u₁ (u₁' x) x :=
+    ((hf x).pow (n + 1)).congr_deriv (by simp only [u₁', Nat.add_sub_cancel]; push_cast; ring)
   have hv₁ (x) : HasDerivAt v₁ (v₁' x) x := HasDerivAt.sinh (hasDerivAt_mul_const θ)
-  have hu₂ (x) : HasDerivAt u₂ (u₂' x) x := by
-    convert (hasDerivAt_id' x).mul ((hf x).pow n) using 1
-    simp only [u₂', Pi.pow_apply]
-    ring
+  have hu₂ (x) : HasDerivAt u₂ (u₂' x) x :=
+    ((hasDerivAt_id' x).mul ((hf x).pow n)).congr_deriv (by simp only [u₂', Pi.pow_apply]; ring)
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := HasDerivAt.cosh (hasDerivAt_mul_const θ)
   have e1 := integral_mul_deriv_eq_deriv_mul (a := -1) (b := 1) (fun x _ => hu₁ x)
     (fun x _ => hv₁ x) (hu₁d.intervalIntegrable _ _) (hv₁d.intervalIntegrable _ _)
@@ -535,18 +530,13 @@ lemma Ic_recursion' (n : ℕ) (θ : ℝ) :
   have hv₁d : Continuous v₁' := by fun_prop
   have hu₂d : Continuous u₂' := by fun_prop
   have hv₂d : Continuous v₂' := by fun_prop
-  have hf (x) : HasDerivAt f (- 2 * x) x := by
-    convert (hasDerivAt_pow 2 x).const_sub 1 using 1
-    simp
-  have hu₁ (x) : HasDerivAt u₁ (u₁' x) x := by
-    convert (hf x).pow (n + 1) using 1
-    simp only [Nat.add_sub_cancel, u₁', Nat.cast_add_one]
-    ring
+  have hf (x) : HasDerivAt f (- 2 * x) x :=
+    ((hasDerivAt_pow 2 x).const_sub 1).congr_deriv (by push_cast; ring)
+  have hu₁ (x) : HasDerivAt u₁ (u₁' x) x :=
+    ((hf x).pow (n + 1)).congr_deriv (by simp only [u₁', Nat.add_sub_cancel]; push_cast; ring)
   have hv₁ (x) : HasDerivAt v₁ (v₁' x) x := HasDerivAt.sin (hasDerivAt_mul_const θ)
-  have hu₂ (x) : HasDerivAt u₂ (u₂' x) x := by
-    convert (hasDerivAt_id' x).mul ((hf x).pow n) using 1
-    simp only [u₂', Pi.pow_apply]
-    ring
+  have hu₂ (x) : HasDerivAt u₂ (u₂' x) x :=
+    ((hasDerivAt_id' x).mul ((hf x).pow n)).congr_deriv (by simp only [u₂', Pi.pow_apply]; ring)
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := HasDerivAt.cos (hasDerivAt_mul_const θ)
   have e1 := integral_mul_deriv_eq_deriv_mul (a := -1) (b := 1) (fun x _ => hu₁ x)
     (fun x _ => hv₁ x) (hu₁d.intervalIntegrable _ _) (hv₁d.intervalIntegrable _ _)
