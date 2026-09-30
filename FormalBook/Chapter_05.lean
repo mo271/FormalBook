@@ -5,14 +5,10 @@ Authors: Moritz Firsching, Nikolas Kuhn
 -/
 module
 
-public import Mathlib.Algebra.Field.ZMod
-public import Mathlib.Algebra.Polynomial.Basic
-
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.RingTheory.LittleWedderburn
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.Data.Int.Interval
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.NumberTheory.LegendreSymbol.GaussEisensteinLemmas
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 
 @[expose] public section
 
