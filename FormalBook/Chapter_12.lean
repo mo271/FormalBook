@@ -20,6 +20,7 @@ by using real division alone. Finsets ensure that the points are distinct.
 
 namespace Chapter12
 
+/-- A point in the real coordinate plane. -/
 abbrev Point := ℝ × ℝ
 
 /-- Printed p. 83: an unoriented slope, including vertical lines. Only
@@ -40,9 +41,10 @@ noncomputable def directions (S : Finset Point) : Finset (Option ℝ) := by
   classical
   exact ((S ×ˢ S).filter fun pq => pq.1 ≠ pq.2).image fun pq => direction pq.1 pq.2
 
+/-- The number of distinct directions determined by a finite point configuration. -/
 noncomputable def slopeCount (S : Finset Point) : ℕ := (directions S).card
 
-@[simp] theorem direction_comm (p q : Point) : direction p q = direction q p := by
+theorem direction_comm (p q : Point) : direction p q = direction q p := by
   unfold direction
   by_cases h : q.1 = p.1
   · simp [h]
@@ -251,9 +253,13 @@ private theorem product_insert_right {α β : Type*} [DecidableEq α] [Decidable
 /-- Coordinates for the lower sequence in the figure on printed p. 83.
 These rational representatives preserve the directions in that drawing. -/
 noncomputable def example3 : Finset Point := {(0,1),(-1,0),(0,-1)}
+/-- The four-point configuration in the lower sequence on printed p. 83. -/
 noncomputable def example4 : Finset Point := {(0,1),(-1,0),(1,0),(0,-1)}
+/-- The five-point configuration in the lower sequence on printed p. 83. -/
 noncomputable def example5 : Finset Point := {(0,1),(-1,0),(0,0),(1,0),(0,-1)}
+/-- The six-point configuration in the lower sequence on printed p. 83. -/
 noncomputable def example6 : Finset Point := {(0,1),(-1,0),(0,0),(1,0),(2,0),(0,-1)}
+/-- The seven-point configuration in the lower sequence on printed p. 83. -/
 noncomputable def example7 : Finset Point := {(0,1),(-2,0),(-1,0),(0,0),(1,0),(2,0),(0,-1)}
 
 theorem example3_card : example3.card = 3 := by
