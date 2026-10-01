@@ -135,6 +135,7 @@ theorem exists_pos_int_of_pos_rat {m n : Type*} [Fintype n] (A : Matrix m n ℤ)
 
 /-- **The Cone Lemma.** If a system of homogeneous linear equations with integer coefficients
 has a positive real solution, then it also has a positive integer solution. -/
+@[nolint unusedArguments]
 theorem cone_lemma {m n : Type*} [Fintype m] [Fintype n] (A : Matrix m n ℤ)
     (x : n → ℝ) (hx : ∀ j, 0 < x j) (hAx : ∀ i, ∑ j, (A i j : ℝ) * x j = 0) :
     ∃ z : n → ℕ, (∀ j, 0 < z j) ∧ ∀ i, ∑ j, A i j * (z j : ℤ) = 0 := by
