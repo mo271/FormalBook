@@ -5,10 +5,16 @@ Authors: Moritz Firsching, Daniele Cappello
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Defs
-public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
+public import Mathlib.Combinatorics.SimpleGraph.Acyclic
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
+import Mathlib.Tactic
 
 @[expose] public section
 
@@ -35,14 +41,24 @@ must be used: the theorem is false over `ℂ` (the Hesse configuration).
 The statement is proved in an arbitrary real inner product space with its affine torsor,
 with no dimension hypothesis; the classical plane is the case `EuclideanSpace ℝ (Fin 2)`.
 
-## TODO
-  - Theorem 2.
-    - proof
-  Theorem 3.
-    - proof
-  Theorem 4.
-    - proof
-  Appendix: Basic graph concepts
+## Additional results in this file
+
+Theorem 2: `SylvesterGallai.number_of_lines`.
+Theorem 3: `Incidence.de_bruijn_erdos`, with its incidence quadratic identity.
+Theorem 4: `GrahamPollak.graham_pollak`, with Tverberg's quadratic identity
+and the sharp star decomposition.
+The Fano example and its obstruction to real noncollinear realization are proved.
+The graph appendix reuses Mathlib graph definitions and proves its basic correspondences.
+
+Coverage limit: this file does not prove every supplementary assertion in the chapter.
+In particular, the Green–Tao asymptotic bounds and their optimality, Coxeter's
+order-only theorem, and the metric-free Euler proof mentioned for Chapter 13 are
+not supplied. The PDF's odd-n bound 3n/4 differs from the actual bound
+3 * floor(n/4). See Chapter_11_Coverage.md for the complete coverage ledger.
+
+Validation: Lean 4.35.0-rc3; Mathlib commit
+738e62bd6df530a89ac01b20e937ad70923a7b96.
+No new axioms or proof placeholders are introduced.
 -/
 
 namespace chapter11
@@ -494,3 +510,584 @@ theorem sylvester_gallai (S : Set P) (hfin : S.Finite) (hncol : ¬ Collinear ℝ
 end SylvesterGallai
 
 end chapter11
+
+open scoped BigOperators
+namespace chapter11
+namespace Incidence
+variable {X J : Type*} [Fintype X] [Fintype J] [DecidableEq X] [DecidableEq J]
+/-- The real incidence coefficient of a point in a block. -/
+def coeff (A : J → Finset X) (j : J) (x : X) : ℝ := if x ∈ A j then 1 else 0
+/-- Number of blocks through a point. -/
+def degree (A : J → Finset X) (x : X) : ℕ := (Finset.univ.filter fun j => x ∈ A j).card
+/-- Each pair of distinct points belongs to exactly one indexed block. -/
+def PairPartition (A : J → Finset X) : Prop :=
+  ∀ x y : X, x ≠ y → ∃! j : J, x ∈ A j ∧ y ∈ A j
+omit [Fintype X] [DecidableEq J] in
+lemma gram (A : J → Finset X) (hpair : PairPartition A) (x y : X) :
+    ∑ j, coeff A j x * coeff A j y = if x = y then (degree A x : ℝ) else 1 := by
+  classical
+  by_cases hxy : x = y
+  · subst y
+    simp [coeff, degree, Finset.sum_ite, Finset.filter_filter]
+  · obtain ⟨j, hj, huniq⟩ := hpair x y hxy
+    rw [ite_eq_right hxy, Finset.sum_eq_single j]
+    · simp [coeff, hj.1, hj.2]
+    · intro k hk hkj
+      have : ¬ (x ∈ A k ∧ y ∈ A k) := fun h => hkj (huniq k h)
+      simp only [coeff]
+      split_ifs <;> simp_all
+    · simp
+lemma degree_ge_two (A : J → Finset X) (hpair : PairPartition A)
+    (hproper : ∀ j, A j ≠ Finset.univ) (hn : 2 ≤ Fintype.card X) (x : X) :
+    2 ≤ degree A x := by
+  classical
+  obtain ⟨y, hy⟩ : ∃ y : X, y ≠ x := by
+    by_contra h
+    push Not at h
+    have hc : Fintype.card X ≤ 1 := Fintype.card_le_one_iff.mpr (fun a b => (h a).trans (h b).symm)
+    omega
+  obtain ⟨j, hj, _⟩ := hpair x y hy.symm
+  obtain ⟨z, hz⟩ : ∃ z : X, z ∉ A j := by
+    by_contra h
+    push Not at h
+    exact hproper j (Finset.eq_univ_of_forall h)
+  have hxz : x ≠ z := by rintro rfl; exact hz hj.1
+  obtain ⟨k, hk, _⟩ := hpair x z hxz
+  have hjk : j ≠ k := by rintro rfl; exact hz hk.2
+  have hsub : ({j, k} : Finset J) ⊆ Finset.univ.filter (fun l => x ∈ A l) := by
+    intro l hl
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hl
+    rcases hl with rfl | rfl <;> simp [hj.1, hk.1]
+  have := Finset.card_le_card hsub
+  simpa [degree, hjk] using this
+/-- The incidence linear map sends weights on points to their sums on blocks. -/
+def incidenceMap (A : J → Finset X) : (X → ℝ) →ₗ[ℝ] (J → ℝ) where
+  toFun f j := ∑ x, coeff A j x * f x
+  map_add' f g := by ext j; simp [mul_add, Finset.sum_add_distrib]
+  map_smul' c f := by ext j; simp [Finset.mul_sum, mul_left_comm]
+omit [DecidableEq J] in
+lemma energy (A : J → Finset X) (hpair : PairPartition A) (f : X → ℝ) :
+    ∑ j, (incidenceMap A f j)^2 =
+      ∑ x, ((degree A x : ℝ) - 1) * (f x)^2 + (∑ x, f x)^2 := by
+  classical
+  have expand : ∀ j, (incidenceMap A f j)^2 =
+      ∑ x, ∑ y, (coeff A j x * coeff A j y) * (f x * f y) := by
+    intro j
+    simp only [incidenceMap, LinearMap.coe_mk, AddHom.coe_mk, pow_two,
+      Finset.sum_mul, Finset.mul_sum]
+    apply Finset.sum_congr rfl
+    intro x hx
+    apply Finset.sum_congr rfl
+    intro y hy
+    ring
+  simp_rw [expand]
+  rw [Finset.sum_comm]
+  simp_rw [Finset.sum_comm (s := Finset.univ (α := J)), ← Finset.sum_mul, gram A hpair]
+  have inner : ∀ x, (∑ y, (if x = y then (degree A x : ℝ) else 1) * (f x * f y)) =
+      ((degree A x : ℝ) - 1) * (f x)^2 + f x * (∑ y, f y) := by
+    intro x
+    have term : ∀ y, (if x = y then (degree A x : ℝ) else 1) * (f x * f y) =
+        (if y = x then ((degree A x : ℝ) - 1) * (f x)^2 else 0) + f x * f y := by
+      intro y
+      by_cases h : y = x
+      · subst y; simp; ring
+      · simp [h, Ne.symm h]
+    simp_rw [term]
+    simp [Finset.sum_add_distrib, ← Finset.mul_sum]
+  simp_rw [inner]
+  rw [Finset.sum_add_distrib, ← Finset.sum_mul]
+  ring
+/-- Theorem 3, p.78: the de Bruijn–Erdős incidence inequality. Indexed blocks may include
+singletons or empty sets, as permitted by the book; all blocks are proper. -/
+theorem de_bruijn_erdos (A : J → Finset X) (hn : 3 ≤ Fintype.card X)
+    (hproper : ∀ j, A j ≠ Finset.univ) (hpair : PairPartition A) :
+    Fintype.card X ≤ Fintype.card J := by
+  classical
+  have hd : ∀ x, (0 : ℝ) < (degree A x : ℝ) - 1 := by
+    intro x
+    have := degree_ge_two A hpair hproper (by omega) x
+    have hreal : (2 : ℝ) ≤ degree A x := by exact_mod_cast this
+    linarith
+  have hinj : Function.Injective (incidenceMap A) := by
+    apply (incidenceMap A).ker_eq_bot.mp
+    apply le_antisymm
+    · intro f hf
+      have hz : incidenceMap A f = 0 := hf
+      have he := energy A hpair f
+      rw [hz] at he
+      simp only [Pi.zero_apply, zero_pow (by decide : 2 ≠ 0), Finset.sum_const_zero] at he
+      have hnon : ∀ x ∈ Finset.univ, 0 ≤ ((degree A x : ℝ) - 1) * (f x)^2 :=
+        fun x _ => mul_nonneg (hd x).le (sq_nonneg _)
+      have hs : (∑ x, ((degree A x : ℝ) - 1) * (f x)^2) = 0 := by
+        nlinarith [Finset.sum_nonneg hnon, sq_nonneg (∑ x, f x)]
+      have hx := (Finset.sum_eq_zero_iff_of_nonneg hnon).mp hs
+      have hf0 : f = 0 := by
+        funext x
+        have hh := hx x (Finset.mem_univ x)
+        have : (f x)^2 = 0 := (mul_eq_zero.mp hh).resolve_left (ne_of_gt (hd x))
+        simpa using this
+      simp [hf0]
+    · exact bot_le
+  have := LinearMap.finrank_le_finrank_of_injective hinj
+  simpa using this
+end Incidence
+end chapter11
+namespace chapter11
+namespace SylvesterGallai
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
+/-- All distinct lines determined by pairs of points in a finite configuration. -/
+noncomputable def determinedLines (S : Finset P) : Finset (AffineSubspace ℝ P) := by
+  classical
+  exact ((S ×ˢ S).filter fun ab => ab.1 ≠ ab.2).image fun ab => lineThrough (V := V) ab.1 ab.2
+lemma mem_determinedLines {S : Finset P} {l : AffineSubspace ℝ P} :
+    l ∈ determinedLines (V := V) S ↔
+      ∃ a ∈ S, ∃ b ∈ S, a ≠ b ∧ lineThrough (V := V) a b = l := by
+  classical
+  simp only [determinedLines, Finset.mem_image, Finset.mem_filter, Finset.mem_product]
+  constructor
+  · rintro ⟨⟨a,b⟩, ⟨⟨ha,hb⟩,hab⟩,hl⟩
+    exact ⟨a,ha,b,hb,hab,hl⟩
+  · rintro ⟨a,ha,b,hb,hab,hl⟩
+    exact ⟨(a,b),⟨⟨ha,hb⟩,hab⟩,hl⟩
+/-- Theorem 2, p.78: a noncollinear finite point set determines at least as many lines
+as points. The proof applies Theorem 3 to its point–line incidence structure. -/
+theorem number_of_lines (S : Finset P) (hncol : ¬ Collinear ℝ (S : Set P)) :
+    S.card ≤ (determinedLines (V := V) S).card := by
+  classical
+  let X := {p // p ∈ S}
+  let J := {l // l ∈ determinedLines (V := V) S}
+  let A : J → Finset X := fun l => Finset.univ.filter fun p => p.val ∈ l.val
+  have hpair : Incidence.PairPartition A := by
+    intro x y hxy
+    have hne : x.val ≠ y.val := fun hh => hxy (Subtype.ext hh)
+    let l : J := ⟨lineThrough (V := V) x.val y.val,
+      mem_determinedLines.mpr ⟨x.val,x.property,y.val,y.property,hne,rfl⟩⟩
+    refine ⟨l, ?_, ?_⟩
+    · simp [A, l, lineThrough, left_mem_affineSpan_pair, right_mem_affineSpan_pair]
+    · intro k hk
+      apply Subtype.ext
+      have hx : x.val ∈ k.val := (Finset.mem_filter.mp hk.1).2
+      have hy : y.val ∈ k.val := (Finset.mem_filter.mp hk.2).2
+      obtain ⟨a,ha,b,hb,hab,hl⟩ := mem_determinedLines.mp k.property
+      change k.val = lineThrough (V := V) x.val y.val
+      rw [← hl] at hx hy ⊢
+      exact (affineSpan_pair_eq_of_mem_of_mem_of_ne hx hy hne).symm
+  have hproper : ∀ j, A j ≠ Finset.univ := by
+    intro j hj
+    obtain ⟨a,ha,b,hb,hab,hl⟩ := mem_determinedLines.mp j.property
+    apply hncol
+    apply collinear_of_subset_line (V := V) (a := a) (b := b)
+    intro p hp
+    have hmem : (⟨p,hp⟩ : X) ∈ A j := by rw [hj]; exact Finset.mem_univ _
+    have h := (Finset.mem_filter.mp hmem).2
+    rwa [← hl] at h
+  have hn : 3 ≤ Fintype.card X := by
+    obtain ⟨a,ha,b,hb,hab⟩ := exists_ne_of_not_collinear (V := V) hncol
+    obtain ⟨c,hc,hcL⟩ : ∃ c ∈ (S : Set P), c ∉ lineThrough (V := V) a b := by
+      by_contra h
+      push Not at h
+      exact hncol (collinear_of_subset_line (V := V) h)
+    have hca : c ≠ a := by
+      intro h
+      apply hcL
+      rw [h]
+      exact left_mem_affineSpan_pair ℝ a b
+    have hcb : c ≠ b := by
+      intro h
+      apply hcL
+      rw [h]
+      exact right_mem_affineSpan_pair ℝ a b
+    have hsub : ({a,b,c} : Finset P) ⊆ S := by
+      intro p hp
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hp
+      rcases hp with rfl | rfl | rfl <;> assumption
+    have hh := Finset.card_le_card hsub
+    have habc : ({a,b,c} : Finset P).card = 3 := by simp [hab,hca.symm,hcb.symm]
+    rw [habc] at hh
+    simpa [X] using hh
+  have hh := Incidence.de_bruijn_erdos A hn hproper hpair
+  simpa [X,J] using hh
+end SylvesterGallai
+end chapter11
+namespace chapter11.Fano
+/-- The seven lines in the Fano diagram, with the book's labels shifted down by one. -/
+def blocks : Fin 7 → Finset (Fin 7)
+  | 0 => {0,1,5}
+  | 1 => {0,2,4}
+  | 2 => {0,3,6}
+  | 3 => {1,2,3}
+  | 4 => {1,4,6}
+  | 5 => {2,5,6}
+  | 6 => {3,4,5}
+/-- Each Fano line has three points. Finite verification uses kernel-reduced `decide`. -/
+theorem block_card : ∀ j, (blocks j).card = 3 := by decide
+/-- Any two distinct points determine exactly one of the seven lines. -/
+theorem pair_partition : Incidence.PairPartition blocks := by
+  unfold Incidence.PairPartition ExistsUnique
+  decide +kernel
+/-- Every pair has a third point on its Fano line. -/
+theorem third : ∀ x y : Fin 7, x ≠ y →
+    ∃ z : Fin 7, z ≠ x ∧ z ≠ y ∧ ∃ j, x ∈ blocks j ∧ y ∈ blocks j ∧ z ∈ blocks j := by
+  decide +kernel
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
+/-- The Fano incidence structure cannot be realized by seven distinct noncollinear
+real points with every indicated triple collinear (p.77). Noncollinearity excludes the
+degenerate drawing putting all seven points on one line. -/
+theorem not_realizable (f : Fin 7 → P) (hinj : Function.Injective f)
+    (hncol : ¬ Collinear ℝ (Set.range f))
+    (hblocks : ∀ j, Collinear ℝ (f '' (blocks j : Set (Fin 7)))) : False := by
+  obtain ⟨a,ha,b,hb,hab⟩ := SylvesterGallai.sylvester_gallai (V := V)
+    (Set.range f) (Set.finite_range f) hncol
+  obtain ⟨x,rfl⟩ := ha
+  obtain ⟨y,rfl⟩ := hb
+  have hxy : x ≠ y := fun h => hab.2.2.1 (congrArg f h)
+  obtain ⟨z,hzx,hzy,j,hx,hy,hz⟩ := third x y hxy
+  have hzL : f z ∈ SylvesterGallai.lineThrough (V := V) (f x) (f y) :=
+    (hblocks j).mem_affineSpan_of_mem_of_ne ⟨x,hx,rfl⟩ ⟨y,hy,rfl⟩
+      ⟨z,hz,rfl⟩ hab.2.2.1
+  rcases hab.2.2.2 (f z) (Set.mem_range_self z) hzL with h | h
+  · exact hzx (hinj h)
+  · exact hzy (hinj h)
+end chapter11.Fano
+
+
+open scoped BigOperators
+namespace chapter11
+namespace GrahamPollak
+variable {X J : Type*} [Fintype X] [Fintype J] [DecidableEq X] [DecidableEq J]
+/-- Coefficient of membership in one side of a bipartite block. -/
+def coeff (A : J → Finset X) (j : J) (x : X) : ℝ := if x ∈ A j then 1 else 0
+/-- An edge belongs to a complete bipartite block in either orientation. -/
+def Covers (L R : J → Finset X) (j : J) (x y : X) : Prop :=
+  (x ∈ L j ∧ y ∈ R j) ∨ (x ∈ R j ∧ y ∈ L j)
+/-- The vertex sides are disjoint and every unordered edge is covered exactly once. -/
+def BipartitePartition (L R : J → Finset X) : Prop :=
+  (∀ j, Disjoint (L j) (R j)) ∧
+    ∀ x y : X, x ≠ y → ∃! j : J, Covers L R j x y
+omit [Fintype X] [DecidableEq J] in
+lemma coefficient (L R : J → Finset X) (h : BipartitePartition L R) (x y : X) :
+    ∑ j, (coeff L j x * coeff R j y + coeff R j x * coeff L j y) =
+      if x = y then 0 else 1 := by
+  classical
+  have term : ∀ j, coeff L j x * coeff R j y + coeff R j x * coeff L j y =
+      if Covers L R j x y then 1 else 0 := by
+    intro j
+    have hd := Finset.disjoint_left.mp (h.1 j)
+    simp only [coeff, Covers]
+    split_ifs <;> simp_all
+  simp_rw [term]
+  by_cases hxy : x = y
+  · subst y
+    have hn : ∀ j, ¬ Covers L R j x x := by
+      intro j hh
+      rcases hh with hh | hh
+      · exact Finset.disjoint_left.mp (h.1 j) hh.1 hh.2
+      · exact Finset.disjoint_left.mp (h.1 j) hh.2 hh.1
+    simp [hn]
+  · obtain ⟨j, hj, huniq⟩ := h.2 x y hxy
+    rw [ite_eq_right hxy, Finset.sum_eq_single j]
+    · simp [hj]
+    · intro k hk hkj
+      have hn : ¬ Covers L R k x y := fun hh => hkj (huniq k hh)
+      simp [hn]
+    · simp
+omit [DecidableEq J] in
+/-- The quadratic identity (1), written over ordered pairs and including the diagonal.
+This avoids an arbitrary ordering on the vertex type. -/
+lemma quadratic_identity (L R : J → Finset X) (h : BipartitePartition L R) (f : X → ℝ) :
+    (∑ x, f x)^2 = (∑ x, (f x)^2) +
+      2 * ∑ j, (∑ x, coeff L j x * f x) * (∑ y, coeff R j y * f y) := by
+  classical
+  have hexpand : ∀ j,
+      2 * ((∑ x, coeff L j x * f x) * (∑ y, coeff R j y * f y)) =
+      ∑ x, ∑ y, (coeff L j x * coeff R j y + coeff R j x * coeff L j y) * (f x * f y) := by
+    intro j
+    have hswap : (∑ x, coeff R j x * f x) * (∑ y, coeff L j y * f y) =
+        (∑ x, coeff L j x * f x) * (∑ y, coeff R j y * f y) := mul_comm _ _
+    calc
+      _ = (∑ x, coeff L j x * f x) * (∑ y, coeff R j y * f y) +
+          (∑ x, coeff R j x * f x) * (∑ y, coeff L j y * f y) := by rw [hswap]; ring
+      _ = _ := by
+        simp only [Finset.sum_mul, Finset.mul_sum, ← Finset.sum_add_distrib]
+        apply Finset.sum_congr rfl
+        intro x hx
+        apply Finset.sum_congr rfl
+        intro y hy
+        ring
+  have he : 2 * ∑ j, (∑ x, coeff L j x * f x) * (∑ y, coeff R j y * f y) =
+      ∑ x, ∑ y, (if x = y then (0 : ℝ) else 1) * (f x * f y) := by
+    rw [Finset.mul_sum]
+    simp_rw [hexpand]
+    rw [Finset.sum_comm]
+    simp_rw [Finset.sum_comm (s := Finset.univ (α := J)), ← Finset.sum_mul,
+      coefficient L R h]
+  rw [he]
+  have ht : ∀ x y : X, f x * f y =
+      (if y = x then (f x)^2 else 0) + (if x = y then (0 : ℝ) else 1) * (f x * f y) := by
+    intro x y
+    by_cases hxy : y = x
+    · subst y; simp [pow_two]
+    · simp [hxy, Ne.symm hxy]
+  calc
+    (∑ x, f x)^2 = ∑ x, ∑ y, f x * f y := by
+      rw [pow_two, Finset.sum_mul]
+      simp_rw [Finset.mul_sum]
+    _ = _ := by
+      calc
+        _ = ∑ x, ∑ y, ((if y = x then (f x)^2 else 0) +
+            (if x = y then (0 : ℝ) else 1) * (f x * f y)) := by
+          apply Finset.sum_congr rfl
+          intro x hx
+          exact Finset.sum_congr rfl (fun y hy => ht x y)
+        _ = _ := by simp [Finset.sum_add_distrib]
+/-- The linear constraints in Tverberg's proof. -/
+def constraintMap (L : J → Finset X) : (X → ℝ) →ₗ[ℝ] (ℝ × (J → ℝ)) where
+  toFun f := (∑ x, f x, fun j => ∑ x, coeff L j x * f x)
+  map_add' f g := by
+    ext <;> simp [mul_add, Finset.sum_add_distrib]
+  map_smul' c f := by
+    ext <;> simp [Finset.mul_sum, mul_left_comm]
+omit [DecidableEq J] in
+/-- Theorem 4, pp.79–80: Graham–Pollak, with no assumption that n is positive.
+The equivalent natural-number formulation is n ≤ m + 1. -/
+theorem graham_pollak (L R : J → Finset X) (h : BipartitePartition L R) :
+    Fintype.card X ≤ Fintype.card J + 1 := by
+  classical
+  have hinj : Function.Injective (constraintMap L) := by
+    apply (constraintMap L).ker_eq_bot.mp
+    apply le_antisymm
+    · intro f hf
+      have hz : constraintMap L f = 0 := hf
+      have hs : (∑ x, f x) = 0 := congrArg Prod.fst hz
+      have hl : ∀ j, (∑ x, coeff L j x * f x) = 0 := fun j =>
+        congrFun (congrArg Prod.snd hz) j
+      have he := quadratic_identity L R h f
+      simp only [hs, hl, zero_pow (by decide : 2 ≠ 0), zero_mul,
+        Finset.sum_const_zero, mul_zero, add_zero] at he
+      have hf0 : f = 0 := by
+        funext x
+        have hx := (Finset.sum_eq_zero_iff_of_nonneg
+          (fun y (_ : y ∈ Finset.univ) => sq_nonneg (f y))).mp he.symm x (Finset.mem_univ x)
+        simpa using hx
+      simp [hf0]
+    · exact bot_le
+  have hh := LinearMap.finrank_le_finrank_of_injective hinj
+  simpa [Module.finrank_prod, Nat.add_comm] using hh
+end GrahamPollak
+end chapter11
+namespace chapter11.GrahamPollak
+/-- The j-th star has its centre at vertex j and its leaves at the later vertices.
+There are n stars on n+1 vertices, including n=0. -/
+def starLeft (n : ℕ) (j : Fin n) : Finset (Fin (n+1)) := {j.castSucc}
+/-- The leaves of the j-th star are the vertices with labels greater than j. -/
+def starRight (n : ℕ) (j : Fin n) : Finset (Fin (n+1)) :=
+  Finset.univ.filter fun x => j.val < x.val
+/-- The star construction on p.79 is an edge partition. -/
+theorem star_partition (n : ℕ) : BipartitePartition (starLeft n) (starRight n) := by
+  constructor
+  · intro j
+    apply Finset.disjoint_left.mpr
+    intro x hx hy
+    simp only [starLeft, Finset.mem_singleton] at hx
+    subst x
+    simp [starRight] at hy
+  · intro x y hxy
+    have hne : x.val ≠ y.val := fun hh => hxy (Fin.ext hh)
+    rcases lt_or_gt_of_ne hne with hlt | hlt
+    · let j : Fin n := ⟨x.val, by omega⟩
+      refine ⟨j, Or.inl ?_, ?_⟩
+      · simpa [starLeft, starRight, j] using hlt
+      · intro k hk
+        rcases hk with hk | hk
+        · have hx : x = k.castSucc := by simpa [starLeft] using hk.1
+          apply Fin.ext
+          simpa [j] using congrArg Fin.val hx.symm
+        · have hy : y = k.castSucc := by simpa [starLeft] using hk.2
+          have hx : k.val < x.val := (Finset.mem_filter.mp hk.1).2
+          have hyv := congrArg Fin.val hy
+          simp only [Fin.val_castSucc] at hyv
+          omega
+    · let j : Fin n := ⟨y.val, by omega⟩
+      refine ⟨j, Or.inr ?_, ?_⟩
+      · simpa [starLeft, starRight, j] using hlt
+      · intro k hk
+        rcases hk with hk | hk
+        · have hx : x = k.castSucc := by simpa [starLeft] using hk.1
+          have hy : k.val < y.val := (Finset.mem_filter.mp hk.2).2
+          have hxv := congrArg Fin.val hx
+          simp only [Fin.val_castSucc] at hxv
+          omega
+        · have hy : y = k.castSucc := by simpa [starLeft] using hk.2
+          apply Fin.ext
+          simpa [j] using congrArg Fin.val hy.symm
+/-- The n−1 bound is attained for every nonempty complete graph. -/
+theorem sharp (n : ℕ) :
+    ∃ L R : Fin n → Finset (Fin (n+1)), BipartitePartition L R :=
+  ⟨starLeft n, starRight n, star_partition n⟩
+end chapter11.GrahamPollak
+
+
+namespace chapter11.GraphAppendix
+/-- Complete graph on n vertices (p.80). -/
+abbrev complete (n : ℕ) : SimpleGraph (Fin n) := ⊤
+/-- Complete bipartite graph, with its two vertex classes kept disjoint (p.81). -/
+abbrev completeBipartite (m n : ℕ) : SimpleGraph (Fin m ⊕ Fin n) :=
+  _root_.completeBipartiteGraph (Fin m) (Fin n)
+/-- Path graph on n vertices (p.81). -/
+abbrev path (n : ℕ) := SimpleGraph.pathGraph n
+/-- Cycle graph on n vertices; the book's cycle examples start at n=3. -/
+abbrev cycle (n : ℕ) := SimpleGraph.cycleGraph n
+variable {X Y : Type*}
+/-- Adjacency and incidence use Mathlib's unordered edges (`Sym2`). -/
+abbrev Adjacent (G : SimpleGraph X) (x y : X) := G.Adj x y
+/-- A vertex is incident to an edge if it is one of that unordered edge's endpoints. -/
+def Incident (G : SimpleGraph X) (x : X) (e : G.edgeSet) : Prop := x ∈ e.val
+/-- Simple graphs have no loops and store at most one edge for each unordered pair. -/
+theorem no_loops (G : SimpleGraph X) (x : X) : ¬ G.Adj x x := G.irrefl
+/-- The vertex bijection of a graph isomorphism determines the edge bijection. -/
+abbrev Isomorphism (G : SimpleGraph X) (H : SimpleGraph Y) := G ≃g H
+/-- A subgraph records its vertex subset and exactly its chosen edges. -/
+abbrev Subgraph (G : SimpleGraph X) := G.Subgraph
+/-- An induced graph retains every ambient edge between its chosen vertices. -/
+abbrev induced (G : SimpleGraph X) (s : Set X) := G.induce s
+/-- A connected graph is nonempty and has a walk between every pair of vertices. -/
+abbrev Connected (G : SimpleGraph X) := G.Connected
+/-- A connected component is an equivalence class of mutually reachable vertices. -/
+abbrev Component (G : SimpleGraph X) := G.ConnectedComponent
+/-- A clique is a vertex set whose distinct vertices are pairwise adjacent. -/
+abbrev Clique (G : SimpleGraph X) (s : Set X) := G.IsClique s
+/-- An independent vertex set contains no adjacent pair of vertices. -/
+abbrev Independent (G : SimpleGraph X) (s : Set X) := G.IsIndepSet s
+/-- A forest is a graph with no cycles. -/
+abbrev Forest (G : SimpleGraph X) := G.IsAcyclic
+/-- A tree is a connected graph with no cycles. -/
+abbrev Tree (G : SimpleGraph X) := G.IsTree
+/-- A bipartite graph admits a proper coloring with two colors. -/
+abbrev Bipartite (G : SimpleGraph X) := G.IsBipartite
+/-- Complete graphs have n choose 2 edges (p.80). -/
+theorem complete_edge_count (n : ℕ) : (complete n).edgeFinset.card = n.choose 2 := by
+  simpa [complete] using SimpleGraph.card_edgeFinset_top_eq_card_choose_two (V := Fin n)
+/-- Complete bipartite graphs have m+n vertices (p.81). -/
+theorem completeBipartite_vertex_count (m n : ℕ) : Fintype.card (Fin m ⊕ Fin n) = m+n := by simp
+/-- Complete bipartite graphs have mn edges (p.81), in the library's extended natural
+cardinality. For these finite graphs this is the ordinary cardinality. -/
+theorem completeBipartite_edge_count (m n : ℕ) :
+    (completeBipartite m n).edgeSet.encard = (m : ℕ∞) * n := by
+  simpa [completeBipartite] using
+    (SimpleGraph.encard_edgeSet_completeBipartiteGraph (W₁ := Fin m) (W₂ := Fin n))
+/-- Path adjacency is precisely adjacency of consecutive vertex labels. -/
+theorem path_adjacency (n : ℕ) (x y : Fin n) :
+    (path n).Adj x y ↔ x.val+1 = y.val ∨ y.val+1 = x.val := SimpleGraph.pathGraph_adj
+/-- Paths with at least one vertex are connected. -/
+theorem path_connected (n : ℕ) : (path (n+1)).Connected := SimpleGraph.pathGraph_connected n
+/-- A clique induces a complete graph, as in the appendix. -/
+theorem clique_iff_complete_induced (G : SimpleGraph X) (s : Set X) :
+    Clique G s ↔ induced G s = ⊤ := G.induce_eq_top.symm
+/-- The book's definition of tree agrees with Mathlib's tree structure. -/
+theorem tree_iff (G : SimpleGraph X) : Tree G ↔ Connected G ∧ Forest G := by
+  constructor
+  · intro h; exact ⟨h.connected,h.isAcyclic⟩
+  · rintro ⟨hc,hf⟩; exact ⟨hc,hf⟩
+/-- Each connected component of a forest is a tree. -/
+theorem component_of_forest_is_tree (G : SimpleGraph X) (h : Forest G) (c : Component G) :
+    c.toSimpleGraph.IsTree := h.isTree_connectedComponent c
+end chapter11.GraphAppendix
+namespace chapter11.GraphAppendix
+variable {X Y : Type*}
+/-- The induced edge bijection required by the book's definition of isomorphism. -/
+abbrev edgeBijection {G : SimpleGraph X} {H : SimpleGraph Y} (e : Isomorphism G H) :=
+  e.mapEdgeSet
+/-- An independent set induces the empty graph. -/
+theorem independent_iff_empty_induced (G : SimpleGraph X) (s : Set X) :
+    Independent G s ↔ induced G s = ⊥ := by
+  constructor
+  · intro h
+    apply SimpleGraph.ext
+    funext x y
+    apply propext
+    simp only [induced, SimpleGraph.induce_adj, SimpleGraph.bot_adj, iff_false]
+    by_cases hxy : x.val = y.val
+    · simp [hxy]
+    · exact h x.property y.property hxy
+  · intro h x hx y hy hxy hAdj
+    have : (induced G s).Adj ⟨x,hx⟩ ⟨y,hy⟩ := hAdj
+    simp [h] at this
+/-- A graph is bipartite precisely when its vertices split into two independent sets.
+The sets are disjoint and cover all vertices, including isolated ones. -/
+theorem bipartite_iff_partition (G : SimpleGraph X) :
+    Bipartite G ↔ ∃ s t : Set X, Disjoint s t ∧ s ∪ t = Set.univ ∧
+      Independent G s ∧ Independent G t := by
+  classical
+  constructor
+  · rintro ⟨c,hc⟩
+    let s : Set X := {x | c x = 0}
+    let t : Set X := {x | c x = 1}
+    refine ⟨s,t,?_,?_,?_,?_⟩
+    · apply Set.disjoint_left.mpr
+      intro x hx hy
+      have hx' : c x = 0 := hx
+      have hy' : c x = 1 := hy
+      have : (0 : Fin 2) = 1 := hx'.symm.trans hy'
+      exact (by decide : (0 : Fin 2) ≠ 1) this
+    · ext x
+      simp only [Set.mem_union, Set.mem_univ, iff_true]
+      change c x = 0 ∨ c x = 1
+      have hv := (c x).isLt
+      simp only [Fin.ext_iff]
+      omega
+    · intro x hx y hy hxy hadj
+      exact hc hadj ((show c x = 0 from hx).trans (show c y = 0 from hy).symm)
+    · intro x hx y hy hxy hadj
+      exact hc hadj ((show c x = 1 from hx).trans (show c y = 1 from hy).symm)
+  · rintro ⟨s,t,hd,hcover,hs,ht⟩
+    apply SimpleGraph.IsBipartiteWith.isBipartite (s := s) (t := t)
+    refine ⟨hd,?_⟩
+    intro x y hadj
+    have hx : x ∈ s ∨ x ∈ t := by rw [← Set.mem_union,hcover]; trivial
+    have hy : y ∈ s ∨ y ∈ t := by rw [← Set.mem_union,hcover]; trivial
+    rcases hx with hx | hx <;> rcases hy with hy | hy
+    · exact False.elim (hs hx hy (G.ne_of_adj hadj) hadj)
+    · exact Or.inl ⟨hx,hy⟩
+    · exact Or.inr ⟨hx,hy⟩
+    · exact False.elim (ht hx hy (G.ne_of_adj hadj) hadj)
+end chapter11.GraphAppendix
+
+
+namespace chapter11.Incidence
+variable {X J : Type*} [Fintype X] [Fintype J] [DecidableEq X] [DecidableEq J]
+/-- The graph formulation of Theorem 3 (p.79): each edge of the complete graph
+belongs to exactly one of the complete graphs induced on the vertex blocks. -/
+def CliqueEdgePartition (A : J → Finset X) : Prop :=
+  ∀ x y : X, (⊤ : SimpleGraph X).Adj x y → ∃! j, x ∈ A j ∧ y ∈ A j
+omit [Fintype X] [Fintype J] [DecidableEq X] [DecidableEq J] in
+/-- An unordered edge in K_n is exactly a pair of distinct vertices, so the incidence
+and clique decomposition formulations are identical. -/
+theorem clique_partition_iff (A : J → Finset X) :
+    CliqueEdgePartition A ↔ PairPartition A := by
+  simp only [CliqueEdgePartition, PairPartition, SimpleGraph.top_adj]
+omit [Fintype X] [Fintype J] [DecidableEq X] [DecidableEq J] in
+/-- Every induced vertex block is a clique of the complete graph. -/
+theorem block_is_clique (A : J → Finset X) (j : J) :
+    (⊤ : SimpleGraph X).IsClique (A j : Set X) := by
+  intro x hx y hy hxy
+  exact hxy
+/-- Decomposing K_n into proper cliques requires at least n cliques (p.79). -/
+theorem clique_decomposition_bound (A : J → Finset X) (hn : 3 ≤ Fintype.card X)
+    (hproper : ∀ j, A j ≠ Finset.univ) (hpartition : CliqueEdgePartition A) :
+    Fintype.card X ≤ Fintype.card J :=
+  de_bruijn_erdos A hn hproper ((clique_partition_iff A).mp hpartition)
+end chapter11.Incidence
+
+namespace chapter11.GraphAppendix
+variable {X : Type*}
+/-- Every vertex belongs to its own connected component. -/
+theorem components_cover (G : SimpleGraph X) (x : X) :
+    ∃ c : G.ConnectedComponent, x ∈ c.supp := by
+  exact ⟨G.connectedComponentMk x, by rw [SimpleGraph.ConnectedComponent.mem_supp_iff]⟩
+/-- Distinct connected components have disjoint vertex sets. -/
+theorem components_disjoint (G : SimpleGraph X) :
+    Pairwise fun c c' : G.ConnectedComponent => Disjoint c.supp c'.supp :=
+  G.pairwise_disjoint_supp_connectedComponent
+end chapter11.GraphAppendix
