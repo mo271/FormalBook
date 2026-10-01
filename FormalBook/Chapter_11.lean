@@ -881,6 +881,7 @@ namespace chapter11.GrahamPollak
 /-- The j-th star has its centre at vertex j and its leaves at the later vertices.
 There are n stars on n+1 vertices, including n=0. -/
 def starLeft (n : ℕ) (j : Fin n) : Finset (Fin (n+1)) := {j.castSucc}
+/-- The leaves of the j-th star are the vertices with labels greater than j. -/
 def starRight (n : ℕ) (j : Fin n) : Finset (Fin (n+1)) :=
   Finset.univ.filter fun x => j.val < x.val
 /-- The star construction on p.79 is an edge partition. -/
@@ -951,12 +952,19 @@ abbrev Isomorphism (G : SimpleGraph X) (H : SimpleGraph Y) := G ≃g H
 abbrev Subgraph (G : SimpleGraph X) := G.Subgraph
 /-- An induced graph retains every ambient edge between its chosen vertices. -/
 abbrev induced (G : SimpleGraph X) (s : Set X) := G.induce s
+/-- A connected graph is nonempty and has a walk between every pair of vertices. -/
 abbrev Connected (G : SimpleGraph X) := G.Connected
+/-- A connected component is an equivalence class of mutually reachable vertices. -/
 abbrev Component (G : SimpleGraph X) := G.ConnectedComponent
+/-- A clique is a vertex set whose distinct vertices are pairwise adjacent. -/
 abbrev Clique (G : SimpleGraph X) (s : Set X) := G.IsClique s
+/-- An independent vertex set contains no adjacent pair of vertices. -/
 abbrev Independent (G : SimpleGraph X) (s : Set X) := G.IsIndepSet s
+/-- A forest is a graph with no cycles. -/
 abbrev Forest (G : SimpleGraph X) := G.IsAcyclic
+/-- A tree is a connected graph with no cycles. -/
 abbrev Tree (G : SimpleGraph X) := G.IsTree
+/-- A bipartite graph admits a proper coloring with two colors. -/
 abbrev Bipartite (G : SimpleGraph X) := G.IsBipartite
 /-- Complete graphs have n choose 2 edges (p.80). -/
 theorem complete_edge_count (n : ℕ) : (complete n).edgeFinset.card = n.choose 2 := by
