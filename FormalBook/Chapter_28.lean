@@ -3,12 +3,25 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.LinearAlgebra.Projectivization.Constructions
+
+import Archive.Wiedijk100Theorems.AscendingDescendingSequences
 import FormalBook.Ch28.BrouwerCovering
 import FormalBook.Ch28.SpernerBrouwer
-import Mathlib
 import FormalBook.Mathlib.EdgeFinset
-import Archive.Wiedijk100Theorems.AscendingDescendingSequences
+import Mathlib.Algebra.Order.Chebyshev
+import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.Projectivization.Cardinality
+import Mathlib.Tactic.NormNum.Prime
 
+@[expose] public section
 /-!
 # Pigeon-hole and double counting
 
@@ -636,6 +649,8 @@ section ReimanGraph
 open scoped LinearAlgebra.Projectivization
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
+
+--set_option trace.Meta.synthInstance true
 
 /-- The projective plane over 𝔽ₚ. -/
 abbrev PG2 := ℙ (ZMod p) (Fin 3 → ZMod p)

@@ -3,17 +3,17 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ralf Stephan
 -/
-import Mathlib.Algebra.Order.Ring.Star
+module
+
+public import Mathlib.NumberTheory.LucasLehmer
+public import Mathlib.NumberTheory.EulerProduct.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Int.Lemmas
-import Mathlib.Data.Int.Star
-import Mathlib.NumberTheory.LucasLehmer
-import Mathlib.NumberTheory.PrimeCounting
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.PrimesCongruentOne
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.NumberTheory.SumPrimeReciprocals
+import Mathlib.Algebra.Order.Group.Indicator
+
+@[expose] public section
 
 open Finset Nat
 open BigOperators
@@ -543,7 +543,7 @@ lemma prime_counting_lemma (x : ℝ) :
           rw [ Int.subNatNat_eq_coe ] ; push_cast ; nlinarith [ Nat.Prime.one_lt ( Nat.prime_nth_prime k ), show Nat.nth Nat.Prime k ≥ k + 1 from Nat.recOn k ( Nat.Prime.pos ( Nat.prime_nth_prime 0 ) ) fun n ihn => Nat.succ_le_of_lt ( Nat.lt_of_le_of_lt ihn ( Nat.nth_strictMono ( Nat.infinite_setOfPred_prime ) ( Nat.lt_succ_self _ ) ) ) ];
         · exact Nat.Prime.one_lt ( Nat.prime_nth_prime k );
         · linarith [ Finset.mem_Icc.mp hk ];
-      exact Finset.prod_le_prod ( fun _ _ => div_nonneg ( Nat.cast_nonneg _ ) ( sub_nonneg.mpr ( Nat.one_le_cast.mpr ( Nat.Prime.pos ( Nat.prime_nth_prime _ ) ) ) ) ) h_term_le
+      exact Finset.prod_le_prod₀ ( fun _ _ => div_nonneg ( Nat.cast_nonneg _ ) ( sub_nonneg.mpr ( Nat.one_le_cast.mpr ( Nat.Prime.pos ( Nat.prime_nth_prime _ ) ) ) ) ) h_term_le
 
 theorem infinity_of_primes₄ : Tendsto π atTop atTop := by
 
@@ -558,7 +558,7 @@ theorem infinity_of_primes₄ : Tendsto π atTop atTop := by
       _ ≤ (∏ p ∈ primesBelow (⌊x⌋.natAbs+1), (∑' k : ℕ, (p ^ k : ℝ)⁻¹)) := by {have := euler_product_rearrangement x n hxge hxlt; bound}
       _ ≤ (∏ k ∈ Icc 1 (primeCountingReal x), ((nth Nat.Prime (k-1)):ℝ) / ((nth Nat.Prime (k-1)) - 1)) := by {have := geom_series_simp n x hxge hxlt; bound}
       _ ≤ (∏ k ∈ Icc 1 (primeCountingReal x), ((k : ℝ) + 1) / k) := by
-        apply Finset.prod_le_prod
+        apply Finset.prod_le_prod₀
         · intro k hk
           have h2 : (2 : ℝ) ≤ nth Nat.Prime (k-1) := by
             exact_mod_cast (prime_nth_prime (k-1)).two_le
@@ -832,7 +832,7 @@ lemma factorization_le_of_abs_le {v : ℤ} (hv : v ≠ 0) {B : ℝ}
   · rw [Nat.factorization_eq_zero_of_not_prime _ hp]
     simp only [CharP.cast_eq_zero]
     by_contra h
-    push_neg at h
+    push Not at h
     have : (2 : ℝ) ^ B < 1 := Real.rpow_lt_one_of_one_lt_of_neg (by norm_num) h
     have : (1 : ℝ) ≤ ((|v| : ℤ) : ℝ) := by
       exact_mod_cast Int.one_le_abs hv
@@ -939,7 +939,7 @@ theorem infinitely_many_more_proofs (S : ℕ → ℤ)
     ext p
     simp only [Set.mem_univ, Set.mem_ofPred_eq, true_iff]
     exact ⟨n, by rw [hn]; exact dvd_zero _⟩
-  push_neg at hz
+  push Not at hz
   set P : Finset ℕ := hfin.toFinset.image (fun p : Nat.Primes => (p:ℕ)) with hPdef
   set k := P.card
   have hP : ∀ n p, p.Prime → p ∣ (S n).natAbs → p ∈ P := by

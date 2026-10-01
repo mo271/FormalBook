@@ -3,11 +3,14 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Nikolas Kuhn
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.RingTheory.LittleWedderburn
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.Data.Int.Interval
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.NumberTheory.LegendreSymbol.GaussEisensteinLemmas
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+
+@[expose] public section
 
 open ZMod Finset
 open Polynomial (X)

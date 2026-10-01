@@ -3,11 +3,15 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Julien Michel
 -/
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.CStarAlgebra.Classes
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Defs
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Analysis.Complex.Norm
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Int.Star
 import Mathlib.Topology.Algebra.Polynomial
+
+@[expose] public section
 
 /-!
 # The fundamental theorem of algebra

@@ -1,51 +1,53 @@
-import FormalBook.Chapter_01
-import FormalBook.Chapter_02
-import FormalBook.Chapter_03
-import FormalBook.Chapter_04
-import FormalBook.Chapter_05
-import FormalBook.Chapter_06
-import FormalBook.Chapter_07
-import FormalBook.Chapter_08
-import FormalBook.Chapter_09
-import FormalBook.Chapter_10
-import FormalBook.Chapter_11
-import FormalBook.Chapter_12
-import FormalBook.Chapter_13
-import FormalBook.Chapter_14
-import FormalBook.Chapter_15
-import FormalBook.Chapter_16
-import FormalBook.Chapter_17
-import FormalBook.Chapter_18
-import FormalBook.Chapter_19
-import FormalBook.Chapter_20
-import FormalBook.Chapter_21
-import FormalBook.Chapter_22
-import FormalBook.Chapter_23
-import FormalBook.Chapter_24
-import FormalBook.Chapter_25
-import FormalBook.Chapter_26
-import FormalBook.Chapter_27
-import FormalBook.Chapter_28
-import FormalBook.Chapter_29
-import FormalBook.Chapter_30
-import FormalBook.Chapter_31
-import FormalBook.Chapter_32
-import FormalBook.Chapter_33
-import FormalBook.Chapter_34
-import FormalBook.Chapter_35
-import FormalBook.Chapter_36
-import FormalBook.Chapter_37
-import FormalBook.Chapter_38
-import FormalBook.Chapter_39
-import FormalBook.Chapter_40
-import FormalBook.Chapter_41
-import FormalBook.Chapter_42
-import FormalBook.Chapter_43
-import FormalBook.Chapter_44
-import FormalBook.Chapter_45
-import FormalBook.Mathlib.EdgeFinset
-import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import FormalBook.Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-import FormalBook.Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-import FormalBook.Widgets.Windmill
+module
+
+public import FormalBook.Chapter_01
+public import FormalBook.Chapter_02
+public import FormalBook.Chapter_03
+public import FormalBook.Chapter_04
+public import FormalBook.Chapter_05
+public import FormalBook.Chapter_06
+public import FormalBook.Chapter_07
+public import FormalBook.Chapter_08
+public import FormalBook.Chapter_09
+public import FormalBook.Chapter_10
+public import FormalBook.Chapter_11
+public import FormalBook.Chapter_12
+public import FormalBook.Chapter_13
+public import FormalBook.Chapter_14
+public import FormalBook.Chapter_15
+public import FormalBook.Chapter_16
+public import FormalBook.Chapter_17
+public import FormalBook.Chapter_18
+public import FormalBook.Chapter_19
+public import FormalBook.Chapter_20
+public import FormalBook.Chapter_21
+public import FormalBook.Chapter_22
+public import FormalBook.Chapter_23
+public import FormalBook.Chapter_24
+public import FormalBook.Chapter_25
+public import FormalBook.Chapter_26
+public import FormalBook.Chapter_27
+public import FormalBook.Chapter_28
+public import FormalBook.Chapter_29
+public import FormalBook.Chapter_30
+public import FormalBook.Chapter_31
+public import FormalBook.Chapter_32
+public import FormalBook.Chapter_33
+public import FormalBook.Chapter_34
+public import FormalBook.Chapter_35
+public import FormalBook.Chapter_36
+public import FormalBook.Chapter_37
+public import FormalBook.Chapter_38
+public import FormalBook.Chapter_39
+public import FormalBook.Chapter_40
+public import FormalBook.Chapter_41
+public import FormalBook.Chapter_42
+public import FormalBook.Chapter_43
+public import FormalBook.Chapter_44
+public import FormalBook.Chapter_45
+public import FormalBook.Mathlib.EdgeFinset
+public import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+public import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import FormalBook.Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+public import FormalBook.Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+public import FormalBook.Widgets.Windmill

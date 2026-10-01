@@ -3,9 +3,15 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Tactic
-import Mathlib.Analysis.Matrix.Spectrum
+module
 
+public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Basic.Real.Star
+public import Mathlib.Algebra.Star.UnitaryStarAlgAut
+import Mathlib.Tactic.IntervalCases
+import Mathlib.Analysis.Real.Sqrt
+
+@[expose] public section
 /-!
 # Auxiliary lemmas for Chapter 44 (Friendship Theorem)
 

@@ -3,15 +3,15 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Data.Finset.Powerset
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+public import Mathlib.Combinatorics.SimpleGraph.Maps
 --import Mathlib.Analysis.SpecialFunctions.Exp
 --import Mathlib.Analysis.SpecialFunctions.Log.Base
-
 import Mathlib.Probability.Distributions.Uniform
-import Mathlib.Probability.Notation
 
-
+@[expose] public section
 
 open SimpleGraph Finset
 /-!

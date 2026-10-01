@@ -3,11 +3,14 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Daniele Cappello
 -/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Tactic
+
+@[expose] public section
 
 /-!
 # Lines in the plane and decompositions of graphs
