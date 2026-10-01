@@ -1,6 +1,10 @@
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-import FormalBook.Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+
+@[expose] public section
 
 open Real Set
 

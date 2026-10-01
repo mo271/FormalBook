@@ -3,13 +3,14 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Nick Kuhn
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Data.Int.Star
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.RingTheory.LittleWedderburn
-import Mathlib.RingTheory.SimpleRing.Principal
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+import Mathlib.GroupTheory.ClassEquation
+import Mathlib.Algebra.GroupWithZero.Action.Center
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+
+@[expose] public section
 
 open Finset Subring Polynomial Complex BigOperators Nat
 /-!
@@ -163,7 +164,7 @@ lemma orbit_stabilizer [Fintype R] (A: ConjClasses Rˣ) [Fintype A.carrier] :
   have horbit : MulAction.orbit (ConjAct Rˣ) a = A.carrier := by
     rw [ConjAct.orbit_eq_carrier_conjClasses, ha]
   have e_orbit : (MulAction.orbit (ConjAct Rˣ) a : Set Rˣ) ≃ (A.carrier : Set Rˣ) :=
-    Equiv.setCongr horbit
+    Set.equivOfEq horbit
   have e_stab : (MulAction.stabilizer (ConjAct Rˣ) a : Set (ConjAct Rˣ)) ≃
       (Set.centralizer {a} : Set Rˣ) :=
     (ConjAct_stabilizer_centralizer_eq a).symm

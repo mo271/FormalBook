@@ -1,8 +1,10 @@
+module
 
-import LeanSearchClient.Syntax
-import ProofWidgets.Component.Basic
+public import ProofWidgets.Component.Basic
 import Lean.Widget.Commands
+import Lean.Server.Rpc.Basic
 
+@[expose] public section
 
 /-! ## Example use of string diagram widgets -/
 
@@ -46,7 +48,7 @@ open ProofWidgets
 
 /-- A ProofWidgets component to display a windmill shape based on a `WindmillTriple`. -/
 @[widget_module]
-def WindmillWidget : Component WindmillWidgetProps where
+meta def WindmillWidget : Component WindmillWidgetProps where
   javascript := "
     import { InteractiveCode } from '@leanprover/infoview'
     import * as React from 'react'

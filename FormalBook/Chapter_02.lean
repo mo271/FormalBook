@@ -3,15 +3,17 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+module
+
+public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import Mathlib.Data.Nat.Choose.Factorization
+public import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
-import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Tactic.NormNum.Prime
+
+@[expose] public section
+
 /-!
 # Bertrand's postulate
 
@@ -143,7 +145,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
   rw [centralBinom_factorization_small n n_big no_prime, ← this, ←
     Finset.prod_filter_mul_prod_filter_not S (· ≤ Nat.sqrt (2 * n))]
   apply mul_le_mul'
-  · refine' (Finset.prod_le_prod' fun p _ ↦ (_ : f p ≤ 2 * n)).trans _
+  · refine' (Finset.prod_le_prod fun p _ ↦ (_ : f p ≤ 2 * n)).trans _
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
     have : (Finset.Icc 1 (Nat.sqrt (2 * n))).card = Nat.sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
     rw [Finset.prod_const]
@@ -151,11 +153,11 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
   · refine' le_trans _ (primorial_le_four_pow (2 * n / 3))
-    refine' (Finset.prod_le_prod' fun p hp ↦ (_ : f p ≤ p)).trans _
+    refine' (Finset.prod_le_prod fun p hp ↦ (_ : f p ≤ p)).trans _
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
       refine' (pow_le_pow_right₀ (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
-    refine' Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) _
+    refine' Finset.prod_le_prod_of_subset_of_one_le (Finset.filter_subset _ _) _
     exact fun p hp _ ↦ (Finset.mem_filter.1 hp).2.one_lt.le
 
 

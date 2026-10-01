@@ -3,13 +3,17 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Tactic
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.NumberTheory.LegendreSymbol.Basic
+module
+
+public import Mathlib.Data.Int.Interval
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.NumberTheory.SumTwoSquares
-import Mathlib.SetTheory.Cardinal.Finite
+
+public meta import FormalBook.Widgets.Windmill
 import FormalBook.Widgets.Windmill
+
+@[expose] public section
 
 /-!
 # Representing numbers as sums of two squares
@@ -327,7 +331,6 @@ def secondInvo : Function.End (U k) := fun ⟨⟨⟨x, y, z⟩, hS⟩, h⟩ =>
   ⟨⟨secondInvo_fun ⟨x, y, z⟩, by
     obtain ⟨hS, _, hy⟩ := hS
     refine ⟨?_, h, hy⟩
-    change 4 * (x - y + z) * y + (2 * y - z) ^ 2 = 4 * k + 1
     rw [← hS]; ring⟩, by
     obtain ⟨_, hx, _⟩ := hS
     change 0 < (x - y + z) - y + (2 * y - z)

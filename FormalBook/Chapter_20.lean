@@ -3,20 +3,17 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import FormalBook.Ch20.ErdosGallai
 import FormalBook.Mathlib.EdgeFinset
 import FormalBook.Ch20.CauchyAMGM
 import FormalBook.Ch20.BernoulliAMGM
-import FormalBook.Ch20.ErdosGallai
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.Deriv.Mul
+
+@[expose] public section
 
 open Real
 open RealInnerProductSpace
@@ -849,7 +846,7 @@ theorem mantel_amgm (h: G.CliqueFree 3) : G.edgeFinset.card ≤ (Fintype.card α
       intro e he
       rw [Finset.mem_biUnion]
       obtain ⟨v, hv_mem, hv_in⟩ := h_cover e he
-      exact ⟨v, hv_mem, (G.mem_incidenceFinset v e).mpr ⟨G.mem_edgeFinset.mp he, hv_in⟩⟩
+      exact ⟨v, hv_mem, G.mem_incidenceFinset.mpr ⟨G.mem_edgeFinset.mp he, hv_in⟩⟩
     calc G.edgeFinset.card
         ≤ (Aᶜ.biUnion (fun v => G.incidenceFinset v)).card := Finset.card_le_card hsub
       _ ≤ ∑ v ∈ Aᶜ, (G.incidenceFinset v).card := Finset.card_biUnion_le

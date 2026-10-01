@@ -1,4 +1,18 @@
-import Mathlib
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Data.Fintype.Basic
+import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
+import Mathlib.Analysis.Real.Sqrt
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+import Mathlib.Topology.Sequences
+import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.IntervalCases
+
+@[expose] public section
 
 /-!
 # Sperner's Lemma and Brouwer Fixed Point Theorem via Sperner
@@ -133,13 +147,16 @@ vertex extraction) below; `sperner_coloring_rainbow_triangles` is proved modulo 
 **Gaps 2–3 (Compactness + Limit):** Fully proved below.
 -/
 
-/-- The standard 2-simplex equals Mathlib's `stdSimplex`. -/
-private theorem stdSimplex2_eq : stdSimplex2 = stdSimplex ℝ (Fin 3) := by
-  ext x; simp only [stdSimplex2, stdSimplex, Set.mem_ofPred_eq]
-
 /-- The standard 2-simplex is compact. -/
 private theorem stdSimplex2_isCompact : IsCompact stdSimplex2 := by
-  rw [stdSimplex2_eq]; exact isCompact_stdSimplex ℝ (Fin 3)
+  set f := fun (x : Convexity.StdSimplex ℝ (Fin 3)) ↦ ⇑x.weights with hf
+  have : Continuous f := by
+    apply Topology.IsEmbedding.continuous
+    exact Convexity.StdSimplex.isEmbedding_toFun_comp_weights ℝ (Fin 3)
+  convert isCompact_range this
+  rw [hf, Convexity.StdSimplex.range_toFun_comp_weights, stdSimplex2]
+  ext
+  simp
 
 /-- The Sperner coloring is well-defined: if v ∈ Δ² and f(v) ≠ v with f(v) ∈ Δ²,
     then some coordinate strictly decreases. -/
@@ -793,7 +810,5 @@ private theorem brouwer_fixed_point_simplex2_sperner
   have hvi_i_tends := ((continuous_apply i).tendsto xstar).comp hvi_tends
   exact le_of_tendsto_of_tendsto hfi_tends hvi_i_tends
     (Filter.eventually_atTop.mpr ⟨0, fun n _ => le_of_lt (hvk_col (φ n) i)⟩)
-
-
 
 end chapter28
