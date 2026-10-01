@@ -45,7 +45,7 @@ namespace Chapter10
 
 /-- Rational step: a positive real solution of an integral homogeneous system yields a positive
 rational solution. -/
-theorem exists_pos_rat_solution {m n : Type*} [Fintype m] [Fintype n] (A : Matrix m n ℤ)
+theorem exists_pos_rat_solution {m n : Type*} [Fintype n] (A : Matrix m n ℤ)
     (x : n → ℝ) (hx : ∀ j, 0 < x j) (hAx : ∀ i, ∑ j, (A i j : ℝ) * x j = 0) :
     ∃ q : n → ℚ, (∀ j, 0 < q j) ∧ ∀ i, ∑ j, (A i j : ℚ) * q j = 0 := by
   classical
@@ -102,7 +102,7 @@ theorem exists_pos_rat_solution {m n : Type*} [Fintype m] [Fintype n] (A : Matri
       _ = 0 := by rw [this, zero_mul]
 
 /-- Integral step: clearing denominators. -/
-theorem exists_pos_int_of_pos_rat {m n : Type*} [Fintype m] [Fintype n] (A : Matrix m n ℤ)
+theorem exists_pos_int_of_pos_rat {m n : Type*} [Fintype n] (A : Matrix m n ℤ)
     (q : n → ℚ) (hq : ∀ j, 0 < q j) (hAq : ∀ i, ∑ j, (A i j : ℚ) * q j = 0) :
     ∃ z : n → ℕ, (∀ j, 0 < z j) ∧ ∀ i, ∑ j, A i j * (z j : ℤ) = 0 := by
   classical
