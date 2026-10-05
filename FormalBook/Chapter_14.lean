@@ -335,7 +335,9 @@ polygons lie in an open hemisphere. Degenerate intermediate polygons in the
 book's induction still require a separate weak-convexity development.
 -/
 
+/-- The Euclidean plane containing the planar polygons. -/
 abbrev Plane := EuclideanSpace ℝ (Fin 2)
+/-- Euclidean three-space containing the sphere and convex polyhedra. -/
 abbrev Space := EuclideanSpace ℝ (Fin 3)
 
 /-- Cyclic successor, with no global nonzero-size typeclass assumption. -/
@@ -353,6 +355,7 @@ def orient (p q r : Plane) : ℝ :=
 /-- A strictly convex planar n-gon, oriented counterclockwise. -/
 structure PlanarPolygon (n : ℕ) where
   atLeastThree : 3 ≤ n
+  /-- The vertices in counterclockwise boundary order. -/
   point : Fin n → Plane
   injective : Function.Injective point
   leftOfEdges : ∀ i j, j ≠ i → j ≠ next i →
@@ -360,12 +363,17 @@ structure PlanarPolygon (n : ℕ) where
 
 namespace PlanarPolygon
 
+/-- The index of the first vertex of the polygonal arm. -/
 def first {n : ℕ} (P : PlanarPolygon n) : Fin n := ⟨0, by have := P.atLeastThree; omega⟩
+/-- The index of the last vertex of the polygonal arm. -/
 def last {n : ℕ} (P : PlanarPolygon n) : Fin n := ⟨n - 1, by have := P.atLeastThree; omega⟩
+/-- The length of the edge from a vertex to its cyclic successor. -/
 def side {n : ℕ} (P : PlanarPolygon n) (i : Fin n) : ℝ :=
   dist (P.point i) (P.point (next i))
+/-- The interior angle between the two incident polygon edges. -/
 def angle {n : ℕ} (P : PlanarPolygon n) (i : Fin n) : ℝ :=
   EuclideanGeometry.angle (P.point (previous i)) (P.point i) (P.point (next i))
+/-- The distance between the first and last vertices of the polygonal arm. -/
 def closing {n : ℕ} (P : PlanarPolygon n) : ℝ :=
   dist (P.point P.first) (P.point P.last)
 
@@ -390,6 +398,7 @@ def triple (p q r : Space) : ℝ :=
 /-- A strictly convex spherical n-gon in an open hemisphere, with minor arcs. -/
 structure SphericalPolygon (n : ℕ) where
   atLeastThree : 3 ≤ n
+  /-- The unit-sphere vertices in oriented boundary order. -/
   point : Fin n → Space
   injective : Function.Injective point
   unit : ∀ i, ‖point i‖ = 1
@@ -399,12 +408,17 @@ structure SphericalPolygon (n : ℕ) where
 
 namespace SphericalPolygon
 
+/-- The index of the first vertex of the spherical polygonal arm. -/
 def first {n : ℕ} (P : SphericalPolygon n) : Fin n := ⟨0, by have := P.atLeastThree; omega⟩
+/-- The index of the last vertex of the spherical polygonal arm. -/
 def last {n : ℕ} (P : SphericalPolygon n) : Fin n := ⟨n - 1, by have := P.atLeastThree; omega⟩
+/-- The minor-arc length from a vertex to its cyclic successor. -/
 def side {n : ℕ} (P : SphericalPolygon n) (i : Fin n) : ℝ :=
   arcLength (P.point i) (P.point (next i))
+/-- The angle between the tangent directions of the two incident minor arcs. -/
 def angle {n : ℕ} (P : SphericalPolygon n) (i : Fin n) : ℝ :=
   sphericalAngle (P.point (previous i)) (P.point i) (P.point (next i))
+/-- The minor-arc length between the first and last vertices of the spherical arm. -/
 def closing {n : ℕ} (P : SphericalPolygon n) : ℝ :=
   arcLength (P.point P.first) (P.point P.last)
 
@@ -427,7 +441,9 @@ vertex sets. The correspondence is the identity on labels after relabeling
 one polyhedron; no geometric conclusion is built into that correspondence.
 -/
 
+/-- A full-dimensional convex hull with finitely many distinctly labeled extreme vertices. -/
 structure ConvexPolyhedron (n : ℕ) where
+  /-- The labeled vertices of the polyhedron. -/
   vertex : Fin n → Space
   injective : Function.Injective vertex
   verticesExtreme : (convexHull ℝ (Set.range vertex)).extremePoints ℝ = Set.range vertex
