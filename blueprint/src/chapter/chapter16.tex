@@ -1,19 +1,41 @@
 \chapter{Touching simplices}
 
+Two \(d\)-simplices touch if their interiors are disjoint and their
+intersection is nonempty and has affine dimension \(d-1\).
+Let \(f(d)\) be the largest size of a pairwise touching family in
+\(\mathbb{R}^d\).
+
+Bagemihl conjectured that for every \(d\ge 1\), we have \(f(d)=2^d\).
+
 \begin{theorem}
   \label{ch16theorem1}
+  \lean{TouchingSimplices.zaks}
+  \leanok
   For every \(d\ge 2\), there is a family of \(2^d\) pairwise touching
   \(d\)-simplices in \(\mathbb{R}^d\) together with a transversal line that hits the interior
-  of every single on of them.
+  of every single one of them.
 \end{theorem}
 \begin{proof}
-  TODO
+  \leanok
+  Start with four touching triangles in the plane with a common transversal.
+  For the induction step, an affine transformation puts short segments
+  inside all simplices into a half-square. Reflect the configuration in
+  \(x_1=x_2\), then form pyramids over the two configurations with apexes
+  on opposite sides of \(\mathbb{R}^d\). This doubles the number of simplices.
+  A slightly tilted antidiagonal meets the interior of each pyramid.
 \end{proof}
 
 \begin{theorem}
   \label{ch16theorem2}
+  \lean{TouchingSimplices.touchingNumber_lt}
+  \leanok
   For all \(d \ge 1\), we have \(f(d)< 2^{d+1}\).
 \end{theorem}
 \begin{proof}
-  TODO
+  \leanok
+  Let \(s\) be the number of facet hyperplanes and put \(k=d+1\).
+  Completing the zero entries of each row of the sign matrix gives
+  \(2^{s-k}\) sign vectors. These sets of completions are pairwise disjoint,
+  and at least one of the \(2^s\) possible sign vectors is missing.
+  Thus \(r2^{s-k}<2^s\), so \(r<2^k=2^{d+1}\).
 \end{proof}
