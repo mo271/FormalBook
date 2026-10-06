@@ -1240,10 +1240,13 @@ lemma midpoint_mem {p : Fin 3 → (Fin 2 → ℝ)} (i j : Fin 3) (m : Fin 2 → 
   exact convex_convexHull ℝ _ (vertex_mem i) (vertex_mem j) (by norm_num) (by norm_num)
     (by norm_num)
 
-/-- The four triangles of the base configuration. -/
+/-- The first triangle of the base configuration. -/
 def tri1 : Set (Fin 2 → ℝ) := convexHull ℝ (range ![![0, 0], ![0, -1], ![2, 0]])
+/-- The second triangle of the base configuration. -/
 def tri2 : Set (Fin 2 → ℝ) := convexHull ℝ (range ![![0, 0], ![1, 0], ![0, 1]])
+/-- The third triangle of the base configuration. -/
 def tri3 : Set (Fin 2 → ℝ) := convexHull ℝ (range ![![1, 0], ![2, 0], ![-1, 2]])
+/-- The fourth triangle of the base configuration. -/
 def tri4 : Set (Fin 2 → ℝ) := convexHull ℝ (range ![![0, 1], ![-1, 2], ![0, -1]])
 
 /-- The configuration of four pairwise touching triangles. -/
