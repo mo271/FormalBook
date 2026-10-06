@@ -3,15 +3,20 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, AItoBit
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Data.Nat.Totient
-import Mathlib.NumberTheory.PrimeCounting
-import Mathlib.NumberTheory.Primorial
-import Mathlib.Tactic
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Nat.Choose.Factorization
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Data.Nat.Prime.Factorial
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.NumberTheory.PrimeCounting
+public import Mathlib.NumberTheory.Primorial
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-!
 # Sylvester's theorem
@@ -227,11 +232,11 @@ theorem choose_le_of_smooth (n k : ℕ) (hn : 9 ≤ n) (hkn : 2 * k ≤ n)
     simp only [S, mem_filter, mem_range] at hp ⊢
     exact ⟨by omega, hp.1.2⟩
   · refine le_trans ?_ (primorial_le_four_pow (min k (n / 3)))
-    refine (prod_le_prod' fun p hp => (?_ : f p ≤ p)).trans ?_
+    refine (prod_le_prod fun p hp => (?_ : f p ≤ p)).trans ?_
     · simp only [S, mem_filter, mem_range, not_le] at hp
       refine (Nat.pow_le_pow_right hp.1.2.one_lt.le ?_).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp hp.2)
-    refine prod_le_prod_of_subset_of_one_le' (filter_subset _ _) ?_
+    refine prod_le_prod_of_subset_of_one_le (filter_subset _ _) ?_
     intro p hp _
     simp only [mem_filter] at hp
     exact hp.2.one_lt.le
@@ -248,7 +253,7 @@ theorem pow_le_pow_mul_choose (n k : ℕ) (hkn : k ≤ n) : n ^ k ≤ k ^ k * ch
     have en : n ^ k = ∏ _i ∈ range k, n := by simp
     have ek : k ^ k = ∏ _i ∈ range k, k := by simp
     rw [h1, h2, en, ek, ← prod_mul_distrib, ← prod_mul_distrib]
-    apply prod_le_prod'; intro i hi; simp at hi
+    apply prod_le_prod; intro i hi; simp at hi
     have : n * (k - i) ≤ k * (n - i) := by
       rw [Nat.mul_sub, Nat.mul_sub]
       have : k * i ≤ n * i := Nat.mul_le_mul_right _ hkn
@@ -481,7 +486,7 @@ theorem ineqE2 (n : ℕ) (hn : 4096 ≤ n) :
 theorem exists_prime_gt_dvd_choose (k n : ℕ) (h : 2 * k ≤ n) (hk : 0 < k) :
     ∃ p, k < p ∧ p.Prime ∧ p ∣ choose n k := by
   by_contra hcon
-  push_neg at hcon
+  push Not at hcon
   have hsmooth : ∀ p, p.Prime → p ∣ choose n k → p ≤ k := fun p hp hd => by
     by_contra hlt
     exact hcon p (by omega) hp hd

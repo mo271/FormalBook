@@ -3,12 +3,16 @@ Copyright 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, AItoBit
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.Log
-import Mathlib.Tactic
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Data.Nat.Choose.Factorization
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Tactic
+
+@[expose] public section
 
 /-!
 # Auxiliary results for Erdős' theorem on binomial coefficients
@@ -382,7 +386,7 @@ theorem sq_ne_mul_aux (N k x b y : ℕ) (hk : 2 ≤ k) (hkN : k ^ 3 < N)
     apply mul_pos <;> omega
   have hd : (0 : ℤ) < (y - b) - (b - x) := by
     by_contra hc
-    push_neg at hc
+    push Not at hc
     have : (b : ℤ) * ((y - b) - (b - x)) ≤ 0 :=
       mul_nonpos_of_nonneg_of_nonpos (by positivity) hc
     linarith
