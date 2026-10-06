@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Tactic.Qify
+import Mathlib.Data.Nat.GCD.BigOperators
+import FormalBook.Chapter_03.Sylvester
+import FormalBook.Chapter_03.Erdos
 --set_option trace.simp_lemmas true
 @[expose] public section
 
@@ -33,8 +36,9 @@ There is no proof given in the book, perhaps check out Erdős' for a proof to fo
 -/
 namespace chapter3
 
+/-- **Sylvester's theorem**. The proof (following Erdős) is in `Chapter_03/Sylvester.lean`. -/
 theorem sylvester (k n : ℕ) (h : n ≥ 2*k) (h_k : k > 0): ∃ p, p > k ∧ p.Prime ∧ p ∣ choose n k :=
-  sorry
+  Sylvester.exists_prime_gt_dvd_choose k n h h_k
 
 /-!
 ### Lemmata for Step 1 and Step 2
@@ -94,7 +98,31 @@ theorem prime_div_descFactorial (n k m l p : ℕ) (h_klen : k ≤ n)
 /- now in mathlib? -/
 lemma factor_in_descFactorial (n k p l : ℕ) (h_klen : k ≤ n) (h_klp : k < p) (hp: p.Prime)
 (h_pow_div: p^l ∣ n.descFactorial k) (h_1lel : 1 ≤ l):
-∃ (i : ℕ), (i ≤ k - 1) ∧ p^l ∣ (n - i) := by sorry
+∃ (i : ℕ), (i ≤ k - 1) ∧ p^l ∣ (n - i) := by
+  rw [descFactorial_eq_prod_range] at h_pow_div
+  have hp_dvd : p ∣ ∏ i ∈ range k, (n - i) :=
+    (dvd_pow_self p (by omega)).trans h_pow_div
+  obtain ⟨i, hi, hpi⟩ := (Prime.dvd_finsetProd_iff hp.prime _).mp hp_dvd
+  have hik : i < k := mem_range.mp hi
+  refine ⟨i, by omega, ?_⟩
+  rw [← mul_prod_erase _ _ hi] at h_pow_div
+  -- `p > k` divides at most one of the `k` consecutive factors
+  have hcop : Nat.Coprime (p ^ l) (∏ j ∈ (range k).erase i, (n - j)) := by
+    apply Nat.Coprime.pow_left
+    apply Nat.Coprime.prod_right
+    intro j hj
+    rw [Nat.Prime.coprime_iff_not_dvd hp]
+    intro hpj
+    have hj' := mem_erase.mp hj
+    have hjk : j < k := mem_range.mp hj'.2
+    rcases lt_or_gt_of_ne hj'.1 with h | h
+    · have : p ∣ (n - j) - (n - i) := Nat.dvd_sub hpj hpi
+      have := Nat.le_of_dvd (by omega) this
+      omega
+    · have : p ∣ (n - i) - (n - j) := Nat.dvd_sub hpi hpj
+      have := Nat.le_of_dvd (by omega) this
+      omega
+  exact hcop.dvd_of_dvd_mul_right h_pow_div
 
 /-
 ### Erdős' Theorem
@@ -138,25 +166,13 @@ theorem binomials_coefficients_never_powers (k l m n : ℕ) (h_2lel : 2 ≤ l) (
             Nat.pow_le_pow_of_le (by omega) h_2lel -- prove k² ≤ k^l
             ⟩
 
-    -- Step (2) : aⱼ only have prime divisors ≤ k ; aᵢ ≠ aⱼ
-    --have h₂ : ∀ j, (j ≤ k - 1) ∧ (∀ (q : ℕ), q ∣ (aFct l n j) ∧ prime q → q ≤ k) ∧
-    --    (∀ i ≤ k - 1, i ≠ j → (aFct l n i) ≠ (aFct l n j)) := by
-    -- sorry
-    -- Step (3) : a_i are integers 1..k
-    --have h₃ : a_values l n k = s_1tok k := by
-    -- divide in two cases
-    cases em (l = 2)
-    -- Special Case l = 2 by Contradiction
-    ·  sorry
-    -- STEP (4) : l ≥ 3 by Contradiction
-    -- case l ≥ 3
-    · have h_3lel : 3 ≤ l := by
-        omega
-      -- main work : n < k³
-      have h₄ : n < k^3 := by
-        sorry
-
-      sorry
+    -- Step (2) : write `n - j = aⱼ * mⱼ ^ l` with `aⱼ` `l`-th power free;
+    --   the `aⱼ` are distinct
+    -- Step (3) : the `aⱼ` are the integers `1, …, k`
+    -- Step (4) : contradiction in the cases `l = 2` and `l ≥ 3`
+    -- These steps are carried out in `Chapter_03/Erdos.lean`.
+    obtain ⟨p, -, h_pln, h_klpl, -⟩ := h₁
+    exact Erdos.erdos_main n k l m h_2lel h_4lek h (lt_of_lt_of_le h_klpl h_pln) H
 
   rcases em (n ≥ 2*k) with h_2k | h
   · exact h_wlog k h_4lek h_klen4 h_2k
