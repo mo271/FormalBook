@@ -6,41 +6,64 @@ Authors: Moritz Firsching, Julien Michel
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.NumberTheory.ZetaValues
+public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+public import Mathlib.NumberTheory.Harmonic.Defs
 import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import FormalBook.Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Arctan
 import Mathlib.Tactic.NormNum.RealSqrt
 import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
+import Mathlib.Analysis.PSeries
+import Mathlib.Analysis.Real.Pi.Bounds
+import Mathlib.Analysis.Real.Pi.Leibniz
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
 @[expose] public section
 
 /-!
-# Four times $π^2/6$
+# Four times π²/6
 
-## TODO
-  - statement
-    - first proof
-    - second proof
-    - The Substitution Formula
-    - third proof
-    - fourth proof
-  - Appendix: The Riemann zeta function
-    - (1)
-    - (2)
-    - (3)
-    - (4)
+Results from Chapter 9 of Aigner and Ziegler, *Proofs from THE BOOK*, sixth edition,
+pp. 55–64. The first integral proof is preserved; a second proof reuses Mathlib's Fourier-series result.
+The three unfinished names from the supplied file record the odd-denominator identity
+and the positive-natural-indexed Basel identity. They do not assert that the four
+independent arguments in the book have been formalized.
+
+The terms at zero in natural-indexed reciprocal-power sums are zero. Positive-natural
+indices express the book's indexing literally. The supplied statements of
+`euler_series_3` and `euler_series_4` omitted the square; it is restored here.
 -/
 
-open Real
+open Real Filter
+open scoped Topology
 
-local notation "ofReal" => ENNReal.ofReal
+
+namespace Chapter09Integral
 
 open Set ENNReal MeasureTheory Filter intervalIntegral
 
---set_option trace.Meta.synthInstance true
+local notation "ofReal" => ENNReal.ofReal
+
+private lemma basel_integral_inv_sq_add_sq {a b c : ℝ} (hc : c ≠ 0) :
+    ∫ x : ℝ in a..b, (c ^ 2 + x ^ 2)⁻¹ = c⁻¹ * (arctan (b / c) - arctan (a / c)) := calc
+  _ = ∫ x : ℝ in a..b, (c ^ 2)⁻¹ * (1 + (x / c) ^ 2)⁻¹ := by field_simp
+  _ = _ := by
+    simp [intervalIntegral.integral_comp_div (fun x => (c ^ 2)⁻¹ * (1 + x ^ 2)⁻¹) hc]
+    field_simp
+
+private lemma basel_intervalIntegrable_inv_sqrt_one_sub_sq {a b : ℝ} :
+    IntervalIntegrable (fun x : ℝ => (√(1 - x ^ 2))⁻¹) volume a b := by
+  simpa [deriv_arcsin] using (monotone_arcsin.monotoneOn _).intervalIntegrable_deriv
+
 set_option maxHeartbeats 1000000 in
-theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
+/-- The first proof in the book, by Tonelli and a two-dimensional change of variables. -/
+theorem euler_series_integral : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
   convert_to ∑' n : ℕ, (n : ℝ)⁻¹ ^ 2 = _ using 3 with n
   · simp
   -- Change the index from n to n + 1 to avoid division by zero
@@ -379,7 +402,7 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
     all_goals
     · refine setLIntegral_congr_fun measurableSet_Ioo fun u hu => ?_
       congr 1
-      rw [intervalIntegral.integral_inv_sq_add_sq]
+      rw [basel_integral_inv_sq_add_sq]
       swap
       · rw [sqrt_ne_zero] <;> nlinarith only [hu.1, hu.2]
       simp_rw [sub_eq_add_neg, ←arctan_neg]
@@ -399,7 +422,7 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
   have integrable_deriv_h_explicit : IntervalIntegrable
       (fun u ↦ 2 * (√(1 - u ^ 2))⁻¹ * arctan ((1 - u) / √(1 - u ^ 2))) volume 2⁻¹ 1 := by
     have h1 : IntervalIntegrable (fun u ↦ π * (√(1 - u ^ 2))⁻¹) volume 2⁻¹ 1 :=
-      intervalIntegrable_inv_sqrt_one_sub_sq.const_mul π
+      basel_intervalIntegrable_inv_sqrt_one_sub_sq.const_mul π
     apply IntervalIntegrable.mono_fun h1 (by clear * -; measurability)
     filter_upwards [ae_restrict_mem measurableSet_uIoc] with u hu
     replace hu : 2⁻¹ < u ∧ u ≤ 1 := by simp [uIoc] at hu; grind only
@@ -636,14 +659,220 @@ theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
   ring
 
 
+end Chapter09Integral
+
+/-- Euler's Basel identity, also available through Mathlib's Fourier-series proof. -/
+theorem euler_series : ∑' n : ℕ, ((n : ℝ) ^ 2)⁻¹ = π ^ 2 / 6 := by
+  simpa only [one_div] using hasSum_zeta_two.tsum_eq
+
+/-- The reciprocal-square series converges to π²/6. -/
+theorem euler_series_hasSum :
+    HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π ^ 2 / 6) :=
+  hasSum_zeta_two
+
+/-- The even-denominator terms contribute one quarter of the Basel sum. -/
+lemma euler_series_even_hasSum :
+    HasSum (fun k : ℕ => (1 : ℝ) / ((2 * k : ℕ) : ℝ) ^ 2) (π ^ 2 / 24) := by
+  have hs := hasSum_zeta_two.mul_left (1 / 4 : ℝ)
+  have hf : (fun k : ℕ => (1 / 4 : ℝ) * (1 / (k : ℝ) ^ 2)) =
+      (fun k : ℕ => (1 : ℝ) / ((2 * k : ℕ) : ℝ) ^ 2) := by
+    funext k
+    push_cast
+    ring
+  rw [hf] at hs
+  have hv : (1 / 4 : ℝ) * (π ^ 2 / 6) = π ^ 2 / 24 := by ring
+  rw [hv] at hs
+  exact hs
+
+set_option maxHeartbeats 1000000 in
+/-- The odd-denominator terms contribute three quarters of the Basel sum. -/
+lemma euler_series_odd_hasSum :
+    HasSum (fun k : ℕ => (1 : ℝ) / (2 * k + 1) ^ 2) (π ^ 2 / 8) := by
+  have hi : Function.Injective (fun k : ℕ => 2 * k + 1) := by
+    intro a b h
+    dsimp at h
+    omega
+  have ho : Summable (fun k : ℕ => (1 : ℝ) / ((2 * k + 1 : ℕ) : ℝ) ^ 2) :=
+    hasSum_zeta_two.summable.comp_injective hi
+  have ht : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2)
+      (π ^ 2 / 24 + ∑' k : ℕ, (1 : ℝ) / ((2 * k + 1 : ℕ) : ℝ) ^ 2) :=
+    euler_series_even_hasSum.even_add_odd ho.hasSum
+  have he := ht.unique hasSum_zeta_two
+  have hv : (∑' k : ℕ, (1 : ℝ) / ((2 * k + 1 : ℕ) : ℝ) ^ 2) = π ^ 2 / 8 := by
+    linarith
+  have hs := ho.hasSum
+  rw [hv] at hs
+  simpa only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_one] using hs
+
+/-- The odd-denominator version used in the second and fourth arguments. -/
 theorem euler_series' :
-   ∑' (k : ℕ), (1 : ℝ) / (2 * k + 1) ^ 2  = π ^ 2  / 8 := by
-  sorry
+    ∑' k : ℕ, (1 : ℝ) / (2 * k + 1) ^ 2 = π ^ 2 / 8 :=
+  euler_series_odd_hasSum.tsum_eq
 
-theorem euler_series_3 :
-  ∑' (n : ℕ+), (1 : ℝ) / n = π ^ 2  / 6 := by
-  sorry
+/-- The Basel identity indexed literally by positive natural numbers. -/
+theorem euler_series_3 : ∑' n : ℕ+, (1 : ℝ) / (n : ℝ) ^ 2 = π ^ 2 / 6 := by
+  rw [tsum_pnat_eq_tsum_of_eq_zero (f := fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2)
+    (by simp)]
+  exact hasSum_zeta_two.tsum_eq
 
-theorem euler_series_4 :
-  ∑' (n : ℕ+), (1 : ℝ) / n = π ^ 2  / 6 := by
-  sorry
+/-- The same positive-indexed result under the fourth name in the supplied file. -/
+theorem euler_series_4 : ∑' n : ℕ+, (1 : ℝ) / (n : ℝ) ^ 2 = π ^ 2 / 6 :=
+  euler_series_3
+
+namespace Chapter09
+
+/-- The harmonic series does not converge. -/
+theorem harmonic_not_summable : ¬ Summable (fun n : ℕ => (1 : ℝ) / (n : ℝ)) := by
+  simpa using (show ¬ Summable (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 1) by
+    rw [summable_one_div_nat_pow]
+    omega)
+
+/-- The real zeta series converges exactly when its exponent exceeds one. -/
+theorem zeta_series_summable_iff (s : ℝ) :
+    Summable (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ s) ↔ 1 < s :=
+  summable_one_div_nat_rpow
+
+/-- Euler's formula for all positive even zeta values. -/
+theorem even_zeta_hasSum (k : ℕ) (hk : k ≠ 0) :
+    HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ (2 * k))
+      ((-1 : ℝ) ^ (k + 1) * 2 ^ (2 * k - 1) * π ^ (2 * k) *
+        (bernoulli (2 * k) : ℝ) / (Nat.factorial (2 * k) : ℝ)) :=
+  hasSum_zeta_nat hk
+
+/-- The fourth-power reciprocal series has sum π⁴/90. -/
+theorem zeta_four : ∑' n : ℕ, (1 : ℝ) / (n : ℝ) ^ 4 = π ^ 4 / 90 :=
+  hasSum_zeta_four.tsum_eq
+
+/-- The relation between ζ(4) and ζ(2) obtained in the appendix. -/
+theorem zagier_zeta_relation :
+    5 * (∑' n : ℕ, (1 : ℝ) / (n : ℝ) ^ 4) =
+      2 * (∑' n : ℕ, (1 : ℝ) / (n : ℝ) ^ 2) ^ 2 := by
+  rw [zeta_four, hasSum_zeta_two.tsum_eq]
+  ring
+
+/-- The rational function in Zagier's computation. -/
+noncomputable def zagierF (m n : ℝ) : ℝ := 2 / (m ^ 3 * n) + 1 / (m ^ 2 * n ^ 2) + 2 / (m * n ^ 3)
+
+/-- Zagier's algebraic cancellation, with nonzero denominators made explicit. -/
+theorem zagier_cancellation {m n : ℝ} (hm : m ≠ 0) (hn : n ≠ 0) (hmn : m + n ≠ 0) :
+    zagierF m n - zagierF (m + n) n - zagierF m (m + n) = 2 / (m ^ 2 * n ^ 2) := by
+  unfold zagierF
+  field_simp
+  ring
+
+/-- The diagonal terms remaining in Zagier's computation. -/
+theorem zagier_diagonal (n : ℝ) : zagierF n n = 5 / n ^ 4 := by
+  unfold zagierF
+  ring
+
+/-- Euler's product, for the analytically continued complex zeta function in Re(s)>1. -/
+theorem zeta_euler_product {s : ℂ} (hs : 1 < s.re) :
+    HasProd (fun p : Nat.Primes => (1 - (p : ℂ) ^ (-s))⁻¹) (riemannZeta s) :=
+  riemannZeta_eulerProduct_hasProd hs
+
+/-- Partial sums of the reciprocal-square series converge to the Basel value. -/
+theorem basel_partial_sums_tendsto :
+    Tendsto (fun m : ℕ => ∑ n ∈ Finset.range m, (1 : ℝ) / (n : ℝ) ^ 2)
+      atTop (𝓝 (π ^ 2 / 6)) :=
+  hasSum_zeta_two.tendsto_sum_nat
+
+/-- Gregory–Leibniz is an ordered partial-sum limit, not an unordered real `tsum`. -/
+theorem gregory_leibniz :
+    Tendsto (fun m : ℕ => ∑ n ∈ Finset.range m, (-1 : ℝ) ^ n / (2 * n + 1))
+      atTop (𝓝 (π / 4)) :=
+  tendsto_sum_pi_div_four
+
+/-- The elementary trigonometric comparisons used in the third argument. -/
+theorem trigonometric_comparison {x : ℝ} (hx : 0 < x) (hxp : x < π / 2) :
+    0 < sin x ∧ sin x < x ∧ x < tan x := by
+  exact ⟨sin_pos_of_pos_of_lt_pi hx (by linarith [pi_pos]), sin_lt hx, lt_tan hx hxp⟩
+
+/-- The relation between squared cosecant and cotangent away from sine's zeros. -/
+theorem cosecant_cotangent_identity {x : ℝ} (hx : sin x ≠ 0) :
+    (sin x)⁻¹ ^ 2 = cot x ^ 2 + 1 := by
+  rw [Real.cot_eq_cos_div_sin]
+  field_simp
+  nlinarith [cos_sq_add_sin_sq x]
+
+/-- There are infinitely many primes, as noted in the appendix. -/
+theorem infinitely_many_primes : {p : ℕ | Nat.Prime p}.Infinite :=
+  Nat.infinite_setOfPred_prime
+
+/-- A positive reciprocal difference telescopes to its initial reciprocal. -/
+lemma reciprocal_difference_hasSum (c : ℝ) (hc : 0 < c) :
+    HasSum (fun n : ℕ => 1 / ((n : ℝ) + c) - 1 / ((n : ℝ) + c + 1)) (1 / c) := by
+  refine (hasSum_iff_tendsto_nat_of_nonneg (fun n => ?_) _).2 ?_
+  · apply sub_nonneg.mpr
+    apply one_div_le_one_div_of_le (by positivity)
+    linarith
+  · have ht : Tendsto (fun n : ℕ => 1 / ((n : ℝ) + c)) atTop (𝓝 0) := by
+      simpa only [one_div, Function.comp_def] using
+        tendsto_inv_atTop_zero.comp ((tendsto_atTop_add_const_right atTop c tendsto_natCast_atTop_atTop))
+    have hs := (tendsto_const_nhds (x := 1 / c)).sub ht
+    have he : (fun n : ℕ => ∑ i ∈ Finset.range n,
+        (1 / ((i : ℝ) + c) - 1 / ((i : ℝ) + c + 1))) =
+        (fun n : ℕ => 1 / c - 1 / ((n : ℝ) + c)) := by
+      funext n
+      simpa [Nat.cast_add, add_assoc, add_comm, add_left_comm] using
+        Finset.sum_range_sub' (fun n : ℕ => 1 / ((n : ℝ) + c)) n
+    rw [he]
+    simpa only [sub_zero] using hs
+
+/-- The error after summing the first m positive terms is exactly the remaining tail. -/
+theorem basel_tail_eq (m : ℕ) :
+    π ^ 2 / 6 - (∑ n ∈ Finset.range (m + 1), (1 : ℝ) / (n : ℝ) ^ 2) =
+      ∑' n : ℕ, (1 : ℝ) / ((n : ℝ) + m + 1) ^ 2 := by
+  have hs := hasSum_zeta_two.summable.sum_add_tsum_nat_add (m + 1)
+  rw [hasSum_zeta_two.tsum_eq] at hs
+  have he : (∑' n : ℕ, (1 : ℝ) / ((n + (m + 1) : ℕ) : ℝ) ^ 2) =
+      ∑' n : ℕ, (1 : ℝ) / ((n : ℝ) + m + 1) ^ 2 := by
+    simp only [Nat.cast_add, Nat.cast_one, add_assoc]
+  rw [he] at hs
+  linarith
+
+/-- The remaining reciprocal-square series converges. -/
+lemma basel_tail_summable (m : ℕ) :
+    Summable (fun n : ℕ => (1 : ℝ) / ((n : ℝ) + m + 1) ^ 2) := by
+  simpa only [Nat.cast_add, Nat.cast_one, add_assoc] using
+    (summable_nat_add_iff (m + 1)).2 hasSum_zeta_two.summable
+
+/-- The valid lower tail estimate on page 60. -/
+theorem basel_tail_lower (m : ℕ) :
+    1 / ((m : ℝ) + 1) < ∑' n : ℕ, (1 : ℝ) / ((n : ℝ) + m + 1) ^ 2 := by
+  have hs := reciprocal_difference_hasSum ((m : ℝ) + 1) (by positivity)
+  have hi (n : ℕ) :
+      1 / ((n : ℝ) + ((m : ℝ) + 1)) - 1 / ((n : ℝ) + ((m : ℝ) + 1) + 1) <
+        1 / ((n : ℝ) + m + 1) ^ 2 := by
+    have hx : 0 < (n : ℝ) + m + 1 := by positivity
+    have hx' : 0 < (n : ℝ) + m + 1 + 1 := by positivity
+    field_simp
+    nlinarith
+  have ht := Summable.tsum_lt_tsum (fun n => (hi n).le) (hi 0)
+    hs.summable (basel_tail_summable m)
+  rwa [hs.tsum_eq] at ht
+
+/-- The valid upper tail estimate on page 60, for m>0. -/
+theorem basel_tail_upper (m : ℕ) (hm : 0 < m) :
+    (∑' n : ℕ, (1 : ℝ) / ((n : ℝ) + m + 1) ^ 2) < 1 / (m : ℝ) := by
+  have hm' : 0 < (m : ℝ) := by exact_mod_cast hm
+  have hs := reciprocal_difference_hasSum (m : ℝ) hm'
+  have hi (n : ℕ) :
+      1 / ((n : ℝ) + m + 1) ^ 2 < 1 / ((n : ℝ) + m) - 1 / ((n : ℝ) + m + 1) := by
+    have hx : 0 < (n : ℝ) + m := by positivity
+    have hx' : 0 < (n : ℝ) + m + 1 := by positivity
+    field_simp
+    nlinarith
+  have ht := Summable.tsum_lt_tsum (fun n => (hi n).le) (hi 0)
+    (basel_tail_summable m) hs.summable
+  rwa [hs.tsum_eq] at ht
+
+/-- At m=1, the tail is smaller than 1/(m+1/2), contrary to the printed bound. -/
+theorem midpoint_lower_bound_counterexample :
+    (∑' n : ℕ, (1 : ℝ) / ((n : ℝ) + 1 + 1) ^ 2) < 1 / ((1 : ℝ) + 1 / 2) := by
+  have he := basel_tail_eq 1
+  norm_num only [Nat.cast_one] at he
+  rw [← he]
+  norm_num [Finset.sum_range_succ]
+  nlinarith [pi_pos, pi_lt_d2]
+
+end Chapter09
