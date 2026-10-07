@@ -331,6 +331,7 @@ theorem lemma_P_dvd_iff {p m : ℕ} (hp : p.Prime) (hm : 0 < m) (z : ℤ) :
     have e1 : ((N + 2 : ℕ) : ℤ) = (p ^ m : ℕ) + (1 - z) := by omega
     have e2 : ((N + 1 : ℕ) : ℤ) = (p ^ m : ℕ) + (0 - z) := by omega
     rw [e1, e2, dvd_add_right (dvd_refl _), dvd_add_right (dvd_refl _), or_comm]
+/-- The chapter's polynomial `P(z) = (z - 2)(z - 3) ⋯ (z - (q - 1)) / (q - 2)!`. -/
 noncomputable def bookP (q : ℕ) : ℚ[X] :=
   (((q - 2).factorial : ℚ)⁻¹) • (descPochhammer ℚ (q - 2)).comp (X - C 2)
 theorem bookP_natDegree (q : ℕ) : (bookP q).natDegree = q - 2 := by
@@ -1156,6 +1157,7 @@ end
 @[expose] public section
 open Finset Metric Real Filter
 namespace Borsuk
+/-- The ratio of the counterexample's cardinality to the bound on a smaller-diameter part. -/
 noncomputable def g (q : ℕ) : ℝ :=
   (2 ^ (4 * q - 4) : ℝ) / (∑ i ∈ range (q - 1), (4 * q - 3).choose i : ℕ)
 theorem choose_two_eq (q : ℕ) (hq : 1 ≤ q) : (4 * q - 2).choose 2 = (2 * q - 1) * (4 * q - 3) := by
