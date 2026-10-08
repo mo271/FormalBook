@@ -259,12 +259,12 @@ For `α : Fin m → ℝ`, `β : Fin n → ℝ` with all `αᵢ, βⱼ ≥ 1` we 
 which (up to a positive constant) is the general real-rooted polynomial that is positive
 on `(-1, 1)` and vanishes at `±1` (equation (3) of the chapter).
 
-* `erdos_gallai_area α β = ∫₋₁¹ f`  is the area `A`;
-* `erdos_gallai_deriv_at_one α β = f'(1)` and `erdos_gallai_deriv_at_neg_one α β = f'(-1)`
+* `erdosGallaiArea α β = ∫₋₁¹ f`  is the area `A`;
+* `erdosGallaiDerivAtOne α β = f'(1)` and `erdosGallaiDerivAtNegOne α β = f'(-1)`
   (see `erdos_gallai_hasDerivAt_one`, `erdos_gallai_hasDerivAt_neg_one`);
-* `erdos_gallai_T α β = 2 f'(1) f'(-1) / (f'(1) - f'(-1))` is the area of the tangential
+* `erdosGallaiT α β = 2 f'(1) f'(-1) / (f'(1) - f'(-1))` is the area of the tangential
   triangle, formula (2) of the chapter (it is `0` when the denominator vanishes);
-* `erdos_gallai_C_sq α β = ∏ᵢ (αᵢ² - 1) · ∏ⱼ (βⱼ² - 1)`.
+* `erdosGallaiCSq α β = ∏ᵢ (αᵢ² - 1) · ∏ⱼ (βⱼ² - 1)`.
 
 The main analytic step is Pólya's estimate `A ≥ (4/3) √(∏(αᵢ²-1) ∏(βⱼ²-1))`
 (`erdos_gallai_integral_bound`), obtained by symmetrisation `x ↦ -x` and AM–GM.
@@ -275,29 +275,29 @@ open Finset
 variable {m n : ℕ}
 
 /-- The polynomial `f(x) = (1 - x²) ∏ᵢ (αᵢ - x) ∏ⱼ (βⱼ + x)`. -/
-noncomputable def erdos_gallai_f (α : Fin m → ℝ) (β : Fin n → ℝ) (x : ℝ) : ℝ :=
+noncomputable def erdosGallaiF (α : Fin m → ℝ) (β : Fin n → ℝ) (x : ℝ) : ℝ :=
   (1 - x ^ 2) * (∏ i, (α i - x)) * ∏ j, (β j + x)
 
 /-- The area `A = ∫₋₁¹ f(x) dx`. -/
-noncomputable def erdos_gallai_area (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
-  ∫ x in (-1 : ℝ)..1, erdos_gallai_f α β x
+noncomputable def erdosGallaiArea (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
+  ∫ x in (-1 : ℝ)..1, erdosGallaiF α β x
 
 /-- `f'(1) = -2 ∏ᵢ (αᵢ - 1) ∏ⱼ (βⱼ + 1)`. -/
-def erdos_gallai_deriv_at_one (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
+def erdosGallaiDerivAtOne (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   -2 * (∏ i, (α i - 1)) * ∏ j, (β j + 1)
 
 /-- `f'(-1) = 2 ∏ᵢ (αᵢ + 1) ∏ⱼ (βⱼ - 1)`. -/
-def erdos_gallai_deriv_at_neg_one (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
+def erdosGallaiDerivAtNegOne (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   2 * (∏ i, (α i + 1)) * ∏ j, (β j - 1)
 
 /-- Area of the tangential triangle, `T = 2 f'(1) f'(-1) / (f'(1) - f'(-1))`
 (formula (2) of the chapter; `T = 0` when `f'(1) = f'(-1)`). -/
-noncomputable def erdos_gallai_T (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
-  2 * erdos_gallai_deriv_at_one α β * erdos_gallai_deriv_at_neg_one α β /
-    (erdos_gallai_deriv_at_one α β - erdos_gallai_deriv_at_neg_one α β)
+noncomputable def erdosGallaiT (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
+  2 * erdosGallaiDerivAtOne α β * erdosGallaiDerivAtNegOne α β /
+    (erdosGallaiDerivAtOne α β - erdosGallaiDerivAtNegOne α β)
 
 /-- `C² = ∏ᵢ (αᵢ² - 1) ∏ⱼ (βⱼ² - 1)`, so that `-f'(1) f'(-1) = 4 C²`. -/
-def erdos_gallai_C_sq (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
+def erdosGallaiCSq (α : Fin m → ℝ) (β : Fin n → ℝ) : ℝ :=
   (∏ i, (α i ^ 2 - 1)) * ∏ j, (β j ^ 2 - 1)
 
 section VersionStableHelpers
@@ -408,33 +408,33 @@ private lemma differentiable_prods (α : Fin m → ℝ) (β : Fin n → ℝ) :
     Differentiable ℝ (fun x : ℝ => (∏ i, (α i - x)) * ∏ j, (β j + x)) := by
   fun_prop
 
-/-- `erdos_gallai_deriv_at_one` is indeed the derivative of `f` at `1`. -/
+/-- `erdosGallaiDerivAtOne` is indeed the derivative of `f` at `1`. -/
 theorem erdos_gallai_hasDerivAt_one (α : Fin m → ℝ) (β : Fin n → ℝ) :
-    HasDerivAt (erdos_gallai_f α β) (erdos_gallai_deriv_at_one α β) 1 := by
+    HasDerivAt (erdosGallaiF α β) (erdosGallaiDerivAtOne α β) 1 := by
   set k : ℝ → ℝ := fun x => (1 + x) * ((∏ i, (α i - x)) * ∏ j, (β j + x))
   have hk : DifferentiableAt ℝ k 1 :=
     ((differentiable_const _).add differentiable_id).mul (differentiable_prods α β)
       |>.differentiableAt
   have h := hasDerivAt_one_sub_mul hk
-  have hf : erdos_gallai_f α β = fun x => (1 - x) * k x := by
-    funext x; simp only [erdos_gallai_f, k]; ring
+  have hf : erdosGallaiF α β = fun x => (1 - x) * k x := by
+    funext x; simp only [erdosGallaiF, k]; ring
   rw [hf]
   convert h using 1
-  simp only [erdos_gallai_deriv_at_one, k]; ring
+  simp only [erdosGallaiDerivAtOne, k]; ring
 
-/-- `erdos_gallai_deriv_at_neg_one` is indeed the derivative of `f` at `-1`. -/
+/-- `erdosGallaiDerivAtNegOne` is indeed the derivative of `f` at `-1`. -/
 theorem erdos_gallai_hasDerivAt_neg_one (α : Fin m → ℝ) (β : Fin n → ℝ) :
-    HasDerivAt (erdos_gallai_f α β) (erdos_gallai_deriv_at_neg_one α β) (-1) := by
+    HasDerivAt (erdosGallaiF α β) (erdosGallaiDerivAtNegOne α β) (-1) := by
   set k : ℝ → ℝ := fun x => (1 - x) * ((∏ i, (α i - x)) * ∏ j, (β j + x))
   have hk : DifferentiableAt ℝ k (-1) :=
     ((differentiable_const _).sub differentiable_id).mul (differentiable_prods α β)
       |>.differentiableAt
   have h := hasDerivAt_one_add_mul hk
-  have hf : erdos_gallai_f α β = fun x => (1 + x) * k x := by
-    funext x; simp only [erdos_gallai_f, k]; ring
+  have hf : erdosGallaiF α β = fun x => (1 + x) * k x := by
+    funext x; simp only [erdosGallaiF, k]; ring
   rw [hf]
   convert h using 1
-  simp only [erdos_gallai_deriv_at_neg_one, k]
+  simp only [erdosGallaiDerivAtNegOne, k]
   norm_num [sub_neg_eq_add, ← sub_eq_add_neg]
   ring
 
@@ -443,8 +443,8 @@ end Derivatives
 section IntegralBound
 
 lemma erdos_gallai_C_sq_nonneg (α : Fin m → ℝ) (β : Fin n → ℝ)
-    (hα : ∀ i, 1 ≤ α i) (hβ : ∀ j, 1 ≤ β j) : 0 ≤ erdos_gallai_C_sq α β := by
-  unfold erdos_gallai_C_sq
+    (hα : ∀ i, 1 ≤ α i) (hβ : ∀ j, 1 ≤ β j) : 0 ≤ erdosGallaiCSq α β := by
+  unfold erdosGallaiCSq
   apply mul_nonneg
   · exact prod_nonneg fun i _ => by nlinarith [hα i]
   · exact prod_nonneg fun j _ => by nlinarith [hβ j]
@@ -453,8 +453,8 @@ lemma erdos_gallai_C_sq_nonneg (α : Fin m → ℝ) (β : Fin n → ℝ)
 `(f(x) + f(-x))/2 ≥ (1 - x²) √C²`. -/
 lemma erdos_gallai_pointwise (α : Fin m → ℝ) (β : Fin n → ℝ)
     (hα : ∀ i, 1 ≤ α i) (hβ : ∀ j, 1 ≤ β j) {x : ℝ} (hx : x ∈ Set.Icc (-1 : ℝ) 1) :
-    (1 - x ^ 2) * Real.sqrt (erdos_gallai_C_sq α β) ≤
-      (erdos_gallai_f α β x + erdos_gallai_f α β (-x)) / 2 := by
+    (1 - x ^ 2) * Real.sqrt (erdosGallaiCSq α β) ≤
+      (erdosGallaiF α β x + erdosGallaiF α β (-x)) / 2 := by
   obtain ⟨hx1, hx2⟩ := hx
   have hx2' : x ^ 2 ≤ 1 := by nlinarith
   have h1x : 0 ≤ 1 - x ^ 2 := by linarith
@@ -464,11 +464,11 @@ lemma erdos_gallai_pointwise (α : Fin m → ℝ) (β : Fin n → ℝ)
     (prod_nonneg fun j _ => by linarith [hβ j])
   have hQ0 : 0 ≤ Q := mul_nonneg (prod_nonneg fun i _ => by linarith [hα i])
     (prod_nonneg fun j _ => by linarith [hβ j])
-  have hfx : erdos_gallai_f α β x = (1 - x ^ 2) * P := by
-    simp only [erdos_gallai_f, hP]; ring
-  have hfnx : erdos_gallai_f α β (-x) = (1 - x ^ 2) * Q := by
-    simp only [erdos_gallai_f, hQ, sub_neg_eq_add, neg_sq]; ring_nf
-  have hPQ : erdos_gallai_C_sq α β ≤ P * Q := by
+  have hfx : erdosGallaiF α β x = (1 - x ^ 2) * P := by
+    simp only [erdosGallaiF, hP]; ring
+  have hfnx : erdosGallaiF α β (-x) = (1 - x ^ 2) * Q := by
+    simp only [erdosGallaiF, hQ, sub_neg_eq_add, neg_sq]; ring_nf
+  have hPQ : erdosGallaiCSq α β ≤ P * Q := by
     have e : P * Q = (∏ i, (α i ^ 2 - x ^ 2)) * ∏ j, (β j ^ 2 - x ^ 2) := by
       rw [hP, hQ]
       have e1 : ∏ i, (α i ^ 2 - x ^ 2) = (∏ i, (α i - x)) * ∏ i, (α i + x) := by
@@ -476,16 +476,16 @@ lemma erdos_gallai_pointwise (α : Fin m → ℝ) (β : Fin n → ℝ)
       have e2 : ∏ j, (β j ^ 2 - x ^ 2) = (∏ j, (β j + x)) * ∏ j, (β j - x) := by
         rw [← prod_mul_distrib]; exact prod_congr rfl fun j _ => by ring
       rw [e1, e2]; ring
-    rw [e]; unfold erdos_gallai_C_sq
+    rw [e]; unfold erdosGallaiCSq
     apply mul_le_mul
     · exact prod_le_prod_aux (fun i _ => by nlinarith [hα i]) (fun i _ => by linarith)
     · exact prod_le_prod_aux (fun j _ => by nlinarith [hβ j]) (fun j _ => by linarith)
     · exact prod_nonneg fun j _ => by nlinarith [hβ j]
     · exact prod_nonneg fun i _ => by nlinarith [hα i]
   rw [hfx, hfnx]
-  set s := Real.sqrt (erdos_gallai_C_sq α β)
+  set s := Real.sqrt (erdosGallaiCSq α β)
   have hs0 : 0 ≤ s := Real.sqrt_nonneg _
-  have hs2 : s ^ 2 = erdos_gallai_C_sq α β :=
+  have hs2 : s ^ 2 = erdosGallaiCSq α β :=
     Real.sq_sqrt (erdos_gallai_C_sq_nonneg α β hα hβ)
   -- `s ≤ (P + Q)/2` since `s² ≤ PQ ≤ ((P+Q)/2)²`
   have hsPQ : s ≤ (P + Q) / 2 := by
@@ -495,8 +495,8 @@ lemma erdos_gallai_pointwise (α : Fin m → ℝ) (β : Fin n → ℝ)
     _ = _ := by ring
 
 lemma erdos_gallai_f_continuous (α : Fin m → ℝ) (β : Fin n → ℝ) :
-    Continuous (erdos_gallai_f α β) := by
-  unfold erdos_gallai_f
+    Continuous (erdosGallaiF α β) := by
+  unfold erdosGallaiF
   fun_prop
 
 /-- `∫₋₁¹ (1 - x²) dx = 4/3`. -/
@@ -509,25 +509,25 @@ lemma integral_one_sub_sq : ∫ x in (-1 : ℝ)..1, (1 - x ^ 2) = 4 / 3 := by
 /-- **Pólya's estimate**: `A ≥ (4/3) √(∏ᵢ (αᵢ² - 1) ∏ⱼ (βⱼ² - 1))`. -/
 theorem erdos_gallai_integral_bound (α : Fin m → ℝ) (β : Fin n → ℝ)
     (hα : ∀ i, 1 ≤ α i) (hβ : ∀ j, 1 ≤ β j) :
-    erdos_gallai_area α β ≥ 4 / 3 * Real.sqrt (erdos_gallai_C_sq α β) := by
+    erdosGallaiArea α β ≥ 4 / 3 * Real.sqrt (erdosGallaiCSq α β) := by
   have hcont := erdos_gallai_f_continuous α β
   -- symmetrisation: A = ∫ f(-x)
-  have hsym : erdos_gallai_area α β = ∫ x in (-1 : ℝ)..1, erdos_gallai_f α β (-x) := by
-    unfold erdos_gallai_area
-    rw [intervalIntegral.integral_comp_neg (fun x => erdos_gallai_f α β x)]
+  have hsym : erdosGallaiArea α β = ∫ x in (-1 : ℝ)..1, erdosGallaiF α β (-x) := by
+    unfold erdosGallaiArea
+    rw [intervalIntegral.integral_comp_neg (fun x => erdosGallaiF α β x)]
     norm_num
-  have havg : erdos_gallai_area α β =
-      ∫ x in (-1 : ℝ)..1, (erdos_gallai_f α β x + erdos_gallai_f α β (-x)) / 2 := by
+  have havg : erdosGallaiArea α β =
+      ∫ x in (-1 : ℝ)..1, (erdosGallaiF α β x + erdosGallaiF α β (-x)) / 2 := by
     rw [intervalIntegral.integral_div, intervalIntegral.integral_add
-      (hcont.intervalIntegrable _ _) ((show Continuous fun x => erdos_gallai_f α β (-x) from
+      (hcont.intervalIntegrable _ _) ((show Continuous fun x => erdosGallaiF α β (-x) from
         hcont.comp continuous_neg).intervalIntegrable _ _),
       ← hsym]
-    unfold erdos_gallai_area; ring
-  have hmono : ∫ x in (-1 : ℝ)..1, (1 - x ^ 2) * Real.sqrt (erdos_gallai_C_sq α β) ≤
-      ∫ x in (-1 : ℝ)..1, (erdos_gallai_f α β x + erdos_gallai_f α β (-x)) / 2 := by
+    unfold erdosGallaiArea; ring
+  have hmono : ∫ x in (-1 : ℝ)..1, (1 - x ^ 2) * Real.sqrt (erdosGallaiCSq α β) ≤
+      ∫ x in (-1 : ℝ)..1, (erdosGallaiF α β x + erdosGallaiF α β (-x)) / 2 := by
     apply intervalIntegral.integral_mono_on (by norm_num)
     · exact (by fun_prop : Continuous fun x : ℝ =>
-        (1 - x ^ 2) * Real.sqrt (erdos_gallai_C_sq α β)).intervalIntegrable _ _
+        (1 - x ^ 2) * Real.sqrt (erdosGallaiCSq α β)).intervalIntegrable _ _
     · exact ((hcont.add (hcont.comp continuous_neg)).div_const 2).intervalIntegrable _ _
     · intro x hx; exact erdos_gallai_pointwise α β hα hβ hx
   rw [intervalIntegral.integral_mul_const, integral_one_sub_sq] at hmono
@@ -539,9 +539,9 @@ section TangentialTriangle
 
 /-- `-f'(1) f'(-1) = 4 C²`. -/
 lemma erdos_gallai_neg_deriv_mul (α : Fin m → ℝ) (β : Fin n → ℝ) :
-    -(erdos_gallai_deriv_at_one α β * erdos_gallai_deriv_at_neg_one α β) =
-      4 * erdos_gallai_C_sq α β := by
-  unfold erdos_gallai_deriv_at_one erdos_gallai_deriv_at_neg_one erdos_gallai_C_sq
+    -(erdosGallaiDerivAtOne α β * erdosGallaiDerivAtNegOne α β) =
+      4 * erdosGallaiCSq α β := by
+  unfold erdosGallaiDerivAtOne erdosGallaiDerivAtNegOne erdosGallaiCSq
   have e1 : ∏ i, (α i ^ 2 - 1) = (∏ i, (α i - 1)) * ∏ i, (α i + 1) := by
     rw [← prod_mul_distrib]; exact prod_congr rfl fun i _ => by ring
   have e2 : ∏ j, (β j ^ 2 - 1) = (∏ j, (β j + 1)) * ∏ j, (β j - 1) := by
@@ -551,28 +551,28 @@ lemma erdos_gallai_neg_deriv_mul (α : Fin m → ℝ) (β : Fin n → ℝ) :
 /-- Harmonic–geometric mean step: `T ≤ √(-f'(1) f'(-1)) = 2 √C²`. -/
 theorem erdos_gallai_T_le (α : Fin m → ℝ) (β : Fin n → ℝ)
     (hα : ∀ i, 1 ≤ α i) (hβ : ∀ j, 1 ≤ β j) :
-    erdos_gallai_T α β ≤ 2 * Real.sqrt (erdos_gallai_C_sq α β) := by
-  set a := -erdos_gallai_deriv_at_one α β with ha_def
-  set b := erdos_gallai_deriv_at_neg_one α β with hb_def
+    erdosGallaiT α β ≤ 2 * Real.sqrt (erdosGallaiCSq α β) := by
+  set a := -erdosGallaiDerivAtOne α β with ha_def
+  set b := erdosGallaiDerivAtNegOne α β with hb_def
   have ha : 0 ≤ a := by
-    rw [ha_def]; unfold erdos_gallai_deriv_at_one
+    rw [ha_def]; unfold erdosGallaiDerivAtOne
     have h1 : 0 ≤ ∏ i, (α i - 1) := prod_nonneg fun i _ => by linarith [hα i]
     have h2 : 0 ≤ ∏ j, (β j + 1) := prod_nonneg fun j _ => by linarith [hβ j]
     nlinarith [mul_nonneg h1 h2]
   have hb : 0 ≤ b := by
-    rw [hb_def]; unfold erdos_gallai_deriv_at_neg_one
+    rw [hb_def]; unfold erdosGallaiDerivAtNegOne
     have h1 : 0 ≤ ∏ i, (α i + 1) := prod_nonneg fun i _ => by linarith [hα i]
     have h2 : 0 ≤ ∏ j, (β j - 1) := prod_nonneg fun j _ => by linarith [hβ j]
     nlinarith [mul_nonneg h1 h2]
-  have hab : a * b = 4 * erdos_gallai_C_sq α β := by
+  have hab : a * b = 4 * erdosGallaiCSq α β := by
     rw [ha_def, hb_def, ← erdos_gallai_neg_deriv_mul]; ring
-  set g := Real.sqrt (erdos_gallai_C_sq α β)
+  set g := Real.sqrt (erdosGallaiCSq α β)
   have hg0 : 0 ≤ g := Real.sqrt_nonneg _
-  have hg2 : g ^ 2 = erdos_gallai_C_sq α β :=
+  have hg2 : g ^ 2 = erdosGallaiCSq α β :=
     Real.sq_sqrt (erdos_gallai_C_sq_nonneg α β hα hβ)
-  have hT : erdos_gallai_T α β = 2 * a * b / (a + b) := by
-    unfold erdos_gallai_T
-    rw [show erdos_gallai_deriv_at_one α β = -a by rw [ha_def]; ring, ← hb_def]
+  have hT : erdosGallaiT α β = 2 * a * b / (a + b) := by
+    unfold erdosGallaiT
+    rw [show erdosGallaiDerivAtOne α β = -a by rw [ha_def]; ring, ← hb_def]
     rw [show -a - b = -(a + b) by ring, div_neg]; ring
   rw [hT]
   rcases (add_nonneg ha hb).lt_or_eq with hpos | hzero
@@ -590,26 +590,26 @@ section Equality
 
 /-- Symmetrisation: `A = ∫₋₁¹ (f(x) + f(-x))/2 dx`. -/
 lemma erdos_gallai_area_eq_avg (α : Fin m → ℝ) (β : Fin n → ℝ) :
-    erdos_gallai_area α β =
-      ∫ x in (-1 : ℝ)..1, (erdos_gallai_f α β x + erdos_gallai_f α β (-x)) / 2 := by
+    erdosGallaiArea α β =
+      ∫ x in (-1 : ℝ)..1, (erdosGallaiF α β x + erdosGallaiF α β (-x)) / 2 := by
   have hcont := erdos_gallai_f_continuous α β
-  have hsym : erdos_gallai_area α β = ∫ x in (-1 : ℝ)..1, erdos_gallai_f α β (-x) := by
-    unfold erdos_gallai_area
-    rw [intervalIntegral.integral_comp_neg (fun x => erdos_gallai_f α β x)]
+  have hsym : erdosGallaiArea α β = ∫ x in (-1 : ℝ)..1, erdosGallaiF α β (-x) := by
+    unfold erdosGallaiArea
+    rw [intervalIntegral.integral_comp_neg (fun x => erdosGallaiF α β x)]
     norm_num
   rw [intervalIntegral.integral_div, intervalIntegral.integral_add
-    (hcont.intervalIntegrable _ _) ((show Continuous fun x => erdos_gallai_f α β (-x) from
+    (hcont.intervalIntegrable _ _) ((show Continuous fun x => erdosGallaiF α β (-x) from
       hcont.comp continuous_neg).intervalIntegrable _ _), ← hsym]
-  unfold erdos_gallai_area; ring
+  unfold erdosGallaiArea; ring
 
 /-- If there is at least one factor `αᵢ - x` or `βⱼ + x`, Pólya's pointwise estimate is strict
 at `x = 0`. -/
 lemma erdos_gallai_strict_at_zero (α : Fin m → ℝ) (β : Fin n → ℝ)
     (hα : ∀ i, 1 ≤ α i) (hβ : ∀ j, 1 ≤ β j) (hmn : 0 < m + n) :
-    (1 - (0 : ℝ) ^ 2) * Real.sqrt (erdos_gallai_C_sq α β) <
-      (erdos_gallai_f α β 0 + erdos_gallai_f α β (-0)) / 2 := by
-  have hf0 : erdos_gallai_f α β 0 = (∏ i, α i) * ∏ j, β j := by
-    simp [erdos_gallai_f]
+    (1 - (0 : ℝ) ^ 2) * Real.sqrt (erdosGallaiCSq α β) <
+      (erdosGallaiF α β 0 + erdosGallaiF α β (-0)) / 2 := by
+  have hf0 : erdosGallaiF α β 0 = (∏ i, α i) * ∏ j, β j := by
+    simp [erdosGallaiF]
   simp only [neg_zero, hf0]
   have hX : 0 < ∏ i, α i := prod_pos fun i _ => by linarith [hα i]
   have hY : 0 < ∏ j, β j := prod_pos fun j _ => by linarith [hβ j]
@@ -620,7 +620,7 @@ lemma erdos_gallai_strict_at_zero (α : Fin m → ℝ) (β : Fin n → ℝ)
   have hsq : ((∏ i, α i) * ∏ j, β j) ^ 2 = (∏ i, α i ^ 2) * ∏ j, β j ^ 2 := by
     rw [mul_pow, prod_pow, prod_pow]
   rw [hsq]
-  unfold erdos_gallai_C_sq
+  unfold erdosGallaiCSq
   set X1 := ∏ i, (α i ^ 2 - 1)
   set X2 := ∏ j, (β j ^ 2 - 1)
   have hX1 : 0 ≤ X1 := prod_nonneg fun i _ => by nlinarith [hα i]
@@ -660,17 +660,17 @@ lemma erdos_gallai_strict_at_zero (α : Fin m → ℝ) (β : Fin n → ℝ)
 i.e. when `f` has degree `2` (the parabola). -/
 theorem erdos_gallai_eq_iff (α : Fin m → ℝ) (β : Fin n → ℝ)
     (hα : ∀ i, 1 ≤ α i) (hβ : ∀ j, 1 ≤ β j) :
-    erdos_gallai_area α β = 2 / 3 * erdos_gallai_T α β ↔ m = 0 ∧ n = 0 := by
+    erdosGallaiArea α β = 2 / 3 * erdosGallaiT α β ↔ m = 0 ∧ n = 0 := by
   constructor
   · intro heq
     by_contra hmn
     have hmn' : 0 < m + n := by omega
     have hcont := erdos_gallai_f_continuous α β
-    have hlt : ∫ x in (-1 : ℝ)..1, (1 - x ^ 2) * Real.sqrt (erdos_gallai_C_sq α β) <
-        ∫ x in (-1 : ℝ)..1, (erdos_gallai_f α β x + erdos_gallai_f α β (-x)) / 2 := by
+    have hlt : ∫ x in (-1 : ℝ)..1, (1 - x ^ 2) * Real.sqrt (erdosGallaiCSq α β) <
+        ∫ x in (-1 : ℝ)..1, (erdosGallaiF α β x + erdosGallaiF α β (-x)) / 2 := by
       apply intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt (by norm_num)
       · exact (by fun_prop : Continuous fun x : ℝ =>
-          (1 - x ^ 2) * Real.sqrt (erdos_gallai_C_sq α β)).continuousOn
+          (1 - x ^ 2) * Real.sqrt (erdosGallaiCSq α β)).continuousOn
       · exact ((hcont.add (hcont.comp continuous_neg)).div_const 2).continuousOn
       · intro x hx
         exact erdos_gallai_pointwise α β hα hβ ⟨hx.1.le, hx.2⟩
@@ -680,11 +680,11 @@ theorem erdos_gallai_eq_iff (α : Fin m → ℝ) (β : Fin n → ℝ)
     have hT := erdos_gallai_T_le α β hα hβ
     linarith
   · rintro ⟨rfl, rfl⟩
-    have hA : erdos_gallai_area α β = 4 / 3 := by
-      unfold erdos_gallai_area erdos_gallai_f
+    have hA : erdosGallaiArea α β = 4 / 3 := by
+      unfold erdosGallaiArea erdosGallaiF
       simpa using integral_one_sub_sq
     rw [hA]
-    simp [erdos_gallai_T, erdos_gallai_deriv_at_one, erdos_gallai_deriv_at_neg_one]
+    simp [erdosGallaiT, erdosGallaiDerivAtOne, erdosGallaiDerivAtNegOne]
     norm_num
 
 end Equality
@@ -1675,11 +1675,11 @@ theorem erdos_gallai_A_ge_two_thirds_T {m n : ℕ}
     (hα : ∀ i, 1 ≤ α i) (hβ : ∀ j, 1 ≤ β j)
     (A : ℝ)
     -- The integral layer hypothesis: A ≥ (4/3) · C
-    (hA : A ≥ 4 / 3 * Real.sqrt (erdos_gallai_C_sq α β))
+    (hA : A ≥ 4 / 3 * Real.sqrt (erdosGallaiCSq α β))
     -- Note: The tex also assumes f'(1) ≠ f'(-1) (non-degeneracy), but the proof
     -- doesn't need it — the inequality A ≥ (2/3)T holds regardless.
     :
-    A ≥ 2 / 3 * erdos_gallai_T α β := by
+    A ≥ 2 / 3 * erdosGallaiT α β := by
   -- Harmonic–geometric mean inequality applied to `-f'(1)` and `f'(-1)`:
   -- `T = 2 f'(1) f'(-1) / (f'(1) - f'(-1)) ≤ √(-f'(1) f'(-1)) = 2 √C²`.
   have hT := erdos_gallai_T_le α β hα hβ
@@ -1691,9 +1691,9 @@ theorem erdos_gallai_A_ge_two_thirds_T {m n : ℕ}
 theorem erdos_gallai_full {m n : ℕ}
     (α : Fin m → ℝ) (β : Fin n → ℝ)
     (hα : ∀ i, 1 ≤ α i) (hβ : ∀ j, 1 ≤ β j) :
-    erdos_gallai_area α β ≥ 2 / 3 * erdos_gallai_T α β :=
+    erdosGallaiArea α β ≥ 2 / 3 * erdosGallaiT α β :=
   erdos_gallai_A_ge_two_thirds_T α β hα hβ
-    (erdos_gallai_area α β) (erdos_gallai_integral_bound α β hα hβ)
+    (erdosGallaiArea α β) (erdos_gallai_integral_bound α β hα hβ)
 
 end ErdosGallai
 
@@ -1887,7 +1887,7 @@ theorem erdos_gallai_normal_form (p : ℝ[X]) (hsplit : p.Splits)
     (h1 : p.eval 1 = 0) (hm1 : p.eval (-1) = 0)
     (hpos : ∀ x ∈ Set.Ioo (-1 : ℝ) 1, 0 < p.eval x) :
     ∃ (K : ℝ) (m n : ℕ) (α : Fin m → ℝ) (β : Fin n → ℝ), 0 < K ∧ (∀ i, 1 ≤ α i) ∧
-      (∀ j, 1 ≤ β j) ∧ (∀ x, p.eval x = K * erdos_gallai_f α β x) ∧
+      (∀ j, 1 ≤ β j) ∧ (∀ x, p.eval x = K * erdosGallaiF α β x) ∧
       p.natDegree = m + n + 2 := by
   have hp0 : p ≠ 0 := by
     intro h; have := hpos 0 (by norm_num); simp [h] at this
@@ -1950,11 +1950,11 @@ theorem erdos_gallai_normal_form (p : ℝ[X]) (hsplit : p.Splits)
     apply Multiset.map_congr rfl
     intro r _; simp; ring
   set K := p.leadingCoeff * (-1) * (-1) ^ sa.card with hK
-  have hrepr : ∀ x, p.eval x = K * erdos_gallai_f α β x := by
+  have hrepr : ∀ x, p.eval x = K * erdosGallaiF α β x := by
     intro x
     rw [heval x, hs1, hs2, ← hsplit2]
     simp only [Multiset.map_cons, Multiset.prod_cons, Multiset.map_add, Multiset.prod_add]
-    unfold erdos_gallai_f
+    unfold erdosGallaiF
     rw [hprodα, hprodβ]
     have hneg : (sa.map (fun r => x - r)).prod = (-1) ^ sa.card * (sa.map (fun r => r - x)).prod :=
       by
@@ -1963,8 +1963,8 @@ theorem erdos_gallai_normal_form (p : ℝ[X]) (hsplit : p.Splits)
       rw [this, Multiset.prod_map_neg, Multiset.card_map]
     rw [hneg, hK]
     ring
-  have hf0 : 0 < erdos_gallai_f α β 0 := by
-    unfold erdos_gallai_f
+  have hf0 : 0 < erdosGallaiF α β 0 := by
+    unfold erdosGallaiF
     have ha0 : 0 < ∏ i, (α i - 0) := prod_pos fun i _ => by linarith [hα i]
     have hb0 : 0 < ∏ j, (β j + 0) := prod_pos fun j _ => by linarith [hβ j]
     exact mul_pos (mul_pos (by norm_num) ha0) hb0
@@ -1986,19 +1986,19 @@ private lemma tangential_scale {K a b : ℝ} (hK : K ≠ 0) :
 
 /-- Transfer of `A`, `T` from a polynomial to its normal form. -/
 private lemma area_T_of_repr (p : ℝ[X]) {K : ℝ} {m n : ℕ} {α : Fin m → ℝ} {β : Fin n → ℝ}
-    (hK : 0 < K) (hrepr : ∀ x, p.eval x = K * erdos_gallai_f α β x) :
-    (∫ x in (-1 : ℝ)..1, p.eval x) = K * erdos_gallai_area α β ∧
-      tangentialTriangleArea p = K * erdos_gallai_T α β := by
-  have hfun : (fun x => p.eval x) = fun x => K * erdos_gallai_f α β x := funext hrepr
+    (hK : 0 < K) (hrepr : ∀ x, p.eval x = K * erdosGallaiF α β x) :
+    (∫ x in (-1 : ℝ)..1, p.eval x) = K * erdosGallaiArea α β ∧
+      tangentialTriangleArea p = K * erdosGallaiT α β := by
+  have hfun : (fun x => p.eval x) = fun x => K * erdosGallaiF α β x := funext hrepr
   constructor
   · rw [hfun, intervalIntegral.integral_const_mul]; rfl
-  · have hd : ∀ y, (derivative p).eval y = deriv (fun x => K * erdos_gallai_f α β x) y := by
+  · have hd : ∀ y, (derivative p).eval y = deriv (fun x => K * erdosGallaiF α β x) y := by
       intro y; rw [← hfun, Polynomial.deriv]
-    have hd1 : (derivative p).eval 1 = K * erdos_gallai_deriv_at_one α β := by
+    have hd1 : (derivative p).eval 1 = K * erdosGallaiDerivAtOne α β := by
       rw [hd]; exact ((erdos_gallai_hasDerivAt_one α β).const_mul K).deriv
-    have hdm1 : (derivative p).eval (-1) = K * erdos_gallai_deriv_at_neg_one α β := by
+    have hdm1 : (derivative p).eval (-1) = K * erdosGallaiDerivAtNegOne α β := by
       rw [hd]; exact ((erdos_gallai_hasDerivAt_neg_one α β).const_mul K).deriv
-    unfold tangentialTriangleArea erdos_gallai_T
+    unfold tangentialTriangleArea erdosGallaiT
     rw [hd1, hdm1, tangential_scale hK.ne']
 
 /-- **Theorem 2, left inequality** (Pólya's proof): for a real polynomial `p` with only real
@@ -2027,8 +2027,8 @@ theorem erdos_gallai_polynomial_eq_iff (p : ℝ[X]) (hsplit : p.Splits)
   have key := erdos_gallai_eq_iff α β hα hβ
   constructor
   · intro h
-    have : erdos_gallai_area α β = 2 / 3 * erdos_gallai_T α β := by
-      have h' : K * erdos_gallai_area α β = K * (2 / 3 * erdos_gallai_T α β) := by
+    have : erdosGallaiArea α β = 2 / 3 * erdosGallaiT α β := by
+      have h' : K * erdosGallaiArea α β = K * (2 / 3 * erdosGallaiT α β) := by
         rw [h]; ring
       exact mul_left_cancel₀ hK.ne' h'
     obtain ⟨rfl, rfl⟩ := key.mp this
