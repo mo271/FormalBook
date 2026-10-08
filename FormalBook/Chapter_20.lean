@@ -1229,7 +1229,7 @@ theorem mantel (h: G.CliqueFree 3) : #E ≤ (n^2 / 4) := by
       _ = ∑ e ∈ E, ∑ v ∈ e.toFinset, d(v)                  :=
         Finset.sum_congr rfl (λ e he ↦ by
           induction e with
-          | _ v w => simp at he; simp [sum_deg, Sym2.toFinset_mk_eq, he.ne])
+          | _ v w => simp at he; simp [sum_deg, he.ne])
       _ = ∑ e ∈ E, ∑ v ∈ {v' ∈ V | v' ∈ e}, d(v)  :=
         Finset.sum_congr rfl (by intro e _; exact congrFun (congrArg Finset.sum (by ext; simp)) _)
       _ = ∑ v ∈ V, ∑ _ ∈ {e ∈ E | v ∈ e}, d(v)    :=
@@ -1303,7 +1303,7 @@ theorem mantel_eq_adj_degree (h : G.CliqueFree 3) (heq : #E * 4 = n ^ 2)
       _ = ∑ e ∈ E, ∑ v ∈ e.toFinset, d(v)                  :=
         Finset.sum_congr rfl (λ e he ↦ by
           induction e with
-          | _ v w => simp at he; simp [sum_deg, Sym2.toFinset_mk_eq, he.ne])
+          | _ v w => simp at he; simp [sum_deg, he.ne])
       _ = ∑ e ∈ E, ∑ v ∈ {v' ∈ V | v' ∈ e}, d(v)  :=
         Finset.sum_congr rfl (by intro e _; exact congrFun (congrArg Finset.sum (by ext; simp)) _)
       _ = ∑ v ∈ V, ∑ _ ∈ {e ∈ E | v ∈ e}, d(v)    :=
@@ -1363,7 +1363,7 @@ theorem mantel_eq_regular (h : G.CliqueFree 3) (heq : #E * 4 = n ^ 2)
     calc  ∑ e ∈ E, sum_deg e
       _ = ∑ e ∈ E, ∑ v ∈ e.toFinset, d(v) := Finset.sum_congr rfl (λ e he ↦ by
           induction e with | _ v w =>
-            simp at he; simp [sum_deg, Sym2.toFinset_mk_eq, he.ne])
+            simp at he; simp [sum_deg, he.ne])
       _ = ∑ e ∈ E, ∑ v ∈ {v' ∈ V | v' ∈ e}, d(v) := Finset.sum_congr rfl (by
           intro e _; exact congrFun (congrArg Finset.sum (by ext; simp)) _)
       _ = ∑ v ∈ V, ∑ _ ∈ {e ∈ E | v ∈ e}, d(v) :=
