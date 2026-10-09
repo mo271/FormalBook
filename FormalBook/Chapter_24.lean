@@ -14,6 +14,7 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.LinearAlgebra.Matrix.Permanent
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.Topology.Algebra.MvPolynomial
 public import Mathlib.Tactic
 
 @[expose] public section
@@ -770,10 +771,10 @@ theorem lemma1 {p : MvPolynomial (Fin n) ℝ} (hhom : p.IsHomogeneous d) (hst : 
         fun ε : ℝ => eval (fun i => x i + (ε : ℂ)) (map (algebraMap ℝ ℂ) p) := by
       ext ε; rw [aeval_def, eval_map]
     rw [this]
-    exact (continuous_eval _).comp (continuous_pi fun i =>
+    exact (MvPolynomial.continuous_eval _).comp (continuous_pi fun i =>
       continuous_const.add Complex.continuous_ofReal)
   have hcont2 : Continuous fun ε : ℝ => |eval (fun i => (x i).re + ε) p| :=
-    ((continuous_eval _).comp (continuous_pi fun i => continuous_const.add continuous_id)).abs
+    ((MvPolynomial.continuous_eval _).comp (continuous_pi fun i => continuous_const.add continuous_id)).abs
   have hle : ∀ ε : ℝ, 0 < ε →
       |eval (fun i => (x i).re + ε) p| ≤ ‖aeval (fun i => x i + (ε : ℂ)) p‖ := by
     intro ε hε
