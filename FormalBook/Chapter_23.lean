@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Polynomial.Factorization
 public import Mathlib.Analysis.Polynomial.Order
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Extremal
 public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.Tactic
 
