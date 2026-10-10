@@ -145,6 +145,7 @@ theorem needleProbability_eq_crossingProbability {l d : ℝ} (hl : 0 ≤ l) (hd 
   apply intervalIntegral.integral_congr
   intro a ha
   rw [uIcc_of_le (by positivity : (0 : ℝ) ≤ π / 2)] at ha
+  dsimp only
   rw [← intervalIntegral.integral_of_le zero_le_one]
   have hsin : 0 ≤ sin a := sin_nonneg_of_nonneg_of_le_pi ha.1 (by linarith [ha.2])
   have hh : 0 ≤ heightRatio l d a := mul_nonneg (div_nonneg hl hd.le) hsin
