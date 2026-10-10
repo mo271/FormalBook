@@ -58,6 +58,7 @@ theorem buffon_boundary {d : ℝ} (hd : 0 < d) : needleProbability d d = 2 / Rea
 theorem needleProbability_strictMono {d : ℝ} (hd : 0 < d) :
     StrictMonoOn (fun l => needleProbability l d) (Set.Ici 0) := by
   intro x hx y hy hxy
+  dsimp only
   rw [needleProbability_eq_crossingProbability hx hd,
     needleProbability_eq_crossingProbability hy hd]
   exact crossingProbability_strictMono hd hx hy hxy
