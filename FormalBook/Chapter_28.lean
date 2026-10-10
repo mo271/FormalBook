@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.Pigeonhole
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.LinearAlgebra.Projectivization.Constructions
@@ -139,8 +140,7 @@ theorem claim1_coprime (n : ℕ)
     rw [hcons]
     exact (Nat.coprime_self_add_right.mpr (Nat.coprime_one_right _)).symm
 
-/
--- Claim 2: From {1, 2, ..., 2n}, any n+1 chosen numbers contain two where one divides the other. -/
+/-- Claim 2: Any n+1 numbers from {1, 2, ..., 2n} contain two where one divides the other. -/
 theorem claim2_divisible (n : ℕ) (hn : 0 < n) (S : Finset ℕ)
     (hS_sub : ∀ x ∈ S, 1 ≤ x ∧ x ≤ 2 * n)
     (hS_card : S.card = n + 1) :
@@ -260,8 +260,8 @@ theorem sum_choose_deg_le_choose_card
   · -- injective (C₄-free condition)
     intro ⟨v₁, p₁⟩ hx₁ ⟨v₂, p₂⟩ hx₂ (hfx : p₁ = p₂)
     subst hfx
-    simp only [Finset.coe_sigma, Set.mem_sigma_iff, Finset.mem_coe, Finset.mem_powersetCard] at hx₁
-      hx₂
+    simp only [Finset.coe_sigma, Set.mem_sigma_iff, Finset.mem_coe, Finset.mem_powersetCard] at
+      hx₁ hx₂
     have hp₁ := hx₁.2
     have hp₂ := hx₂.2
     suffices v₁ = v₂ by subst this; rfl
