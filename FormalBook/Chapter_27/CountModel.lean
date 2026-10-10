@@ -30,6 +30,7 @@ lemma measurable_needleCount (l d : ℝ) : Measurable (needleCount l d) := by
   exact (measurable_of_countable Int.toNat).comp ((by fun_prop :
     Measurable (fun p : ℝ × ℝ => p.2 + l / d * sin p.1)).floor)
 
+
 lemma positionAngleMeasure_mem_ae :
     ∀ᵐ p ∂positionAngleMeasure, p ∈ Ioc (0 : ℝ) (π / 2) ×ˢ Ioc (0 : ℝ) 1 := by
   rw [positionAngleMeasure, Measure.prod_restrict]
@@ -114,5 +115,37 @@ theorem needleProbability_distribution (l d : ℝ) :
 theorem needleProbability_distribution_summable (l d : ℝ) :
     Summable (fun n : ℕ => needleLaw.real {p | needleCount l d p = n + 1}) :=
   count_probability_summable (measurable_needleCount l d)
+
+/-- The boundary offset is null in the product position and angle measure. -/
+lemma positionAngleMeasure_offset_ne_one_ae : ∀ᵐ p ∂positionAngleMeasure, p.2 ≠ 1 := by
+  unfold positionAngleMeasure
+  apply (ae_prod_iff_ae_ae (measurableSet_ne measurable_snd measurable_const)).mpr
+  exact ae_of_all _ fun _ => ae_restrict_of_ae (volume.ae_ne (1 : ℝ))
+
+/-- A short needle has at most one crossing almost surely in the actual sample space. -/
+theorem needleCount_le_one_ae {l d : ℝ} (hl : 0 ≤ l) (hd : 0 < d) (hld : l ≤ d) :
+    ∀ᵐ p ∂needleLaw, needleCount l d p ≤ 1 := by
+  have hpos : ∀ᵐ p ∂positionAngleMeasure, needleCount l d p ≤ 1 := by
+    filter_upwards [positionAngleMeasure_mem_ae, positionAngleMeasure_offset_ne_one_ae]
+      with p hp hne
+    have hs : 0 ≤ sin p.1 := sin_nonneg_of_nonneg_of_le_pi hp.1.1.le
+      (by linarith [hp.1.2])
+    have hr : 0 ≤ heightRatio l d p.1 := mul_nonneg (div_nonneg hl hd.le) hs
+    have hr1 : heightRatio l d p.1 ≤ 1 := by
+      have hratio : l / d ≤ 1 := (div_le_one hd).2 hld
+      exact (mul_le_mul_of_nonneg_left (sin_le_one p.1) (div_nonneg hl hd.le)).trans
+        (by simpa [heightRatio] using hratio)
+    have hu : p.2 ∈ Ico (0 : ℝ) 1 := ⟨hp.2.1.le, lt_of_le_of_ne hp.2.2 hne⟩
+    rw [needleCount, offsetCrossings_eq_indicator hr hr1 hu]
+    split_ifs <;> norm_num
+  exact ae_smul_measure hpos (ENNReal.ofReal (2 / π))
+
+/-- The general zero-or-one count identity specializes to the genuine short-needle count. -/
+theorem integral_needleCount_eq_probability {l d : ℝ}
+    (hl : 0 ≤ l) (hd : 0 < d) (hld : l ≤ d) :
+    (∫ p, (needleCount l d p : ℝ) ∂needleLaw) = needleProbability l d := by
+  rw [needleProbability, crossingEvent_eq_positive_count]
+  exact count_expectation_eq_probability (measurable_needleCount l d)
+    (needleCount_le_one_ae hl hd hld)
 
 end Chapter27

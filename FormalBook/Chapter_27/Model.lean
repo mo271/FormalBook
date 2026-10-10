@@ -6,6 +6,8 @@ module
 
 public import FormalBook.Chapter_27.Calculus
 public import FormalBook.Chapter_27.ModelBase
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Order.Interval.Set.Card
 
 /-!
 # Probability and expected crossings of a randomly dropped needle
@@ -85,8 +87,9 @@ theorem ruled_line_intersection_iff {l d a u : ℝ} (hd : 0 < d) (hu : u ∈ Ioo
   · rintro ⟨n, hlo, hhi⟩
     have hnpos : (0 : ℝ) < n := by
       have : 0 < (n : ℝ) * d := lt_of_lt_of_le (mul_pos hu.1 hd) hlo
-      exact pos_of_mul_pos_right this hd.le
-    have hn : (1 : ℤ) ≤ n := by exact_mod_cast hnpos
+      exact pos_of_mul_pos_left this hd.le
+    have hnzero : (0 : ℤ) < n := by exact_mod_cast hnpos
+    have hn : (1 : ℤ) ≤ n := by omega
     have hnreal : (1 : ℝ) ≤ n := by exact_mod_cast hn
     have hnline : d ≤ (n : ℝ) * d := by nlinarith
     exact hiff.mpr (hnline.trans hhi)
@@ -97,15 +100,44 @@ theorem ruled_line_intersection_iff {l d a u : ℝ} (hd : 0 < d) (hu : u ∈ Ioo
     · simp only [Int.cast_one, one_mul]
       exact hiff.mp h
 
+/-- The ruled lines met by the segment form precisely an integer interval. -/
+theorem ruled_lines_eq_interval {l d a u : ℝ} (hd : 0 < d) (hu : u ∈ Ioo 0 1) :
+    {n : ℤ | (n : ℝ) * d ∈ Icc (u * d) (u * d + l * sin a)} =
+      Icc 1 (offsetCrossings (heightRatio l d a) u) := by
+  ext n
+  simp only [mem_ofPred_eq, mem_Icc, le_offsetCrossings_iff]
+  have heq : u + heightRatio l d a = (u * d + l * sin a) / d := by
+    unfold heightRatio
+    field_simp
+  rw [heq, le_div_iff₀ hd]
+  constructor
+  · rintro ⟨hlo, hhi⟩
+    have hnreal : (0 : ℝ) < n := by
+      exact pos_of_mul_pos_left (lt_of_lt_of_le (mul_pos hu.1 hd) hlo) hd.le
+    have hn : (0 : ℤ) < n := by exact_mod_cast hnreal
+    exact ⟨by omega, hhi⟩
+  · rintro ⟨hn, hhi⟩
+    have hnreal : (1 : ℝ) ≤ n := by exact_mod_cast hn
+    exact ⟨mul_le_mul_of_nonneg_right (hu.2.le.trans hnreal) hd.le, hhi⟩
+
+/-- The floor count equals the cardinality of actual intersected ruled lines. -/
+theorem ruled_lines_ncard {l d a u : ℝ} (hd : 0 < d) (hu : u ∈ Ioo 0 1) :
+    {n : ℤ | (n : ℝ) * d ∈ Icc (u * d) (u * d + l * sin a)}.ncard =
+      (offsetCrossings (heightRatio l d a) u).toNat := by
+  rw [ruled_lines_eq_interval hd hu, Set.ncard_Icc, Int.card_Icc]
+  simp
+
 /-- Fubini's theorem turns the geometric event probability into the angle average. -/
 theorem needleProbability_eq_crossingProbability {l d : ℝ} (hl : 0 ≤ l) (hd : 0 < d) :
     needleProbability l d = crossingProbability l d := by
   have hevent := measurableSet_crossingEvent l d
   have hi : Integrable ((crossingEvent l d).indicator (fun _ => (1 : ℝ)))
-      positionAngleMeasure := integrable_const.indicator hevent
+      positionAngleMeasure := (integrable_const (1 : ℝ)).indicator hevent
   rw [needleProbability, needleLaw, measureReal_ennreal_smul_apply,
     ENNReal.toReal_ofReal (by positivity : (0 : ℝ) ≤ 2 / π)]
   rw [← integral_indicator_one (μ := positionAngleMeasure) hevent]
+  change (2 / π) * (∫ x, (crossingEvent l d).indicator (fun _ => (1 : ℝ)) x
+    ∂positionAngleMeasure) = crossingProbability l d
   rw [positionAngleMeasure, integral_prod _ hi]
   rw [← intervalIntegral.integral_of_le (by positivity : (0 : ℝ) ≤ π / 2)]
   unfold crossingProbability
