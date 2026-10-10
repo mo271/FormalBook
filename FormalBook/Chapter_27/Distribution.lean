@@ -93,6 +93,9 @@ theorem count_probability_real_sum [IsFiniteMeasure μ] (hN : Measurable N) :
   exact ENNReal.tsum_toReal_eq (fun n => measure_ne_top μ _)
 
 /-- If at most one crossing can occur almost surely, expectation equals hit probability. -/
+-- Finiteness restricts the interpretation to genuine expectations and real probabilities;
+-- without it, both sides can agree through the default values for infinite measures.
+@[nolint unusedArguments]
 theorem count_expectation_eq_probability [IsFiniteMeasure μ] (hN : Measurable N)
     (hshort : ∀ᵐ ω ∂μ, N ω ≤ 1) :
     (∫ ω, (N ω : ℝ) ∂μ) = μ.real {ω | 1 ≤ N ω} := by

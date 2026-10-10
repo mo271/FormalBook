@@ -77,3 +77,17 @@ theorem expectedCrossings_barbier {d : ℝ} (hd : 0 < d) :
   monotone _ _ _ _ h := expectedCrossings_mono hd h
 
 end Chapter27
+
+-- Temporary kernel dependency audit, removed after CI records the results.
+#print axioms Chapter27.buffon_needle
+#print axioms Chapter27.buffon_long_needle
+#print axioms Chapter27.needleProbability_strictMono
+#print axioms Chapter27.needleProbability_tendsto_one
+#print axioms Chapter27.expectedCrossings_eq_probability
+#print axioms Chapter27.circleCrossings_eq_two
+#print axioms Chapter27.BarbierExpectation.linear
+#print axioms Chapter27.barbier_calibration
+#print axioms Chapter27.count_expectation_sum
+#print axioms Chapter27.count_probability_real_sum
+#print axioms Chapter27.integral_needleCount
+#print axioms Chapter27.expectedCrossings_distribution
