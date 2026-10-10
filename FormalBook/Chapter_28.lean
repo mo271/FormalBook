@@ -260,8 +260,8 @@ theorem sum_choose_deg_le_choose_card
   · -- injective (C₄-free condition)
     intro ⟨v₁, p₁⟩ hx₁ ⟨v₂, p₂⟩ hx₂ (hfx : p₁ = p₂)
     subst hfx
-    simp only [Finset.coe_sigma, Set.mem_sigma_iff, Finset.mem_coe, Finset.mem_powersetCard] at
-      hx₁ hx₂
+    simp only [Finset.coe_sigma, Set.mem_sigma_iff,
+      Finset.mem_coe, Finset.mem_powersetCard] at hx₁ hx₂
     have hp₁ := hx₁.2
     have hp₂ := hx₂.2
     suffices v₁ = v₂ by subst this; rfl
@@ -2240,7 +2240,7 @@ lemma HasFixedPointProperty.transfer {X Y : Type*} [TopologicalSpace X] [Topolog
 def stdTriangle : Set (Fin 3 → ℝ) := {x | (∀ i, 0 ≤ x i) ∧ ∑ i, x i = 1}
 
 lemma isClosed_stdTriangle : IsClosed stdTriangle := by
-  rw [stdTriangle, Set.setOf_and, Set.setOf_forall]
+  rw [stdTriangle, Set.ofPred_and, Set.ofPred_forall]
   exact (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i)).inter
     (isClosed_eq (by fun_prop) continuous_const)
 
