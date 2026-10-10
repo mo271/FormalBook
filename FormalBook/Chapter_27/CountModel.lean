@@ -119,7 +119,7 @@ theorem needleProbability_distribution_summable (l d : ℝ) :
 /-- The boundary offset is null in the product position and angle measure. -/
 lemma positionAngleMeasure_offset_ne_one_ae : ∀ᵐ p ∂positionAngleMeasure, p.2 ≠ 1 := by
   unfold positionAngleMeasure
-  apply (ae_prod_iff_ae_ae (measurableSet_ne measurable_snd measurable_const)).mpr
+  apply (Measure.ae_prod_iff_ae_ae (measurableSet_ne measurable_snd measurable_const)).mpr
   exact ae_of_all _ fun _ => ae_restrict_of_ae (volume.ae_ne (1 : ℝ))
 
 /-- A short needle has at most one crossing almost surely in the actual sample space. -/
@@ -138,7 +138,7 @@ theorem needleCount_le_one_ae {l d : ℝ} (hl : 0 ≤ l) (hd : 0 < d) (hld : l �
     have hu : p.2 ∈ Ico (0 : ℝ) 1 := ⟨hp.2.1.le, lt_of_le_of_ne hp.2.2 hne⟩
     rw [needleCount, offsetCrossings_eq_indicator hr hr1 hu]
     split_ifs <;> norm_num
-  exact ae_smul_measure hpos (ENNReal.ofReal (2 / π))
+  exact Measure.ae_smul_measure hpos (ENNReal.ofReal (2 / π))
 
 /-- The general zero-or-one count identity specializes to the genuine short-needle count. -/
 theorem integral_needleCount_eq_probability {l d : ℝ}
