@@ -119,7 +119,8 @@ theorem needleProbability_distribution_summable (l d : ℝ) :
 /-- The boundary offset is null in the product position and angle measure. -/
 lemma positionAngleMeasure_offset_ne_one_ae : ∀ᵐ p ∂positionAngleMeasure, p.2 ≠ 1 := by
   unfold positionAngleMeasure
-  apply (Measure.ae_prod_iff_ae_ae (measurableSet_ne measurable_snd measurable_const)).mpr
+  apply (Measure.ae_prod_iff_ae_ae
+    (isClosed_eq continuous_snd continuous_const).measurableSet.compl).mpr
   exact ae_of_all _ fun _ => ae_restrict_of_ae (volume.ae_ne (1 : ℝ))
 
 /-- A short needle has at most one crossing almost surely in the actual sample space. -/
