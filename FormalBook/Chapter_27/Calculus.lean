@@ -11,6 +11,14 @@ public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.NormNum
 
+/-!
+# Buffon's needle: the calculus proof
+
+The conditional crossing probability is capped at one and averaged over inclination.
+The short-needle formula, the long-needle formula, and the chapter's three exercises
+are proved from this integral model.
+-/
+
 open Real Set MeasureTheory
 open scoped Interval
 
@@ -42,7 +50,7 @@ theorem crossingProbability_short {l d : ℝ} (hl : 0 ≤ l) (hd : 0 < d)
     intro a ha
     exact min_eq_right ((mul_le_mul_of_nonneg_left (sin_le_one a) hratio).trans
       (by simpa using hratio'))
-  rw [heq, intervalIntegral.integral_const_mul, intervalIntegral.integral_sin]
+  rw [heq, intervalIntegral.integral_const_mul, integral_sin]
   simp
 
 theorem crossingProbability_boundary {d : ℝ} (hd : 0 < d) :
@@ -61,7 +69,8 @@ theorem crossingProbability_split {l d : ℝ} (hd : 0 < d) (hdl : d ≤ l) :
   have hsin : sin (arcsin (d / l)) = d / l := sin_arcsin (by linarith) hr1
   have hcancel : (l / d) * (d / l) = 1 := by
     field_simp [ne_of_gt hd, ne_of_gt hl]
-  have hi (a b : ℝ) := (continuous_conditionalCrossingProbability l d).intervalIntegrable a b
+  have hi (a b : ℝ) :=
+    (continuous_conditionalCrossingProbability l d).intervalIntegrable (μ := volume) a b
   unfold crossingProbability
   rw [← intervalIntegral.integral_add_adjacent_intervals
     (hi 0 (arcsin (d / l))) (hi (arcsin (d / l)) (π / 2))]
@@ -90,7 +99,7 @@ theorem crossingProbability_split {l d : ℝ} (hd : 0 < d) (hdl : d ≤ l) :
       _ ≤ (l / d) * sin a := mul_le_mul_of_nonneg_left
         (sin_le_sin_of_le_of_le_pi_div_two (by linarith [pi_pos]) ha.2 ha.1)
         (div_nonneg hl.le hd.le)
-  rw [hleft, hright, intervalIntegral.integral_const_mul, intervalIntegral.integral_sin,
+  rw [hleft, hright, intervalIntegral.integral_const_mul, integral_sin,
     intervalIntegral.integral_const]
   simp only [cos_zero, smul_eq_mul, mul_one]
   ring
@@ -100,8 +109,8 @@ theorem crossingProbability_long {l d : ℝ} (hd : 0 < d) (hdl : d ≤ l) :
     crossingProbability l d = 1 + (2 / π) *
       ((l / d) * (1 - sqrt (1 - d ^ 2 / l ^ 2)) - arcsin (d / l)) := by
   rw [crossingProbability_split hd hdl, cos_arcsin, div_pow]
-  field_simp
-  <;> ring
+  field_simp [Real.pi_ne_zero]
+  ring
 
 /-- Longer needles have strictly greater crossing probability. -/
 theorem crossingProbability_strictMono {d : ℝ} (hd : 0 < d) :
@@ -119,8 +128,10 @@ theorem crossingProbability_strictMono {d : ℝ} (hd : 0 < d) :
   have hspos : 0 < sin a := by rw [hs]; exact hrpos
   have hy1 : y / d * sin a < 1 := by
     rw [hs]
-    field_simp
-    nlinarith
+    calc
+      y / d * (d / (2 * (y + d))) = y / (2 * (y + d)) := by
+        field_simp [ne_of_gt hd, ne_of_gt (show 0 < y + d by positivity)]
+      _ < 1 := (div_lt_one (by positivity)).2 (by linarith)
   have hxy' : x / d * sin a < y / d * sin a :=
     mul_lt_mul_of_pos_right ((div_lt_div_iff_of_pos_right hd).2 hxy) hspos
   unfold crossingProbability
@@ -140,15 +151,16 @@ theorem crossingProbability_strictMono {d : ℝ} (hd : 0 < d) :
 /-- Every conditional probability is at most one, hence so is its average. -/
 theorem crossingProbability_le_one (l d : ℝ) : crossingProbability l d ≤ 1 := by
   have hp : (0 : ℝ) ≤ π / 2 := by positivity
-  have hi := (continuous_conditionalCrossingProbability l d).intervalIntegrable 0 (π / 2)
+  have hi :=
+    (continuous_conditionalCrossingProbability l d).intervalIntegrable (μ := volume) 0 (π / 2)
   have h := intervalIntegral.integral_mono_on hp hi
-    (continuous_const.intervalIntegrable 0 (π / 2))
+    (continuous_const.intervalIntegrable (μ := volume) 0 (π / 2))
     (fun a _ => min_le_left (1 : ℝ) (l / d * sin a))
   have hh := mul_le_mul_of_nonneg_left h (div_nonneg (by norm_num) pi_pos.le)
   unfold crossingProbability
   convert hh using 1
   simp only [intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_one]
-  field_simp
+  field_simp [Real.pi_ne_zero]
 
 /-- The probability tends to one as needle length tends to infinity. -/
 theorem crossingProbability_tendsto_one {d : ℝ} (hd : 0 < d) :
@@ -158,8 +170,8 @@ theorem crossingProbability_tendsto_one {d : ℝ} (hd : 0 < d) :
   have ha := (continuous_arcsin.tendsto 0).comp hr
   have hlo : Filter.Tendsto (fun l : ℝ => 1 - (2 / π) * arcsin (d / l))
       Filter.atTop (nhds 1) := by
-    simpa using Filter.tendsto_const_nhds.sub (ha.const_mul (2 / π))
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le' hlo Filter.tendsto_const_nhds
+    simpa using tendsto_const_nhds.sub (ha.const_mul (2 / π))
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le' hlo tendsto_const_nhds
   · filter_upwards [Filter.eventually_ge_atTop d] with l hld
     have hl : 0 < l := lt_of_lt_of_le hd hld
     have hn : 0 ≤ (l / d) * (1 - cos (arcsin (d / l))) :=
@@ -172,10 +184,3 @@ theorem crossingProbability_tendsto_one {d : ℝ} (hd : 0 < d) :
   · exact Filter.Eventually.of_forall (fun l => crossingProbability_le_one l d)
 
 end Chapter27
-
-
-
-
-
-
-

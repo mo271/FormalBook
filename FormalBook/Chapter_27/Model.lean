@@ -126,7 +126,7 @@ theorem expectedCrossings_eq (l d : ℝ) : expectedCrossings l d = 2 * l / (π *
   unfold expectedCrossings
   simp_rw [integral_offsetCrossings]
   unfold heightRatio
-  rw [intervalIntegral.integral_const_mul, intervalIntegral.integral_sin]
+  rw [intervalIntegral.integral_const_mul, integral_sin]
   simp only [cos_zero, cos_pi_div_two, sub_zero]
   simp only [div_eq_mul_inv, mul_inv_rev]
   ring

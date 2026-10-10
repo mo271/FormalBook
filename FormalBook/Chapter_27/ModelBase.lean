@@ -26,7 +26,7 @@ on boundary alignments does not affect the integrals.
 
 @[expose] public section
 
-open MeasureTheory Set Real
+open MeasureTheory Set Real Classical
 
 namespace Chapter27
 
@@ -38,6 +38,7 @@ lemma intervalIntegrable_offsetCrossings (r a b : ℝ) :
     IntervalIntegrable (fun u => (offsetCrossings r u : ℝ)) volume a b := by
   apply Monotone.intervalIntegrable
   intro u v huv
+  change ((⌊u + r⌋ : ℤ) : ℝ) ≤ ((⌊v + r⌋ : ℤ) : ℝ)
   exact_mod_cast Int.floor_mono (show u + r ≤ v + r by linarith)
 
 /-- The crossing event for the next ruled line. -/
@@ -75,7 +76,7 @@ lemma integral_offset_step_le {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 1) :
   apply intervalIntegral.integral_congr_ae
   filter_upwards [volume.ae_ne t] with u hu
   intro _
-  simp only [le_iff_lt_or_eq, eq_comm, hu, or_false]
+  simp only [le_iff_lt_or_eq, Ne.symm hu, or_false]
 
 /-- Averaging the number of crossings over a uniformly random offset gives the
 normalized vertical displacement, including for long needles. -/
@@ -94,17 +95,18 @@ theorem integral_offsetCrossings (r : ℝ) :
     · have hf : offsetCrossings r u = k + 1 := by
         apply Int.floor_eq_iff.mpr
         constructor <;> push_cast <;> dsimp [t] at htu <;> linarith [hu.2]
-      rw [hf, if_pos htu]
+      rw [hf, ite_eq_left htu]
       push_cast
       rfl
     · have hf : offsetCrossings r u = k := by
         apply Int.floor_eq_iff.mpr
         constructor <;> dsimp [t] at htu <;> linarith [hu.1]
-      rw [hf, if_neg htu, add_zero]
+      rw [hf, ite_eq_right htu, add_zero]
   have hi : IntervalIntegrable (fun u : ℝ => if t ≤ u then (1 : ℝ) else 0)
       volume 0 1 := by
     apply Monotone.intervalIntegrable
     intro a b hab
+    dsimp only
     split_ifs <;> try norm_num
     linarith
   calc
@@ -124,7 +126,10 @@ theorem integral_hitsLine {r : ℝ} (hr : 0 ≤ r) :
   · have heq : (fun u => if hitsLine r u then (1 : ℝ) else 0) =
         fun u => if 1 - r ≤ u then (1 : ℝ) else 0 := by
       funext u
-      simp only [hitsLine, le_add_iff_sub_le]
+      have h : hitsLine r u ↔ 1 - r ≤ u := by
+        unfold hitsLine
+        constructor <;> intro h <;> linarith
+      simp only [h]
     rw [heq, integral_offset_step_le (by linarith) (by linarith), min_eq_right hr1]
     ring
   · rw [min_eq_left (le_of_not_ge hr1)]
@@ -134,7 +139,7 @@ theorem integral_hitsLine {r : ℝ} (hr : 0 ≤ r) :
         apply intervalIntegral.integral_congr
         intro u hu
         rw [uIcc_of_le zero_le_one] at hu
-        rw [if_pos]
+        rw [ite_eq_left]
         dsimp [hitsLine]
         linarith [hu.1]
       _ = 1 := by simp

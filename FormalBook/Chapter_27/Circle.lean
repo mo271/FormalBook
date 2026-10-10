@@ -9,6 +9,7 @@ public import Mathlib.Data.Set.Card
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Ring
 
 /-!
 # The circular needle in Barbier's argument
@@ -45,19 +46,26 @@ theorem circleSection_one {d u : ℝ} (hd : 0 < d) (hu : u ∈ Ioo 0 1) :
       {Real.sqrt (circleRadicand d u), -Real.sqrt (circleRadicand d u)} := by
   have hs := Real.sq_sqrt (circleRadicand_pos hd hu).le
   ext x
-  simp only [circleSection, mem_setOf_eq, Int.cast_one, one_mul,
+  simp only [circleSection, mem_ofPred_eq, Int.cast_one, one_mul,
     mem_insert_iff, mem_singleton_iff]
   constructor
   · intro hx
     have hsq : x ^ 2 = (Real.sqrt (circleRadicand d u)) ^ 2 := by
-      dsimp [circleRadicand] at hs
+      rw [hs]
+      dsimp [circleRadicand]
       nlinarith
     have hprod : (x - Real.sqrt (circleRadicand d u)) *
         (x + Real.sqrt (circleRadicand d u)) = 0 := by nlinarith
     rcases mul_eq_zero.mp hprod with h | h
     · left; linarith
     · right; linarith
-  · rintro (rfl | rfl) <;> dsimp [circleRadicand] at hs <;> nlinarith
+  · rintro (rfl | rfl)
+    · rw [hs]
+      dsimp [circleRadicand]
+      ring
+    · rw [neg_sq, hs]
+      dsimp [circleRadicand]
+      ring
 
 theorem circleSection_one_distinct {d u : ℝ} (hd : 0 < d) (hu : u ∈ Ioo 0 1) :
     Real.sqrt (circleRadicand d u) ≠ -Real.sqrt (circleRadicand d u) := by
@@ -112,9 +120,9 @@ theorem circleIntersectionPoints_eq_pair {d u : ℝ} (hd : 0 < d)
   rcases p with ⟨k, x⟩
   by_cases hk : k = 1
   · subst k
-    simp only [circleIntersectionPoints, mem_setOf_eq, circleSection_one hd hu,
+    simp only [circleIntersectionPoints, mem_ofPred_eq, circleSection_one hd hu,
       mem_insert_iff, mem_singleton_iff, Prod.mk.injEq, true_and]
-  · simp only [circleIntersectionPoints, mem_setOf_eq, circleSection_eq_empty hd hu hk,
+  · simp only [circleIntersectionPoints, mem_ofPred_eq, circleSection_eq_empty hd hu hk,
       mem_empty_iff_false, mem_insert_iff, mem_singleton_iff, Prod.mk.injEq, hk,
       false_and, or_self]
 

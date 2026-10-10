@@ -36,6 +36,8 @@ namespace BarbierExpectation
 
 variable {E : ℝ → ℝ} (h : BarbierExpectation E)
 
+include h
+
 theorem zero : E 0 = 0 := by
   have := h.add 0 0 (by norm_num) (by norm_num)
   simp only [zero_add] at this
@@ -103,10 +105,12 @@ theorem polygon {ι : Type*} (s : Finset ι) (length : ι → ℝ)
 end BarbierExpectation
 
 /-- Perimeter of the regular `n`-gon inscribed in a circle of diameter `d`. -/
-def inscribedPerimeter (d : ℝ) (n : ℕ) : ℝ := n * d * Real.sin (Real.pi / n)
+noncomputable def inscribedPerimeter (d : ℝ) (n : ℕ) : ℝ :=
+  n * d * Real.sin (Real.pi / n)
 
 /-- Perimeter of the regular `n`-gon circumscribed about that circle. -/
-def circumscribedPerimeter (d : ℝ) (n : ℕ) : ℝ := n * d * Real.tan (Real.pi / n)
+noncomputable def circumscribedPerimeter (d : ℝ) (n : ℕ) : ℝ :=
+  n * d * Real.tan (Real.pi / n)
 
 /-- The inscribed regular polygon's perimeter is at most the circumference. -/
 theorem inscribedPerimeter_le {d : ℝ} (hd : 0 ≤ d) {n : ℕ} (hn : 3 ≤ n) :
@@ -117,7 +121,6 @@ theorem inscribedPerimeter_le {d : ℝ} (hd : 0 ≤ d) {n : ℕ} (hn : 3 ≤ n) 
     (mul_nonneg (Nat.cast_nonneg n) hd)
   have he : (n : ℝ) * d * (Real.pi / n) = d * Real.pi := by
     field_simp [hn']
-    <;> ring
   simpa only [inscribedPerimeter, he] using hp
 
 /-- The circumscribed regular polygon's perimeter is at least the circumference. -/
@@ -133,7 +136,6 @@ theorem le_circumscribedPerimeter {d : ℝ} (hd : 0 ≤ d) {n : ℕ} (hn : 3 ≤
     (mul_nonneg (Nat.cast_nonneg n) hd)
   have he : (n : ℝ) * d * (Real.pi / n) = d * Real.pi := by
     field_simp [hn'.ne']
-    <;> ring
   simpa only [circumscribedPerimeter, he] using hp
 
 private theorem polygonAngle_tendsto :
@@ -153,7 +155,6 @@ theorem inscribedPerimeter_tendsto (d : ℝ) :
   have hn' : (n : ℝ) ≠ 0 := by exact_mod_cast (show n ≠ 0 by omega)
   dsimp [inscribedPerimeter]
   field_simp [Real.pi_ne_zero, hn']
-  <;> ring
 
 theorem circumscribedPerimeter_tendsto (d : ℝ) :
     Tendsto (circumscribedPerimeter d) atTop (𝓝 (d * Real.pi)) := by
@@ -165,7 +166,6 @@ theorem circumscribedPerimeter_tendsto (d : ℝ) :
   have hn' : (n : ℝ) ≠ 0 := by exact_mod_cast (show n ≠ 0 by omega)
   dsimp [circumscribedPerimeter]
   field_simp [Real.pi_ne_zero, hn']
-  <;> ring
 
 /-- Barbier's squeeze argument, conditional on the geometric polygon comparisons. -/
 theorem barbier_calibration {c d : ℝ} (hd : 0 < d)

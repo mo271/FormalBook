@@ -8,6 +8,7 @@ module
 public import FormalBook.Chapter_27.Model
 public import FormalBook.Chapter_27.Barbier
 public import FormalBook.Chapter_27.Circle
+public import FormalBook.Chapter_27.Distribution
 
 /-!
 # Buffon's needle problem
