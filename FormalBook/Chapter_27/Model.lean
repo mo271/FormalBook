@@ -130,6 +130,7 @@ theorem ruled_lines_ncard {l d a u : ℝ} (hd : 0 < d) (hu : u ∈ Ioo 0 1) :
 /-- Fubini's theorem turns the geometric event probability into the angle average. -/
 theorem needleProbability_eq_crossingProbability {l d : ℝ} (hl : 0 ≤ l) (hd : 0 < d) :
     needleProbability l d = crossingProbability l d := by
+  classical
   have hevent := measurableSet_crossingEvent l d
   have hi : Integrable ((crossingEvent l d).indicator (fun _ => (1 : ℝ)))
       positionAngleMeasure := (integrable_const (1 : ℝ)).indicator hevent
@@ -147,7 +148,8 @@ theorem needleProbability_eq_crossingProbability {l d : ℝ} (hl : 0 ≤ l) (hd 
   rw [uIcc_of_le (by positivity : (0 : ℝ) ≤ π / 2)] at ha
   dsimp only
   rw [← intervalIntegral.integral_of_le zero_le_one]
-  have hsin : 0 ≤ sin a := sin_nonneg_of_nonneg_of_le_pi ha.1 (by linarith [ha.2])
+  have hsin : 0 ≤ sin a := sin_nonneg_of_nonneg_of_le_pi ha.1
+    (by linarith [ha.2, pi_pos])
   have hh : 0 ≤ heightRatio l d a := mul_nonneg (div_nonneg hl hd.le) hsin
   change (∫ u in (0 : ℝ)..1, if hitsLine (heightRatio l d a) u then 1 else 0) =
     conditionalCrossingProbability l d a

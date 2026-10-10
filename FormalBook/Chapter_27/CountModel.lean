@@ -17,7 +17,7 @@ Its ordinary Bochner expectation equals the iterated average in `Model`.
 
 @[expose] public section
 
-open MeasureTheory Set Real
+open MeasureTheory Set Real Classical
 
 namespace Chapter27
 
@@ -40,7 +40,7 @@ lemma needleCount_cast_eq {l d : ℝ} (hl : 0 ≤ l) (hd : 0 < d)
     {p : ℝ × ℝ} (hp : p ∈ Ioc (0 : ℝ) (π / 2) ×ˢ Ioc (0 : ℝ) 1) :
     (needleCount l d p : ℝ) = (offsetCrossings (heightRatio l d p.1) p.2 : ℝ) := by
   have hs : 0 ≤ sin p.1 := sin_nonneg_of_nonneg_of_le_pi hp.1.1.le
-    (by linarith [hp.1.2])
+    (by linarith [hp.1.2, pi_pos])
   have hr : 0 ≤ heightRatio l d p.1 := mul_nonneg (div_nonneg hl hd.le) hs
   have hn := offsetCrossings_nonneg hr hp.2.1.le
   have heq : (needleCount l d p : ℤ) = offsetCrossings (heightRatio l d p.1) p.2 :=
@@ -129,7 +129,7 @@ theorem needleCount_le_one_ae {l d : ℝ} (hl : 0 ≤ l) (hd : 0 < d) (hld : l �
     filter_upwards [positionAngleMeasure_mem_ae, positionAngleMeasure_offset_ne_one_ae]
       with p hp hne
     have hs : 0 ≤ sin p.1 := sin_nonneg_of_nonneg_of_le_pi hp.1.1.le
-      (by linarith [hp.1.2])
+      (by linarith [hp.1.2, pi_pos])
     have hr : 0 ≤ heightRatio l d p.1 := mul_nonneg (div_nonneg hl hd.le) hs
     have hr1 : heightRatio l d p.1 ≤ 1 := by
       have hratio : l / d ≤ 1 := (div_le_one hd).2 hld
