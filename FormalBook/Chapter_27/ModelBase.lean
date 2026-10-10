@@ -139,6 +139,7 @@ theorem integral_hitsLine {r : ℝ} (hr : 0 ≤ r) :
         apply intervalIntegral.integral_congr
         intro u hu
         rw [uIcc_of_le zero_le_one] at hu
+        dsimp only
         rw [ite_eq_left]
         dsimp [hitsLine]
         linarith [hu.1]

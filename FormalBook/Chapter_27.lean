@@ -9,6 +9,7 @@ public import FormalBook.Chapter_27.Model
 public import FormalBook.Chapter_27.Barbier
 public import FormalBook.Chapter_27.Circle
 public import FormalBook.Chapter_27.Distribution
+public import FormalBook.Chapter_27.CountModel
 
 /-!
 # Buffon's needle problem

@@ -53,7 +53,8 @@ theorem count_expectation_summable (hN : Measurable N)
   convert hs using 1
   funext n
   rw [← measureReal_def, map_measureReal_apply hN (measurableSet_singleton n)]
-  simp only [Real.norm_eq_abs, abs_of_nonneg (Nat.cast_nonneg n), mul_comm]
+  simp only [Real.norm_eq_abs, abs_of_nonneg (Nat.cast_nonneg n : (0 : ℝ) ≤ n),
+    mul_comm]
   rfl
 
 /-- Positive-count events partition into the disjoint events of counts `1,2,3,...`. -/
@@ -61,7 +62,7 @@ theorem count_probability_sum (hN : Measurable N) :
     μ {ω | 1 ≤ N ω} = ∑' n : ℕ, μ {ω | N ω = n + 1} := by
   have heq : {ω | 1 ≤ N ω} = ⋃ n : ℕ, {ω | N ω = n + 1} := by
     ext ω
-    simp only [mem_setOf_eq, mem_iUnion]
+    simp only [mem_ofPred_eq, mem_iUnion]
     constructor
     · intro h
       exact ⟨N ω - 1, by omega⟩
@@ -72,7 +73,7 @@ theorem count_probability_sum (hN : Measurable N) :
   · intro i j hij
     apply Set.disjoint_left.mpr
     intro ω hi hj
-    simp only [mem_setOf_eq] at hi hj
+    simp only [mem_ofPred_eq] at hi hj
     omega
   · intro n
     exact hN (measurableSet_singleton (n + 1))
@@ -95,7 +96,8 @@ theorem count_probability_real_sum [IsFiniteMeasure μ] (hN : Measurable N) :
 theorem count_expectation_eq_probability [IsFiniteMeasure μ] (hN : Measurable N)
     (hshort : ∀ᵐ ω ∂μ, N ω ≤ 1) :
     (∫ ω, (N ω : ℝ) ∂μ) = μ.real {ω | 1 ≤ N ω} := by
-  rw [← integral_indicator_one (hN measurableSet_Ici)]
+  have hevent : MeasurableSet {ω | 1 ≤ N ω} := hN (measurableSet_Ici (a := (1 : ℕ)))
+  rw [← integral_indicator_one (μ := μ) hevent]
   apply integral_congr_ae
   filter_upwards [hshort] with ω hω
   by_cases hz : N ω = 0

@@ -77,14 +77,18 @@ theorem linear {x : ℝ} (hx : 0 ≤ x) : E x = E 1 * x := by
   · apply ge_of_tendsto (hc.const_mul (E 1))
     filter_upwards [eventually_ge_atTop (1 : ℕ)] with n hn
     have hn' : (0 : ℝ) < n := Nat.cast_pos.mpr (by omega)
-    have hp := h.monotone hx (by positivity)
+    have hp := h.monotone hx (by
+      change 0 ≤ (⌈x * (n : ℝ)⌉₊ : ℝ) / n
+      positivity)
       ((le_div_iff₀ hn').2 (by simpa [mul_comm] using Nat.le_ceil (x * n)))
     simpa [h.nat_div ⌈x * (n : ℝ)⌉₊ n (by omega), mul_comm] using hp
 
   · apply le_of_tendsto (hf.const_mul (E 1))
     filter_upwards [eventually_ge_atTop (1 : ℕ)] with n hn
     have hn' : (0 : ℝ) < n := Nat.cast_pos.mpr (by omega)
-    have hp := h.monotone (by positivity) hx
+    have hp := h.monotone (by
+      change 0 ≤ (⌊x * (n : ℝ)⌋₊ : ℝ) / n
+      positivity) hx
       ((div_le_iff₀ hn').2 (by
         simpa [mul_comm] using Nat.floor_le (mul_nonneg hx hn'.le)))
     simpa [h.nat_div ⌊x * (n : ℝ)⌋₊ n (by omega), mul_comm] using hp

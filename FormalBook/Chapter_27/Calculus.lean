@@ -84,7 +84,7 @@ theorem crossingProbability_split {l d : ℝ} (hd : 0 < d) (hdl : d ≤ l) :
     calc
       (l / d) * sin a ≤ (l / d) * sin (arcsin (d / l)) :=
         mul_le_mul_of_nonneg_left
-          (sin_le_sin_of_le_of_le_pi_div_two (by linarith [pi_pos]) ht' ha.2)
+          (sin_le_sin_of_le_of_le_pi_div_two (by linarith [ha.1, pi_pos]) ht' ha.2)
           (div_nonneg hl.le hd.le)
       _ = 1 := by rw [hsin, hcancel]
   have hright : (∫ a in arcsin (d / l)..π / 2, conditionalCrossingProbability l d a) =
@@ -156,7 +156,7 @@ theorem crossingProbability_le_one (l d : ℝ) : crossingProbability l d ≤ 1 :
   have h := intervalIntegral.integral_mono_on hp hi
     (continuous_const.intervalIntegrable (μ := volume) 0 (π / 2))
     (fun a _ => min_le_left (1 : ℝ) (l / d * sin a))
-  have hh := mul_le_mul_of_nonneg_left h (div_nonneg (by norm_num) pi_pos.le)
+  have hh := mul_le_mul_of_nonneg_left h (by positivity : 0 ≤ 2 / π)
   unfold crossingProbability
   convert hh using 1
   simp only [intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_one]
