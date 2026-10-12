@@ -2010,4 +2010,3 @@ theorem box_tiling_integer_side (B : Box n) (Ts : List (Box n)) (h_tiling : is_b
 end
 
 end
-
