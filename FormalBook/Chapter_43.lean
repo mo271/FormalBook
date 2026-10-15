@@ -461,12 +461,23 @@ def GeometricKneserGraph {d : ℕ} (P : Finset (EuclideanSpace ℝ (Fin d))) (k 
 def isoGeometricKneserGraphVertices {d : ℕ} (P : Finset (EuclideanSpace ℝ (Fin d))) (k : ℕ) :
     {s : Finset (EuclideanSpace ℝ (Fin d)) // s ⊆ P ∧ s.card = k} ≃
     {s : Finset (Fin P.card) // s.card = k} := by
-  sorry
+  let e := (Equiv.finsetSubtypeComm (· ∈ P)).symm.trans P.equivFin.finsetCongr
+  exact (Equiv.subtypeSubtypeEquivSubtypeInter (· ⊆ P) (fun s => s.card = k)).symm.trans
+    (e.subtypeEquiv (by intro s; simp [e, Equiv.finsetSubtypeComm]))
 
 /-- The geometric Kneser graph on `P` is isomorphic to the standard Kneser graph `K(|P|, k)`. -/
 def isoGeometricKneserGraph {d : ℕ} (P : Finset (EuclideanSpace ℝ (Fin d))) (k : ℕ) :
     GeometricKneserGraph P k ≃g KneserGraph P.card k := by
-  sorry
+  refine (show KneserGraph P.card k ≃g GeometricKneserGraph P k from
+    { toEquiv := (isoGeometricKneserGraphVertices P k).symm
+      map_rel_iff' := ?_ }).symm
+  intro v w
+  simp only [GeometricKneserGraph, KneserGraph, SimpleGraph.fromRel_adj,
+    Equiv.apply_eq_iff_eq, ne_eq, or_self, disjoint_comm]
+  change (v ≠ w ∧
+    Disjoint ((v.val.map P.equivFin.symm.toEmbedding).map (Function.Embedding.subtype _))
+      ((w.val.map P.equivFin.symm.toEmbedding).map (Function.Embedding.subtype _))) ↔ _
+  simp only [Finset.disjoint_map]
 
 /- The chromatic number of the geometric Kneser graph on `P` is strictly greater than `d+1`. -/
 theorem chromatic_number_geometric_kneser_gt {k d : ℕ} (hk : 1 ≤ k)
